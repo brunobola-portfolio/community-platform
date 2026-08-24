@@ -1,0 +1,7 @@
+{
+  "name": "Community Platform",
+  "description": "White-label community platform for cultural and recreational associations. Reference instance: arcva.pt",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

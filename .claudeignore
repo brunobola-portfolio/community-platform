@@ -1,0 +1,24 @@
+# Dependencias
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Convex generated (auto-gerado, nao editar)
+convex/_generated/
+
+# Outros agentes (nao relevantes para Claude)
+.roo/
+.augment/
+
+# Artefactos temporarios
+.artifacts/
+.playwright-mcp/
+
+# Ficheiros grandes sem valor de contexto
+package-lock.json
+
+# Screenshots
+*.png
+*.jpg

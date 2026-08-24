@@ -1,0 +1,56 @@
+
+/**
+ * Admin panel constants and shared utilities.
+ */
+
+import { Users, Lightbulb, Target, Heart, Sparkles, Handshake, Activity, Shield, Trophy, LucideIcon } from 'lucide-react';
+import type { Tab } from './types';
+
+export const ICON_MAP: Record<string, LucideIcon> = {
+    Users, Lightbulb, Target, Heart, Sparkles, Handshake, Activity, Shield, Trophy
+};
+
+// Standardized input styling across the admin panel
+// min-w-0 prevents grid children from overflowing their track (grid items
+// default to min-width: auto, which lets long placeholder/content widths
+// push past the column and clip neighbouring fields)
+export const STD_INPUT_CLASS =
+    "w-full min-w-0 bg-slate-950/50 border border-slate-800 rounded-lg p-3 text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-none transition-all";
+
+export const LABEL_CLASS =
+    "text-xs font-mono text-brand-400 uppercase tracking-wider font-bold mb-1.5 block";
+
+export const TAB_NAMES: Record<Tab, string> = {
+    dashboard: "Painel de Controlo",
+    events: "Eventos",
+    news: "Notícias",
+    members: "Membros",
+    sponsors: "Parceiros",
+    categories: "Categorias",
+    tiers: "Níveis de Parceria",
+    settings: "Definições",
+    documents: "Documentos",
+    notifications: "Notificações",
+    gallery: "Galeria",
+    historia: "História",
+    leads: "Leads & Contactos",
+    "member-quotas": "Sócios & Quotas",
+    homepage: "Personalização Homepage",
+    ai: "IA & Chatbot"
+};
+
+/** Helper to format ISO dates for HTML datetime-local inputs */
+export const formatDateForInput = (dateString?: string): string => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+    const localDate = new Date(date.getTime() - offsetMs);
+    return localDate.toISOString().slice(0, 16);
+};
+
+export const getGreeting = (): string => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
+};
