@@ -16,3 +16,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   o nome de uma associação; ver `docs/WHITE-LABEL.md`.
 - Contacto técnico do projeto: **`bruno@bolalabs.pt`** (BolaLabs); contacto da instância
   demo ARCVA: `geral@arcva.pt`.
+- **Entregáveis longos vão para Artifact.** Guias, runbooks, relatórios de auditoria ou
+  planos com mais de ~60 linhas publicam-se como Artifact (página) e guardam-se também em
+  `.artifacts/docs/` (cópia local); na resposta fica só o link e um resumo de 5 linhas.
+  Textos curtos, decisões e respostas diretas ficam na conversa — o Artifact só quando
+  poupa leitura e tokens, não por defeito.

@@ -120,6 +120,10 @@ npm run preview      # Servir o build local
 - NUNCA criar mocks/stubs, nem PNGs/JPGs/temporários na raiz do projeto.
 - Screenshots → `.artifacts/screenshots/` · docs de agentes → `.artifacts/docs/` ·
   logs → `.artifacts/logs/` (tudo gitignored).
+- **Entregáveis longos não vão para o chat.** Guias, runbooks, relatórios ou planos com
+  mais de ~60 linhas escrevem-se num ficheiro em `.artifacts/docs/` (e, em agentes que o
+  suportem, publicam-se como página/Artifact); a resposta leva o link e um resumo curto.
+  Textos pequenos e decisões ficam na conversa.
 - Perguntar antes de mudanças arquiteturais.
 - NUNCA commitar `.env`, `.env.local` ou ficheiros com segredos.
 
