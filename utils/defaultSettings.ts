@@ -48,8 +48,21 @@ const getEnvNumber = (key: string, fallback: number): number => {
 // Values sourced from environment variables with sensible defaults
 export const INITIAL_SETTINGS: Settings = {
   // Site Identity
-  siteName: getEnvVar("VITE_SITE_NAME", "ARCVA"),
-  contactEmail: getEnvVar("VITE_CONTACT_EMAIL", "geral@arcva.pt"),
+  // Generic demo identity: a fresh deployment shows a fictitious association
+  // until Admin > Definições (or VITE_* in a private .env) supplies the real one
+  siteName: getEnvVar("VITE_SITE_NAME", "ACR Vila Nova"),
+  siteFullName: getEnvVar("VITE_SITE_FULL_NAME", "Associação Cultural e Recreativa de Vila Nova"),
+  locality: getEnvVar("VITE_LOCALITY", "Vila Nova"),
+  region: getEnvVar("VITE_REGION", ""),
+  foundedYear: getEnvVar("VITE_FOUNDED_YEAR", "1985"),
+  heroTagline: getEnvVar("VITE_HERO_TAGLINE", "Cultura. Desporto. Comunidade."),
+  heroSubtitle: getEnvVar("VITE_HERO_SUBTITLE", "Desde 1985 a construir o futuro da comunidade."),
+  historyIntro: getEnvVar("VITE_HISTORY_INTRO", "A associação nasceu da vontade de um grupo de residentes de criar um ponto de encontro para todas as gerações.\n\nO que começou numa pequena sede emprestada cresceu com o trabalho voluntário da comunidade, até se tornar a casa de todos.\n\nHoje continua a honrar esse espírito de união, adaptando-se aos novos tempos sem esquecer as suas raízes."),
+  historyQuote: getEnvVar("VITE_HISTORY_QUOTE", "Construída com as mãos de quem cá vive, para quem cá vive."),
+  venueName: getEnvVar("VITE_VENUE_NAME", "Sede da Associação"),
+  venueDescription: getEnvVar("VITE_VENUE_DESCRIPTION", "A nossa sede dispõe de salão polivalente, bar associativo e espaços de convívio abertos a sócios e à população."),
+  foundersNote: getEnvVar("VITE_FOUNDERS_NOTE", "Registados na ata da assembleia geral constituinte"),
+  contactEmail: getEnvVar("VITE_CONTACT_EMAIL", "geral@exemplo.pt"),
   logoUrl: '',
   maintenanceMode: getEnvBool("VITE_MAINTENANCE_MODE", false),
 
@@ -68,7 +81,7 @@ export const INITIAL_SETTINGS: Settings = {
 
   // AI Guardrails
   aiSystemPromptExtra: getEnvVar("VITE_AI_SYSTEM_PROMPT_EXTRA", ""),
-  aiAllowedTopics: getEnvVar("VITE_AI_ALLOWED_TOPICS", "ARCVA, Vale Alto, eventos, cultura, desporto, comunidade"),
+  aiAllowedTopics: getEnvVar("VITE_AI_ALLOWED_TOPICS", "associação, eventos, cultura, desporto, comunidade"),
   aiForbiddenTopics: getEnvVar("VITE_AI_FORBIDDEN_TOPICS", "política partidária, religião, aconselhamento médico, conteúdo adulto"),
   aiGuardrailsEnabled: getEnvBool("VITE_AI_GUARDRAILS_ENABLED", true),
   imageResolution: getEnvVar("VITE_IMAGE_RESOLUTION", "1k"),
@@ -78,21 +91,21 @@ export const INITIAL_SETTINGS: Settings = {
   // local, gitignored .env) — never hardcoded in the repository
   phone: getEnvVar("VITE_PHONE", ""),
   openingHours: getEnvVar("VITE_OPENING_HOURS", "Seg–Sex: 9:00–18:00 · Sáb–Dom: 13:00–23:00"),
-  address: getEnvVar("VITE_ADDRESS", "Largo do Pavilhão, N° 1, 2395-301 Minde, Vale Alto"),
-  mapsUrl: getEnvVar("VITE_MAPS_URL", "https://maps.app.goo.gl/zzqN8LJMgkFKd2mn9"),
-  latitude: getEnvVar("VITE_LATITUDE", "39.515469"),
-  longitude: getEnvVar("VITE_LONGITUDE", "-8.586681"),
+  address: getEnvVar("VITE_ADDRESS", "Rua da Associação, 1, 0000-000 Vila Nova"),
+  mapsUrl: getEnvVar("VITE_MAPS_URL", ""),
+  latitude: getEnvVar("VITE_LATITUDE", "38.7223"),
+  longitude: getEnvVar("VITE_LONGITUDE", "-9.1393"),
 
   // About Page Content (editable via Admin > Definições; these mirror the
   // original copy so the page renders before the DB is configured)
-  aboutMission: "A ARCVA promove a vida recreativa, cultural e desportiva de Vale Alto, realizando eventos que fomentam o convívio entre os associados e a população em geral.",
+  aboutMission: getEnvVar("VITE_ABOUT_MISSION", "A associação promove a vida recreativa, cultural e desportiva da comunidade, realizando eventos que fomentam o convívio entre os associados e a população em geral."),
   aboutPillars: [
     { icon: "Target", title: "Convívio", description: "Combatemos o isolamento e promovemos o encontro entre gerações, com o bar associativo aberto aos domingos por voluntários." },
     { icon: "Shield", title: "Transparência", description: "Gestão voluntária e transparente, ao serviço dos cerca de 150 associados que fazem viver esta casa." },
-    { icon: "Users", title: "Impacto Local", description: "Crescemos com a comunidade e com os parceiros locais, da Câmara Municipal de Alcanena à Junta de Freguesia de Minde." },
+    { icon: "Users", title: "Impacto Local", description: "Crescemos com a comunidade e com os parceiros locais, da autarquia às empresas da região." },
   ],
 
   // Social Media Integration
-  facebookPageId: getEnvVar("VITE_FACEBOOK_PAGE_ID", "arcvalealto"),
-  instagramUrl: getEnvVar("VITE_INSTAGRAM_URL", "https://www.instagram.com/arcva_1982/")
+  facebookPageId: getEnvVar("VITE_FACEBOOK_PAGE_ID", ""),
+  instagramUrl: getEnvVar("VITE_INSTAGRAM_URL", "")
 };

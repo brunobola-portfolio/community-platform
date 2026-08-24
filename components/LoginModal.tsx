@@ -89,7 +89,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-2">Email</label>
             <Input
-              placeholder={isAdmin ? "admin@arcva.pt" : "socio@email.com"}
+              placeholder={isAdmin ? "admin@exemplo.pt" : "socio@email.com"}
               type="email"
               autoComplete="email"
               required

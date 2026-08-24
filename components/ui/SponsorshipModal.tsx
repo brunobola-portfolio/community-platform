@@ -77,7 +77,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-brand-500/10 rounded-full blur-[80px] pointer-events-none"></div>
                         <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-3 relative z-10">Invista na Comunidade</h3>
                         <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto text-lg font-light relative z-10 leading-relaxed">
-                            Ao apoiar a ARCVA, contribui diretamente para a cultura e desporto de Vale Alto. Escolha o seu nível de impacto.
+                            Ao apoiar a associação, contribui diretamente para a cultura e o desporto da comunidade. Escolha o seu nível de impacto.
                         </p>
                     </div>
 
@@ -210,7 +210,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                     <div>
                         <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-4">Obrigado pelo Apoio!</h3>
                         <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto text-lg font-light leading-relaxed">
-                            O seu pedido foi registado com sucesso. A direção da ARCVA entrará em contacto brevemente para formalizar a parceria.
+                            O seu pedido foi registado com sucesso. A direção entrará em contacto brevemente para formalizar a parceria.
                         </p>
                     </div>
                     <Button onClick={reset} variant="outline" className="border-slate-900/20 dark:border-white/20 hover:bg-slate-900/10 dark:hover:bg-white/10 px-8 rounded-full">Voltar ao Site</Button>

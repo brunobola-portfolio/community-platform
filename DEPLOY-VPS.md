@@ -12,7 +12,7 @@ O backend (funções, base de dados, storage) já está deployed em
 
 - VPS Linux (Ubuntu/Debian) com acesso SSH e sudo
 - Domínio apontado para o IP da VPS (registo A de `arcva.pt` e `www.arcva.pt`)
-- `arcva-v2-dist.zip` gerado localmente com `npm run dist` (usa `.env.production`)
+- `community-platform-dist.zip` gerado localmente com `npm run dist` (usa `.env.production`)
 
 ## 1. Gerar e enviar o build
 
@@ -21,7 +21,7 @@ O backend (funções, base de dados, storage) já está deployed em
 npm run dist
 
 # Enviar para a VPS
-scp arcva-v2-dist.zip user@VPS_IP:/tmp/
+scp community-platform-dist.zip user@VPS_IP:/tmp/
 ```
 
 ## 2. Instalar na VPS
@@ -29,7 +29,7 @@ scp arcva-v2-dist.zip user@VPS_IP:/tmp/
 ```bash
 sudo apt update && sudo apt install -y nginx unzip
 sudo mkdir -p /var/www/arcva
-sudo unzip -o /tmp/arcva-v2-dist.zip -d /var/www/arcva
+sudo unzip -o /tmp/community-platform-dist.zip -d /var/www/arcva
 sudo chown -R www-data:www-data /var/www/arcva
 ```
 

@@ -102,7 +102,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                                  <span className="text-sm font-medium">{featuredPost.readTime || '5 min'} de leitura</span>
                               </div>
                               <div className="w-px h-4 bg-slate-900/10 dark:bg-white/10"></div>
-                              <div className="text-sm font-medium text-slate-600 dark:text-slate-300">por {featuredPost.author || 'Equipa ARCVA'}</div>
+                              <div className="text-sm font-medium text-slate-600 dark:text-slate-300">por {featuredPost.author || `Equipa ${settings.siteName}`}</div>
                            </div>
                         </div>
                      </div>

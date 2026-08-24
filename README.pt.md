@@ -59,11 +59,20 @@ dinâmicos, notícias com editor rich text, equipa, galerias, quotas de sócios,
 notificações, definições do site e o próprio assistente IA — tudo DB-first, tudo editável
 pela direção.
 
-O repositório inclui o conteúdo da instância de referência (ARCVA) como **dados
-seed/demo**. A identidade em runtime — nome, contactos, coordenadas, persona da IA — vem
-das settings guardadas na base de dados: um deployment novo torna-se a *tua* associação
-preenchendo as definições no admin, não fazendo fork do código. Ver
+**Nada neste repositório nomeia uma associação real.** O seed demo é um clube fictício;
+uma instância real vive em três camadas privadas que nunca chegam ao git — a base de dados
+(painel admin), um `.env.production` gitignored para as meta tags de build, e um overlay
+`.brand/` gitignored para logos, fotos e OG image. Um deployment novo torna-se a *tua*
+associação preenchendo as definições no admin, não fazendo fork do código. Ver
 [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md).
+
+### Nasceu de uma necessidade real
+
+A plataforma começou como o novo portal da **ARCVA** — uma associação recreativa e
+cultural portuguesa — construído pela [BolaLabs](https://bolalabs.pt) para substituir um
+site estático que ninguém conseguia atualizar. Cresceu para produto genérico, e a ARCVA é a
+sua **parceira fundadora e instância de referência**: cada funcionalidade corre primeiro em
+produção para uma comunidade real.
 
 ## Funcionalidades
 
@@ -303,6 +312,16 @@ strict (sem `any`), Tailwind exclusivamente, `requireAdmin(ctx)` na primeira lin
 mutations admin, ficheiros < 300 linhas.
 
 Reportes de segurança: [SECURITY.md](SECURITY.md). Histórico de versões: [CHANGELOG.md](CHANGELOG.md).
+
+## Apoiar o projeto
+
+A plataforma é gratuita e MIT. Se poupa um programador à tua associação, podes ajudar a
+mantê-la em andamento:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-brunobola-FF5E5B?logo=ko-fi&logoColor=white&labelColor=0f172a)](https://ko-fi.com/brunobola)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-brunobola-FFDD00?logo=buymeacoffee&logoColor=black&labelColor=0f172a)](https://buymeacoffee.com/brunobola)
+
+Consultoria, alojamento e desenvolvimento à medida para associações: [bolalabs.pt](https://bolalabs.pt).
 
 ## Licença
 

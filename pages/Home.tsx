@@ -115,13 +115,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
           </div>
 
           <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-slate-900 via-slate-800 to-slate-500 dark:from-white dark:via-white dark:to-slate-500 mb-8 leading-[0.9] tracking-tight animate-fade-in-up drop-shadow-2xl [animation-delay:0.1s]">
-            Vale Alto<br />
-            <span className="text-4xl md:text-6xl lg:text-7xl font-light italic font-sans text-brand-600 dark:text-brand-400 opacity-90">ARCVA</span>
+            {settings.locality || settings.siteName}<br />
+            {settings.locality && (
+              <span className="text-4xl md:text-6xl lg:text-7xl font-light italic font-sans text-brand-600 dark:text-brand-400 opacity-90">{settings.siteName}</span>
+            )}
           </h1>
 
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 font-light max-w-2xl mx-auto leading-relaxed animate-fade-in-up [animation-delay:0.2s]">
-            Responsabilidade Cultural. Coesão Social. Eventos Criativos.<br />
-            Desde 1982 a construir o futuro da comunidade.
+            {settings.heroTagline}{settings.heroTagline && settings.heroSubtitle && <br />}
+            {settings.heroSubtitle}
           </p>
 
           {/* AI Search Bar Mockup */}
@@ -223,7 +225,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
             <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.25em] text-xs font-bold mb-4 block">Os Nossos Pilares</span>
             <h2 className="font-serif text-5xl md:text-6xl text-slate-900 dark:text-white mb-8 leading-tight">Áreas de <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400 dark:from-brand-400 dark:to-brand-200">Impacto</span></h2>
             <p className="text-slate-600 dark:text-slate-300 max-w-3xl mx-auto text-lg font-light leading-relaxed">
-              Da vida recreativa ao desporto, da cultura à solidariedade — a nossa missão assenta em quatro áreas de ação ao serviço de Vale Alto.
+              {`Da vida recreativa ao desporto, da cultura à solidariedade — a nossa missão assenta em áreas de ação ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}.`}
             </p>
           </div>
 
@@ -391,7 +393,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
           <div className="flex justify-between items-end mb-12">
             <div>
               <h2 className="font-serif text-5xl text-slate-900 dark:text-white mb-4">Agenda Cultural</h2>
-              <p className="text-slate-500 dark:text-slate-400 text-lg">Próximos eventos em Vale Alto.</p>
+              <p className="text-slate-500 dark:text-slate-400 text-lg">{settings.locality ? `Próximos eventos em ${settings.locality}.` : "Próximos eventos."}</p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="icon" className="rounded-full border-slate-900/10 dark:border-white/10 hover:bg-slate-900/10 dark:hover:bg-white/10" aria-label="Eventos anteriores" onClick={() => scrollEvents('left')}>

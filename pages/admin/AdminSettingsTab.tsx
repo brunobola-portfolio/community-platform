@@ -6,6 +6,7 @@ import { AdminSelect } from './components/AdminSelect';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import type { AdminSettingsTabProps } from './types';
 import type { AboutPillar } from '../../types';
+import { AdminIdentitySection } from './AdminIdentitySection';
 
 // Icon options must match PILLAR_ICONS in pages/About.tsx
 const PILLAR_ICON_OPTIONS = ['Target', 'Shield', 'Users', 'Heart', 'Trophy', 'Handshake', 'Star', 'Sparkles'];
@@ -73,6 +74,8 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                 </div>
             </div>
 
+            <AdminIdentitySection settingsForm={settingsForm} onChange={update} />
+
             {/* Contact & Location */}
             <div className="bg-dark-surface border border-white/10 rounded-2xl p-6">
                 <h3 className="text-xl font-serif text-white mb-6 flex items-center gap-2">
@@ -91,7 +94,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                     </div>
                     <div>
                         <label className={LABEL_CLASS}>Morada</label>
-                        <input value={settingsForm.address ?? ''} onChange={e => update('address', e.target.value)} className={STD_INPUT_CLASS} placeholder="Largo do Pavilhão, N. 1, 2395-301 Minde" />
+                        <input value={settingsForm.address ?? ''} onChange={e => update('address', e.target.value)} className={STD_INPUT_CLASS} placeholder="Rua da Associação, 1, 0000-000 Localidade" />
                     </div>
                     <div>
                         <label className={LABEL_CLASS}>Horário de Funcionamento</label>
@@ -161,7 +164,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                             value={settingsForm.aboutMission ?? ''}
                             onChange={e => update('aboutMission', e.target.value)}
                             className={STD_INPUT_CLASS}
-                            placeholder="A ARCVA promove a vida recreativa, cultural e desportiva de Vale Alto..."
+                            placeholder="A associação promove a vida recreativa, cultural e desportiva da comunidade..."
                         />
                     </div>
                     <div>
@@ -241,7 +244,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                     </div>
                     <div>
                         <label className={LABEL_CLASS}>Instagram (URL)</label>
-                        <input value={settingsForm.instagramUrl ?? ''} onChange={e => update('instagramUrl', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://www.instagram.com/arcva_1982/" />
+                        <input value={settingsForm.instagramUrl ?? ''} onChange={e => update('instagramUrl', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://www.instagram.com/a-tua-associacao/" />
                     </div>
                 </div>
             </div>

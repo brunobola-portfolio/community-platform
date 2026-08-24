@@ -156,7 +156,7 @@ export const SetupPage: React.FC = () => {
                             </div>
                         </div>
                         <div className="text-center">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-300/80">ARCVA</p>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-brand-300/80">Community Platform</p>
                             <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white">Configuração inicial</h1>
                             <p className="mt-2 text-sm text-slate-400">
                                 Cria a primeira conta de administrador para começares a gerir o portal.
@@ -184,7 +184,7 @@ export const SetupPage: React.FC = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         disabled={submitting}
-                                        placeholder="admin@arcva.pt"
+                                        placeholder="admin@exemplo.pt"
                                         className="bg-white/[0.04] border-white/5 focus-visible:border-brand-400/40"
                                     />
                                 </Field>
@@ -291,7 +291,7 @@ export const SetupPage: React.FC = () => {
                     </div>
 
                     <p className="mt-6 text-center text-[10px] uppercase tracking-[0.3em] text-slate-600">
-                        ARCVA Portal · Setup seguro
+                        Community Platform · Setup seguro
                     </p>
                 </div>
             </div>

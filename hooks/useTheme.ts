@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type Theme = 'light' | 'dark';
 
-const STORAGE_KEY = 'arcva-theme';
+const STORAGE_KEY = 'portal-theme';
 
 function readStoredTheme(): Theme {
   try {

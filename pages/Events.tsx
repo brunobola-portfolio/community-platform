@@ -166,7 +166,7 @@ export const EventsPage: React.FC = () => {
                     <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Agenda Cultural</span>
                     <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Eventos & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-purple-500 dark:to-purple-300">Atividades</span></h1>
                     <p className="text-xl text-slate-500 dark:text-slate-400 font-light max-w-2xl mx-auto">
-                        O ponto de encontro da comunidade de Vale Alto.
+                        {settings.locality ? `O ponto de encontro da comunidade de ${settings.locality}.` : "O ponto de encontro da comunidade."}
                     </p>
                 </div>
 

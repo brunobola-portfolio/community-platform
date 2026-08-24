@@ -193,10 +193,10 @@ const GuardrailsConfig: React.FC<ConfigSectionProps> = ({ settingsForm, update }
             <Shield className="text-amber-400" /> Guardrails & Segurança
         </h3>
         <div className="space-y-4">
-            <ToggleRow label="Guardrails Ativos" description="Classifica e filtra perguntas fora do âmbito da ARCVA" checked={settingsForm.aiGuardrailsEnabled} onChange={v => update('aiGuardrailsEnabled', v)} />
+            <ToggleRow label="Guardrails Ativos" description="Classifica e filtra perguntas fora do âmbito da associação" checked={settingsForm.aiGuardrailsEnabled} onChange={v => update('aiGuardrailsEnabled', v)} />
             <div>
                 <label className={LABEL_CLASS}>Tópicos Permitidos</label>
-                <input value={settingsForm.aiAllowedTopics ?? ''} onChange={e => update('aiAllowedTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="ARCVA, Vale Alto, eventos, cultura, desporto, comunidade" />
+                <input value={settingsForm.aiAllowedTopics ?? ''} onChange={e => update('aiAllowedTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="associação, localidade, eventos, cultura, desporto, comunidade" />
                 <p className="text-slate-600 text-xs mt-1">Separados por vírgula. O chatbot foca-se nestes temas.</p>
             </div>
             <div>

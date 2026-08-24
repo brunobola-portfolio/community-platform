@@ -8,7 +8,7 @@ import {
 
 // Hardened fetch profile to avoid hotlink/UA blocks on Wikimedia, gov.pt, etc.
 const FETCH_HEADERS: Record<string, string> = {
-    "User-Agent": "Mozilla/5.0 (compatible; ARCVA-Seed/2.0; +https://arcva.pt)",
+    "User-Agent": "Mozilla/5.0 (compatible; CommunityPlatform-Seed/2.0)",
     "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
     "Accept-Language": "pt-PT,pt;q=0.9,en;q=0.8",
 };
@@ -81,7 +81,7 @@ const buildPlaceholderSvg = (label: string): Blob => {
         text-anchor="middle" dominant-baseline="central" filter="url(#soft)">${initials}</text>
   <text x="200" y="346" font-family="ui-sans-serif,-apple-system,Segoe UI,Inter,system-ui,sans-serif"
         font-size="13" font-weight="500" letter-spacing="3" fill="rgba(255,255,255,0.65)"
-        text-anchor="middle" text-transform="uppercase">ARCVA</text>
+        text-anchor="middle" text-transform="uppercase">Portal</text>
 </svg>`;
     return new Blob([svg], { type: "image/svg+xml" });
 };
@@ -310,30 +310,34 @@ export const seed = internalAction({
         // 11. Settings
         console.log("Seeding Settings...");
         await ctx.runMutation(internal.seedHelpers.updateSettings, {
-            siteName: "ARCVA",
+            // Fictitious demo identity: the real association is configured in
+            // Admin > Definições (see docs/WHITE-LABEL.md)
+            siteName: "ACR Vila Nova",
+            siteFullName: "Associação Cultural e Recreativa de Vila Nova",
+            locality: "Vila Nova",
+            foundedYear: "1985",
+            heroTagline: "Cultura. Desporto. Comunidade.",
+            heroSubtitle: "Desde 1985 a construir o futuro da comunidade.",
             maintenanceMode: false,
             currentMandate: "2024-2026",
-            contactEmail: "geral@arcva.pt",
-            // Demo placeholder; the real number is configured in Admin > Definições
+            contactEmail: "geral@exemplo.pt",
             phone: "+351 212 345 678",
-            address: "Largo do Pavilhão, N° 1, 2395-301 Minde, Vale Alto",
-            mapsUrl: "https://maps.app.goo.gl/zzqN8LJMgkFKd2mn9",
-            latitude: "39.515469",
-            longitude: "-8.586681",
+            address: "Rua da Associação, 1, 0000-000 Vila Nova",
+            latitude: "38.7223",
+            longitude: "-9.1393",
             enableChatbot: true,
             showChatbotBubble: true,
-            chatModel: "gemini-2.0-flash",
-            chatModelFallback: "gemini-2.0-flash-lite",
+            chatModel: "gemini-3.5-flash",
+            chatModelFallback: "gemini-3.5-flash-lite",
             ttsModel: "gemini-2.5-flash-preview-tts",
-            imageModel: "gemini-2.0-flash-exp",
+            imageModel: "gemini-3.1-flash-image",
             thinkingBudget: 512,
             defaultImageStyle: "Cinematic lighting, photorealistic, 4k, community atmosphere, warm tones",
             contentTone: "Profissional e Inspirador",
             imageResolution: "1k",
             aiGuardrailsEnabled: true,
-            aiAllowedTopics: "ARCVA, Vale Alto, eventos, cultura, desporto, comunidade",
+            aiAllowedTopics: "associação, eventos, cultura, desporto, comunidade",
             aiForbiddenTopics: "política partidária, religião, aconselhamento médico, conteúdo adulto",
-            facebookPageId: "arcvalealto",
         });
 
         console.log("Seeding complete!");

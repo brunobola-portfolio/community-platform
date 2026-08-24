@@ -334,6 +334,17 @@ interface SettingsUpdateArgs {
   contactEmail?: string;
   logoUrl?: string;
   currentMandate?: string;
+  siteFullName?: string;
+  locality?: string;
+  region?: string;
+  foundedYear?: string;
+  heroTagline?: string;
+  heroSubtitle?: string;
+  historyIntro?: string;
+  historyQuote?: string;
+  venueName?: string;
+  venueDescription?: string;
+  foundersNote?: string;
   contentTone?: string;
   defaultImageStyle?: string;
   enableChatbot?: boolean;
@@ -784,7 +795,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           ...rest,
           description: data.description || '',
           date: data.date || new Date().toISOString(),
-          location: data.location || 'Sede da ARCVA',
+          location: data.location || 'Sede da associação',
           slug: data.slug?.trim() || slugify(data.title),
           categoryId: String(data.categoryId),
           externalImage: imageUrl || data.externalImage,
@@ -849,7 +860,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Fill schema-required fields so a minimal form (title + content) saves.
         await createPostMut({
           ...rest,
-          author: data.author?.trim() || 'Direção ARCVA',
+          author: data.author?.trim() || 'Direção',
           excerpt: data.excerpt?.trim() || excerptFromContent(data.content || '') || data.title,
           date: data.date || new Date().toISOString(),
           slug: data.slug?.trim() || slugify(data.title),
@@ -1317,6 +1328,17 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           contactEmail: s.contactEmail,
           logoUrl: s.logoUrl,
           currentMandate: s.currentMandate,
+          siteFullName: s.siteFullName,
+          locality: s.locality,
+          region: s.region,
+          foundedYear: s.foundedYear,
+          heroTagline: s.heroTagline,
+          heroSubtitle: s.heroSubtitle,
+          historyIntro: s.historyIntro,
+          historyQuote: s.historyQuote,
+          venueName: s.venueName,
+          venueDescription: s.venueDescription,
+          foundersNote: s.foundersNote,
           contentTone: s.contentTone,
           defaultImageStyle: s.defaultImageStyle,
           enableChatbot: s.enableChatbot,

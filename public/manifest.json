@@ -1,7 +1,7 @@
 {
-  "name": "ARCVA - Associação Recreativa e Cultural de Vale Alto",
-  "short_name": "ARCVA",
-  "description": "Portal comunitário da ARCVA - Trabalhando pelo futuro e preservando o legado da nossa comunidade em Vale Alto.",
+  "name": "Community Platform",
+  "short_name": "Portal",
+  "description": "Portal comunitário com eventos, notícias, área de sócio e assistente IA.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",

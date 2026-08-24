@@ -249,7 +249,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
             <main className="flex-1 overflow-y-auto relative bg-dark-bg pt-16 md:pt-0">
                 <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-dark-surface/95 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4 z-[50]">
-                    <div className="font-serif font-bold text-white text-lg">ARCVA <span className="text-brand-400 font-sans font-light">OS</span></div>
+                    <div className="font-serif font-bold text-white text-lg">{settings.siteName} <span className="text-brand-400 font-sans font-light">OS</span></div>
                     <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-slate-400 hover:text-white" aria-label="Menu"><Menu /></button>
                 </div>
                 <div className="p-4 md:p-8 max-w-7xl mx-auto pb-24 md:pb-8">

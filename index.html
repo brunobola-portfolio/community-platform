@@ -6,26 +6,28 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#020617">
-    <title>ARCVA - Associação Recreativa e Cultural de Vale Alto</title>
-    <meta name="description" content="Portal oficial da ARCVA - Trabalhando pelo futuro e preservando o legado da nossa comunidade em Vale Alto, Minde." />
-    <meta name="keywords" content="ARCVA, Vale Alto, Minde, Associação, Cultura, Recreio, Torneios, Eventos" />
-    <meta property="og:title" content="ARCVA - Associação Recreativa e Cultural de Vale Alto" />
-    <meta property="og:description" content="Preservando o legado, construindo o futuro de Vale Alto." />
+    <!-- %VITE_*% placeholders are filled at build time from the env (see
+         vite.config.ts siteMeta); the instance identity never lives in this file -->
+    <title>%VITE_SITE_NAME% - %VITE_SITE_FULL_NAME%</title>
+    <meta name="description" content="%VITE_SITE_DESCRIPTION%" />
+    <meta name="keywords" content="%VITE_SITE_KEYWORDS%" />
+    <meta property="og:title" content="%VITE_SITE_NAME% - %VITE_SITE_FULL_NAME%" />
+    <meta property="og:description" content="%VITE_OG_TAGLINE%" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://arcva.pt/" />
-    <meta property="og:site_name" content="ARCVA" />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:site_name" content="%VITE_SITE_NAME%" />
     <meta property="og:locale" content="pt_PT" />
     <meta name="robots" content="index, follow" />
     <!-- PNG raster: social crawlers do not render SVG previews -->
-    <meta property="og:image" content="https://arcva.pt/og-image.png" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="ARCVA - Associação Recreativa e Cultural de Vale Alto" />
-    <meta name="twitter:description" content="Preservando o legado, construindo o futuro de Vale Alto." />
-    <meta name="twitter:image" content="https://arcva.pt/og-image.png" />
-    <link rel="canonical" href="https://arcva.pt/" />
+    <meta name="twitter:title" content="%VITE_SITE_NAME% - %VITE_SITE_FULL_NAME%" />
+    <meta name="twitter:description" content="%VITE_OG_TAGLINE%" />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.png" />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data: blob:; connect-src 'self' https://*.convex.cloud wss://*.convex.cloud; media-src 'self' blob:;">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +37,7 @@
       // Apply theme before first paint to avoid flash; dark is the default.
       (function () {
         try {
-          var stored = localStorage.getItem('arcva-theme');
+          var stored = localStorage.getItem('portal-theme');
           var theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
           document.documentElement.classList.toggle('dark', theme === 'dark');
         } catch (e) {

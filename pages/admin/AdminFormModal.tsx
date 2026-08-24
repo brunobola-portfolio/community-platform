@@ -265,12 +265,12 @@ const PostForm: React.FC<PostFormProps> = ({
             </div>
             <div className="md:col-span-2 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label className={LABEL_CLASS}>Autor (Nome)</label><input value={str('author')} onChange={e => setField('author', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção ARCVA" /></div>
+                    <div><label className={LABEL_CLASS}>Autor (Nome)</label><input value={str('author')} onChange={e => setField('author', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></div>
                     <div><label className={LABEL_CLASS}>Cargo do Autor</label><input value={str('authorRole')} onChange={e => setField('authorRole', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></div>
                     <div><label className={LABEL_CLASS}>Avatar do Autor (URL)</label><input value={str('authorAvatar')} onChange={e => setField('authorAvatar', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://..." /></div>
                     <div><label className={LABEL_CLASS}>Tempo de Leitura</label><input value={str('readTime')} onChange={e => setField('readTime', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: 5 min" /></div>
                 </div>
-                <div><label className={LABEL_CLASS}>Tags (Separadas por vírgula)</label><input value={tagsValue} onChange={e => setField('tags', e.target.value)} className={STD_INPUT_CLASS} placeholder="ARCVA, Comunidade, Evento" /></div>
+                <div><label className={LABEL_CLASS}>Tags (Separadas por vírgula)</label><input value={tagsValue} onChange={e => setField('tags', e.target.value)} className={STD_INPUT_CLASS} placeholder="Associação, Comunidade, Evento" /></div>
                 <RichTextEditor label="Notícia" value={str('content')} onChange={(v: string) => setField('content', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-96" />
             </div>
         </div>
@@ -481,7 +481,7 @@ const MilestoneForm: React.FC<MilestoneFormProps> = ({ str, num, setField, isGen
                 <div><label className={LABEL_CLASS}>Ordem na Timeline</label><input type="number" value={num('order', 1)} onChange={e => setField('order', parseInt(e.target.value) || 1)} className={STD_INPUT_CLASS} /></div>
             </div>
             <div><label className={LABEL_CLASS}>Título</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: A Fundação" /></div>
-            <div><label className={LABEL_CLASS}>Descrição</label><textarea required value={str('description')} onChange={e => setField('description', e.target.value)} className={cn(STD_INPUT_CLASS, 'h-40')} placeholder="O que aconteceu neste marco da história da ARCVA..." /></div>
+            <div><label className={LABEL_CLASS}>Descrição</label><textarea required value={str('description')} onChange={e => setField('description', e.target.value)} className={cn(STD_INPUT_CLASS, 'h-40')} placeholder="O que aconteceu neste marco da história da associação..." /></div>
         </div>
         <MediaStudio imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle="Historical documentary photo, warm tones, community" />
     </div>

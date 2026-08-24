@@ -92,6 +92,7 @@ interface MemberData {
 }
 
 interface DashboardTabProps {
+  siteName: string;
   memberData: MemberData;
   quotaInfo: QuotaInfo | null;
   isFlipped: boolean;
@@ -101,7 +102,7 @@ interface DashboardTabProps {
   documentsCount: number;
 }
 
-const DashboardTab: React.FC<DashboardTabProps> = ({ memberData, quotaInfo, isFlipped, onFlip, onOpenPaymentModal, notificationsCount, documentsCount }) => (
+const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quotaInfo, isFlipped, onFlip, onOpenPaymentModal, notificationsCount, documentsCount }) => (
   <div className="space-y-8 animate-fade-in-up">
       {/* Top Section: Card & Status */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -122,7 +123,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ memberData, quotaInfo, isFl
                           <div className="absolute top-0 right-0 w-48 h-48 bg-brand-500/10 rounded-full blur-[60px] -mr-10 -mt-10 pointer-events-none"></div>
                           <div className="relative z-10 flex justify-between items-start">
                               <div>
-                                  <div className="text-brand-400 font-serif font-bold text-xl sm:text-2xl tracking-wide">ARCVA</div>
+                                  <div className="text-brand-400 font-serif font-bold text-xl sm:text-2xl tracking-wide">{siteName}</div>
                                   <div className="text-[8px] sm:text-[10px] text-slate-400 tracking-[0.4em] uppercase mt-1">Cartão de Sócio</div>
                               </div>
                               <ShieldCheck className="text-brand-500 drop-shadow-[0_0_10px_rgba(223,61,50,0.5)] w-8 h-8 sm:w-10 sm:h-10" />
@@ -396,7 +397,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
 
   // Card identity comes from the authenticated account; quota/payment data
   // comes from the member profile registered by the direção.
-  const displayName = me?.name || me?.email?.split('@')[0] || 'Sócio ARCVA';
+  const displayName = me?.name || me?.email?.split('@')[0] || 'Sócio';
   const memberSince = me?.createdAt ? new Date(me.createdAt).getFullYear().toString() : '---';
   const memberData: MemberData = {
     name: displayName,
@@ -457,8 +458,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
 
         {/* Tab Content */}
         {activeTab === 'dashboard' && (
-          <DashboardTab
-            memberData={memberData}
+          <DashboardTab siteName={settings.siteName}             memberData={memberData}
             quotaInfo={quotaInfo}
             isFlipped={isFlipped}
             onFlip={() => setIsFlipped(!isFlipped)}

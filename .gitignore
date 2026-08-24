@@ -72,3 +72,7 @@ cache/
 projects/
 history.jsonl
 .last-update-result.json
+
+# Brand overlay (real logos, photos, OG image of a specific instance) — never in the repo
+.brand/
+public/images/

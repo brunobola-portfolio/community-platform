@@ -51,6 +51,19 @@ export interface Settings {
   maintenanceMode: boolean;
   currentMandate?: string;
 
+  // Identity and editorial copy (DB-first; the repo ships generic demo defaults)
+  siteFullName?: string;
+  locality?: string;
+  region?: string;
+  foundedYear?: string;
+  heroTagline?: string;
+  heroSubtitle?: string;
+  historyIntro?: string;
+  historyQuote?: string;
+  venueName?: string;
+  venueDescription?: string;
+  foundersNote?: string;
+
   // AI Chatbot Configuration (DB-configurable with env fallbacks)
   enableChatbot: boolean;
   showChatbotBubble: boolean;

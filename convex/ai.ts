@@ -218,6 +218,7 @@ export const chat = action({
       // Site identity for prompts and canned replies; DB-first, generic fallback
       const siteName = settings?.siteName ?? "associação";
       const siteAddress = settings?.address ?? "";
+      const siteIdentity = settings?.siteFullName ? `${siteName} -- ${settings.siteFullName}` : siteName;
       const guardrailsEnabled = settings?.aiGuardrailsEnabled !== false; // default true
       const extraPrompt = settings?.aiSystemPromptExtra ?? "";
       const allowedTopics = settings?.aiAllowedTopics ?? "";
@@ -340,7 +341,7 @@ export const chat = action({
         forbiddenTopics ? `\nTÓPICOS PROIBIDOS (recusar educadamente): ${forbiddenTopics}` : "",
       ].join("");
 
-      const systemPrompt = `IDENTIDADE: Es o assistente inteligente oficial da ${siteName}${siteAddress ? ` (${siteAddress})` : ""}.
+      const systemPrompt = `IDENTIDADE: Es o assistente inteligente oficial da ${siteIdentity}${siteAddress ? ` (${siteAddress})` : ""}.
 
 LINGUA: Responde SEMPRE em Portugues de Portugal (PT-PT).
 
@@ -545,7 +546,7 @@ export const tts = action({
 
 // ---------------------------------------------------------------------------
 // Action 3: geoQuery
-// Location-aware queries about ARCVA / Vale Alto using Google Maps grounding
+// Location-aware queries about the association venue using Google Maps grounding
 // ---------------------------------------------------------------------------
 export const geoQuery = action({
   args: {
@@ -565,7 +566,7 @@ export const geoQuery = action({
       // Input sanitization: length limit and injection check
       const safeQuery = args.query.slice(0, 500);
       if (injectionPatterns.test(safeQuery)) {
-        return { text: "Posso ajudar-te com informações sobre a localização da ARCVA e serviços na zona de Vale Alto. Reformula a tua pergunta, por favor." };
+        return { text: "Posso ajudar-te com informações sobre a localização da associação e serviços na zona envolvente. Reformula a tua pergunta, por favor." };
       }
 
       const ai = getAI();
@@ -577,10 +578,10 @@ export const geoQuery = action({
       geoModel = model;
 
       // Venue coordinates from DB settings, then env vars (SITE_* preferred,
-      // ARCVA_* kept for existing deployments), then hardcoded seed default
+      // ARCVA_* kept for the reference instance), then a neutral default
       const LOCATION = {
-        lat: parseFloat(settings?.latitude ?? process.env.SITE_LATITUDE ?? process.env.ARCVA_LATITUDE ?? "39.515469"),
-        lng: parseFloat(settings?.longitude ?? process.env.SITE_LONGITUDE ?? process.env.ARCVA_LONGITUDE ?? "-8.586681"),
+        lat: parseFloat(settings?.latitude ?? process.env.SITE_LATITUDE ?? process.env.ARCVA_LATITUDE ?? "38.7223"),
+        lng: parseFloat(settings?.longitude ?? process.env.SITE_LONGITUDE ?? process.env.ARCVA_LONGITUDE ?? "-9.1393"),
       };
 
       const response = await ai.models.generateContent({

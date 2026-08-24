@@ -15,7 +15,7 @@ import { useTheme } from '../hooks/useTheme';
 
 // Built-in logo paths where the theme-aware inline mark should be used instead
 // of a plain <img>, so the mark stays legible in both themes.
-const BUILTIN_LOGOS = ['', '/favicon.svg', '/logo-arcva.svg', '/logo-arcva-white.svg'];
+const BUILTIN_LOGOS = ['', '/favicon.svg'];
 
 interface NavbarProps {
   onNavigate: (page: string) => void;

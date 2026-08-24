@@ -55,7 +55,7 @@ const LocationCommand: React.FC = () => {
     lat: parseFloat(settings.latitude) || 39.515469,
     lon: parseFloat(settings.longitude) || -8.586681
   };
-  const ADDRESS = settings.address || "Largo do Pavilhão, N° 1, Vale Alto, 2395-301 Minde";
+  const ADDRESS = settings.address || "";
 
   const askLocalAI = async () => {
     if (!query.trim()) return;
@@ -100,7 +100,7 @@ const LocationCommand: React.FC = () => {
           <div>
             <div className="flex items-center gap-3 mb-10">
                <div className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_10px_#df3d32]"></div>
-               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">Vale Alto · Minde</span>
+               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">{[settings.locality, settings.region].filter(Boolean).join(" · ") || settings.siteName}</span>
             </div>
 
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-slate-900 dark:text-white mb-10 leading-[1.05] tracking-tight">A Nossa <br/><span className="text-brand-600 dark:text-brand-400 italic">Casa</span></h2>
@@ -189,7 +189,7 @@ const LocationCommand: React.FC = () => {
                 {copied ? <CheckCircle2 size={12} className="text-green-500"/> : <LocateFixed size={12} className="group-hover/coords:scale-125 transition-transform"/>}
                 {LOCATION.lat}, {LOCATION.lon}
              </button>
-             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-700 tracking-tighter">Alcanena · Santarém</span>
+             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-700 tracking-tighter">{[settings.region, settings.locality].filter(Boolean).join(' · ') || settings.siteName}</span>
           </div>
         </div>
 
@@ -220,12 +220,12 @@ const LocationCommand: React.FC = () => {
               </div>
 
               <div className="text-center mb-12">
-                 <h3 className="text-slate-900 dark:text-white text-3xl font-serif mb-2 tracking-tight">Pavilhão de Vale Alto</h3>
-                 <p className="text-brand-600/70 dark:text-brand-400/60 text-xs font-bold uppercase tracking-[0.4em]">Largo do Pavilhão · Minde</p>
+                 <h3 className="text-slate-900 dark:text-white text-3xl font-serif mb-2 tracking-tight">{settings.venueName || settings.siteName}</h3>
+                 <p className="text-brand-600/70 dark:text-brand-400/60 text-xs font-bold uppercase tracking-[0.4em]">{settings.address.split(",")[0]}</p>
               </div>
 
               <a
-                href={settings.mapsUrl || "https://maps.app.goo.gl/zzqN8LJMgkFKd2mn9"}
+                href={settings.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${settings.latitude},${settings.longitude}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group/btn flex items-center gap-5 bg-brand-600 hover:bg-brand-500 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgba(223,61,50,0.2)] transition-all hover:scale-105 active:scale-95"
@@ -246,7 +246,7 @@ const LocationCommand: React.FC = () => {
 
            <div className="absolute bottom-10 right-10 text-right hidden lg:block font-mono">
               <div className="text-[10px] text-slate-400 dark:text-slate-700 uppercase tracking-widest mb-1">Código Postal</div>
-              <div className="text-slate-700 dark:text-white text-xs font-bold">Vale Alto · 2395-301 Minde</div>
+              <div className="text-slate-700 dark:text-white text-xs font-bold">{settings.address.split(",").slice(-1)[0]?.trim()}</div>
            </div>
         </div>
       </div>
@@ -372,7 +372,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
 
         {/* Modern Hero Section */}
         <div className="text-center animate-fade-in-up max-w-5xl mx-auto">
-          <Badge className="mb-8 border-brand-500/30 px-6 py-2">{`Desde 1982 ao serviço de Vale Alto`}</Badge>
+          <Badge className="mb-8 border-brand-500/30 px-6 py-2">{`${settings.foundedYear ? `Desde ${settings.foundedYear} ` : ""}ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}`}</Badge>
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif text-slate-900 dark:text-white mb-10 leading-[0.95] tracking-tighter">
             A apoiar a <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-300 via-brand-500 dark:via-brand-300 to-purple-500 dark:to-purple-300 font-bold">Comunidade</span>
@@ -396,8 +396,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
               <div className="text-brand-600 dark:text-brand-400 font-bold uppercase tracking-[0.4em] text-[10px] mb-4 flex items-center gap-3">
                  <div className="w-12 h-px bg-brand-500"></div> Onde Estamos
               </div>
-              <h2 className="text-4xl md:text-6xl font-serif text-slate-900 dark:text-white mb-8 tracking-tight leading-none">O Nosso Pavilhão</h2>
-              <p className="text-slate-500 dark:text-slate-400 text-xl font-light leading-relaxed">No coração de Vale Alto, o pavilhão gimnodesportivo com 1170 m² dispõe de recinto desportivo, bancadas, cinco balneários, cozinha, bar e espaços de convívio.</p>
+              <h2 className="text-4xl md:text-6xl font-serif text-slate-900 dark:text-white mb-8 tracking-tight leading-none">A Nossa Sede</h2>
+              <p className="text-slate-500 dark:text-slate-400 text-xl font-light leading-relaxed">{settings.venueDescription}</p>
            </div>
            <LocationCommand />
         </div>

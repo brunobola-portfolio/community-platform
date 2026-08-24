@@ -59,13 +59,13 @@ export const gatherContext = internalQuery({
     // --- Build formatted text block ---
     const lines: string[] = [];
 
-    lines.push("## Informacao Atual do Portal ARCVA");
+    lines.push(`## Informacao Atual do Portal ${sanitize(settings?.siteName ?? "da associacao", 100)}`);
     lines.push("");
 
     // Settings / About
-    lines.push("### Sobre a ARCVA");
-    const siteName = sanitize(settings?.siteName ?? "ARCVA", 100);
-    const email = sanitize(settings?.contactEmail ?? "geral@arcva.pt", 100);
+    lines.push(`### Sobre a ${sanitize(settings?.siteName ?? "associacao", 100)}`);
+    const siteName = sanitize(settings?.siteName ?? "Associacao", 100);
+    const email = sanitize(settings?.contactEmail ?? "", 100);
     const mandate = sanitize(settings?.currentMandate ?? "2024-2026", 20);
     lines.push(`Nome: ${siteName} | Email: ${email} | Mandato: ${mandate}`);
     lines.push("");

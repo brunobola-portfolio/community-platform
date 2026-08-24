@@ -202,6 +202,19 @@ export default defineSchema({
     contactEmail: v.optional(v.string()),
     logoUrl: v.optional(v.string()),
     currentMandate: v.optional(v.string()), // e.g., "2024-2026"
+    // Identity and editorial copy (white-label: every public string that names
+    // the association or its locality comes from here, never from code)
+    siteFullName: v.optional(v.string()),
+    locality: v.optional(v.string()),
+    region: v.optional(v.string()),
+    foundedYear: v.optional(v.string()),
+    heroTagline: v.optional(v.string()),
+    heroSubtitle: v.optional(v.string()),
+    historyIntro: v.optional(v.string()),
+    historyQuote: v.optional(v.string()),
+    venueName: v.optional(v.string()),
+    venueDescription: v.optional(v.string()),
+    foundersNote: v.optional(v.string()),
     contentTone: v.optional(v.string()),
     defaultImageStyle: v.optional(v.string()),
     // AI Configuration (runtime-configurable via admin UI)
@@ -326,7 +339,7 @@ export default defineSchema({
     userId: v.string(),
     action: v.string(), // "chat", "tts", "generateImage", "enhanceText", "geoQuery"
     model: v.string(),
-    classification: v.optional(v.string()), // "ARCVA", "LOCAL", "GERAL", "FORA_DE_TEMA", "INJECTION"
+    classification: v.optional(v.string()), // "ASSOCIACAO", "LOCAL", "GERAL", "FORA_DE_TEMA", "INJECTION"
     latencyMs: v.number(),
     success: v.boolean(),
     errorMessage: v.optional(v.string()),

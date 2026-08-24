@@ -8,9 +8,16 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- **Fully generic repository**: no versioned file names a real association. New
+  identity settings (full name, locality, region, founding year, hero copy, venue,
+  history intro/quote, founders note) editable in Admin > Definições > Identidade &
+  Textos; `index.html` meta tags filled from `%VITE_*%` at build; private brand overlay
+  `.brand/public/` (dev middleware + `npm run dist` copy); sitemap/robots generated from
+  `VITE_SITE_URL`; demo seed is a fictitious association with placeholder media
 - White-label pass: runtime identity (AI assistant persona, chat suggestions, footer,
-  page titles) now derives from database settings instead of hardcoded ARCVA strings;
-  ARCVA content remains as seed/demo data
+  page titles) now derives from database settings instead of hardcoded strings
+- Footer credit "Community Platform by BolaLabs"; `.github/FUNDING.yml`; release
+  workflow and deploy zip renamed `community-platform-dist.zip`
 - AI model defaults unified in `convex/lib/aiDefaults.ts` — frontend and server actions
   now advertise and call the same models (`gemini-3-flash-preview` chat,
   `gemini-2.5-flash` fallback, `gemini-2.5-flash-image` image)

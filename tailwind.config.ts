@@ -18,7 +18,7 @@ const config: Config = {
         serif: ['Playfair Display', 'serif'],
       },
       colors: {
-        // ARCVA red, anchored on the original logo colour #df3d32
+        // Brand scale: the single per-instance colour (reference instance red #df3d32)
         brand: {
           50: '#fef3f2',
           100: '#fde5e3',

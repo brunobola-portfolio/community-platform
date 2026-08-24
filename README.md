@@ -58,11 +58,20 @@ is managed from the admin panel**. Events with dynamic registration forms, news 
 text editor, team pages, photo galleries, member dues, documents, notifications, site
 settings, and the AI assistant itself — all database-first, all editable by the board.
 
-The repository ships with the content of the reference instance (ARCVA) as **seed/demo
-data**. Runtime identity — site name, contacts, coordinates, AI persona — comes from the
-settings stored in the database, so a fresh deployment becomes *your* association by filling
-in the admin settings, not by forking the code. See
+**Nothing in this repository names a real association.** The demo seed is a fictitious
+club; a real instance lives in three private layers that never reach git — the database
+(admin panel), a gitignored `.env.production` for build-time meta tags, and a gitignored
+`.brand/` overlay for logos, photos and the OG image. A fresh deployment becomes *your*
+association by filling in the admin settings, not by forking the code. See
 [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md).
+
+### Born from a real need
+
+The platform started as the new portal of **ARCVA** — a cultural and recreational
+association in Portugal — built by [BolaLabs](https://bolalabs.pt) to replace a static
+site nobody could update. It grew into a generic product, and ARCVA is its **founding
+partner and live reference instance**: every feature here runs in production for a real
+community first.
 
 ## Features
 
@@ -300,6 +309,16 @@ TypeScript (no `any`), Tailwind exclusively, `requireAdmin(ctx)` first line of a
 mutations, files < 300 lines.
 
 Security reports: see [SECURITY.md](SECURITY.md). Release history: [CHANGELOG.md](CHANGELOG.md).
+
+## Support the project
+
+The platform is free and MIT-licensed. If it saves your association a developer, you can
+keep it moving:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-brunobola-FF5E5B?logo=ko-fi&logoColor=white&labelColor=0f172a)](https://ko-fi.com/brunobola)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-brunobola-FFDD00?logo=buymeacoffee&logoColor=black&labelColor=0f172a)](https://buymeacoffee.com/brunobola)
+
+Consulting, hosting and custom work for associations: [bolalabs.pt](https://bolalabs.pt).
 
 ## License
 

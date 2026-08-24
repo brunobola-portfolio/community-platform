@@ -108,7 +108,18 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-900/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 dark:text-slate-600 font-mono">
-          <div>&copy; {new Date().getFullYear()} {settings.siteName}. Todos os direitos reservados.</div>
+          <div>
+            &copy; {new Date().getFullYear()} {settings.siteName}. Todos os direitos reservados.
+            <span className="hidden sm:inline"> · </span>
+            <a
+              href="https://bolalabs.pt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block sm:inline text-slate-400 dark:text-slate-600 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            >
+              Community Platform by BolaLabs
+            </a>
+          </div>
           <div className="flex items-center space-x-6">
             <button onClick={onAdminLogin} disabled={!onAdminLogin} className="group flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 hover:bg-amber-900/10 hover:border-amber-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                <ShieldCheck size={12} className="text-slate-500 group-hover:text-amber-600 dark:group-hover:text-amber-500" />

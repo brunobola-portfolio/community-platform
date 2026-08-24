@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import type { UserWithRole } from "./auth";
 
 // Run from Convex Dashboard to promote a user to admin:
-// npx convex run lib/bootstrapAdmin:setUserRole '{"email": "admin@arcva.pt", "role": "admin"}'
+// npx convex run lib/bootstrapAdmin:setUserRole '{"email": "admin@exemplo.pt", "role": "admin"}'
 export const setUserRole = internalMutation({
   args: {
     email: v.string(),

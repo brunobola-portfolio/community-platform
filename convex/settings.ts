@@ -14,6 +14,17 @@ export const getPublic = query({
             contactEmail: settings.contactEmail,
             logoUrl: settings.logoUrl,
             currentMandate: settings.currentMandate,
+            siteFullName: settings.siteFullName,
+            locality: settings.locality,
+            region: settings.region,
+            foundedYear: settings.foundedYear,
+            heroTagline: settings.heroTagline,
+            heroSubtitle: settings.heroSubtitle,
+            historyIntro: settings.historyIntro,
+            historyQuote: settings.historyQuote,
+            venueName: settings.venueName,
+            venueDescription: settings.venueDescription,
+            foundersNote: settings.foundersNote,
             contentTone: settings.contentTone,
             defaultImageStyle: settings.defaultImageStyle,
             enableChatbot: settings.enableChatbot,
@@ -74,6 +85,8 @@ export const getForAI = internalQuery({
         if (!doc) return null;
         return {
             siteName: doc.siteName,
+            siteFullName: doc.siteFullName,
+            locality: doc.locality,
             address: doc.address,
             chatModel: doc.chatModel,
             chatModelFallback: doc.chatModelFallback,
@@ -102,6 +115,17 @@ export const update = mutation({
         contactEmail: v.optional(v.string()),
         logoUrl: v.optional(v.string()),
         currentMandate: v.optional(v.string()),
+        siteFullName: v.optional(v.string()),
+        locality: v.optional(v.string()),
+        region: v.optional(v.string()),
+        foundedYear: v.optional(v.string()),
+        heroTagline: v.optional(v.string()),
+        heroSubtitle: v.optional(v.string()),
+        historyIntro: v.optional(v.string()),
+        historyQuote: v.optional(v.string()),
+        venueName: v.optional(v.string()),
+        venueDescription: v.optional(v.string()),
+        foundersNote: v.optional(v.string()),
         contentTone: v.optional(v.string()),
         defaultImageStyle: v.optional(v.string()),
         enableChatbot: v.optional(v.boolean()),
@@ -157,6 +181,17 @@ export const update = mutation({
         if (args.contactEmail !== undefined) validateMaxLength(args.contactEmail, "contactEmail", 254);
         if (args.logoUrl !== undefined) validateMaxLength(args.logoUrl, "logoUrl", 500);
         if (args.currentMandate !== undefined) validateMaxLength(args.currentMandate, "currentMandate", 100);
+        if (args.siteFullName !== undefined) validateMaxLength(args.siteFullName, "siteFullName", 600);
+        if (args.locality !== undefined) validateMaxLength(args.locality, "locality", 600);
+        if (args.region !== undefined) validateMaxLength(args.region, "region", 600);
+        if (args.foundedYear !== undefined) validateMaxLength(args.foundedYear, "foundedYear", 600);
+        if (args.heroTagline !== undefined) validateMaxLength(args.heroTagline, "heroTagline", 600);
+        if (args.heroSubtitle !== undefined) validateMaxLength(args.heroSubtitle, "heroSubtitle", 600);
+        if (args.historyIntro !== undefined) validateMaxLength(args.historyIntro, "historyIntro", 4000);
+        if (args.historyQuote !== undefined) validateMaxLength(args.historyQuote, "historyQuote", 600);
+        if (args.venueName !== undefined) validateMaxLength(args.venueName, "venueName", 600);
+        if (args.venueDescription !== undefined) validateMaxLength(args.venueDescription, "venueDescription", 600);
+        if (args.foundersNote !== undefined) validateMaxLength(args.foundersNote, "foundersNote", 600);
         if (args.contentTone !== undefined) validateMaxLength(args.contentTone, "contentTone", 100);
         if (args.defaultImageStyle !== undefined) validateMaxLength(args.defaultImageStyle, "defaultImageStyle", 500);
         if (args.chatModel !== undefined) validateMaxLength(args.chatModel, "chatModel", 50);
@@ -195,11 +230,22 @@ export const update = mutation({
             await ctx.db.patch(existing._id, args);
         } else {
             await ctx.db.insert("settings", {
-                siteName: args.siteName ?? "ARCVA",
+                siteName: args.siteName ?? "Associação",
                 maintenanceMode: args.maintenanceMode ?? false,
                 contactEmail: args.contactEmail,
                 logoUrl: args.logoUrl,
                 currentMandate: args.currentMandate,
+                siteFullName: args.siteFullName,
+                locality: args.locality,
+                region: args.region,
+                foundedYear: args.foundedYear,
+                heroTagline: args.heroTagline,
+                heroSubtitle: args.heroSubtitle,
+                historyIntro: args.historyIntro,
+                historyQuote: args.historyQuote,
+                venueName: args.venueName,
+                venueDescription: args.venueDescription,
+                foundersNote: args.foundersNote,
                 contentTone: args.contentTone,
                 defaultImageStyle: args.defaultImageStyle,
                 enableChatbot: args.enableChatbot,

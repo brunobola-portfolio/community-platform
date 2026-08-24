@@ -68,7 +68,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, ini
           </div>
           <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-2">Mensagem Enviada!</h3>
           <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto text-lg font-light">
-             A direção da ARCVA recebeu o seu pedido e entrará em contacto brevemente.
+             A direção recebeu o seu pedido e entrará em contacto brevemente.
           </p>
         </div>
       ) : status === 'error' ? (

@@ -140,7 +140,7 @@ O comando faz tudo e **para com erro claro se algo estiver mal**:
 1. Valida que `.env.production` existe e tem `VITE_CONVEX_URL` (mostra o backend alvo)
 2. Build de produção (`tsc` + `vite build`)
 3. Verifica o resultado: `index.html` e `web.config` presentes, URL de produção embebido no bundle
-4. Cria o `arcva-v2-dist.zip` (~4 MB) com `index.html` na **raiz do zip**: `web.config`, `assets/`, imagens, `manifest.json`, `sitemap.xml`, `robots.txt`
+4. Cria o `community-platform-dist.zip` (~4 MB) com `index.html` na **raiz do zip**: `web.config`, `assets/`, imagens, `manifest.json`, `sitemap.xml`, `robots.txt`
 
 > O zip é criado com `tar` (incluído no Windows 10+), com fallback para `Compress-Archive` — não depende de módulos PowerShell.
 
@@ -162,7 +162,7 @@ O objetivo é ter o site novo a correr numa **porta de teste (8080)**, sem tocar
 ### 3.1 — Copiar e extrair
 
 1. Abre RDP para o servidor.
-2. Copia `arcva-v2-dist.zip` do teu PC para o servidor (copy-paste pelo RDP funciona).
+2. Copia `community-platform-dist.zip` do teu PC para o servidor (copy-paste pelo RDP funciona).
 3. Cria a pasta `C:\inetpub\arcva-v2\`.
 4. Extrai o ZIP para dentro — `index.html` e `web.config` devem ficar **diretamente** em `C:\inetpub\arcva-v2\` (não dentro de uma subpasta `dist`).
 
@@ -405,7 +405,7 @@ npx convex env set GEMINI_API_KEY "AIza..." --prod           # chave IA
 npx @convex-dev/auth --prod --web-server-url https://arcva.pt `
     --skip-git-check --allow-dirty-git-state                 # autenticação
 npx convex run seed:seed --prod                              # dados de exemplo (opcional)
-npm run dist                                                 # gerar o site + arcva-v2-dist.zip (valida tudo)
+npm run dist                                                 # gerar o site + community-platform-dist.zip (valida tudo)
 
 # -- DIAGNÓSTICO CONVEX --
 npx convex env list --prod        # variáveis de produção

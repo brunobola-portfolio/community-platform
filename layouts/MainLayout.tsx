@@ -103,7 +103,7 @@ export const MainLayout: React.FC = () => {
       <ServiceScreen
         icon={<WifiOff size={28} />}
         title="Serviço indisponível"
-        text="Não foi possível ligar ao servidor da ARCVA. Verifique a sua ligação à internet e tente novamente dentro de momentos."
+        text="Não foi possível ligar ao servidor. Verifique a sua ligação à internet e tente novamente dentro de momentos."
         onRetry={() => window.location.reload()}
       />
     );
@@ -114,7 +114,7 @@ export const MainLayout: React.FC = () => {
       <ServiceScreen
         icon={<Wrench size={28} />}
         title="Portal em manutenção"
-        text="Estamos a fazer melhorias no portal da ARCVA. Voltamos dentro de momentos — obrigado pela paciência."
+        text="Estamos a fazer melhorias no portal. Voltamos dentro de momentos — obrigado pela paciência."
       />
     );
   }

@@ -11,62 +11,22 @@ import { Award, Scroll } from 'lucide-react';
 import { Lightbox } from '../components/ui/Lightbox';
 import { useData } from '../context/DataContext';
 
-// Static fallbacks keep the page complete on fresh deployments before the
-// milestones table and founder members are seeded
-const FALLBACK_MILESTONES = [
-    { 
-      year: 1982, 
-      title: "A Fundação", 
-      desc: "A 28 de janeiro, a ARCVA nasce do sonho de um grupo de residentes locais. Sem instalações próprias, a primeira sede funcionou numa casa antiga remodelada, que rapidamente se tornou o coração pulsante da aldeia.",
-      image: "https://images.unsplash.com/photo-1577083288073-40892c0860a4?q=80&w=2070&auto=format&fit=crop"
-    },
-    { 
-      year: 1990, 
-      title: "O Grande Projeto", 
-      desc: "A ambição cresce. Num terreno doado pela Câmara Municipal de Alcanena, lançam-se as primeiras pedras do que viria a ser o Pavilhão. A construção avançou com a força braçal de voluntários que dedicavam os seus sábados à causa.",
-      image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"
-    },
-    { 
-      year: 1993, 
-      title: "Resiliência", 
-      desc: "Após uma breve paragem nas obras, a comunidade une-se novamente. Com novos apoios e materiais doados pela população, o 'esqueleto' de betão começa a ganhar forma final, desenhando a silhueta que hoje conhecemos.",
-      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=2070&auto=format&fit=crop"
-    },
-    { 
-      year: 1994, 
-      title: "A Inauguração", 
-      desc: "A 26 de julho, o sonho materializa-se. O Eng.º Carlos Cunha inaugura o complexo desportivo de 1170m². Vale Alto celebra a abertura de um espaço com bancadas, balneários, bar e salas de convívio.",
-      image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2070&auto=format&fit=crop"
-    },
-    { 
-      year: 2019, 
-      title: "Nova Era", 
-      desc: "Eleição de novos órgãos sociais e revitalização total da marca. A ARCVA moderniza-se, digitaliza processos e renova a sua oferta cultural, mantendo o espírito dos fundadores mas olhando para o futuro.",
-      image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=2070&auto=format&fit=crop"
-    },
-  ];
-
-const FALLBACK_FOUNDERS = [
-  "Artur Simões Rodrigues", "João Conceição Marques", "José Marques Bento",
-  "José Manuel Reis Marto", "Olívio Castanheira Silveira", "João Marques Rodrigues",
-  "Adelino Simões Rodrigues", "Amaro Bento Marques", "Arménio dos Santos Santana",
-  "Gil Bento Marques", "Cândido Manuel Silva Marques"
-];
+// Paragraphs come from settings.historyIntro; both real blank lines (admin
+// textarea) and a literal \n\n (env files) separate them
+const splitParagraphs = (text?: string) =>
+  (text ?? "").split(/\r?\n\s*\r?\n|\\n\\n/).map((p) => p.trim()).filter(Boolean);
 
 export const HistoryPage: React.FC = () => {
   const { milestones: dbMilestones, members, settings } = useData();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  // Backoffice-managed timeline (tab História); fallback covers empty tables
-  const milestones = dbMilestones.length > 0
-    ? dbMilestones.map(m => ({ year: m.year, title: m.title, desc: m.description, image: m.imageUrl || '/placeholder.jpg' }))
-    : FALLBACK_MILESTONES;
-
-  const dbFounders = members
-    .filter(m => m.group === 'founder')
+  // Backoffice-managed timeline (tab História) and founders (Membros, grupo "founder")
+  const milestones = dbMilestones.map(m => ({ year: m.year, title: m.title, desc: m.description, image: m.imageUrl || "/placeholder.jpg" }));
+  const founders = members
+    .filter(m => m.group === "founder")
     .sort((a, b) => (a.order || 99) - (b.order || 99))
     .map(m => m.name);
-  const founders = dbFounders.length > 0 ? dbFounders : FALLBACK_FOUNDERS;
+  const introParagraphs = splitParagraphs(settings.historyIntro);
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg overflow-x-hidden">
@@ -82,18 +42,19 @@ export const HistoryPage: React.FC = () => {
              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-purple-500 to-brand-500 opacity-50"></div>
              
              <div className="space-y-6 text-lg md:text-xl text-slate-600 dark:text-slate-300 font-light leading-relaxed">
-               <p>
-                 A <strong>Associação Recreativa e Cultural de Vale Alto (ARCVA)</strong> não é apenas um edifício; é a prova viva do que a vontade comunitária pode alcançar. Fundada a <strong>28 de janeiro de 1982</strong>, nasceu da necessidade de criar um ponto de encontro para todas as gerações.
-               </p>
-               <p>
-                 O que começou numa pequena casa antiga transformou-se num complexo desportivo de referência regional. Esta evolução não foi financiada por grandes investidores, mas sim construída, tijolo a tijolo, pelas mãos dos próprios habitantes de Vale Alto.
-               </p>
-               <div className="pl-6 border-l-4 border-brand-500 italic text-slate-500 dark:text-slate-400 my-8 py-2 bg-slate-900/5 dark:bg-white/5 rounded-r-xl">
-                 "A sua construção contou com a disponibilização de mão-de-obra de voluntários, aos sábados, e com oferta de muitos materiais por parte da Câmara e da população."
-               </div>
-               <p>
-                 Hoje, com mais de 1170m² de área coberta, a ARCVA continua a honrar esse espírito de sacrifício e união, adaptando-se aos novos tempos sem esquecer as suas raízes.
-               </p>
+               {introParagraphs.map((paragraph, i) => (
+                 <React.Fragment key={i}>
+                   <p>{paragraph}</p>
+                   {i === 1 && settings.historyQuote && (
+                     <div className="pl-6 border-l-4 border-brand-500 italic text-slate-500 dark:text-slate-400 my-8 py-2 bg-slate-900/5 dark:bg-white/5 rounded-r-xl">
+                       {`"${settings.historyQuote}"`}
+                     </div>
+                   )}
+                 </React.Fragment>
+               ))}
+               {introParagraphs.length === 0 && (
+                 <p>{settings.aboutMission}</p>
+               )}
              </div>
            </div>
         </div>
@@ -104,6 +65,9 @@ export const HistoryPage: React.FC = () => {
           <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-brand-500/30 to-transparent md:-ml-px"></div>
 
           <div className="space-y-24">
+            {milestones.length === 0 && (
+              <p className="text-center text-slate-500 dark:text-slate-400 py-12">A cronologia será publicada em breve.</p>
+            )}
             {milestones.map((item, idx) => (
               <div key={idx} className={`relative flex flex-col md:flex-row gap-8 items-center ${idx % 2 !== 0 ? 'md:flex-row-reverse' : ''} group`}>
                 
@@ -157,6 +121,7 @@ export const HistoryPage: React.FC = () => {
         </div>
         
         {/* Founders Grid */}
+        {founders.length > 0 && (
         <div className="mt-40 relative">
            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-900/5 to-transparent pointer-events-none"></div>
            
@@ -164,7 +129,7 @@ export const HistoryPage: React.FC = () => {
                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center text-black mb-6 shadow-[0_0_30px_rgba(251,191,36,0.3)]">
                   <Award size={32} />
                </div>
-               <h2 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mb-4">Os Visionários de 1982</h2>
+               <h2 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mb-4">{settings.foundedYear ? `Os Visionários de ${settings.foundedYear}` : "Os Sócios Fundadores"}</h2>
                <div className="w-24 h-1 bg-amber-500/50 mx-auto rounded-full mb-6"></div>
                <p className="text-amber-700/70 dark:text-amber-200/60 max-w-2xl mx-auto text-lg font-light italic">
                  "Honramos a memória e a audácia daqueles que, com poucos recursos mas muita vontade, lançaram as sementes do que somos hoje."
@@ -192,10 +157,11 @@ export const HistoryPage: React.FC = () => {
            <div className="mt-16 flex justify-center">
               <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-slate-500 dark:text-slate-400 text-sm">
                  <Scroll size={16} className="text-amber-500"/>
-                 <span>Registado na Ata N.º 1 da Assembleia Geral Constituinte</span>
+                 <span>{settings.foundersNote}</span>
               </div>
            </div>
         </div>
+        )}
 
       </div>
 

@@ -56,7 +56,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
                     <Shield size={24} />
                 </div>
                 <div>
-                    <h1 className="font-serif font-bold text-lg text-white leading-none">ARCVA</h1>
+                    <h1 className="font-serif font-bold text-lg text-white leading-none">Backoffice</h1>
                     <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Admin OS</span>
                 </div>
             </div>

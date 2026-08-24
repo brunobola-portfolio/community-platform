@@ -12,6 +12,30 @@ Ambientes:
 | Dev | `fabulous-quail-25` | `npm run dev` local |
 | Produção | `savory-bird-627` (`https://savory-bird-627.convex.cloud`) | IIS na VPS Contabo Windows, site arcva.pt |
 
+## Onde vive o que é da ARCVA (camadas privadas)
+
+O repositório é genérico — nada nele nomeia a ARCVA. A instância vive em três camadas
+fora do git, todas já preenchidas nesta máquina:
+
+| Camada | Localização | Conteúdo | Backup |
+|--------|-------------|----------|--------|
+| Base de dados | Convex `savory-bird-627` (prod) / `fabulous-quail-25` (dev) | Definições (identidade, textos, contactos, IA), eventos, equipa, história, galerias, docs | `npx convex export --prod --path backup-arcva.zip` (guardar fora do repo) |
+| Ambiente | `.env.production` (build) e `.env.local` (dev) | `VITE_*` de identidade e meta tags: nome, URL, descrição, localidade, ano, hero, sede, história | Copiar os dois ficheiros para um cofre privado |
+| Overlay de marca | `.brand/public/` | `logo.svg` (runner vermelho), `favicon.svg`, `og-image.png`, `manifest.json`, `images/{team,eventos,apoios}` | Copiar a pasta para um cofre privado |
+
+**Retomar noutro PC**: clonar o repo + repor `.env.production`, `.env.local` e `.brand/`
+do cofre. Sem estes, o build sai com a marca genérica "ACR Vila Nova" — nunca partido.
+
+Passo único que falta na BD de produção depois desta versão: em **Admin > Definições**,
+preencher a secção nova **Identidade & Textos** (nome completo, localidade "Vale Alto",
+concelho "Minde", ano 1982, tagline, subtítulo, sede, introdução e citação da História,
+nota dos fundadores — os textos estão no `.env.production` para copiar) e definir **URL do
+Logótipo = `/logo.svg`**. Até o fazeres, o portal usa os `VITE_*` do build (idênticos).
+
+Segundo passo na BD de produção: os **11 sócios fundadores** deixaram de estar no código —
+a secção "Os Visionários de 1982" só aparece com membros do grupo "Sócio Fundador" em
+**Admin > Membros**. A lista está em `.artifacts/docs/arcva-fundadores.md` (gitignored).
+
 ## A) Atualização 2026-08 (white-label + modelos IA)
 
 Esta versão muda **backend e frontend**, e exige um passo manual nas definições de
@@ -53,7 +77,7 @@ default, mas o TTS/imagem não têm retry — atualizar já:
 ### 4. Frontend para o IIS
 
 ```bash
-npm run dist          # valida .env.production, faz build, cria arcva-v2-dist.zip
+npm run dist          # valida .env.production, faz build, cria community-platform-dist.zip
 ```
 
 Na VPS (RDP): extrair o zip para a pasta do site (ex: `C:\inetpub\arcva-v2\`),
@@ -135,7 +159,33 @@ gh release create v2.0.0 --title "Community Platform 2.0" --notes-file CHANGELOG
 ```
 
 Confirmar depois que o site da BolaLabs (bolalabs.pt) aponta o cartão "Community
-Platform" para o repositório público além do arcva.pt.
+Platform" para o repositório público além do arcva.pt (texto pronto em
+`.artifacts/docs/bolalabs-divulgacao-community-platform.md`).
+
+### 2. Proteger o `main` (só depois de público — rulesets exigem repo público ou GitHub Pro)
+
+Quem não é colaborador nunca consegue fazer push num repo público — só abrir PRs. O
+ruleset serve para te proteger a ti e a futuros colaboradores: PR obrigatório com o CI
+verde, sem force-push nem apagar o `main`, e bypass para o administrador (tu) fazer push
+direto quando quiseres:
+
+```bash
+gh api -X POST repos/BolaLabs/community-platform/rulesets --input - <<'JSON'
+{
+  "name": "Protect main", "target": "branch", "enforcement": "active",
+  "conditions": { "ref_name": { "include": ["~DEFAULT_BRANCH"], "exclude": [] } },
+  "bypass_actors": [ { "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always" } ],
+  "rules": [
+    { "type": "deletion" },
+    { "type": "non_fast_forward" },
+    { "type": "pull_request", "parameters": { "required_approving_review_count": 0, "dismiss_stale_reviews_on_push": true, "require_code_owner_review": false, "require_last_push_approval": false, "required_review_thread_resolution": false } },
+    { "type": "required_status_checks", "parameters": { "strict_required_status_checks_policy": true, "required_status_checks": [ { "context": "verify" } ] } }
+  ]
+}
+JSON
+```
+
+(`actor_id: 5` = papel Admin do repositório; `verify` é o job do `ci.yml`.)
 
 ## CI/CD para a evolução futura
 

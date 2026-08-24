@@ -17,7 +17,7 @@ npm run dev          # Frontend em http://localhost:3000 (deteta porta ocupada e
 npm run dev:kill     # Igual, mas mata logo o processo que estiver na porta
 npx convex dev       # Backend Convex (terminal separado) — regenera convex/_generated
 npm run build        # tsc && vite build
-npm run dist         # build + validação + arcva-v2-dist.zip pronto para o servidor
+npm run dist         # build + validação + community-platform-dist.zip pronto para o servidor
 npm run type-check   # tsc --noEmit
 npm run lint         # ESLint, zero warnings
 npm run preview      # Servir o build local
@@ -32,11 +32,17 @@ npm run preview      # Servir o build local
 
 ## Arquitetura (o que não é óbvio a ler um ficheiro)
 
-- **Tudo é DB-first.** `settings` (tabela única) alimenta identidade, contactos, coordenadas,
-  quotas, página Sobre, redes sociais e toda a config de IA. Hierarquia de fallback:
-  BD (admin) → `process.env` (servidor) → `VITE_*` (build) → defaults hardcoded em
-  `utils/defaultSettings.ts`. Os defaults hardcoded SÃO o conteúdo demo ARCVA — não são
-  acoplamento, são seed. Nunca hardcodar identidade nova em componentes: ler de `settings`.
+- **Tudo é DB-first e o repo é genérico.** `settings` (tabela única) alimenta identidade
+  (nome, nome completo, localidade, ano, hero, sede, textos da História), contactos,
+  coordenadas, quotas, Sobre, redes e toda a config de IA. Hierarquia de fallback:
+  BD (admin) → `process.env` (servidor) → `VITE_*` (build) → defaults em
+  `utils/defaultSettings.ts`, que são uma associação FICTÍCIA ("ACR Vila Nova"). Nenhum
+  ficheiro versionado nomeia a ARCVA ou pessoas reais; a instância real vive em três
+  camadas gitignored: BD, `.env.production` (meta tags via `%VITE_*%` no `index.html`,
+  plugin `siteMeta` do `vite.config.ts`) e `.brand/public/` (overlay de logos/fotos/OG,
+  servido em dev pelo plugin `brandOverlay` e copiado para `dist/` pelo `npm run dist`).
+  Ver `docs/WHITE-LABEL.md`. Campo de identidade novo = schema + `settings.*` +
+  `seedHelpers.updateSettings` + `types.ts` + defaults + `AdminIdentitySection`.
 - **Modelos IA têm fonte única**: `convex/lib/aiDefaults.ts`. Tanto o frontend
   (`utils/defaultSettings.ts`) como as actions (`convex/ai.ts`) importam de lá — não
   duplicar strings de modelo em mais lado nenhum.

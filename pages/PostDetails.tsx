@@ -134,7 +134,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                         />
                      </div>
                      <div>
-                        <div className="text-white font-bold text-lg">{post.author || 'Equipa ARCVA'}</div>
+                        <div className="text-white font-bold text-lg">{post.author || `Equipa ${settings.siteName}`}</div>
                         <div className="text-brand-400 text-sm font-medium">{post.authorRole || 'Associação'}</div>
                      </div>
                      <div className="ml-auto hidden md:flex items-center gap-2 text-slate-400 text-sm">
@@ -166,7 +166,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                            <Badge variant="outline" className="text-slate-500 dark:text-slate-400 border-slate-900/10 dark:border-white/10 px-4 py-1 rounded-full flex items-center gap-2">
                               <Tag size={12} className="text-brand-500" /> Tags:
                            </Badge>
-                           {(post.tags || ['ARCVA', 'Comunidade']).map((tag: string) => (
+                           {(post.tags || [settings.siteName, 'Comunidade']).map((tag: string) => (
                               <Badge key={tag} className="bg-slate-900/5 dark:bg-white/5 hover:bg-brand-500/20 text-brand-700 dark:text-brand-400 border border-slate-900/10 dark:border-white/10 px-4 py-1 rounded-full cursor-default transition-colors">
                                  {tag}
                               </Badge>
@@ -193,9 +193,9 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                         className="w-20 h-20 rounded-2xl object-cover shadow-2xl ring-4 ring-brand-500/20"
                      />
                      <div>
-                        <h3 className="text-slate-900 dark:text-white font-serif font-bold text-xl mb-1">Escrito por {post.author || 'Equipa ARCVA'}</h3>
+                        <h3 className="text-slate-900 dark:text-white font-serif font-bold text-xl mb-1">Escrito por {post.author || `Equipa ${settings.siteName}`}</h3>
                         <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                           Membro ativo da ARCVA dedicado a partilhar as novidades e desenvolvimentos da nossa comunidade em Vale Alto, Minde.
+                           Membro ativo da associação dedicado a partilhar as novidades e desenvolvimentos da nossa comunidade.
                         </p>
                      </div>
                   </div>

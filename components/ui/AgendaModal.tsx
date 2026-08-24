@@ -32,7 +32,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
   }, {} as Record<string, Event[]>);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Agenda Cultural ARCVA" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title="Agenda Cultural" size="lg">
       <div className="space-y-8">
         <div className="bg-brand-500/10 dark:bg-brand-900/20 border border-brand-500/20 p-4 rounded-xl flex items-start gap-3">
             <Calendar className="text-brand-600 dark:text-brand-400 shrink-0 mt-1" size={20} />
