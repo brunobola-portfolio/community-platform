@@ -112,8 +112,10 @@ git push --force --all && git push --force --tags
 ```
 
 **Opção B — publicar com histórico novo (mais simples; o historial detalhado fica no
-repo privado):** — *executada em 2026-08-24; o historial anterior está no branch
-`private-history` do remoto privado.*
+repo privado):** — *executada em 2026-08-24; o historial anterior está no branch LOCAL
+`private-history` (nunca o enviar para o remoto público — se o quiseres na cloud, cria um
+repo privado à parte: `gh repo create BolaLabs/community-platform-archive --private` e
+`git push <archive> private-history`).*
 
 ```bash
 git checkout --orphan public-release
