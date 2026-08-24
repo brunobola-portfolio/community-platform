@@ -1,0 +1,50 @@
+name: Release
+
+# Tagging vX.Y.Z builds the production zip, attaches it to a GitHub Release,
+# and (when the CONVEX_DEPLOY_KEY secret is configured) deploys the backend.
+# Installing the zip on the IIS VPS stays a manual runbook step — see
+# docs/ARCVA-UPDATE.md — until a self-hosted runner automates it.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Convex types
+        run: npx convex codegen --typecheck disable
+
+      # .env.production is gitignored (real values live in the DB); the
+      # committed example carries the production Convex URL the build needs
+      - name: Prepare production env
+        run: cp .env.production.example .env.production
+
+      - name: Build and package
+        run: npm run dist
+
+      - name: Deploy Convex backend
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        if: env.CONVEX_DEPLOY_KEY != ''
+        run: npx convex deploy --yes
+
+      - name: Create GitHub Release with the deploy zip
+        uses: softprops/action-gh-release@v2
+        with:
+          files: arcva-v2-dist.zip
+          generate_release_notes: true

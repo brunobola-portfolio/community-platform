@@ -1,0 +1,16 @@
+{
+  "name": "ARCVA - Associação Recreativa e Cultural de Vale Alto",
+  "short_name": "ARCVA",
+  "description": "Portal comunitário da ARCVA - Trabalhando pelo futuro e preservando o legado da nossa comunidade em Vale Alto.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

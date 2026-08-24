@@ -1,0 +1,74 @@
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment Variables
+.env
+.env.local
+.env.test
+.env.production
+
+# AI Agent Rules (Local Development Only)
+.roo/
+.augment/
+.clinerules*
+.cursorrules
+.windsurfrules
+
+# Claude Code (local config and workspace)
+.claude/
+
+# Playwright MCP (browser automation artifacts)
+.playwright-mcp/
+
+# Agent artifacts (screenshots, docs, logs)
+.artifacts/
+
+# Screenshots and images (development artifacts)
+# Imagens estaticas do projeto devem ficar em public/
+*.png
+*.jpg
+*.jpeg
+*.webp
+!public/**/*.png
+!public/**/*.jpg
+!public/**/*.jpeg
+!public/**/*.webp
+# Screenshots da documentacao (README)
+!docs/assets/**
+
+# Test output (futuro)
+coverage/
+test-results/
+playwright-report/
+
+# Artefactos locais que nao pertencem ao repositorio
+*.zip
+backups/
+cache/
+projects/
+history.jsonl
+.last-update-result.json
