@@ -26,9 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate Convex types
-        run: npx convex codegen --typecheck disable
-
       # .env.production is gitignored (real values live in the DB); the
       # committed example carries the production Convex URL the build needs
       - name: Prepare production env
