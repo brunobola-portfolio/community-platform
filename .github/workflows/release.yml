@@ -45,3 +45,5 @@ jobs:
         with:
           files: community-platform-dist.zip
           generate_release_notes: true
+          # v2.1.0-rc.1 style tags publish as pre-releases
+          prerelease: ${{ contains(github.ref_name, '-') }}
