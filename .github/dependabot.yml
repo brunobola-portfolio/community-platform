@@ -1,7 +1,8 @@
 version: 2
 updates:
   # Weekly, grouped, so a single PR carries the routine bumps and the CI
-  # (type-check + lint + build) vets them before merge
+  # (type-check + lint + build) vets them before merge. Majors of the
+  # toolchain and SDKs are deliberate upgrades done by hand, not bot PRs.
   - package-ecosystem: npm
     directory: "/"
     schedule:
@@ -10,8 +11,32 @@ updates:
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
-    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@google/genai"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "lucide-react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint*"
+        update-types: ["version-update:semver-major"]
+      # 0.5.x requires ESLint 9; stays pinned until the flat-config migration
+      - dependency-name: "eslint-plugin-react-refresh"
+      - dependency-name: "@typescript-eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 3
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

@@ -11,6 +11,7 @@
 <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white&labelColor=0f172a" alt="Tailwind CSS" />
 <img src="https://img.shields.io/badge/Gemini_AI-multi--provedor-4285F4?logo=google&logoColor=white&labelColor=0f172a" alt="Gemini AI" />
 <img src="https://img.shields.io/badge/licen%C3%A7a-MIT-7fc528?labelColor=0f172a" alt="MIT" />
+<a href="https://github.com/brunobola-portfolio/nextgen-community-platform/actions/workflows/ci.yml"><img src="https://github.com/brunobola-portfolio/nextgen-community-platform/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
 
 Plataforma comunitária white-label: backend serverless em tempo real, assistente IA que
 responde com o conteúdo publicado da própria associação (RAG) e um backoffice completo para
