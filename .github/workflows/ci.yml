@@ -17,6 +17,8 @@ jobs:
           node-version: 22
           cache: npm
 
+      # @emnapi/runtime is pinned as a devDependency only so the Windows-generated
+      # lockfile carries the entry npm ci demands on Linux (npm optional-deps quirk)
       - name: Install dependencies
         run: npm ci
 
