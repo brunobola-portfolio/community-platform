@@ -236,6 +236,10 @@ guardadas no servidor, nunca devolvidas ao browser):
 
 **TTS, geração de imagens e geo-queries usam sempre Gemini**, independentemente do provedor de chat.
 
+A tab do admin tem um botão **"Testar ligação"** (ida e volta ao fornecedor configurado, com
+modelo e latência) e um **catálogo de modelos ao vivo** para OpenRouter e endpoints próprios —
+o operador valida o fornecedor antes de guardar, sem CLI.
+
 ### Modelos default
 
 Configuráveis por instância em Admin > IA & Chatbot; defaults em
@@ -327,10 +331,17 @@ Consultoria, alojamento e desenvolvimento à medida para associações: [bolalab
 
 O código é MIT — ver [LICENSE](LICENSE).
 
-**Os media e ativos de marca não estão cobertos pela licença MIT**: o nome e logo ARCVA,
-os logos de parceiros e as fotografias em `public/images/` pertencem aos respetivos donos e
-estão incluídos apenas como conteúdo da instância de referência. Substitui-os ao lançar a
-tua associação (ver [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)).
+**Os ativos de marca não estão cobertos pela licença MIT.** O repositório não inclui o
+nome, logo ou fotografias de nenhuma associação real; a instância de referência guarda-os
+num overlay privado (ver [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)). O nome e logo ARCVA
+pertencem à associação. Material de terceiros usado pela plataforma:
+
+- Imagens do seed demo alojadas no [Unsplash](https://unsplash.com/license) (Unsplash License)
+- Fontes Geist e Playfair Display servidas pelo Google Fonts (SIL Open Font License)
+- Ícones [Lucide](https://lucide.dev) (ISC); todas as dependências npm são MIT/Apache-2.0/ISC
+- Google Gemini e OpenRouter usam-se sob os respetivos termos; a plataforma nunca inclui uma chave API
+
+Guia de contribuição: [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ## Contacto
 

@@ -16,6 +16,10 @@
     "url": "https://github.com/BolaLabs/community-platform/issues"
   },
   "homepage": "https://bolalabs.pt",
+  "funding": [
+    { "type": "ko-fi", "url": "https://ko-fi.com/brunobola" },
+    { "type": "buymeacoffee", "url": "https://buymeacoffee.com/brunobola" }
+  ],
   "keywords": [
     "react",
     "typescript",
