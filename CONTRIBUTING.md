@@ -111,3 +111,4 @@ vulnerabilities, do **not** open a public issue — see [SECURITY.md](SECURITY.m
 ## Code of conduct
 
 Be kind, professional, and constructive. Assume good faith; review the code, not the person.
+The full text is in [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

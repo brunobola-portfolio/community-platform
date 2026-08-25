@@ -11,6 +11,7 @@
 <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white&labelColor=0f172a" alt="Tailwind CSS" />
 <img src="https://img.shields.io/badge/Gemini_AI-multi--provider-4285F4?logo=google&logoColor=white&labelColor=0f172a" alt="Gemini AI" />
 <img src="https://img.shields.io/badge/license-MIT-7fc528?labelColor=0f172a" alt="MIT" />
+<a href="https://github.com/BolaLabs/community-platform/actions/workflows/ci.yml"><img src="https://github.com/BolaLabs/community-platform/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
 
 A white-label community platform: realtime serverless backend, an AI assistant that answers
 from the association's own published content (RAG), and a complete backoffice so the board
@@ -234,6 +235,10 @@ never returned to the browser):
 
 **TTS, image generation and geo queries always use Gemini**, regardless of the chat provider.
 
+The admin tab includes a **"Testar ligação"** button (round-trip test against the configured
+provider, reporting model and latency) and a **live model catalog** for OpenRouter and custom
+endpoints, so an operator validates the provider before saving — no CLI needed.
+
 ### Default models
 
 All configurable per-instance in Admin > AI & Chatbot; defaults live in
@@ -324,10 +329,18 @@ Consulting, hosting and custom work for associations: [bolalabs.pt](https://bola
 
 Code is MIT — see [LICENSE](LICENSE).
 
-**Media and brand assets are not covered by the MIT license**: the ARCVA name and logo,
-partner logos, and the photographs under `public/images/` belong to their respective owners
-and are included only as content of the reference instance. Replace them when launching
-your own association (see [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)).
+**Brand assets are not covered by the MIT license.** The repository ships no real
+association's name, logo or photographs; the reference instance keeps them in a private
+overlay (see [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)). The ARCVA name and logo belong to
+the association. Third-party material used by the platform:
+
+- Demo seed images are hosted on [Unsplash](https://unsplash.com/license) (Unsplash License)
+- Typefaces Geist and Playfair Display are served from Google Fonts (SIL Open Font License)
+- Icons from [Lucide](https://lucide.dev) (ISC); all npm dependencies are MIT/Apache-2.0/ISC
+- Google Gemini and OpenRouter are used under their own terms of service; the platform
+  never ships an API key
+
+Contributor guidelines: [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ## Contact
 

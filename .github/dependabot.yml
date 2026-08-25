@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Weekly, grouped, so a single PR carries the routine bumps and the CI
+  # (type-check + lint + build) vets them before merge
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly

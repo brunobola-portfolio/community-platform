@@ -13,6 +13,7 @@ import {
     openAiCompatibleChat,
     type ResolvedProvider,
 } from "./lib/aiProvider";
+import { DEFAULT_CHAT_MODEL } from "./lib/aiDefaults";
 
 const MODELS_TIMEOUT_MS = 15_000;
 
@@ -60,10 +61,13 @@ export const testProvider = action({
             if (!process.env.GEMINI_API_KEY) {
                 return { ok: false, latencyMs: 0, model: "gemini", error: "GEMINI_API_KEY não configurada no Convex Dashboard." };
             }
+            // Test the model the chat will actually use: form override, then
+            // stored setting, then the platform default
+            const storedGemini = await ctx.runQuery(internal.settings.getForAI);
+            const model = args.model || storedGemini?.chatModel || DEFAULT_CHAT_MODEL;
             try {
                 const { GoogleGenAI } = await import("@google/genai");
                 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-                const model = args.model || "gemini-2.5-flash";
                 const result = await genAI.models.generateContent({
                     model,
                     contents: [{ role: "user", parts: [{ text: "Responde apenas: OK" }] }],
@@ -71,7 +75,7 @@ export const testProvider = action({
                 if (!result.text) throw new Error("Resposta vazia.");
                 return { ok: true, latencyMs: Date.now() - started, model };
             } catch (e) {
-                return { ok: false, latencyMs: Date.now() - started, model: args.model || "gemini-2.5-flash", error: shortError(e) };
+                return { ok: false, latencyMs: Date.now() - started, model, error: shortError(e) };
             }
         }
 
@@ -122,13 +126,14 @@ export const listModels = action({
                 .sort((a, b) => a.id.localeCompare(b.id));
         }
 
-        // Gemini has no public list endpoint worth exposing; curated set
+        // Gemini has no public list endpoint worth exposing; curated set kept
+        // in sync with the AdminAITab selectors (2.0 family retired 2026-06)
         return [
-            { id: "gemini-3-flash-preview", name: "Gemini 3 Flash (Preview)" },
+            { id: "gemini-3.7-flash", name: "Gemini 3.7 Flash" },
+            { id: "gemini-3.5-flash", name: "Gemini 3.5 Flash" },
+            { id: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash Lite" },
             { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
             { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite" },
-            { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash" },
-            { id: "gemini-2.0-flash-lite", name: "Gemini 2.0 Flash Lite" },
         ];
     },
 });
