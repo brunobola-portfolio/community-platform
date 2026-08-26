@@ -83,7 +83,7 @@ default, mas o TTS/imagem não têm retry — atualizar já:
 npm run dist          # valida .env.production, faz build, cria community-platform-dist.zip
 ```
 
-Na VPS (RDP): extrair o zip para a pasta do site (ex: `C:\inetpub\arcva-v2\`),
+Na VPS (RDP): extrair o zip para a pasta do site (ex: `C:\inetpub\wwwroot\`),
 substituindo o conteúdo. O `index.html` não é cacheado (web.config), por isso os
 visitantes apanham a versão nova ao primeiro refresh.
 
