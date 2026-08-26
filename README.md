@@ -11,7 +11,7 @@
 <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white&labelColor=0f172a" alt="Tailwind CSS" />
 <img src="https://img.shields.io/badge/Gemini_AI-multi--provider-4285F4?logo=google&logoColor=white&labelColor=0f172a" alt="Gemini AI" />
 <img src="https://img.shields.io/badge/license-MIT-7fc528?labelColor=0f172a" alt="MIT" />
-<a href="https://github.com/brunobola-portfolio/nextgen-community-platform/actions/workflows/ci.yml"><img src="https://github.com/brunobola-portfolio/nextgen-community-platform/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+<a href="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml"><img src="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
 
 A white-label community platform: realtime serverless backend, an AI assistant that answers
 from the association's own published content (RAG), and a complete backoffice so the board
@@ -173,7 +173,7 @@ the frontend and the server actions both import from it.
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/BolaLabs/community-platform.git
+git clone https://github.com/brunobola-portfolio/community-platform.git
 cd community-platform
 npm install
 

@@ -51,5 +51,5 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/BolaLabs/community-platform/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/BolaLabs/community-platform/releases/tag/v2.0.0
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/brunobola-portfolio/community-platform/releases/tag/v2.0.0

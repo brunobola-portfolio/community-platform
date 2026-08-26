@@ -16,7 +16,7 @@ Thank you for considering a contribution to the Community Platform.
 # 1. Fork, then clone your fork
 git clone https://github.com/YOUR_USERNAME/community-platform.git
 cd community-platform
-git remote add upstream https://github.com/BolaLabs/community-platform.git
+git remote add upstream https://github.com/brunobola-portfolio/community-platform.git
 
 # 2. Install and configure
 npm install
@@ -104,7 +104,7 @@ complex type definitions. UI copy is European Portuguese (pt-PT); code and comme
 
 ## Reporting bugs and suggesting features
 
-Open an issue at [github.com/BolaLabs/community-platform/issues](https://github.com/BolaLabs/community-platform/issues)
+Open an issue at [github.com/brunobola-portfolio/community-platform/issues](https://github.com/brunobola-portfolio/community-platform/issues)
 with steps to reproduce (bugs) or the problem being solved (features). For security
 vulnerabilities, do **not** open a public issue — see [SECURITY.md](SECURITY.md).
 
