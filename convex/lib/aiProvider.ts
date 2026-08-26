@@ -27,6 +27,8 @@ export interface ResolvedProvider {
     model?: string;
 }
 
+import { DEFAULT_OPENROUTER_MODEL } from "./aiDefaults";
+
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const COMPLETION_TIMEOUT_MS = 60_000;
 
@@ -38,7 +40,7 @@ export function resolveProvider(settings: ProviderSettings | null): ResolvedProv
             kind,
             baseUrl: OPENROUTER_BASE_URL,
             apiKey: settings?.openrouterApiKey || process.env.OPENROUTER_API_KEY,
-            model: settings?.openrouterModel || process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",
+            model: settings?.openrouterModel || process.env.OPENROUTER_MODEL || DEFAULT_OPENROUTER_MODEL,
         };
     }
     if (kind === "custom") {
