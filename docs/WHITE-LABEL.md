@@ -13,6 +13,13 @@ uma instância real vive em **três camadas privadas**, nunca no git:
 Se a camada 2 ou 3 faltar, o build continua a funcionar com os assets e textos genéricos
 do repositório — nunca há um build "partido", só um build sem marca.
 
+**Padrão recomendado: um repositório privado de instância.** Em vez de um fork, cada
+associação guarda as camadas 2 e 3 (mais backups e notas) num repo privado próprio, sem
+código, com um `platform.lock` (tag da plataforma em produção) e um `apply.ps1` que
+clona/atualiza a plataforma nessa versão, copia as camadas e corre `npm run dist`. Zero
+divergência de código, zero risco de fuga, e "retomar noutro PC" é clonar os dois repos. A
+instância de referência segue este padrão (`BolaLabs/arcva-instance`, privado).
+
 ## 1. Base de dados (sem código)
 
 Depois do deploy ([DEPLOY.md](../DEPLOY.md) ou [DEPLOY-VPS.md](../DEPLOY-VPS.md)) e da conta

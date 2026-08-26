@@ -23,8 +23,11 @@ fora do git, todas já preenchidas nesta máquina:
 | Ambiente | `.env.production` (build) e `.env.local` (dev) | `VITE_*` de identidade e meta tags: nome, URL, descrição, localidade, ano, hero, sede, história | Copiar os dois ficheiros para um cofre privado |
 | Overlay de marca | `.brand/public/` | `logo.svg` (runner vermelho), `favicon.svg`, `og-image.png`, `manifest.json`, `images/{team,eventos,apoios}` | Copiar a pasta para um cofre privado |
 
-**Retomar noutro PC**: clonar o repo + repor `.env.production`, `.env.local` e `.brand/`
-do cofre. Sem estes, o build sai com a marca genérica "ACR Vila Nova" — nunca partido.
+**O cofre é um repositório**: as três camadas, os backups e as notas vivem no repo privado
+`BolaLabs/arcva-instance` (sem código; `platform.lock` + `apply.ps1`). **Retomar noutro
+PC** = clonar `community-platform` e `arcva-instance` lado a lado e correr
+`.\apply.ps1 -ApplyOnly` na instância. Sem as camadas, o build sai com a marca genérica
+"ACR Vila Nova" — nunca partido.
 
 Passo único que falta na BD de produção depois desta versão: em **Admin > Definições**,
 preencher a secção nova **Identidade & Textos** (nome completo, localidade "Vale Alto",
