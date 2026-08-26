@@ -141,7 +141,7 @@ git push --force --all && git push --force --tags
 **Opção B — publicar com histórico novo (mais simples; o historial detalhado fica no
 repo privado):** — *executada em 2026-08-24; o historial anterior está no branch LOCAL
 `private-history` (nunca o enviar para o remoto público — se o quiseres na cloud, cria um
-repo privado à parte: `gh repo create BolaLabs/community-platform-archive --private` e
+repo privado à parte: `gh repo create brunobola-portfolio/community-platform-archive --private` e
 `git push <archive> private-history`).*
 
 ```bash
@@ -151,13 +151,12 @@ git branch -M public-release main   # substitui o main local
 git push --force origin main
 ```
 
-### 1. Renomear, transferir e publicar
+### 1. Renomear e publicar (o público fica na conta brunobola-portfolio; o privado na org BolaLabs)
 
 ```bash
 gh repo rename community-platform -R brunobola-portfolio/nextgen-community-platform
-gh api repos/brunobola-portfolio/community-platform/transfer -f new_owner=BolaLabs
-gh repo edit BolaLabs/community-platform --visibility public --accept-visibility-change-consequences
-git remote set-url origin https://github.com/BolaLabs/community-platform.git
+gh repo edit brunobola-portfolio/community-platform --visibility public --accept-visibility-change-consequences
+git remote set-url origin https://github.com/brunobola-portfolio/community-platform.git
 gh release create v2.0.0 --title "Community Platform 2.0" --notes-file CHANGELOG.md
 ```
 
@@ -173,7 +172,7 @@ verde, sem force-push nem apagar o `main`, e bypass para o administrador (tu) fa
 direto quando quiseres:
 
 ```bash
-gh api -X POST repos/BolaLabs/community-platform/rulesets --input - <<'JSON'
+gh api -X POST repos/brunobola-portfolio/community-platform/rulesets --input - <<'JSON'
 {
   "name": "Protect main", "target": "branch", "enforcement": "active",
   "conditions": { "ref_name": { "include": ["~DEFAULT_BRANCH"], "exclude": [] } },

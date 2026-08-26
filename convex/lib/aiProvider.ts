@@ -77,7 +77,7 @@ export async function openAiCompatibleChat(
     if (provider.apiKey) headers["Authorization"] = `Bearer ${provider.apiKey}`;
     if (provider.kind === "openrouter") {
         // Attribution headers recommended by OpenRouter
-        headers["HTTP-Referer"] = process.env.SITE_URL ?? "https://github.com/BolaLabs/community-platform";
+        headers["HTTP-Referer"] = process.env.SITE_URL ?? "https://github.com/brunobola-portfolio/community-platform";
         headers["X-Title"] = "Community Platform";
     }
 
