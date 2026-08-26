@@ -43,6 +43,9 @@ npm run preview      # Servir o build local
   servido em dev pelo plugin `brandOverlay` e copiado para `dist/` pelo `npm run dist`).
   Ver `docs/WHITE-LABEL.md`. Campo de identidade novo = schema + `settings.*` +
   `seedHelpers.updateSettings` + `types.ts` + defaults + `AdminIdentitySection`.
+  A instância ARCVA guarda as camadas no repo privado `BolaLabs/arcva-instance`
+  (pasta irmã `..\arcva-instance`, `apply.ps1` copia-as para aqui) — nunca as commitar
+  neste repositório.
 - **Modelos IA têm fonte única**: `convex/lib/aiDefaults.ts`. Tanto o frontend
   (`utils/defaultSettings.ts`) como as actions (`convex/ai.ts`) importam de lá — não
   duplicar strings de modelo em mais lado nenhum.
