@@ -291,6 +291,12 @@ export const updateSettings = internalMutation({
         facebookAccessToken: v.optional(v.string()),
         showChatbotBubble: v.optional(v.boolean()),
         ttsModel: v.optional(v.string()),
+        // Provider selection and model slugs (never the keys) so an operator
+        // can repair a retired model from the CLI without the admin UI
+        aiProvider: v.optional(v.string()),
+        openrouterModel: v.optional(v.string()),
+        customApiUrl: v.optional(v.string()),
+        customModel: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
         const existing = await ctx.db.query("settings").first();

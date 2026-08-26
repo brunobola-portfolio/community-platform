@@ -10,7 +10,9 @@ import {
   DEFAULT_CHAT_MODEL_FALLBACK,
   DEFAULT_TTS_MODEL,
   DEFAULT_IMAGE_MODEL,
+  OPENROUTER_FALLBACK_MODELS,
   isModelNotFoundError,
+  isRateLimitedError,
 } from "./lib/aiDefaults";
 
 /**
@@ -403,13 +405,46 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
           response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? null;
       } else {
         // OpenAI-compatible providers: no web/maps grounding, RAG context only
-        text = await openAiCompatibleChat(provider, [
-          { role: "system", content: systemPrompt },
+        const openAiMessages = [
+          { role: "system" as const, content: systemPrompt },
           ...contents.map((c) => ({
             role: (c.role === "model" ? "assistant" : "user") as "assistant" | "user",
             content: c.parts[0]?.text ?? "",
           })),
-        ]);
+        ];
+        // Self-heal chain: configured slug, then the platform's free fallbacks
+        // (retired/paid-only/rate-limited slugs are common on OpenRouter),
+        // then Gemini when a key exists. Only OpenRouter walks the chain;
+        // custom endpoints surface their own error.
+        const candidates = provider.kind === "openrouter"
+          ? [provider.model, ...OPENROUTER_FALLBACK_MODELS].filter((m, i, all): m is string => Boolean(m) && all.indexOf(m) === i)
+          : [provider.model];
+        let lastError: unknown = null;
+        text = "";
+        for (const candidate of candidates) {
+          try {
+            text = await openAiCompatibleChat({ ...provider, model: candidate }, openAiMessages);
+            selectedModel = candidate;
+            lastError = null;
+            break;
+          } catch (modelError) {
+            lastError = modelError;
+            const raw = modelError instanceof Error ? modelError.message : String(modelError);
+            if (provider.kind !== "openrouter" || !(isModelNotFoundError(raw) || isRateLimitedError(raw))) throw modelError;
+            console.warn(`OpenRouter model ${candidate} unavailable (${raw.slice(0, 80)}), trying next`);
+          }
+        }
+        if (lastError) {
+          if (!process.env.GEMINI_API_KEY) throw lastError;
+          console.warn(`All OpenRouter candidates failed, falling back to Gemini ${DEFAULT_CHAT_MODEL}`);
+          const geminiResponse = await getAI().models.generateContent({
+            model: DEFAULT_CHAT_MODEL,
+            contents,
+            config: { systemInstruction: systemPrompt },
+          });
+          text = geminiResponse.text ?? "Desculpe, não consegui processar o seu pedido.";
+          selectedModel = DEFAULT_CHAT_MODEL;
+        }
       }
 
       // --- Step 6: Build suggested actions ---

@@ -10,6 +10,24 @@ export const DEFAULT_CHAT_MODEL = "gemini-3.5-flash";
 export const DEFAULT_CHAT_MODEL_FALLBACK = "gemini-3.5-flash-lite";
 export const DEFAULT_TTS_MODEL = "gemini-2.5-flash-preview-tts";
 export const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image";
+// OpenRouter fallback when the configured slug disappears (free-tier slugs
+// rotate often): Google open-weights MoE, 4B active params — fast, free,
+// solid Portuguese
+export const DEFAULT_OPENROUTER_MODEL = "google/gemma-4-26b-a4b-it:free";
+// Tried in order when the configured slug is retired or rate-limited upstream
+// (free slugs share capacity); the chat then falls back to Gemini if a key exists
+export const OPENROUTER_FALLBACK_MODELS = [
+  "google/gemma-4-26b-a4b-it:free",
+  "nvidia/nemotron-3.5-lightning:free",
+  "z-ai/glm-5.2:free",
+  "minimax/minimax-m2.7:free",
+];
+
+/** Upstream throttling (shared free tiers hit this often); worth trying another slug. */
+export function isRateLimitedError(raw: string): boolean {
+  const lower = raw.toLowerCase();
+  return lower.includes("429") || lower.includes("rate-limited") || lower.includes("rate limit");
+}
 
 /**
  * Detects the provider error for a model id that was retired or renamed.
