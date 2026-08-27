@@ -85,7 +85,7 @@ npx convex deploy
 Responde **Y** a "Deploy to production?". No fim imprime o URL de produção, por exemplo:
 
 ```text
-✔ Deployed Convex functions to https://savory-bird-627.convex.cloud
+✔ Deployed Convex functions to https://<deployment>.convex.cloud
 ```
 
 ### 1.3 — Confirmar o URL de produção (importante)

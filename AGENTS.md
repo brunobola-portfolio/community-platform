@@ -43,9 +43,9 @@ npm run preview      # Servir o build local
   servido em dev pelo plugin `brandOverlay` e copiado para `dist/` pelo `npm run dist`).
   Ver `docs/WHITE-LABEL.md`. Campo de identidade novo = schema + `settings.*` +
   `seedHelpers.updateSettings` + `types.ts` + defaults + `AdminIdentitySection`.
-  A instância ARCVA guarda as camadas no repo privado `BolaLabs/arcva-instance`
-  (pasta irmã `..\arcva-instance`, `apply.ps1` copia-as para aqui) — nunca as commitar
-  neste repositório.
+  Instâncias reais vivem em repositórios privados próprios (padrão e template em
+  `docs/INSTANCE-REPO.md` + `templates/instance/`) — nunca commitar camadas de uma
+  instância neste repositório.
 - **Modelos IA têm fonte única**: `convex/lib/aiDefaults.ts`. Tanto o frontend
   (`utils/defaultSettings.ts`) como as actions (`convex/ai.ts`) importam de lá — não
   duplicar strings de modelo em mais lado nenhum.
@@ -135,6 +135,6 @@ npm run preview      # Servir o build local
 - [README.md](README.md) (EN) / [README.pt.md](README.pt.md) — visão geral e setup
 - [DEPLOY.md](DEPLOY.md) (IIS/Windows) / [DEPLOY-VPS.md](DEPLOY-VPS.md) (Linux/nginx)
 - [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md) — checklist para lançar uma nova associação
-- [docs/ARCVA-UPDATE.md](docs/ARCVA-UPDATE.md) — runbook de atualização da instância arcva.pt
+- [docs/INSTANCE-REPO.md](docs/INSTANCE-REPO.md) — lançar e operar uma instância (repo privado + deploy automático)
 - [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) — tokens, tipografia, padrões de UI
 - [CONTRIBUTING.md](CONTRIBUTING.md) · [SECURITY.md](SECURITY.md) · [CHANGELOG.md](CHANGELOG.md)

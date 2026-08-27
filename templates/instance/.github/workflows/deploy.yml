@@ -1,0 +1,51 @@
+name: Deploy
+
+# Runs on a self-hosted runner installed on the instance's server (Windows + IIS).
+# Trigger: manual, or a push that changes the platform version, env, brand or scripts.
+# Steps: clone the public platform at platform.lock, apply the private layers, build
+# with the brand, optionally deploy the Convex backend, install on IIS with backup,
+# smoke test and automatic rollback (deploy/install.ps1).
+#
+# Repository settings needed:
+#   - self-hosted runner with the label below (Settings > Actions > Runners)
+#   - secret CONVEX_DEPLOY_KEY (optional; production deploy key from the Convex dashboard)
+#   - variables SITE_PATH and SITE_URL (optional; defaults inside install.ps1)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - platform.lock
+      - env/**
+      - brand/**
+      - deploy/**
+      - apply.ps1
+
+concurrency:
+  group: deploy-instance
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, windows, instance]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # Windows PowerShell 5.1 is always present on Windows Server; pwsh is not
+      - name: Build with the instance brand
+        shell: powershell
+        run: .\apply.ps1 -Clone
+
+      # Backend first, frontend after: a new bundle may call new functions
+      - name: Deploy Convex backend
+        if: env.CONVEX_DEPLOY_KEY != ''
+        shell: powershell
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: Set-Location .\platform; npx convex deploy --yes
+
+      - name: Install on IIS (backup, smoke test, rollback)
+        shell: powershell
+        run: .\deploy\install.ps1 -SitePath "${{ vars.SITE_PATH || 'C:\inetpub\wwwroot' }}" -SiteUrl "${{ vars.SITE_URL || 'https://www.example.org/' }}"
