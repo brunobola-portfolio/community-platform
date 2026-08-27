@@ -51,6 +51,10 @@ Instância de referência ([arcva.pt](https://arcva.pt)) — tudo o que se vê �
 |:---:|:---:|
 | ![Página de eventos](docs/assets/events-dark.png) | ![Dashboard admin](docs/assets/admin-dashboard.png) |
 
+| Gestor de galeria: upload múltiplo, legendas, ordenação, capa |
+|:---:|
+| ![Gestor de galeria](docs/assets/admin-gallery.png) |
+
 ## Sobre
 
 A maioria das pequenas associações depende de um voluntário com conhecimentos técnicos — e

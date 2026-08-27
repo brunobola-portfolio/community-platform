@@ -51,6 +51,10 @@ Reference instance ([arcva.pt](https://arcva.pt)) — everything below is manage
 |:---:|:---:|
 | ![Events page](docs/assets/events-dark.png) | ![Admin dashboard](docs/assets/admin-dashboard.png) |
 
+| Gallery manager: multi-upload, captions, ordering, cover |
+|:---:|
+| ![Gallery manager](docs/assets/admin-gallery.png) |
+
 ## About
 
 Most small associations depend on a volunteer with technical skills — and stall when that
