@@ -1,0 +1,4 @@
+# Build output and the checked-out platform are disposable
+dist/
+platform/
+node_modules/

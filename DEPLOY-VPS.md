@@ -3,7 +3,7 @@
 O portal é uma SPA estática (Vite) que fala com o backend Convex na cloud —
 na VPS só é preciso servir ficheiros estáticos com fallback de SPA e HTTPS.
 O backend (funções, base de dados, storage) já está deployed em
-`https://savory-bird-627.convex.cloud` e não corre na VPS.
+`https://<deployment>.convex.cloud` e não corre na VPS.
 
 > Para VPS Windows com IIS, segue o [DEPLOY.md](DEPLOY.md) — o processo é o
 > mesmo, apenas muda a máquina. Este guia cobre o caso comum de VPS Linux.
