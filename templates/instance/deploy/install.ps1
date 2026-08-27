@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Installs a Community Platform zip on an IIS site with backup, smoke test and automatic
   rollback. Runs ON THE SERVER (by the runner or by hand).

@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `templates/instance/` and `docs/INSTANCE-REPO.md`: the private instance repository
+  pattern (env + brand + backups + `platform.lock`, `apply.ps1`, IIS `install.ps1` with
+  backup/smoke test/rollback, self-hosted runner workflow) for running the platform for
+  any association without client data in the public product
 - Backoffice gallery manager: master-detail albums view, drag-and-drop multi-file
   upload straight to Convex storage with per-file status, inline captions, arrow
   reordering persisted per album, cover chosen among the album's photos, single and
