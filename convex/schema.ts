@@ -170,6 +170,9 @@ export default defineSchema({
     date: v.string(),
     coverId: v.optional(v.union(v.id("_storage"), v.null())),
     externalCover: v.optional(v.string()),
+    // Cover chosen among the album's own photos (takes precedence over
+    // coverId/externalCover); cleared automatically if that photo is removed
+    coverImageId: v.optional(v.id("galleryImages")),
     description: v.optional(v.string()),
   })
     .index("by_date", ["date"]),
@@ -180,6 +183,8 @@ export default defineSchema({
     storageId: v.optional(v.union(v.id("_storage"), v.null())),
     externalUrl: v.optional(v.string()),
     caption: v.optional(v.string()),
+    // Display position inside the album; legacy rows without it fall back to uploadedAt
+    order: v.optional(v.number()),
     uploadedAt: v.number(),
   })
     .index("by_album", ["albumId"]),

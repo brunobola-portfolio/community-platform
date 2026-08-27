@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Backoffice gallery manager: master-detail albums view, drag-and-drop multi-file
+  upload straight to Convex storage with per-file status, inline captions, arrow
+  reordering persisted per album, cover chosen among the album's photos, single and
+  bulk delete with storage cleanup (`albums.updateImage/removeImage/reorderImages/setCoverImage`)
+
 ### Changed
 
 - **Fully generic repository**: no versioned file names a real association. New

@@ -24,10 +24,8 @@ export const AdminFormModal: React.FC<AdminFormModalProps> = ({
     isEnhancingText,
     categories,
     sponsorTiers,
-    tempPhotoUrl,
     settings,
     onFormDataChange,
-    onTempPhotoUrlChange,
     onSubmit,
     onClose,
     onGenerateImage,
@@ -127,10 +125,8 @@ export const AdminFormModal: React.FC<AdminFormModalProps> = ({
                     )}
                     {showModal === 'album' && (
                         <AlbumForm
-                            formData={formData} str={str} setField={setField}
-                            tempPhotoUrl={tempPhotoUrl} onTempPhotoUrlChange={onTempPhotoUrlChange}
+                            str={str} setField={setField}
                             isGeneratingImage={isGeneratingImage} onGenerateImage={onGenerateImage}
-                            onFormDataChange={onFormDataChange}
                         />
                     )}
                 </form>
@@ -504,52 +500,21 @@ const StatForm: React.FC<StatFormProps> = ({ str, num, setField }) => (
 // ── Album Form ──────────────────────────────────────────────────────────────
 
 interface AlbumFormProps extends FieldHelpers {
-    formData: AdminFormData;
-    tempPhotoUrl: string;
-    onTempPhotoUrlChange: (url: string) => void;
     isGeneratingImage: boolean;
     onGenerateImage: AdminFormModalProps['onGenerateImage'];
-    onFormDataChange: (data: AdminFormData) => void;
 }
 
-const AlbumForm: React.FC<AlbumFormProps> = ({
-    formData, str, setField,
-    tempPhotoUrl, onTempPhotoUrlChange,
-    isGeneratingImage, onGenerateImage, onFormDataChange,
-}) => {
-    const photos = Array.isArray(formData.photos) ? (formData.photos as string[]) : [];
-    return (
-        <div className="space-y-6">
-            <div><label className={LABEL_CLASS}>Título do Álbum</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></div>
-            <div><label className={LABEL_CLASS}>Data</label><input type="date" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} /></div>
+// Album metadata only: photos (upload, captions, order, cover pick) are
+// managed in the Galeria tab by AdminGalleryManager
+const AlbumForm: React.FC<AlbumFormProps> = ({ str, setField, isGeneratingImage, onGenerateImage }) => (
+    <div className="space-y-6">
+        <div><label className={LABEL_CLASS}>Título do Álbum</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></div>
+        <div><label className={LABEL_CLASS}>Data</label><input type="date" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} /></div>
+        <div><label className={LABEL_CLASS}>Descrição (opcional)</label><textarea rows={3} value={str('description')} onChange={e => setField('description', e.target.value)} className={STD_INPUT_CLASS} placeholder="Uma frase sobre o evento ou a ocasião" /></div>
+        <div>
+            <label className={LABEL_CLASS}>Capa (opcional)</label>
+            <p className="text-xs text-slate-500 mb-2">Podes também escolher a capa entre as fotos do álbum, na tab Galeria (estrela).</p>
             <MediaStudio imageUrl={str('coverUrl')} onChange={(url: string) => setField('coverUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} />
-
-            <div className="pt-4 border-t border-white/5">
-                <h4 className="text-sm font-bold text-white mb-2">Gerir Fotos</h4>
-                <div className="flex gap-2 mb-2">
-                    <input value={tempPhotoUrl} onChange={e => onTempPhotoUrlChange(e.target.value)} className={STD_INPUT_CLASS} placeholder="URL da nova foto" />
-                    <Button type="button" onClick={() => {
-                        if (tempPhotoUrl) {
-                            onFormDataChange({ ...formData, photos: [...photos, tempPhotoUrl] });
-                            onTempPhotoUrlChange('');
-                        }
-                    }}>Adicionar</Button>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {photos.map((p, i) => (
-                        <div key={i} className="relative group">
-                            <img src={p} alt={`Foto ${i + 1}`} className="w-full h-20 object-cover rounded-md" />
-                            <button
-                                type="button"
-                                onClick={() => onFormDataChange({ ...formData, photos: photos.filter((_, idx) => idx !== i) })}
-                                className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                                <X size={12} />
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </div>
         </div>
-    );
-};
+    </div>
+);

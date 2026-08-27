@@ -31,8 +31,9 @@ import { AdminFormModal } from './admin/AdminFormModal';
 import {
     HomepageTab, EventsTab, NewsTab, MembersTab, SponsorsTab,
     CategoriesTab, TiersTab, DocumentsTab, NotificationsTab,
-    GalleryTab, MilestonesTab, RegistrationModal
+    MilestonesTab, RegistrationModal
 } from './admin/AdminEntityTabs';
+import { AdminGalleryManager } from './admin/gallery/AdminGalleryManager';
 
 type AnyRecord = Record<string, any>;
 
@@ -275,7 +276,15 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     {activeTab === 'tiers' && <TiersTab sponsorTiers={sponsorTiers} openEditModal={openEditModal} handleDeleteRequest={handleDeleteRequest} />}
                     {activeTab === 'documents' && <DocumentsTab documents={documents} openEditModal={openEditModal} handleDuplicate={handleDuplicate} handleDeleteRequest={handleDeleteRequest} />}
                     {activeTab === 'notifications' && <NotificationsTab notifications={notifications} openEditModal={openEditModal} handleDuplicate={handleDuplicate} handleDeleteRequest={handleDeleteRequest} />}
-                    {activeTab === 'gallery' && <GalleryTab albums={albums} openEditModal={openEditModal} handleDeleteRequest={handleDeleteRequest} />}
+                    {activeTab === 'gallery' && (
+                        <AdminGalleryManager
+                            albums={albums}
+                            openEditModal={openEditModal}
+                            handleDeleteRequest={handleDeleteRequest}
+                            onNewAlbum={openNewModal}
+                            notify={(message, type) => setToast({ message, type })}
+                        />
+                    )}
                     {activeTab === 'historia' && <MilestonesTab milestones={milestones} openEditModal={openEditModal} handleDeleteRequest={handleDeleteRequest} />}
                 </div>
             </main>

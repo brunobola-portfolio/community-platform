@@ -103,7 +103,7 @@ produção para uma comunidade real.
 ### Painel de administração — 16 tabs de gestão
 
 Dashboard · Homepage · Eventos (rich text + formulários de inscrição dinâmicos + torneios) ·
-Notícias · Membros · Parceiros · Galeria · Leads & Contactos (workflow de estado) ·
+Notícias · Membros · Parceiros · Gestor de galeria (upload múltiplo por arrastar para o storage, legendas, ordenação, capa, apagar em lote) · Leads & Contactos (workflow de estado) ·
 Sócios & Quotas · Timeline da História · Documentos · Notificações · Categorias ·
 Níveis de Parceria · IA & Chatbot (fornecedor, modelos, guardrails, analytics) ·
 Definições (configuração completa do site)
