@@ -102,7 +102,7 @@ community first.
 ### Admin panel — 16 management tabs
 
 Dashboard · Homepage · Events (rich text + dynamic registration forms + tournaments) · News ·
-Members · Partners · Gallery · Leads & Contacts (state workflow) · Dues & Members ·
+Members · Partners · Gallery manager (drag-and-drop multi-upload to Convex storage, captions, ordering, cover pick, bulk delete) · Leads & Contacts (state workflow) · Dues & Members ·
 History timeline · Documents · Notifications · Categories · Partnership tiers ·
 AI & Chatbot (provider, models, guardrails, analytics) · Settings (full site configuration)
 

@@ -337,10 +337,21 @@ export interface Album {
   id: string;
   title: string;
   coverUrl?: string;
+  coverImageId?: string;
   date: string;
   description?: string;
   photos: string[];
   photoCount?: number;
+}
+
+/** One photo of an album as managed in the backoffice gallery manager. */
+export interface GalleryImage {
+  id: string;
+  url: string | null;
+  caption?: string;
+  order?: number;
+  uploadedAt: number;
+  isStored: boolean;
 }
 
 // ── Activity Log ───────────────────────────────────────────────────────────────
