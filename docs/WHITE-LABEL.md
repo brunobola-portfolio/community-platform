@@ -17,8 +17,9 @@ do repositório — nunca há um build "partido", só um build sem marca.
 associação guarda as camadas 2 e 3 (mais backups e notas) num repo privado próprio, sem
 código, com um `platform.lock` (tag da plataforma em produção) e um `apply.ps1` que
 clona/atualiza a plataforma nessa versão, copia as camadas e corre `npm run dist`. Zero
-divergência de código, zero risco de fuga, e "retomar noutro PC" é clonar os dois repos. A
-instância de referência segue este padrão (`BolaLabs/arcva-instance`, privado).
+divergência de código, zero risco de fuga, e "retomar noutro PC" é clonar os dois repos.
+Template pronto em `templates/instance/`; playbook completo (Convex, servidor, runner,
+rotina) em [docs/INSTANCE-REPO.md](INSTANCE-REPO.md).
 
 ## 1. Base de dados (sem código)
 

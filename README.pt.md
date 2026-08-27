@@ -35,6 +35,7 @@ cultural portuguesa, a correr exatamente este código.
 | Qualquer pessoa — técnica ou não | Esta página, de cima a baixo (~5 minutos) |
 | Developer a configurar localmente | [Instalação](#instalação) → [Comandos](#comandos) |
 | A lançar o portal de outra associação | [White-Label](#lançar-a-tua-associação) → **[docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)** |
+| A operar instâncias para clientes (repo privado + deploy automático) | **[docs/INSTANCE-REPO.md](docs/INSTANCE-REPO.md)** + [templates/instance/](templates/instance/) |
 | A fazer release ou deploy | [Deploy](#deploy-para-produção) → **[DEPLOY.md](DEPLOY.md)** (IIS) / **[DEPLOY-VPS.md](DEPLOY-VPS.md)** (nginx) |
 | A alterar UI / design visual | **[docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)** |
 | Um agente de IA | **[AGENTS.md](AGENTS.md)** (guia canónico) + [CLAUDE.md](CLAUDE.md) |

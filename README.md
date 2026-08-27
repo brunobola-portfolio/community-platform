@@ -35,6 +35,7 @@ association, running this exact codebase.
 | Anyone — technical or not | This page, top to bottom (~5 minutes) |
 | A developer setting up locally | [Getting Started](#getting-started) → [Commands](#commands) |
 | Launching a portal for another association | [White-Label](#launching-your-own-association) → **[docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)** |
+| Running instances for clients (private repo + automated deploy) | **[docs/INSTANCE-REPO.md](docs/INSTANCE-REPO.md)** + [templates/instance/](templates/instance/) |
 | Releasing or deploying | [Deploy](#deploying-to-production) → **[DEPLOY.md](DEPLOY.md)** (IIS) / **[DEPLOY-VPS.md](DEPLOY-VPS.md)** (nginx) |
 | Changing the UI / visual design | **[docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)** |
 | An AI coding agent | **[AGENTS.md](AGENTS.md)** (canonical guide) + [CLAUDE.md](CLAUDE.md) |

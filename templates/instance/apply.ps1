@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Applies this instance (private layers) onto the Community Platform and builds the deploy zip.
 
