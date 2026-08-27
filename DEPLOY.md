@@ -90,7 +90,7 @@ Responde **Y** a "Deploy to production?". No fim imprime o URL de produção, po
 
 ### 1.3 — Confirmar o URL de produção (importante)
 
-> **Verifica que o URL impresso acima coincide com o que está no ficheiro `.env.production`** (campo `VITE_CONVEX_URL`). Deve ser `https://savory-bird-627.convex.cloud`.
+> **Verifica que o URL impresso acima coincide com o que está no ficheiro `.env.production`** (campo `VITE_CONVEX_URL`). Deve ser `https://<deployment>.convex.cloud`.
 >
 > - **Se coincidir:** ótimo, continua.
 > - **Se for diferente:** abre `.env.production`, mete o URL correto em `VITE_CONVEX_URL`, grava. (O build da Parte 2 usa este valor.)
