@@ -1,7 +1,11 @@
 import type { Config } from 'tailwindcss';
+import { CATEGORY_COLOR_CLASSES } from './utils/categoryColors';
 
 const config: Config = {
   darkMode: 'class',
+  // Category colours are chosen in the backoffice and stored in the database,
+  // so they never appear in any scanned source file
+  safelist: CATEGORY_COLOR_CLASSES,
   content: [
     './index.html',
     './*.{ts,tsx}',

@@ -48,7 +48,13 @@ npm run preview      # Servir o build local
   instância neste repositório.
 - **Modelos IA têm fonte única**: `convex/lib/aiDefaults.ts`. Tanto o frontend
   (`utils/defaultSettings.ts`) como as actions (`convex/ai.ts`) importam de lá — não
-  duplicar strings de modelo em mais lado nenhum.
+  duplicar strings de modelo em mais lado nenhum. Em OpenRouter o chat percorre
+  `OPENROUTER_FALLBACK_MODELS` a cada falha (slug retirado, 429, 5xx) e só desiste em erro
+  de credenciais (`isAuthError`), caindo depois para Gemini se houver `GEMINI_API_KEY`.
+- **Classes Tailwind vindas da BD precisam de safelist**: as cores de categoria são
+  guardadas como classe (`bg-*-500`). A paleta autorizada vive em `utils/categoryColors.ts`
+  e entra no `safelist` do `tailwind.config.ts` — fora da paleta, o JIT não compila a classe
+  e o ponto de cor fica invisível em produção.
 - **Identidade do assistente IA é dinâmica**: `convex/ai.ts` constrói o system prompt com
   `settings.siteName`/`address` (via `settings.getForAI`, que é um subconjunto explícito de
   campos — ao precisar de um campo novo numa action, adicioná-lo lá, não usar `getAdmin`).

@@ -5,6 +5,7 @@ import { useConvexAuth } from 'convex/react';
 import { MapPin, Clock, Search, CalendarPlus, Trophy, CheckCircle2, Download, X, History, CalendarOff, Smartphone, CreditCard, LogIn } from 'lucide-react';
 import { Button, Badge, Input, Modal, cn } from '../components/ui/UIComponents';
 import { sanitizeHtml, sanitizeText } from '../utils/security';
+import { categoryColorClass } from '../utils/categoryColors';
 import { EventCardSkeleton } from '../components/ui/Skeleton';
 import type { Event } from '../types';
 
@@ -237,8 +238,9 @@ export const EventsPage: React.FC = () => {
                         {/* Divider */}
                         <div className="hidden sm:block w-px h-5 bg-slate-900/10 dark:bg-white/10 shrink-0" aria-hidden="true"></div>
 
-                        {/* Category chips — horizontal scroll with edge fade as affordance */}
-                        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:flex-1 min-w-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)]">
+                        {/* Category chips — scrollable rail with edge fade on narrow screens,
+                            wrapping from lg up so no category stays hidden on desktop */}
+                        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:flex-1 min-w-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] lg:flex-wrap lg:overflow-visible lg:[mask-image:none]">
                             <button
                                 onClick={() => setCategoryFilter('all')}
                                 aria-label="Filtrar por categoria: Todas"
@@ -265,7 +267,7 @@ export const EventsPage: React.FC = () => {
                                             : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5"
                                     )}
                                 >
-                                    <span className={`w-2 h-2 rounded-full ${cat.color} shrink-0`}></span>
+                                    <span className={`w-2 h-2 rounded-full ${categoryColorClass(cat.color)} shrink-0`}></span>
                                     {cat.name}
                                 </button>
                             ))}

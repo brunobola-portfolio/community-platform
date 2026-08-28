@@ -148,9 +148,9 @@ export const MainLayout: React.FC = () => {
             data-chatbot-trigger
             onClick={() => openAI()}
             aria-label={`Abrir o assistente ${settings.siteName}`}
-            className="fixed bottom-6 right-6 z-40 w-16 h-16 bg-gradient-to-tr from-brand-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl hover:scale-110 transition-all group animate-fade-in-up border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="fixed bottom-6 right-6 z-40 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 rounded-2xl flex items-center justify-center shadow-[0_18px_40px_-12px_rgba(223,61,50,0.7)] hover:scale-105 active:scale-95 transition-all group animate-fade-in-up ring-1 ring-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
-            <MessageCircle size={32} className="text-white" />
+            <MessageCircle size={28} className="text-white" />
             <div className="absolute right-full mr-4 bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 px-4 py-2 rounded-xl text-xs text-slate-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">
               Como posso ajudar?
             </div>

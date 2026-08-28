@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/UIComponents';
 import { cn } from '../../utils/cn';
 import { AdminSelect } from './components/AdminSelect';
 import { ICON_MAP, STD_INPUT_CLASS, LABEL_CLASS } from './constants';
+import { CATEGORY_COLORS, categoryColorClass } from '../../utils/categoryColors';
 import { RichTextEditor } from './editors/RichTextEditor';
 import { MediaStudio } from './editors/MediaStudio';
 import { RegistrationFormBuilder } from './editors/RegistrationFormBuilder';
@@ -310,16 +311,27 @@ const CategoryForm: React.FC<FieldHelpers> = ({ str, setField }) => (
     <div className="space-y-6">
         <div><label className={LABEL_CLASS}>Nome</label><input required value={str('name')} onChange={e => setField('name', e.target.value)} className={STD_INPUT_CLASS} /></div>
         <div>
-            <label className={LABEL_CLASS}>Cor (Tailwind Class)</label>
-            <AdminSelect value={str('color', 'bg-brand-500')} onChange={e => setField('color', e.target.value)}>
-                <option value="bg-brand-500">Azul Marca</option>
-                <option value="bg-green-500">Verde</option>
-                <option value="bg-red-500">Vermelho</option>
-                <option value="bg-yellow-500">Amarelo</option>
-                <option value="bg-purple-500">Roxo</option>
-                <option value="bg-pink-500">Rosa</option>
-                <option value="bg-slate-500">Cinzento</option>
-            </AdminSelect>
+            <label className={LABEL_CLASS}>Cor da categoria</label>
+            <div className="flex flex-wrap gap-2.5">
+                {CATEGORY_COLORS.map(color => {
+                    const selected = categoryColorClass(str('color', 'bg-brand-500')) === color.value;
+                    return (
+                        <button
+                            key={color.value}
+                            type="button"
+                            onClick={() => setField('color', color.value)}
+                            aria-label={color.label}
+                            aria-pressed={selected}
+                            title={color.label}
+                            className={cn(
+                                'w-8 h-8 rounded-full ring-2 ring-offset-2 ring-offset-slate-900 transition-transform focus-visible:outline-none focus-visible:ring-brand-500',
+                                color.value,
+                                selected ? 'ring-white scale-110' : 'ring-transparent hover:scale-105',
+                            )}
+                        />
+                    );
+                })}
+            </div>
         </div>
     </div>
 );
