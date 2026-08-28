@@ -1,4 +1,4 @@
-# Deploy do Portal ARCVA numa VPS
+# Deploy numa VPS Linux (nginx)
 
 O portal é uma SPA estática (Vite) que fala com o backend Convex na cloud —
 na VPS só é preciso servir ficheiros estáticos com fallback de SPA e HTTPS.
@@ -11,7 +11,7 @@ O backend (funções, base de dados, storage) já está deployed em
 ## 0. Pré-requisitos
 
 - VPS Linux (Ubuntu/Debian) com acesso SSH e sudo
-- Domínio apontado para o IP da VPS (registo A de `arcva.pt` e `www.arcva.pt`)
+- Domínio apontado para o IP da VPS (registo A de `example.org` e `www.example.org`)
 - `community-platform-dist.zip` gerado localmente com `npm run dist` (usa `.env.production`)
 
 ## 1. Gerar e enviar o build
@@ -28,22 +28,22 @@ scp community-platform-dist.zip user@VPS_IP:/tmp/
 
 ```bash
 sudo apt update && sudo apt install -y nginx unzip
-sudo mkdir -p /var/www/arcva
-sudo unzip -o /tmp/community-platform-dist.zip -d /var/www/arcva
-sudo chown -R www-data:www-data /var/www/arcva
+sudo mkdir -p /var/www/community-platform
+sudo unzip -o /tmp/community-platform-dist.zip -d /var/www/community-platform
+sudo chown -R www-data:www-data /var/www/community-platform
 ```
 
-`index.html` deve ficar diretamente em `/var/www/arcva/` (não numa subpasta `dist`).
+`index.html` deve ficar diretamente em `/var/www/community-platform/` (não numa subpasta `dist`).
 
 ## 3. Configurar o nginx
 
-`/etc/nginx/sites-available/arcva`:
+`/etc/nginx/sites-available/community-platform`:
 
 ```nginx
 server {
     listen 80;
-    server_name arcva.pt www.arcva.pt;
-    root /var/www/arcva;
+    server_name example.org www.example.org;
+    root /var/www/community-platform;
     index index.html;
 
     # Security headers (o certbot --redirect NAO adiciona HSTS)
@@ -81,7 +81,7 @@ server {
 ```
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/arcva /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/community-platform /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -89,19 +89,19 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d arcva.pt -d www.arcva.pt --redirect
+sudo certbot --nginx -d example.org -d www.example.org --redirect
 ```
 
 A renovação fica automática (`systemctl list-timers | grep certbot`).
 
 ## 5. Verificação pós-deploy
 
-1. `https://arcva.pt/` abre com o logo vermelho ARCVA e tema escuro por defeito.
+1. `https://www.example.org/` abre com o logo da associação e tema escuro por defeito.
 2. Alternar tema claro/escuro no botão do menu.
 3. `/team` mostra as fotos reais dos órgãos sociais.
 4. `/events` mostra torneios com inscrições abertas; submeter uma inscrição de teste.
 5. `/admin` pede login; entrar com a conta de administrador de produção.
-6. `https://arcva.pt/images/team/01.jpg` responde 200 (estáticos ok).
+6. `https://www.example.org/images/team/01.jpg` responde 200 (estáticos ok).
 
 ## 6. Atualizações futuras
 

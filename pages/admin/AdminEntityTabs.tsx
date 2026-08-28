@@ -5,13 +5,13 @@
  */
 
 import React from 'react';
-import { Edit2, Trash2, Copy, Trophy, Target, BarChart3, X } from 'lucide-react';
+import { Edit2, Trash2, Copy, Target, BarChart3, X } from 'lucide-react';
 import { Button, Badge } from '../../components/ui/UIComponents';
 import { AdminEntityTable } from './AdminEntityTable';
 import { AdminCard } from '../admin/components/AdminCard';
 import { ICON_MAP } from './constants';
 import type {
-    Event, Post, Member, Sponsor, SponsorTier, Category,
+    Sponsor, SponsorTier, Category,
     Album, ActionArea, Stat, Registration, Milestone
 } from '../../types';
 import type { Notification as AppNotification, Document as AppDocument } from '../../types';
@@ -78,43 +78,8 @@ export const HomepageTab: React.FC<EntityHandlers & { actionAreas: ActionArea[];
     </div>
 );
 
-export const EventsTab: React.FC<EntityHandlers & { events: (Event & { category: string })[] }> = ({ events, ...h }) => (
-    <div className="space-y-4 animate-fade-in-up">
-        <AdminEntityTable headers={['Evento', 'Data', 'Ocupação / Estado', 'Tipo']}>
-            {events.map(ev => {
-                const percent = ev.isTournament && ev.maxParticipants ? ((ev.currentParticipants ?? 0) / ev.maxParticipants) * 100 : 0;
-                return (
-                    <tr key={ev.id} className="hover:bg-white/[0.02]">
-                        <td className="p-4 font-medium text-white">{ev.title}{ev.status === 'draft' && <Badge className="ml-2 bg-slate-500/10 text-slate-400 border-slate-500/20">Rascunho</Badge>}</td>
-                        <td className="p-4 text-slate-400">{new Date(ev.date).toLocaleDateString('pt-PT')}</td>
-                        <td className="p-4">{ev.isTournament ? (<div className="w-32"><div className="flex justify-between text-[10px] text-slate-400 mb-1"><span>{ev.currentParticipants}/{ev.maxParticipants}</span> <span>{Math.round(percent)}%</span></div><div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden"><div className={`h-full rounded-full ${percent > 90 ? 'bg-red-500' : 'bg-brand-500'}`} style={{ width: `${percent}%` }} /></div></div>) : <span className="text-slate-500 text-xs">-</span>}</td>
-                        <td className="p-4">{ev.isTournament ? <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20">Torneio ({ev.entryPrice}EUR)</Badge> : <Badge>{ev.category}</Badge>}</td>
-                        <ActionRow type="event" item={ev} h={h} />
-                    </tr>
-                );
-            })}
-        </AdminEntityTable>
-        <div className="md:hidden space-y-4">{events.map(ev => (<AdminCard key={ev.id} image={ev.imageUrl} title={ev.title} subtitle={new Date(ev.date).toLocaleDateString('pt-PT')} status={ev.isTournament ? <div className="text-xs text-amber-400 mt-1 flex items-center gap-2"><Trophy size={12} /> Torneio ({ev.currentParticipants}/{ev.maxParticipants})</div> : <Badge>{ev.category}</Badge>} actions={<><Button size="sm" variant="ghost" onClick={() => h.handleDuplicate?.('event', ev)}><Copy size={16} /></Button><Button size="sm" variant="ghost" onClick={() => h.openEditModal('event', ev)}><Edit2 size={16} /></Button><Button size="sm" variant="ghost" className="text-red-400" onClick={() => h.handleDeleteRequest('event', ev.id, ev.title)}><Trash2 size={16} /></Button></>} />))}</div>
-    </div>
-);
 
-export const NewsTab: React.FC<EntityHandlers & { posts: (Post & { category: string })[] }> = ({ posts, ...h }) => (
-    <>
-        <AdminEntityTable headers={['Título', 'Data', 'Estado']}>
-            {posts.map(p => (<tr key={p.id} className="hover:bg-white/5"><td className="p-4 font-medium text-white">{p.title}</td><td className="p-4 text-slate-400">{new Date(p.date).toLocaleDateString()}</td><td className={`p-4 ${p.published ? 'text-green-400' : 'text-slate-500'}`}>{p.published ? 'Online' : 'Rascunho'}</td><ActionRow type="post" item={p} h={h} /></tr>))}
-        </AdminEntityTable>
-        <div className="md:hidden space-y-4">{posts.map(p => <AdminCard key={p.id} image={p.coverUrl} title={p.title} subtitle={new Date(p.date).toLocaleDateString()} status={p.published ? <Badge>Online</Badge> : <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20">Rascunho</Badge>} actions={<Button size="sm" variant="ghost" onClick={() => h.openEditModal('post', p)}><Edit2 size={16} /></Button>} />)}</div>
-    </>
-);
 
-export const MembersTab: React.FC<EntityHandlers & { members: Member[] }> = ({ members, ...h }) => (
-    <>
-        <AdminEntityTable headers={['Nome', 'Cargo', 'Grupo']}>
-            {members.map(m => (<tr key={m.id} className="hover:bg-white/5"><td className="p-4 flex items-center gap-3"><img src={m.photoUrl} alt={m.name} className="w-8 h-8 rounded-full object-cover" />{m.name}</td><td className="p-4 text-slate-400">{m.role}</td><td className="p-4"><Badge>{m.group}</Badge></td><ActionRow type="member" item={m} h={h} /></tr>))}
-        </AdminEntityTable>
-        <div className="md:hidden space-y-4">{members.map(m => <AdminCard key={m.id} image={m.photoUrl} title={m.name} subtitle={m.role} status={<Badge>{m.group}</Badge>} actions={<Button size="sm" variant="ghost" onClick={() => h.openEditModal('member', m)}><Edit2 size={16} /></Button>} />)}</div>
-    </>
-);
 
 export const SponsorsTab: React.FC<EntityHandlers & { sponsors: Sponsor[] }> = ({ sponsors, ...h }) => (
     <>

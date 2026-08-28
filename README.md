@@ -106,6 +106,8 @@ community first.
 
 ### Admin panel — 16 management tabs
 
+Every list has search (`/`), filter chips with live counts, sort and a result counter.
+
 Dashboard · Homepage · Events (rich text + dynamic registration forms + tournaments) · News ·
 Members · Partners · Gallery manager (drag-and-drop multi-upload to Convex storage, captions, ordering, cover pick, bulk delete) · Leads & Contacts (state workflow) · Dues & Members ·
 History timeline · Documents · Notifications · Categories · Partnership tiers ·
@@ -113,20 +115,20 @@ AI & Chatbot (provider, models, guardrails, analytics) · Settings (full site co
 
 ### Media Studio
 
-Image generation (3 Gemini models, 1K–4K), tone-aware text enhancement, TTS narration —
+Image generation (Gemini image models, 1K–4K), tone-aware text enhancement, TTS narration —
 uploads go to Convex storage, never base64.
 
 ## Tech Stack
 
 | Layer | Technology | Version |
 |-------|-----------|---------|
-| Frontend | React + TypeScript | 19.2 + 5.2 |
-| Build | Vite (Rolldown) | 8.1 |
+| Frontend | React + TypeScript | 19.2 + 5.9 |
+| Build | Vite (Rolldown) | 8.2 |
 | Styling | Tailwind CSS + clsx + tailwind-merge | 3.4 |
-| Backend | Convex (serverless, realtime) | 1.31 |
-| Auth | @convex-dev/auth (password) | 0.0.90 |
-| AI | Google Gemini (@google/genai), multi-provider layer | 1.30 |
-| Sanitization | DOMPurify (client) + server-side | 3.3 |
+| Backend | Convex (serverless, realtime) | 1.45 |
+| Auth | @convex-dev/auth (password) | 0.0.95 |
+| AI | Google Gemini (@google/genai), multi-provider layer | 1.52 |
+| Sanitization | DOMPurify (client) + server-side | 3.4 |
 
 ## Architecture
 

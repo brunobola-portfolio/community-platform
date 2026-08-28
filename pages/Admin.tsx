@@ -17,7 +17,7 @@ import { useAuthActions } from "@convex-dev/auth/react";
 
 import type { Tab, ToastState, AIStats } from './admin/types';
 import type { Registration } from '../types';
-import { TAB_NAMES, formatDateForInput, getGreeting } from './admin/constants';
+import { TAB_NAMES, NEW_LABELS, formatDateForInput, getGreeting } from './admin/constants';
 import { Toast } from './admin/components/Toast';
 import { AdminSidebar } from './admin/components/AdminSidebar';
 import { DeleteConfirmDialog } from './admin/components/DeleteConfirmDialog';
@@ -29,10 +29,13 @@ import { AdminLeadsTab } from './admin/AdminLeadsTab';
 import { AdminMemberQuotasTab } from './admin/AdminMemberQuotasTab';
 import { AdminFormModal } from './admin/AdminFormModal';
 import {
-    HomepageTab, EventsTab, NewsTab, MembersTab, SponsorsTab,
+    HomepageTab, SponsorsTab,
     CategoriesTab, TiersTab, DocumentsTab, NotificationsTab,
     MilestonesTab, RegistrationModal
 } from './admin/AdminEntityTabs';
+import { EventsTab } from './admin/tabs/EventsTab';
+import { NewsTab } from './admin/tabs/NewsTab';
+import { MembersTab } from './admin/tabs/MembersTab';
 import { AdminGalleryManager } from './admin/gallery/AdminGalleryManager';
 
 type AnyRecord = Record<string, any>;
@@ -241,6 +244,12 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
     const handleTabSelect = (tab: Tab) => { setActiveTab(tab); setMobileMenuOpen(false); };
     const showNewButton = ['events', 'news', 'members', 'documents', 'notifications', 'gallery', 'sponsors', 'categories', 'homepage', 'tiers', 'historia'].includes(activeTab);
+    // Header counter for list tabs; the toolbar inside each tab shows the filtered subset
+    const tabCounts: Partial<Record<string, number>> = {
+        events: events.length, news: posts.length, members: members.length, sponsors: sponsors.length,
+        gallery: albums.length, documents: documents.length, notifications: notifications.length,
+        categories: categories.length, tiers: sponsorTiers.length, historia: milestones.length,
+    };
 
     return (
         <div className="flex h-screen bg-dark-bg text-slate-200 font-sans overflow-hidden">
@@ -255,8 +264,11 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 </div>
                 <div className="p-4 md:p-8 max-w-7xl mx-auto pb-24 md:pb-8">
                     <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
-                        <h1 className="text-2xl md:text-3xl font-serif text-white capitalize flex items-center gap-2">{activeTab === 'dashboard' ? `${getGreeting()}, Admin` : TAB_NAMES[activeTab]}</h1>
-                        {showNewButton && <Button onClick={openNewModal} className="shadow-lg w-full md:w-auto"><Plus size={18} className="mr-2" /> Novo Registo</Button>}
+                        <h1 className="text-2xl md:text-3xl font-serif text-white capitalize flex items-center gap-3">
+                            {activeTab === 'dashboard' ? `${getGreeting()}, Admin` : TAB_NAMES[activeTab]}
+                            {tabCounts[activeTab] !== undefined && <span className="font-sans text-xs font-bold text-slate-400 bg-white/5 border border-white/10 rounded-full px-2.5 py-1 tabular-nums">{tabCounts[activeTab]}</span>}
+                        </h1>
+                        {showNewButton && <Button onClick={openNewModal} className="shadow-lg w-full md:w-auto"><Plus size={18} className="mr-2" /> {NEW_LABELS[activeTab] ?? 'Novo Registo'}</Button>}
                     </div>
                     <div className="md:hidden flex gap-3 overflow-x-auto pb-4 mb-4 no-scrollbar">
                         {[{ l: 'Notícia', i: PenTool, a: () => { setActiveTab('news'); setShowModal('post'); setFormData({}); } }, { l: 'Evento', i: Calendar, a: () => { setActiveTab('events'); setShowModal('event'); setFormData({}); } }, { l: 'Aviso', i: Bell, a: () => { setActiveTab('notifications'); setShowModal('notification'); setFormData({}); } }].map((b, i) => (<button key={i} onClick={b.a} className="flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-dark-surface border border-white/10 rounded-full text-xs font-bold text-white whitespace-nowrap"><b.i size={14} /> {b.l}</button>))}

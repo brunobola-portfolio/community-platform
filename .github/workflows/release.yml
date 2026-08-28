@@ -1,9 +1,9 @@
 name: Release
 
-# Tagging vX.Y.Z builds the production zip, attaches it to a GitHub Release,
-# and (when the CONVEX_DEPLOY_KEY secret is configured) deploys the backend.
-# Installing the zip on the IIS VPS stays a manual runbook step — see
-# docs/ARCVA-UPDATE.md — until a self-hosted runner automates it.
+# Tagging vX.Y.Z builds the generic production zip and attaches it to a GitHub
+# Release. Instances (private repositories built from templates/instance/)
+# consume the tag: they apply their brand and deploy their own Convex backend
+# and server, so this workflow holds no deploy keys and touches no deployment.
 
 on:
   push:
@@ -26,19 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # .env.production is gitignored (real values live in the DB); the
-      # committed example carries the production Convex URL the build needs
+      # .env.production is gitignored; the committed example (placeholder Convex
+      # URL, generic identity) is enough for a build that instances overlay later
       - name: Prepare production env
         run: cp .env.production.example .env.production
 
       - name: Build and package
         run: npm run dist
-
-      - name: Deploy Convex backend
-        env:
-          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
-        if: env.CONVEX_DEPLOY_KEY != ''
-        run: npx convex deploy --yes
 
       - name: Create GitHub Release with the deploy zip
         uses: softprops/action-gh-release@v3

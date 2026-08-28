@@ -107,6 +107,8 @@ produção para uma comunidade real.
 
 ### Painel de administração — 16 tabs de gestão
 
+Todas as listas têm pesquisa (`/`), filtros com contagens ao vivo, ordenação e contador de resultados.
+
 Dashboard · Homepage · Eventos (rich text + formulários de inscrição dinâmicos + torneios) ·
 Notícias · Membros · Parceiros · Gestor de galeria (upload múltiplo por arrastar para o storage, legendas, ordenação, capa, apagar em lote) · Leads & Contactos (workflow de estado) ·
 Sócios & Quotas · Timeline da História · Documentos · Notificações · Categorias ·
@@ -115,20 +117,20 @@ Definições (configuração completa do site)
 
 ### Media Studio
 
-Geração de imagens (3 modelos Gemini, 1K–4K), melhoria de texto com tom configurável,
+Geração de imagens (modelos de imagem Gemini, 1K–4K), melhoria de texto com tom configurável,
 narração TTS — uploads vão para o Convex storage, nunca base64.
 
 ## Stack Tecnológica
 
 | Camada | Tecnologia | Versão |
 |--------|-----------|--------|
-| Frontend | React + TypeScript | 19.2 + 5.2 |
-| Build | Vite (Rolldown) | 8.1 |
+| Frontend | React + TypeScript | 19.2 + 5.9 |
+| Build | Vite (Rolldown) | 8.2 |
 | Styling | Tailwind CSS + clsx + tailwind-merge | 3.4 |
-| Backend | Convex (serverless, tempo real) | 1.31 |
-| Auth | @convex-dev/auth (password) | 0.0.90 |
-| IA | Google Gemini (@google/genai), camada multi-provedor | 1.30 |
-| Sanitização | DOMPurify (cliente) + server-side | 3.3 |
+| Backend | Convex (serverless, tempo real) | 1.45 |
+| Auth | @convex-dev/auth (password) | 0.0.95 |
+| IA | Google Gemini (@google/genai), camada multi-provedor | 1.52 |
+| Sanitização | DOMPurify (cliente) + server-side | 3.4 |
 
 ## Arquitetura
 

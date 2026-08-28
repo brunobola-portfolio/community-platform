@@ -6,8 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-08-28
+
 ### Added
 
+- Backoffice list toolbar (`useAdminList` + `AdminListToolbar`): search with `/`
+  shortcut, filter chips with live counts (upcoming/past/tournaments/drafts,
+  published/drafts, governing body), sort, result counter and empty states on the
+  Events, News and Members tabs; contextual primary action ("Novo evento", "Nova
+  notícia"…) and record count in the page header; tournament occupancy shows 0/N
+  instead of /N
 - `templates/instance/` and `docs/INSTANCE-REPO.md`: the private instance repository
   pattern (env + brand + backups + `platform.lock`, `apply.ps1`, IIS `install.ps1` with
   backup/smoke test/rollback, self-hosted runner workflow) for running the platform for
