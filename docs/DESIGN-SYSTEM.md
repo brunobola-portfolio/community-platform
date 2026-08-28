@@ -30,6 +30,11 @@ glassmorphism sobre neutros slate, com uma cor brand quente por instância.
 
 Regra de contraste: em dark, a brand para texto é `brand-400`; `brand-600` é para light.
 
+Cores de categoria (eventos e notícias) vêm da BD como classes Tailwind: a paleta
+autorizada é `utils/categoryColors.ts`, importada pelo `safelist` do
+[tailwind.config.ts](../tailwind.config.ts). Sem essa entrada a classe não é compilada
+e o ponto de cor fica invisível — nunca gravar uma classe fora da paleta.
+
 ## Tipografia
 
 | Família | Papel |
@@ -76,6 +81,7 @@ pode transmitir informação essencial.
 | `Lightbox` | Único lightbox do site, controlado por index; setas + teclado; usado em Galeria, Equipa, História |
 | `Button` / `Badge` / `Modal` | Base atómica; variantes por props, nunca por CSS ad-hoc |
 | `RichTextEditor` / `MediaStudio` / `FormBuilder` | Editores do admin (`pages/admin/editors/`) |
+| `AIModal` + `ai/ChatMessage` | Assistente ancorado em baixo à direita (bottom sheet em mobile): shell/estado no modal, turnos no `ChatMessage`; identidade visual `Sparkles` + gradiente brand |
 | `.custom-scrollbar` | Scrollbar fina temática para corpos de modal e rails horizontais |
 | `.perspective-1000` | Suporte 3D do cartão de sócio |
 

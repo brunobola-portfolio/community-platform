@@ -23,10 +23,20 @@ export const OPENROUTER_FALLBACK_MODELS = [
   "minimax/minimax-m2.7:free",
 ];
 
-/** Upstream throttling (shared free tiers hit this often); worth trying another slug. */
-export function isRateLimitedError(raw: string): boolean {
+/**
+ * Bad or missing credentials. The only provider failure where walking the
+ * fallback chain is pointless — every candidate would fail the same way.
+ */
+export function isAuthError(raw: string): boolean {
   const lower = raw.toLowerCase();
-  return lower.includes("429") || lower.includes("rate-limited") || lower.includes("rate limit");
+  return (
+    lower.includes("401") ||
+    lower.includes("403") ||
+    lower.includes("unauthorized") ||
+    lower.includes("api key") ||
+    lower.includes("api_key") ||
+    lower.includes("permission_denied")
+  );
 }
 
 /**

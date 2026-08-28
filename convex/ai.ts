@@ -11,8 +11,8 @@ import {
   DEFAULT_TTS_MODEL,
   DEFAULT_IMAGE_MODEL,
   OPENROUTER_FALLBACK_MODELS,
+  isAuthError,
   isModelNotFoundError,
-  isRateLimitedError,
 } from "./lib/aiDefaults";
 
 /**
@@ -52,7 +52,15 @@ function classifyProviderError(raw: string): string {
   if (lower.includes("permission_denied") || lower.includes("api key") || lower.includes("401") || lower.includes("403")) {
     return "ERR_UNAVAILABLE";
   }
-  if (lower.includes("unavailable") || lower.includes("503") || lower.includes("504") || lower.includes("timeout")) {
+  if (
+    lower.includes("unavailable") ||
+    lower.includes("500") ||
+    lower.includes("502") ||
+    lower.includes("503") ||
+    lower.includes("504") ||
+    lower.includes("internal server error") ||
+    lower.includes("timeout")
+  ) {
     return "ERR_UNAVAILABLE";
   }
   // Retired/renamed model ids surface as 404 NOT_FOUND from the provider
@@ -430,7 +438,9 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
           } catch (modelError) {
             lastError = modelError;
             const raw = modelError instanceof Error ? modelError.message : String(modelError);
-            if (provider.kind !== "openrouter" || !(isModelNotFoundError(raw) || isRateLimitedError(raw))) throw modelError;
+            // Any upstream failure is worth another slug (retired, paid-only,
+            // throttled, or a provider 5xx); only bad credentials abort early
+            if (provider.kind !== "openrouter" || isAuthError(raw)) throw modelError;
             console.warn(`OpenRouter model ${candidate} unavailable (${raw.slice(0, 80)}), trying next`);
           }
         }

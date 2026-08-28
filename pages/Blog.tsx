@@ -5,6 +5,7 @@ import { useData } from '../context/DataContext';
 import { Search, Calendar, ArrowRight, X, Sparkles, Clock } from 'lucide-react';
 import { Badge, Button } from '../components/ui/UIComponents';
 import { PostCardSkeleton } from '../components/ui/Skeleton';
+import { categoryColorClass } from '../utils/categoryColors';
 
 export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onViewPost }) => {
    const { posts, categories, isLoading, settings } = useData();
@@ -26,7 +27,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
 
    // Solid category color per pill (photo overlays need solid bg, not translucent, for legibility)
    const categoryColorMap = useMemo(() => categories.reduce((acc, cat) => {
-      acc[cat.name] = cat.color || 'bg-brand-600';
+      acc[cat.name] = categoryColorClass(cat.color);
       return acc;
    }, {} as Record<string, string>), [categories]);
 
@@ -185,7 +186,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                                        : 'text-slate-400 dark:text-slate-600 border-transparent opacity-40 cursor-default'
                               }`}
                            >
-                              <span className={`w-2 h-2 rounded-full ${cat.color} shrink-0`}></span>
+                              <span className={`w-2 h-2 rounded-full ${categoryColorClass(cat.color)} shrink-0`}></span>
                               {cat.name}
                               <span className={`tabular-nums text-[10px] px-1.5 py-0.5 rounded-full leading-none ${activeFilter === cat.name ? 'bg-slate-900/10 text-slate-900 dark:bg-white/20 dark:text-white' : 'bg-slate-900/5 dark:bg-white/5 text-slate-500 dark:text-slate-600'}`}>
                                  {count}

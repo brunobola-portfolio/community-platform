@@ -10,6 +10,7 @@ import { Button, Badge } from '../../components/ui/UIComponents';
 import { AdminEntityTable } from './AdminEntityTable';
 import { AdminCard } from '../admin/components/AdminCard';
 import { ICON_MAP } from './constants';
+import { categoryColorClass } from '../../utils/categoryColors';
 import type {
     Sponsor, SponsorTier, Category,
     Album, ActionArea, Stat, Registration, Milestone
@@ -26,9 +27,9 @@ export interface EntityHandlers {
 
 const ActionRow: React.FC<{ type: string; item: AnyRecord; h: EntityHandlers }> = ({ type, item, h }) => (
     <td className="p-4 text-right flex justify-end gap-1">
-        {h.handleDuplicate && <Button size="sm" variant="ghost" onClick={() => h.handleDuplicate!(type, item)}><Copy size={16} /></Button>}
-        <Button size="sm" variant="ghost" onClick={() => h.openEditModal(type, item)}><Edit2 size={16} /></Button>
-        <Button size="sm" variant="ghost" className="text-red-400" onClick={() => h.handleDeleteRequest(type, item.id, item.title ?? item.name ?? item.label ?? '')}><Trash2 size={16} /></Button>
+        {h.handleDuplicate && <Button size="sm" variant="ghost" aria-label="Duplicar" title="Duplicar" onClick={() => h.handleDuplicate!(type, item)}><Copy size={16} /></Button>}
+        <Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => h.openEditModal(type, item)}><Edit2 size={16} /></Button>
+        <Button size="sm" variant="ghost" aria-label="Apagar" title="Apagar" className="text-red-400" onClick={() => h.handleDeleteRequest(type, item.id, item.title ?? item.name ?? item.label ?? '')}><Trash2 size={16} /></Button>
     </td>
 );
 
@@ -86,7 +87,7 @@ export const SponsorsTab: React.FC<EntityHandlers & { sponsors: Sponsor[] }> = (
         <AdminEntityTable headers={['Entidade', 'Nível', 'Status']}>
             {sponsors.map(s => (<tr key={s.id} className="hover:bg-white/5"><td className="p-4 flex items-center gap-3"><img src={s.logoUrl} alt={s.name} className="w-8 h-8 object-contain bg-white rounded-md p-0.5" />{s.name}</td><td className="p-4"><Badge>{s.tier}</Badge></td><td className={`p-4 ${s.active !== false ? 'text-green-400' : 'text-slate-500'}`}>{s.active !== false ? 'Ativo' : 'Inativo'}</td><ActionRow type="sponsor" item={s} h={h} /></tr>))}
         </AdminEntityTable>
-        <div className="md:hidden space-y-4">{sponsors.map(s => <AdminCard key={s.id} image={s.logoUrl} title={s.name} subtitle={s.tier} status={s.active !== false ? <Badge>Ativo</Badge> : <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20">Inativo</Badge>} actions={<Button size="sm" variant="ghost" onClick={() => h.openEditModal('sponsor', s)}><Edit2 size={16} /></Button>} />)}</div>
+        <div className="md:hidden space-y-4">{sponsors.map(s => <AdminCard key={s.id} image={s.logoUrl} title={s.name} subtitle={s.tier} status={s.active !== false ? <Badge>Ativo</Badge> : <Badge className="bg-slate-500/10 text-slate-400 border-slate-500/20">Inativo</Badge>} actions={<Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => h.openEditModal('sponsor', s)}><Edit2 size={16} /></Button>} />)}</div>
     </>
 );
 
@@ -102,16 +103,16 @@ export const MilestonesTab: React.FC<EntityHandlers & { milestones: Milestone[] 
                 </tr>
             ))}
         </AdminEntityTable>
-        <div className="md:hidden space-y-4">{milestones.map(m => <AdminCard key={m.id} image={m.imageUrl} title={`${m.year} — ${m.title}`} subtitle={m.description.slice(0, 80)} status={<Badge>Marco</Badge>} actions={<><Button size="sm" variant="ghost" onClick={() => h.openEditModal('milestone', m)}><Edit2 size={16} /></Button><Button size="sm" variant="ghost" className="text-red-400" onClick={() => h.handleDeleteRequest('milestone', m.id, m.title)}><Trash2 size={16} /></Button></>} />)}</div>
+        <div className="md:hidden space-y-4">{milestones.map(m => <AdminCard key={m.id} image={m.imageUrl} title={`${m.year} — ${m.title}`} subtitle={m.description.slice(0, 80)} status={<Badge>Marco</Badge>} actions={<><Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => h.openEditModal('milestone', m)}><Edit2 size={16} /></Button><Button size="sm" variant="ghost" aria-label="Apagar" title="Apagar" className="text-red-400" onClick={() => h.handleDeleteRequest('milestone', m.id, m.title)}><Trash2 size={16} /></Button></>} />)}</div>
     </>
 );
 
 export const CategoriesTab: React.FC<EntityHandlers & { categories: Category[] }> = ({ categories, ...h }) => (
     <>
         <AdminEntityTable headers={['Nome', 'Cor', 'Slug']}>
-            {categories.map(c => (<tr key={c.id} className="hover:bg-white/5"><td className="p-4 font-bold text-white">{c.name}</td><td className="p-4"><div className={`w-6 h-6 rounded-full ${c.color}`} /></td><td className="p-4 text-slate-500">{c.slug}</td><ActionRow type="category" item={c} h={h} /></tr>))}
+            {categories.map(c => (<tr key={c.id} className="hover:bg-white/5"><td className="p-4 font-bold text-white">{c.name}</td><td className="p-4"><div className={`w-6 h-6 rounded-full ${categoryColorClass(c.color)}`} /></td><td className="p-4 text-slate-500">{c.slug}</td><ActionRow type="category" item={c} h={h} /></tr>))}
         </AdminEntityTable>
-        <div className="md:hidden space-y-4">{categories.map(c => <AdminCard key={c.id} title={c.name} subtitle={c.slug} status={<div className={`w-6 h-6 rounded-full ${c.color}`} />} actions={<Button size="sm" variant="ghost" onClick={() => h.openEditModal('category', c)}><Edit2 size={16} /></Button>} />)}</div>
+        <div className="md:hidden space-y-4">{categories.map(c => <AdminCard key={c.id} title={c.name} subtitle={c.slug} status={<div className={`w-6 h-6 rounded-full ${categoryColorClass(c.color)}`} />} actions={<Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => h.openEditModal('category', c)}><Edit2 size={16} /></Button>} />)}</div>
     </>
 );
 
@@ -120,7 +121,7 @@ export const TiersTab: React.FC<EntityHandlers & { sponsorTiers: SponsorTier[] }
         <AdminEntityTable headers={['Nível', 'Preço', 'Benefícios']}>
             {sponsorTiers.map(t => (<tr key={t.id} className="hover:bg-white/5"><td className="p-4 font-bold text-white uppercase">{t.name}</td><td className="p-4 text-brand-400">{t.price}</td><td className="p-4 text-slate-500">{t.benefits.length} benefícios</td><ActionRow type="tier" item={t} h={h} /></tr>))}
         </AdminEntityTable>
-        <div className="md:hidden space-y-4">{sponsorTiers.map(t => <AdminCard key={t.id} title={t.name} subtitle={t.price} status={<Badge>{t.benefits.length} ben.</Badge>} actions={<><Button size="sm" variant="ghost" onClick={() => h.openEditModal('tier', t)}><Edit2 size={16} /></Button><Button size="sm" variant="ghost" className="text-red-400" onClick={() => h.handleDeleteRequest('tier', t.id, t.name)}><Trash2 size={16} /></Button></>} />)}</div>
+        <div className="md:hidden space-y-4">{sponsorTiers.map(t => <AdminCard key={t.id} title={t.name} subtitle={t.price} status={<Badge>{t.benefits.length} ben.</Badge>} actions={<><Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => h.openEditModal('tier', t)}><Edit2 size={16} /></Button><Button size="sm" variant="ghost" aria-label="Apagar" title="Apagar" className="text-red-400" onClick={() => h.handleDeleteRequest('tier', t.id, t.name)}><Trash2 size={16} /></Button></>} />)}</div>
     </>
 );
 
@@ -129,7 +130,7 @@ export const DocumentsTab: React.FC<EntityHandlers & { documents: AppDocument[] 
         <AdminEntityTable headers={['Documento', 'Categoria', 'Data']}>
             {documents.map(d => (<tr key={d.id} className="hover:bg-white/5"><td className="p-4 font-medium text-white">{d.title}</td><td className="p-4"><Badge>{d.category}</Badge></td><td className="p-4 text-slate-500">{d.date}</td><ActionRow type="document" item={d} h={h} /></tr>))}
         </AdminEntityTable>
-        <div className="md:hidden space-y-4">{documents.map(d => <AdminCard key={d.id} title={d.title} subtitle={d.date} status={<Badge>{d.category}</Badge>} actions={<Button size="sm" variant="ghost" onClick={() => h.openEditModal('document', d)}><Edit2 size={16} /></Button>} />)}</div>
+        <div className="md:hidden space-y-4">{documents.map(d => <AdminCard key={d.id} title={d.title} subtitle={d.date} status={<Badge>{d.category}</Badge>} actions={<Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => h.openEditModal('document', d)}><Edit2 size={16} /></Button>} />)}</div>
     </>
 );
 
@@ -138,7 +139,7 @@ export const NotificationsTab: React.FC<EntityHandlers & { notifications: AppNot
         <AdminEntityTable headers={['Título', 'Mensagem', 'Tipo']}>
             {notifications.map(n => (<tr key={n.id} className="hover:bg-white/5"><td className="p-4 font-medium text-white">{n.title}</td><td className="p-4 text-slate-500 max-w-xs truncate">{n.message}</td><td className="p-4"><Badge>{n.type}</Badge></td><ActionRow type="notification" item={n} h={h} /></tr>))}
         </AdminEntityTable>
-        <div className="md:hidden space-y-4">{notifications.map(n => <AdminCard key={n.id} title={n.title} subtitle={n.message} status={<Badge>{n.type}</Badge>} actions={<Button size="sm" variant="ghost" onClick={() => h.openEditModal('notification', n)}><Edit2 size={16} /></Button>} />)}</div>
+        <div className="md:hidden space-y-4">{notifications.map(n => <AdminCard key={n.id} title={n.title} subtitle={n.message} status={<Badge>{n.type}</Badge>} actions={<Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => h.openEditModal('notification', n)}><Edit2 size={16} /></Button>} />)}</div>
     </>
 );
 

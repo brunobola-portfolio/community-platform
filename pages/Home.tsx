@@ -12,7 +12,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ArrowRight, Calendar, MapPin, ChevronRight, Sparkles, Target, Heart, Users, Search, Bot, Mic, Lightbulb, CheckCircle2, ChevronLeft, Handshake, LucideIcon, Activity, Shield, Trophy } from 'lucide-react';
+import { ArrowRight, Calendar, MapPin, ChevronRight, Sparkles, Target, Heart, Users, Search, Mic, Lightbulb, CheckCircle2, ChevronLeft, Handshake, LucideIcon, Activity, Shield, Trophy } from 'lucide-react';
 import { Button, Badge, Modal } from '../components/ui/UIComponents';
 import { SponsorshipModal } from '../components/ui/SponsorshipModal';
 import { PartnerDetailsModal } from '../components/ui/PartnerDetailsModal';
@@ -133,7 +133,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
               'relative flex items-center bg-white/80 dark:bg-black/60 border rounded-full px-4 py-2 backdrop-blur-xl transition-colors',
               isListening ? 'border-red-500/40' : 'border-slate-900/10 dark:border-white/10',
             )}>
-              <Bot className="text-brand-600 dark:text-brand-400 mr-3" size={20} />
+              <Sparkles className="text-brand-600 dark:text-brand-400 mr-3" size={18} />
               <input
                 type="text"
                 placeholder={isListening ? 'A ouvir... fala agora' : 'Pergunte à IA: Quando é o próximo torneio?'}
@@ -181,7 +181,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
 
         {/* Scroll Indicator */}
         <div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-3 animate-float cursor-pointer group z-20"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden md:[@media(min-height:760px)]:flex flex-col items-center gap-3 animate-float cursor-pointer group z-20"
           role="button"
           tabIndex={0}
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}

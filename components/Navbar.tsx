@@ -17,6 +17,42 @@ import { useTheme } from '../hooks/useTheme';
 // of a plain <img>, so the mark stays legible in both themes.
 const BUILTIN_LOGOS = ['', '/favicon.svg'];
 
+const ACTION_TONES = {
+  neutral:
+    'bg-slate-900/5 border-slate-900/10 text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:bg-white/5 dark:border-white/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10',
+  brand:
+    'bg-brand-600/10 border-brand-600/20 text-brand-700 hover:text-brand-800 hover:bg-brand-600/20 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400 dark:hover:text-brand-200 dark:hover:bg-brand-500/20',
+  admin:
+    'bg-amber-500/10 border-amber-500/30 text-amber-600 hover:text-amber-700 hover:bg-amber-500/20 dark:text-amber-500 dark:hover:text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.1)]',
+} as const;
+
+interface NavActionProps {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  tone?: keyof typeof ACTION_TONES;
+}
+
+/**
+ * Desktop action button. Between lg and xl the nav pill needs the horizontal
+ * room, so the label collapses and the button becomes a labelled icon.
+ */
+const NavAction: React.FC<NavActionProps> = ({ icon, label, onClick, tone = 'neutral' }) => (
+  <button
+    onClick={onClick}
+    title={label}
+    aria-label={label}
+    className={cn(
+      'hidden md:flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl border backdrop-blur-md text-[10px] font-bold uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+      'w-9 px-0 md:w-auto md:px-3 lg:w-9 lg:px-0 xl:w-auto xl:px-3',
+      ACTION_TONES[tone],
+    )}
+  >
+    {icon}
+    <span className="hidden md:inline lg:hidden xl:inline">{label}</span>
+  </button>
+);
+
 interface NavbarProps {
   onNavigate: (page: string) => void;
   currentPage: string;
@@ -98,12 +134,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
       <nav
         aria-label="Menu principal"
         className={cn(
-          "fixed top-0 left-0 right-0 z-[100] flex justify-center pt-2 sm:pt-4 transition-transform duration-500 ease-in-out",
+          "fixed top-0 left-0 right-0 z-[100] flex justify-center px-2 sm:px-6 lg:px-8 pt-2 sm:pt-4 transition-transform duration-500 ease-in-out",
           isVisible && !mobileOpen ? "translate-y-0" : mobileOpen ? "translate-y-0" : "-translate-y-[150%]"
         )}
       >
         <div className={cn(
-          "w-full max-w-7xl mx-2 sm:mx-6 lg:mx-8 flex items-center justify-between rounded-[2rem] px-4 sm:px-6 transition-all duration-500",
+          "w-full max-w-7xl flex items-center justify-between gap-3 rounded-[2rem] px-3 sm:px-5 transition-all duration-500",
           scrolled && !mobileOpen
             ? "bg-white/85 dark:bg-dark-bg/80 backdrop-blur-xl border border-slate-900/10 dark:border-white/10 shadow-2xl py-2"
             : mobileOpen
@@ -116,7 +152,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           {/* Logo Section */}
           {/* Logo - sourced from environment config with text fallback */}
           <div
-            className="cursor-pointer flex items-center gap-3 group relative z-[102]"
+            className="cursor-pointer flex shrink-0 items-center gap-2.5 group relative z-[102]"
             onClick={() => { onNavigate('home'); setMobileOpen(false); }}
           >
             <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
@@ -142,7 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
                 onClick={() => onNavigate(link.id)}
                 aria-current={currentPage === link.id ? "page" : undefined}
                 className={cn(
-                  "px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                  "px-3 xl:px-4 py-1.5 rounded-full text-[11px] xl:text-xs font-medium whitespace-nowrap transition-all duration-300 uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                   currentPage === link.id
                     ? "bg-slate-900 text-white dark:bg-white dark:text-black shadow-lg"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10"
@@ -154,39 +190,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 relative z-[102]">
+          <div className="flex shrink-0 items-center gap-2 relative z-[102]">
             <button
-              className="w-9 h-9 flex items-center justify-center rounded-xl backdrop-blur-md border transition-all bg-slate-900/5 border-slate-900/10 text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:bg-white/5 dark:border-white/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="w-9 h-9 flex shrink-0 items-center justify-center rounded-xl backdrop-blur-md border transition-all bg-slate-900/5 border-slate-900/10 text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:bg-white/5 dark:border-white/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? "Mudar para tema claro" : "Mudar para tema escuro"}
+              title={theme === 'dark' ? "Mudar para tema claro" : "Mudar para tema escuro"}
             >
               {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            <button
-              className="hidden md:flex items-center gap-2 px-4 py-2 h-9 rounded-xl backdrop-blur-md border transition-all text-[10px] font-bold uppercase tracking-wider group bg-slate-900/5 border-slate-900/10 text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:bg-white/5 dark:border-white/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              onClick={onOpenAgenda}
-            >
-              <CalendarDays size={15} className="group-hover:text-brand-500 transition-colors" />
-              <span>Agenda</span>
-            </button>
-
-            <button
-              className="hidden md:flex items-center gap-2 px-4 py-2 h-9 rounded-xl backdrop-blur-md border transition-all text-[10px] font-bold uppercase tracking-wider group bg-brand-600/10 border-brand-600/20 text-brand-700 hover:text-brand-800 hover:bg-brand-600/20 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400 dark:hover:text-brand-200 dark:hover:bg-brand-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              onClick={onMemberLogin}
-            >
-              <UserCircle size={15} />
-              <span>Sócio</span>
-            </button>
-
+            <NavAction icon={<CalendarDays size={15} />} label="Agenda" onClick={onOpenAgenda} />
+            <NavAction icon={<UserCircle size={15} />} label="Sócio" onClick={onMemberLogin} tone="brand" />
             {onAdminLogin && (
-              <button
-                onClick={onAdminLogin}
-                className="hidden md:flex items-center gap-2 px-4 py-2 h-9 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-500 hover:text-amber-300 hover:bg-amber-500/20 transition-all text-[10px] font-bold uppercase tracking-widest group shadow-[0_0_15px_rgba(245,158,11,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              >
-                <ShieldCheck size={15} />
-                <span>Reservado</span>
-              </button>
+              <NavAction icon={<ShieldCheck size={15} />} label="Reservado" onClick={onAdminLogin} tone="admin" />
             )}
 
             {/* Mobile Hamburger Toggle */}
