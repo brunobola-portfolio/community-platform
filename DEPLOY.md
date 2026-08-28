@@ -1,4 +1,4 @@
-# Deploy ARCVA 2.0
+# Deploy no IIS (Windows Server)
 
 Guia passo-a-passo para colocar o portal novo a **substituir o site atual, no mesmo domínio**, num servidor Windows com IIS — **sem mudar DNS e sem downtime**.
 
@@ -104,8 +104,8 @@ Responde **Y** a "Deploy to production?". No fim imprime o URL de produção, po
 npx convex env set GEMINI_API_KEY "AIza..." --prod
 
 # Autenticação: gera SITE_URL, JWT_PRIVATE_KEY e JWKS para produção
-# Troca arcva.pt pelo TEU domínio real
-npx @convex-dev/auth --prod --web-server-url https://arcva.pt --skip-git-check --allow-dirty-git-state
+# Troca example.org pelo TEU domínio real
+npx @convex-dev/auth --prod --web-server-url https://www.example.org --skip-git-check --allow-dirty-git-state
 ```
 
 Confirma que ficou tudo:
@@ -163,8 +163,8 @@ O objetivo é ter o site novo a correr numa **porta de teste (8080)**, sem tocar
 
 1. Abre RDP para o servidor.
 2. Copia `community-platform-dist.zip` do teu PC para o servidor (copy-paste pelo RDP funciona).
-3. Cria a pasta `C:\inetpub\arcva-v2\`.
-4. Extrai o ZIP para dentro — `index.html` e `web.config` devem ficar **diretamente** em `C:\inetpub\arcva-v2\` (não dentro de uma subpasta `dist`).
+3. Cria a pasta `C:\inetpub\community-platform\`.
+4. Extrai o ZIP para dentro — `index.html` e `web.config` devem ficar **diretamente** em `C:\inetpub\community-platform\` (não dentro de uma subpasta `dist`).
 
 ### 3.2 — URL Rewrite Module (se faltar)
 
@@ -182,8 +182,8 @@ No IIS Manager:
 
 1. Botão direito em **Sites** → **Add Website**
 2. Preenche:
-   - **Site name:** `ARCVA-v2`
-   - **Physical path:** `C:\inetpub\arcva-v2`
+   - **Site name:** `community-platform`
+   - **Physical path:** `C:\inetpub\community-platform`
    - **Binding:** Type `http` · IP `All Unassigned` · **Port `8080`** · Host name *(vazio)*
 3. **OK**
 
@@ -191,10 +191,10 @@ No IIS Manager:
 
 ```powershell
 # Firewall: abrir a porta 8080 (PowerShell como administrador)
-New-NetFirewallRule -DisplayName "ARCVA v2 HTTP 8080" -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
+New-NetFirewallRule -DisplayName "Community Platform HTTP 8080" -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
 ```
 
-Permissões da pasta: botão direito em `C:\inetpub\arcva-v2` → **Properties → Security** → confirma que **IIS_IUSRS** e **IUSR** têm **Read & Execute**. Se não tiverem, **Edit → Add** e adiciona ambos.
+Permissões da pasta: botão direito em `C:\inetpub\community-platform` → **Properties → Security** → confirma que **IIS_IUSRS** e **IUSR** têm **Read & Execute**. Se não tiverem, **Edit → Add** e adiciona ambos.
 
 ### 3.5 — Criar o admin e validar
 
@@ -250,17 +250,17 @@ No IIS Manager:
 
 1. Clica no site atual (o que responde no teu domínio).
 2. Painel direito → **Basic Settings…**
-3. Muda **Physical path** para `C:\inetpub\arcva-v2`
+3. Muda **Physical path** para `C:\inetpub\community-platform`
 4. **OK** → botão direito no site → **Restart**
 
 > **Vantagem:** todos os bindings (domínio, porta 443, certificado HTTPS) ficam intactos. Só muda a pasta servida. É a opção mais segura e a mais fácil de reverter.
 
 ### 4.4 — Confirmar
 
-Do teu PC (troca `arcva.pt` pelo teu domínio):
+Do teu PC (troca `example.org` pelo teu domínio):
 
 ```powershell
-curl.exe -I https://arcva.pt        # deve devolver HTTP 200
+curl.exe -I https://www.example.org        # deve devolver HTTP 200
 ```
 
 - [ ] `https://teu-dominio` abre o portal novo
@@ -288,7 +288,7 @@ Repete a Parte 2 e copia para o servidor:
 npm run dist
 ```
 
-No servidor: extrai por cima de `C:\inetpub\arcva-v2\` (substitui os ficheiros). Não precisas de recriar o site nem reiniciar o IIS — o `index.html` está marcado como "não cachear", por isso a nova versão aparece no próximo refresh (Ctrl+F5 para garantir).
+No servidor: extrai por cima de `C:\inetpub\community-platform\` (substitui os ficheiros). Não precisas de recriar o site nem reiniciar o IIS — o `index.html` está marcado como "não cachear", por isso a nova versão aparece no próximo refresh (Ctrl+F5 para garantir).
 
 ### C) Mudaste código do backend (pasta `convex/`)
 
@@ -402,7 +402,7 @@ npm run preview                   # pré-visualizar o build
 # -- DEPLOY DE PRODUÇÃO --
 npx convex deploy                                             # backend -> cloud
 npx convex env set GEMINI_API_KEY "AIza..." --prod           # chave IA
-npx @convex-dev/auth --prod --web-server-url https://arcva.pt `
+npx @convex-dev/auth --prod --web-server-url https://www.example.org `
     --skip-git-check --allow-dirty-git-state                 # autenticação
 npx convex run seed:seed --prod                              # dados de exemplo (opcional)
 npm run dist                                                 # gerar o site + community-platform-dist.zip (valida tudo)
@@ -419,7 +419,7 @@ npx convex run lib/bootstrapAdmin:setUserRole '{"email":"...","role":"admin"}' -
 
 # -- IIS (no servidor, via RDP) --
 # Abrir o Manager:  Win+R -> inetmgr
-New-NetFirewallRule -DisplayName "ARCVA v2 8080" `
+New-NetFirewallRule -DisplayName "Community Platform 8080" `
     -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow   # firewall
 Get-Website | Select-Object Name, State, PhysicalPath               # ver sites
 ```
@@ -430,6 +430,6 @@ Get-Website | Select-Object Name, State, PhysicalPath               # ver sites
 
 - [README.md](README.md) — visão geral do projeto, stack e funcionalidades
 - [DEPLOY-VPS.md](DEPLOY-VPS.md) — o mesmo deploy numa VPS Linux com nginx
-- [docs/ARCVA-UPDATE.md](docs/ARCVA-UPDATE.md) — runbook de atualização da instância arcva.pt
+- [docs/INSTANCE-REPO.md](docs/INSTANCE-REPO.md) — operar instâncias (repo privado + deploy automático com runner)
 - [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md) — lançar o portal de outra associação
 - [CONTRIBUTING.md](CONTRIBUTING.md) — regras de código e convenções

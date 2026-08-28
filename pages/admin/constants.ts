@@ -20,6 +20,13 @@ export const STD_INPUT_CLASS =
 export const LABEL_CLASS =
     "text-xs font-mono text-brand-400 uppercase tracking-wider font-bold mb-1.5 block";
 
+// Contextual label for the primary action of each list tab
+export const NEW_LABELS: Partial<Record<Tab, string>> = {
+    events: 'Novo evento', news: 'Nova notícia', members: 'Novo membro', sponsors: 'Novo parceiro',
+    gallery: 'Novo álbum', documents: 'Novo documento', notifications: 'Nova notificação',
+    categories: 'Nova categoria', tiers: 'Novo nível', homepage: 'Nova área', historia: 'Novo marco',
+};
+
 export const TAB_NAMES: Record<Tab, string> = {
     dashboard: "Painel de Controlo",
     events: "Eventos",
