@@ -21,6 +21,7 @@ on:
       - brand/**
       - deploy/**
       - apply.ps1
+      - .github/workflows/deploy.yml
 
 concurrency:
   group: deploy-instance
@@ -30,6 +31,9 @@ jobs:
   deploy:
     runs-on: [self-hosted, windows, instance]
     timeout-minutes: 30
+    # secrets are not allowed in step conditions; expose presence as a job env
+    env:
+      HAS_CONVEX_KEY: ${{ secrets.CONVEX_DEPLOY_KEY != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +44,7 @@ jobs:
 
       # Backend first, frontend after: a new bundle may call new functions
       - name: Deploy Convex backend
-        if: ${{ secrets.CONVEX_DEPLOY_KEY != '' }}
+        if: env.HAS_CONVEX_KEY == 'true'
         shell: powershell
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
