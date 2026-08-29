@@ -3,7 +3,7 @@ import React from 'react';
 import {
     LogOut, LayoutDashboard, Calendar, FileText, Users, Image as ImageIcon,
     Settings as SettingsIcon, Handshake, Bell, Layers, Award, ChevronRight,
-    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet
+    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet, X
 } from 'lucide-react';
 import { Button, cn } from '../../../components/ui/UIComponents';
 import type { Tab } from '../types';
@@ -42,15 +42,16 @@ export interface AdminSidebarProps {
     activeTab: Tab;
     mobileMenuOpen: boolean;
     onTabSelect: (tab: Tab) => void;
+    onClose: () => void;
     onLogout: () => void;
 }
 
-export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMenuOpen, onTabSelect, onLogout }) => (
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMenuOpen, onTabSelect, onClose, onLogout }) => (
     <aside className={cn(
         "fixed inset-y-0 left-0 z-[60] w-72 bg-dark-surface border-r border-white/5 flex flex-col transition-transform duration-300 md:translate-x-0 md:static",
-        mobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
+        mobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
     )}>
-        <div className="p-6 hidden md:block">
+        <div className="flex items-center justify-between p-6 pb-4 md:pb-6">
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-[0_0_15px_rgba(223,61,50,0.3)]">
                     <Shield size={24} />
@@ -60,9 +61,16 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
                     <span className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">Admin OS</span>
                 </div>
             </div>
+            <button
+                onClick={onClose}
+                aria-label="Fechar menu"
+                className="rounded-lg p-2 text-slate-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 md:hidden"
+            >
+                <X size={20} />
+            </button>
         </div>
 
-        <nav aria-label="Menu de administração" className="flex-1 px-4 space-y-6 overflow-y-auto py-6 mt-16 md:mt-0 custom-scrollbar">
+        <nav aria-label="Menu de administração" className="flex-1 px-4 space-y-6 overflow-y-auto py-4 custom-scrollbar">
             <div>
                 <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Visão Geral</h3>
                 <div className="space-y-1">

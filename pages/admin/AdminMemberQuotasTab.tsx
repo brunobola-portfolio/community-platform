@@ -12,6 +12,9 @@ import { useMutation, useQuery } from 'convex/react';
 import { ConvexError } from 'convex/values';
 import { Edit2, Plus, Search, Trash2, Wallet } from 'lucide-react';
 import { Button, Modal, cn } from '../../components/ui/UIComponents';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { DeleteConfirmDialog } from './components/DeleteConfirmDialog';
+import { QuotaPill } from './components/QuotaPill';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
 import { LABEL_CLASS, STD_INPUT_CLASS } from './constants';
@@ -32,25 +35,6 @@ interface FormState {
 }
 
 const EMPTY_FORM: FormState = { email: '', memberNumber: '', quotaPaidUntil: '', notes: '' };
-const CURRENT_YEAR = new Date().getFullYear();
-
-const QuotaPill: React.FC<{ year: string }> = ({ year }) => {
-    if (!year) return <span className="text-slate-500 text-xs">—</span>;
-    const isUpToDate = Number(year) >= CURRENT_YEAR;
-    return (
-        <span
-            className={cn(
-                'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold',
-                isUpToDate
-                    ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                    : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-            )}
-        >
-            {year} · {isUpToDate ? 'Em dia' : 'Atrasada'}
-        </span>
-    );
-};
-
 export const AdminMemberQuotasTab: React.FC = () => {
     const profiles = useQuery(api.memberProfiles.list);
     const upsertProfile = useMutation(api.memberProfiles.upsert);
@@ -62,7 +46,8 @@ export const AdminMemberQuotasTab: React.FC = () => {
     const [form, setForm] = useState<FormState>(EMPTY_FORM);
     const [formError, setFormError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const [pendingRemoveId, setPendingRemoveId] = useState<Id<'memberProfiles'> | null>(null);
+    const [pendingRemove, setPendingRemove] = useState<{ id: Id<'memberProfiles'>; email: string } | null>(null);
+    const [isRemoving, setIsRemoving] = useState(false);
 
     const filtered = useMemo<MemberProfileRow[]>(() => {
         if (!profiles) return [];
@@ -111,30 +96,24 @@ export const AdminMemberQuotasTab: React.FC = () => {
         }
     };
 
-    // Two-step confirm: first click arms it, a second click within 3s removes it
-    const handleRemoveClick = (id: Id<'memberProfiles'>) => {
-        if (pendingRemoveId !== id) {
-            setPendingRemoveId(id);
-            setTimeout(() => setPendingRemoveId((current) => (current === id ? null : current)), 3000);
-            return;
+    const confirmRemove = async () => {
+        if (!pendingRemove) return;
+        setIsRemoving(true);
+        try {
+            await removeProfile({ id: pendingRemove.id });
+        } finally {
+            setIsRemoving(false);
+            setPendingRemove(null);
         }
-        setPendingRemoveId(null);
-        void removeProfile({ id });
     };
 
     if (profiles === null) return null;
 
     return (
         <div className="space-y-6 animate-fade-in-up">
-            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-                <div>
-                    <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-                        Registos de quotas dos sócios, associados por email à conta do portal. Um sócio sem registo
-                        aqui vê "Sem registo" na Área de Sócio.
-                    </p>
-                </div>
-                <Button onClick={openNewModal} className="shadow-lg w-full md:w-auto">
-                    <Plus size={18} className="mr-2" /> Adicionar Sócio
+            <div className="flex justify-end">
+                <Button onClick={openNewModal} className="w-full shadow-lg md:w-auto">
+                    <Plus size={18} /> Adicionar sócio
                 </Button>
             </div>
 
@@ -147,12 +126,13 @@ export const AdminMemberQuotasTab: React.FC = () => {
             )}
 
             {profiles !== undefined && profiles.length === 0 && (
-                <div className="text-center py-16 bg-dark-surface border border-dashed border-white/10 rounded-2xl">
-                    <Wallet size={32} className="mx-auto text-slate-600 mb-3" />
-                    <p className="text-slate-400 mb-4">Ainda não há registos de sócios.</p>
-                    <Button onClick={openNewModal} variant="outline">
-                        <Plus size={16} className="mr-2" /> Adicionar Sócio
-                    </Button>
+                <div className="rounded-2xl border border-white/10 bg-dark-surface">
+                    <EmptyState
+                        icon={Wallet}
+                        title="Ainda não há registos de sócios"
+                        description="Cada registo liga um email de sócio ao número e ao ano de quota mostrados na área reservada."
+                        action={{ label: 'Adicionar sócio', onClick: openNewModal }}
+                    />
                 </div>
             )}
 
@@ -205,14 +185,12 @@ export const AdminMemberQuotasTab: React.FC = () => {
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    onClick={() => handleRemoveClick(row.id)}
+                                                    onClick={() => setPendingRemove({ id: row.id, email: row.email })}
                                                     aria-label={`Remover ${row.email}`}
-                                                    className={cn(
-                                                        'focus-visible:ring-2 focus-visible:ring-brand-500',
-                                                        pendingRemoveId === row.id ? 'text-amber-400' : 'text-red-400'
-                                                    )}
+                                                    title="Remover"
+                                                    className="text-red-400 hover:text-red-300 focus-visible:ring-2 focus-visible:ring-brand-500"
                                                 >
-                                                    {pendingRemoveId === row.id ? 'Confirmar?' : <Trash2 size={16} />}
+                                                    <Trash2 size={16} />
                                                 </Button>
                                             </div>
                                         </td>
@@ -231,8 +209,33 @@ export const AdminMemberQuotasTab: React.FC = () => {
                 </>
             )}
 
-            <Modal isOpen={showModal} onClose={closeModal} title={editingId ? 'Editar Sócio' : 'Adicionar Sócio'}>
-                <form onSubmit={handleSave} className="space-y-4">
+            {pendingRemove && (
+                <DeleteConfirmDialog
+                    deleteConfirm={{ type: 'memberProfile', id: pendingRemove.id, title: pendingRemove.email }}
+                    isDeleting={isRemoving}
+                    onCancel={() => setPendingRemove(null)}
+                    onConfirm={confirmRemove}
+                />
+            )}
+
+            <Modal
+                isOpen={showModal}
+                onClose={closeModal}
+                title={editingId ? 'Editar sócio' : 'Adicionar sócio'}
+                eyebrow="Quotas"
+                description="O email liga este registo à conta do portal; o ano indica até quando a quota está paga."
+                icon={<Wallet size={20} />}
+                size="md"
+                footer={
+                    <div className="flex gap-3">
+                        <Button type="button" variant="ghost" className="flex-1" onClick={closeModal}>Cancelar</Button>
+                        <Button type="submit" form="member-quota-form" className="flex-1" disabled={isSaving}>
+                            {isSaving ? 'A guardar...' : 'Guardar'}
+                        </Button>
+                    </div>
+                }
+            >
+                <form id="member-quota-form" onSubmit={handleSave} className="space-y-4">
                     {formError && (
                         <div className="bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-lg p-3">
                             {formError}
@@ -276,14 +279,6 @@ export const AdminMemberQuotasTab: React.FC = () => {
                             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                             className={STD_INPUT_CLASS}
                         />
-                    </div>
-                    <div className="flex gap-3 pt-2">
-                        <Button type="button" variant="ghost" className="flex-1" onClick={closeModal}>
-                            Cancelar
-                        </Button>
-                        <Button type="submit" className="flex-1" disabled={isSaving}>
-                            {isSaving ? 'A guardar...' : 'Guardar'}
-                        </Button>
                     </div>
                 </form>
             </Modal>

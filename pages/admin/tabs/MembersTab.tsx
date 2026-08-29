@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react';
-import { Edit2, Trash2, Copy, User } from 'lucide-react';
-import { Button, Badge } from '../../../components/ui/UIComponents';
-import { AdminEntityTable } from '../AdminEntityTable';
-import { AdminCard } from '../components/AdminCard';
-import { AdminListToolbar, AdminListEmpty } from '../components/AdminListToolbar';
-import { useAdminList, type ListFilter, type ListSort } from '../../../hooks/useAdminList';
-import type { EntityHandlers } from '../AdminEntityTabs';
+import { User, Users } from 'lucide-react';
+import { Badge } from '../../../components/ui/UIComponents';
+import { EntityList } from '../components/EntityList';
+import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
+import type { AdminRecord, EntityHandlers } from '../types';
 import type { Member } from '../../../types';
 
 const SORTS: ListSort<Member>[] = [
@@ -17,8 +15,8 @@ const groupLabel = (group: string) => (group === 'founder' ? 'Sócios Fundadores
 
 const Avatar: React.FC<{ member: Member }> = ({ member }) =>
     member.photoUrl
-        ? <img src={member.photoUrl} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
-        : <div className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center text-slate-500 shrink-0"><User size={16} /></div>;
+        ? <img src={member.photoUrl} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
+        : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-slate-500"><User size={16} /></span>;
 
 export const MembersTab: React.FC<EntityHandlers & { members: Member[] }> = ({ members, ...h }) => {
     // Group chips follow the data, so new governing bodies appear without code changes
@@ -27,43 +25,42 @@ export const MembersTab: React.FC<EntityHandlers & { members: Member[] }> = ({ m
         return [{ key: 'all', label: 'Todos', predicate: () => true }, ...groups.map(g => ({ key: g, label: groupLabel(g), predicate: (m: Member) => m.group === g }))];
     }, [members]);
 
-    const list = useAdminList(members, {
-        searchText: m => `${m.name} ${m.role} ${groupLabel(m.group)}`,
-        filters,
-        sorts: SORTS,
-    });
-
     return (
-        <div className="space-y-4 animate-fade-in-up">
-            <AdminListToolbar list={list} placeholder="Pesquisar membros por nome, cargo ou órgão" noun={['membro', 'membros']} />
-            {list.visible.length === 0 ? (
-                <AdminListEmpty query={list.query} noun="membro" />
-            ) : (
-                <>
-                    <AdminEntityTable headers={['Nome', 'Cargo', 'Órgão', 'Ordem']}>
-                        {list.visible.map(m => (
-                            <tr key={m.id} className="hover:bg-white/[0.02]">
-                                <td className="p-4 font-medium text-white"><div className="flex items-center gap-3"><Avatar member={m} />{m.name}</div></td>
-                                <td className="p-4 text-slate-400">{m.role}</td>
-                                <td className="p-4"><Badge>{groupLabel(m.group)}</Badge></td>
-                                <td className="p-4 text-slate-500 font-mono text-xs">{m.order ?? '-'}</td>
-                                <td className="p-4 text-right">
-                                    <div className="flex justify-end gap-1">
-                                        {h.handleDuplicate && <Button size="sm" variant="ghost" aria-label="Duplicar" onClick={() => h.handleDuplicate?.('member', m)}><Copy size={16} /></Button>}
-                                        <Button size="sm" variant="ghost" aria-label="Editar" onClick={() => h.openEditModal('member', m)}><Edit2 size={16} /></Button>
-                                        <Button size="sm" variant="ghost" aria-label="Apagar" className="text-red-400" onClick={() => h.handleDeleteRequest('member', m.id, m.name)}><Trash2 size={16} /></Button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </AdminEntityTable>
-                    <div className="md:hidden space-y-4">
-                        {list.visible.map(m => (
-                            <AdminCard key={m.id} image={m.photoUrl} title={m.name} subtitle={m.role} status={<Badge>{groupLabel(m.group)}</Badge>} actions={<Button size="sm" variant="ghost" aria-label="Editar" onClick={() => h.openEditModal('member', m)}><Edit2 size={16} /></Button>} />
-                        ))}
-                    </div>
-                </>
-            )}
-        </div>
+        <EntityList<Member>
+            items={members}
+            isLoading={h.isLoading}
+            getKey={m => m.id}
+            getTitle={m => m.name}
+            getSubtitle={m => m.role}
+            getImage={m => m.photoUrl}
+            getStatus={m => <Badge>{groupLabel(m.group)}</Badge>}
+            search={m => `${m.name} ${m.role} ${groupLabel(m.group)}`}
+            filters={filters}
+            sorts={SORTS}
+            searchPlaceholder="Pesquisar membros por nome, cargo ou órgão"
+            noun={['membro', 'membros']}
+            columns={[
+                {
+                    header: 'Nome',
+                    cell: m => (
+                        <div className="flex items-center gap-3">
+                            <Avatar member={m} />
+                            <span className="font-medium text-white">{m.name}</span>
+                        </div>
+                    ),
+                },
+                { header: 'Cargo', cell: m => <span className="text-slate-400">{m.role}</span> },
+                { header: 'Órgão', cell: m => <Badge>{groupLabel(m.group)}</Badge> },
+                { header: 'Ordem', cell: m => <span className="font-mono text-xs text-slate-500">{m.order ?? '—'}</span> },
+            ]}
+            onEdit={m => h.openEditModal('member', m as unknown as AdminRecord)}
+            onDelete={m => h.handleDeleteRequest('member', m.id, m.name)}
+            onDuplicate={h.handleDuplicate ? m => h.handleDuplicate?.('member', m as unknown as AdminRecord) : undefined}
+            emptyIcon={Users}
+            emptyTitle="Ainda não há membros"
+            emptyDescription="Adicione os corpos sociais para os apresentar na página Equipa do portal."
+            onCreate={h.onCreate}
+            createLabel="Adicionar membro"
+        />
     );
 };

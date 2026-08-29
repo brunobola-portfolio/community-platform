@@ -1,16 +1,15 @@
 import React from 'react';
-import { Edit2, Trash2, Copy, Trophy } from 'lucide-react';
-import { Button, Badge } from '../../../components/ui/UIComponents';
-import { AdminEntityTable } from '../AdminEntityTable';
-import { AdminCard } from '../components/AdminCard';
-import { AdminListToolbar, AdminListEmpty } from '../components/AdminListToolbar';
-import { useAdminList, type ListFilter, type ListSort } from '../../../hooks/useAdminList';
-import type { EntityHandlers } from '../AdminEntityTabs';
+import { CalendarOff } from 'lucide-react';
+import { Badge } from '../../../components/ui/UIComponents';
+import { EntityList } from '../components/EntityList';
+import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
+import type { AdminRecord, EntityHandlers } from '../types';
 import type { Event } from '../../../types';
 
 type AdminEvent = Event & { category: string };
 
 const isUpcoming = (e: AdminEvent) => new Date(e.date).getTime() >= Date.now() - 24 * 3600 * 1000;
+const fill = (e: AdminEvent) => (e.isTournament && e.maxParticipants ? (e.currentParticipants ?? 0) / e.maxParticipants : -1);
 
 const FILTERS: ListFilter<AdminEvent>[] = [
     { key: 'all', label: 'Todos', predicate: () => true },
@@ -27,80 +26,74 @@ const SORTS: ListSort<AdminEvent>[] = [
     { key: 'fill', label: 'Ocupação', compare: (a, b) => fill(b) - fill(a) },
 ];
 
-const fill = (e: AdminEvent) => (e.isTournament && e.maxParticipants ? (e.currentParticipants ?? 0) / e.maxParticipants : -1);
-
 // Static class list so Tailwind can see every width (no inline styles); the
 // bar is quantized to 10% steps, which is all a 128px bar can show anyway
 const WIDTH_CLASSES = ['w-0', 'w-[10%]', 'w-[20%]', 'w-[30%]', 'w-[40%]', 'w-[50%]', 'w-[60%]', 'w-[70%]', 'w-[80%]', 'w-[90%]', 'w-full'];
 
 const Occupancy: React.FC<{ event: AdminEvent }> = ({ event }) => {
-    if (!event.isTournament || !event.maxParticipants) return <span className="text-slate-500 text-xs">-</span>;
+    if (!event.isTournament || !event.maxParticipants) return <span className="text-xs text-slate-500">—</span>;
     const current = event.currentParticipants ?? 0;
     const percent = Math.min(100, Math.round((current / event.maxParticipants) * 100));
     const width = WIDTH_CLASSES[Math.min(10, Math.max(current > 0 ? 1 : 0, Math.round(percent / 10)))];
     return (
         <div className="w-32">
-            <div className="flex justify-between text-[10px] text-slate-400 mb-1 tabular-nums"><span>{current}/{event.maxParticipants}</span><span>{percent}%</span></div>
-            <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
+            <div className="mb-1 flex justify-between text-[10px] tabular-nums text-slate-400">
+                <span>{current}/{event.maxParticipants}</span><span>{percent}%</span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-700" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
                 <div className={`h-full rounded-full ${percent > 90 ? 'bg-red-500' : 'bg-brand-500'} ${width}`} />
             </div>
         </div>
     );
 };
 
-export const EventsTab: React.FC<EntityHandlers & { events: AdminEvent[] }> = ({ events, ...h }) => {
-    const list = useAdminList(events, {
-        searchText: e => `${e.title} ${e.category} ${e.location ?? ''} ${e.tournamentType ?? ''}`,
-        filters: FILTERS,
-        sorts: SORTS,
-    });
-
-    return (
-        <div className="space-y-4 animate-fade-in-up">
-            <AdminListToolbar list={list} placeholder="Pesquisar eventos por título, local ou categoria" noun={['evento', 'eventos']} />
-            {list.visible.length === 0 ? (
-                <AdminListEmpty query={list.query} noun="evento" />
-            ) : (
-                <>
-                    <AdminEntityTable headers={['Evento', 'Data', 'Ocupação / Estado', 'Tipo']}>
-                        {list.visible.map(ev => (
-                            <tr key={ev.id} className="hover:bg-white/[0.02]">
-                                <td className="p-4 font-medium text-white">
-                                    {ev.title}
-                                    {ev.status === 'draft' && <Badge className="ml-2 bg-slate-500/10 text-slate-400 border-slate-500/20">Rascunho</Badge>}
-                                    {!isUpcoming(ev) && ev.status !== 'draft' && <span className="ml-2 text-[10px] uppercase tracking-wider text-slate-500">Passado</span>}
-                                </td>
-                                <td className="p-4 text-slate-400 font-variant-numeric tabular-nums">{new Date(ev.date).toLocaleDateString('pt-PT')}</td>
-                                <td className="p-4"><Occupancy event={ev} /></td>
-                                <td className="p-4">{ev.isTournament ? <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20">Torneio{ev.entryPrice ? ` (${ev.entryPrice} EUR)` : ''}</Badge> : <Badge>{ev.category}</Badge>}</td>
-                                <td className="p-4 text-right">
-                                    <div className="flex justify-end gap-1">
-                                        {h.handleDuplicate && <Button size="sm" variant="ghost" aria-label="Duplicar" onClick={() => h.handleDuplicate?.('event', ev)}><Copy size={16} /></Button>}
-                                        <Button size="sm" variant="ghost" aria-label="Editar" onClick={() => h.openEditModal('event', ev)}><Edit2 size={16} /></Button>
-                                        <Button size="sm" variant="ghost" aria-label="Apagar" className="text-red-400" onClick={() => h.handleDeleteRequest('event', ev.id, ev.title)}><Trash2 size={16} /></Button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </AdminEntityTable>
-                    <div className="md:hidden space-y-4">
-                        {list.visible.map(ev => (
-                            <AdminCard
-                                key={ev.id}
-                                image={ev.imageUrl}
-                                title={ev.title}
-                                subtitle={new Date(ev.date).toLocaleDateString('pt-PT')}
-                                status={ev.isTournament ? <div className="text-xs text-amber-400 mt-1 flex items-center gap-2"><Trophy size={12} /> Torneio ({ev.currentParticipants ?? 0}/{ev.maxParticipants})</div> : <Badge>{ev.category}</Badge>}
-                                actions={<>
-                                    <Button size="sm" variant="ghost" aria-label="Duplicar" onClick={() => h.handleDuplicate?.('event', ev)}><Copy size={16} /></Button>
-                                    <Button size="sm" variant="ghost" aria-label="Editar" onClick={() => h.openEditModal('event', ev)}><Edit2 size={16} /></Button>
-                                    <Button size="sm" variant="ghost" aria-label="Apagar" className="text-red-400" onClick={() => h.handleDeleteRequest('event', ev.id, ev.title)}><Trash2 size={16} /></Button>
-                                </>}
-                            />
-                        ))}
-                    </div>
-                </>
-            )}
-        </div>
-    );
+const StatusCell: React.FC<{ event: AdminEvent }> = ({ event }) => {
+    if (event.status === 'draft') return <Badge className="border-slate-500/20 bg-slate-500/10 text-slate-400">Rascunho</Badge>;
+    if (!isUpcoming(event)) return <Badge className="border-white/10 bg-white/5 text-slate-400">Passado</Badge>;
+    return <Badge className="border-emerald-500/20 bg-emerald-500/10 text-emerald-400">Publicado</Badge>;
 };
+
+export const EventsTab: React.FC<EntityHandlers & { events: AdminEvent[] }> = ({ events, ...h }) => (
+    <EntityList<AdminEvent>
+        items={events}
+        isLoading={h.isLoading}
+        getKey={e => e.id}
+        getTitle={e => e.title}
+        getSubtitle={e => `${new Date(e.date).toLocaleDateString('pt-PT')} · ${e.location}`}
+        getImage={e => e.imageUrl}
+        getStatus={e => <StatusCell event={e} />}
+        search={e => `${e.title} ${e.category} ${e.location ?? ''} ${e.tournamentType ?? ''}`}
+        filters={FILTERS}
+        sorts={SORTS}
+        searchPlaceholder="Pesquisar eventos por título, local ou categoria"
+        noun={['evento', 'eventos']}
+        columns={[
+            {
+                header: 'Evento',
+                cell: e => (
+                    <div className="flex items-center gap-3">
+                        {e.imageUrl && <img src={e.imageUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />}
+                        <span className="line-clamp-2 max-w-xs font-medium text-white">{e.title}</span>
+                    </div>
+                ),
+            },
+            { header: 'Data', cell: e => <span className="tabular-nums text-slate-400">{new Date(e.date).toLocaleDateString('pt-PT')}</span> },
+            { header: 'Estado', cell: e => <StatusCell event={e} /> },
+            { header: 'Ocupação', cell: e => <Occupancy event={e} /> },
+            {
+                header: 'Tipo',
+                cell: e => (e.isTournament
+                    ? <Badge className="border-amber-500/20 bg-amber-500/10 text-amber-400">Torneio{e.entryPrice ? ` · ${e.entryPrice}€` : ''}</Badge>
+                    : <Badge>{e.category}</Badge>),
+            },
+        ]}
+        onEdit={e => h.openEditModal('event', e as unknown as AdminRecord)}
+        onDelete={e => h.handleDeleteRequest('event', e.id, e.title)}
+        onDuplicate={h.handleDuplicate ? e => h.handleDuplicate?.('event', e as unknown as AdminRecord) : undefined}
+        emptyIcon={CalendarOff}
+        emptyTitle="Ainda não há eventos"
+        emptyDescription="Crie o primeiro evento para o mostrar na agenda do portal e abrir inscrições."
+        onCreate={h.onCreate}
+        createLabel="Criar evento"
+    />
+);

@@ -23,12 +23,28 @@ export type Tab =
     | 'member-quotas'
     | 'ai';
 
-export type AdminFormData = Record<string, any>;
+export type AdminFormData = Record<string, unknown>;
+
+/** Record shape shared by every admin entity list. */
+export type AdminRecord = Record<string, unknown> & { id: string };
+
+/**
+ * Handlers every entity tab receives from the admin shell. Tabs adapt them to
+ * the per-item callbacks of EntityList.
+ */
+export interface EntityHandlers {
+    openEditModal: (type: string, item: AdminRecord) => void;
+    handleDeleteRequest: (type: string, id: string, title: string) => void;
+    handleDuplicate?: (type: string, item: AdminRecord) => void;
+    /** Opens the create form of the active tab (used by empty states). */
+    onCreate?: () => void;
+    isLoading?: boolean;
+}
 
 /** Toast notification state */
 export interface ToastState {
     message: string;
-    type: 'success' | 'error';
+    type: 'success' | 'error' | 'info';
 }
 
 /** AI usage statistics returned by aiLogs.getStats */
@@ -56,6 +72,7 @@ export interface AdminSettingsTabProps {
     settingsForm: Settings;
     onSettingsChange: (settings: Settings) => void;
     onSave: () => void;
+    isSaving?: boolean;
 }
 
 /** Props for the AI tab */
@@ -64,6 +81,7 @@ export interface AdminAITabProps {
     settingsForm: Settings;
     onSettingsChange: (settings: Settings) => void;
     onSave: () => void;
+    isSaving?: boolean;
 }
 
 /** Props for the dashboard */

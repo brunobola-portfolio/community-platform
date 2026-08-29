@@ -1,9 +1,6 @@
 
 import React from 'react';
-import {
-    BarChart3, Bot, Shield, MessageSquare,
-    Image as LucideImage
-} from 'lucide-react';
+import { BarChart3, Bot, Shield, MessageSquare, Image as LucideImage, Loader2, Save } from 'lucide-react';
 import { Button } from '../../components/ui/UIComponents';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import { AdminSelect } from './components/AdminSelect';
@@ -19,6 +16,7 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
     settingsForm,
     onSettingsChange,
     onSave,
+    isSaving = false,
 }) => {
     const update = <K extends keyof typeof settingsForm>(key: K, value: (typeof settingsForm)[K]) => {
         onSettingsChange({ ...settingsForm, [key]: value });
@@ -33,8 +31,11 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
             <ImageGenerationConfig settingsForm={settingsForm} update={update} />
             <TestChatSection />
 
-            <div className="flex justify-end sticky bottom-0 bg-dark-bg p-4 z-10 border-t border-white/10">
-                <Button onClick={onSave}>Guardar Alterações</Button>
+            <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-white/10 bg-dark-bg/95 p-4 backdrop-blur">
+                <span className="text-xs text-slate-500">As alterações só ficam no portal depois de guardar.</span>
+                <Button onClick={onSave} disabled={isSaving} className="min-w-[170px]">
+                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> Guardar alterações</>}
+                </Button>
             </div>
         </div>
     );

@@ -27,6 +27,25 @@ export const NEW_LABELS: Partial<Record<Tab, string>> = {
     categories: 'Nova categoria', tiers: 'Novo nível', homepage: 'Nova área', historia: 'Novo marco',
 };
 
+/** One line per tab explaining what it controls on the public site. */
+export const TAB_DESCRIPTIONS: Partial<Record<Tab, string>> = {
+    homepage: 'Áreas de atuação e números em destaque da página inicial.',
+    events: 'Agenda pública, inscrições e torneios. Rascunhos ficam invisíveis no portal.',
+    news: 'Notícias do blog. Só as publicadas aparecem no portal.',
+    members: 'Corpos sociais mostrados na página Equipa, pela ordem definida.',
+    sponsors: 'Apoios e parceiros mostrados na faixa da página inicial.',
+    gallery: 'Álbuns e fotografias da galeria pública.',
+    historia: 'Linha do tempo da página História.',
+    leads: 'Mensagens de contacto e pedidos de parceria recebidos no portal.',
+    'member-quotas': 'Registo de sócios e estado das quotas mostrado na área reservada.',
+    documents: 'Estatutos, atas e regulamentos disponíveis aos sócios.',
+    notifications: 'Avisos mostrados aos sócios com sessão iniciada.',
+    categories: 'Categorias e cores usadas por eventos e notícias.',
+    tiers: 'Níveis de parceria propostos no formulário de apoios.',
+    ai: 'Fornecedor, modelos e limites do assistente do portal.',
+    settings: 'Identidade, contactos, quotas e textos que alimentam todo o portal.',
+};
+
 export const TAB_NAMES: Record<Tab, string> = {
     dashboard: "Painel de Controlo",
     events: "Eventos",
