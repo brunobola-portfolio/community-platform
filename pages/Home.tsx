@@ -89,6 +89,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
     }
   };
 
+  // Hoisted so the dialog footer and body agree on registration state
+  const eventSlotsLeft = selectedEvent?.maxParticipants !== undefined
+    ? selectedEvent.maxParticipants - (selectedEvent.currentParticipants ?? 0)
+    : undefined;
+  const eventIsFull = eventSlotsLeft !== undefined && eventSlotsLeft <= 0;
+  const eventCanRegister = Boolean(
+    selectedEvent && new Date(selectedEvent.date) >= new Date() && selectedEvent.registrationOpen === true,
+  );
+
   return (
     <div className="w-full overflow-x-hidden">
       <title>{settings.siteName}</title>
@@ -537,42 +546,47 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
       <Modal
         isOpen={!!selectedEvent}
         onClose={() => setSelectedEvent(null)}
-        title="Detalhes do Evento"
+        title={selectedEvent?.title ?? ''}
+        eyebrow={selectedEvent ? `${new Date(selectedEvent.date).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })} · ${selectedEvent.location}` : undefined}
+        icon={selectedEvent?.isTournament ? <Trophy size={20} /> : <Calendar size={20} />}
+        footer={selectedEvent && (
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <Button variant="ghost" onClick={() => { setSelectedEvent(null); onNavigate('events'); }}>Ver agenda</Button>
+            {eventCanRegister && !eventIsFull ? (
+              <Button onClick={() => { setSelectedEvent(null); onNavigate('events'); }}>
+                <CheckCircle2 size={16} />
+                {selectedEvent.entryPrice && selectedEvent.entryPrice > 0 ? `Inscrever (${selectedEvent.entryPrice}€)` : 'Inscrever-me'}
+              </Button>
+            ) : eventIsFull ? (
+              <Button variant="outline" disabled>Vagas esgotadas</Button>
+            ) : new Date(selectedEvent.date) >= new Date() ? (
+              <Button variant="outline" disabled>Inscrições fechadas</Button>
+            ) : null}
+          </div>
+        )}
       >
         {selectedEvent && (() => {
-          const isUpcoming = new Date(selectedEvent.date) >= new Date();
-          const canRegister = isUpcoming && selectedEvent.registrationOpen === true;
-          const slotsLeft = selectedEvent.maxParticipants !== undefined
-            ? selectedEvent.maxParticipants - (selectedEvent.currentParticipants ?? 0)
-            : undefined;
-          const isFull = slotsLeft !== undefined && slotsLeft <= 0;
+          const isFull = eventIsFull;
 
           return (
-            <div className="space-y-6">
+            <div className="space-y-5">
               <img
                 src={selectedEvent.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop'}
-                className="w-full h-64 object-cover rounded-xl"
+                className="h-56 w-full rounded-2xl object-cover"
                 alt={selectedEvent.title}
               />
               <div>
-                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-                  <h2 className="text-2xl font-serif text-slate-900 dark:text-white font-bold">{selectedEvent.title}</h2>
-                  <div className="flex gap-2 flex-wrap">
-                    <Badge className="bg-brand-600 text-white border-none shadow-md">{selectedEvent.category || 'Geral'}</Badge>
-                    {selectedEvent.isHighlight && <Badge className="bg-accent-gold text-black border-none shadow-md">Destaque</Badge>}
-                    {selectedEvent.isTournament && selectedEvent.tournamentType && (
-                      <Badge className="bg-purple-600 text-white border-none shadow-md">
-                        <Trophy size={12} className="inline mr-1" /> {selectedEvent.tournamentType}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="text-slate-500 dark:text-slate-400 text-sm flex gap-4 mb-4 flex-wrap">
-                  <span className="flex items-center gap-1"><Calendar size={14} /> {new Date(selectedEvent.date).toLocaleDateString('pt-PT')}</span>
-                  <span className="flex items-center gap-1"><MapPin size={14} /> {selectedEvent.location}</span>
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <Badge className="border-none bg-brand-600 text-white shadow-md">{selectedEvent.category || 'Geral'}</Badge>
+                  {selectedEvent.isHighlight && <Badge className="border-none bg-accent-gold text-black shadow-md">Destaque</Badge>}
+                  {selectedEvent.isTournament && selectedEvent.tournamentType && (
+                    <Badge className="border-none bg-slate-900 text-white shadow-md dark:bg-white dark:text-slate-900">
+                      <Trophy size={12} className="mr-1 inline" /> {selectedEvent.tournamentType}
+                    </Badge>
+                  )}
                 </div>
                 {/* Descriptions come from the rich-text editor as HTML */}
-                <div className="text-slate-600 dark:text-slate-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEvent.description) }} />
+                <div className="leading-relaxed text-slate-600 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEvent.description) }} />
               </div>
 
               {(selectedEvent.isTournament || selectedEvent.entryPrice !== undefined || selectedEvent.maxParticipants !== undefined) && (
@@ -597,35 +611,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
                 </div>
               )}
 
-              <div className="flex gap-3">
-                {canRegister && !isFull ? (
-                  <Button
-                    className="flex-1"
-                    onClick={() => {
-                      setSelectedEvent(null);
-                      onNavigate('events');
-                    }}
-                  >
-                    <CheckCircle2 size={16} className="mr-2" />
-                    {selectedEvent.entryPrice && selectedEvent.entryPrice > 0
-                      ? `Inscrever (${selectedEvent.entryPrice}€)`
-                      : 'Inscrever-me'}
-                  </Button>
-                ) : isFull ? (
-                  <Button variant="outline" disabled className="flex-1">Vagas Esgotadas</Button>
-                ) : isUpcoming ? (
-                  <Button variant="outline" disabled className="flex-1">Inscrições Fechadas</Button>
-                ) : null}
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedEvent(null);
-                    onNavigate('events');
-                  }}
-                >
-                  Ver Agenda
-                </Button>
-              </div>
             </div>
           );
         })()}
@@ -634,21 +619,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
       <Modal
         isOpen={!!selectedArea}
         onClose={() => setSelectedArea(null)}
-        title={selectedArea?.title}
+        title={selectedArea?.title ?? ''}
+        eyebrow={selectedArea?.subtitle}
+        icon={selectedArea ? (() => { const Icon = ICON_MAP[selectedArea.iconName] || Users; return <Icon size={20} />; })() : undefined}
         size="lg"
+        footer={
+          <div className="flex justify-end">
+            <Button onClick={() => { setSelectedArea(null); onContact('Direção'); }}>Contactar direção</Button>
+          </div>
+        }
       >
         {selectedArea && (
           <div className="flex flex-col gap-6">
-            <div className="relative h-48 md:h-64 rounded-xl overflow-hidden">
-              <img src={selectedArea.imageUrl} alt={selectedArea.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark-surface to-transparent"></div>
-              <div className="absolute bottom-4 left-4">
-                <div className="text-brand-400 text-xs font-mono uppercase mb-1">{selectedArea.subtitle}</div>
-                <h2 className="text-3xl md:text-4xl font-serif text-white font-bold">{selectedArea.title}</h2>
-              </div>
+            <div className="h-48 overflow-hidden rounded-2xl md:h-60">
+              <img src={selectedArea.imageUrl} alt={selectedArea.title} className="h-full w-full object-cover" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               <div className="md:col-span-2">
                 <h3 className="text-lg font-serif text-slate-900 dark:text-white mb-3">Sobre esta área</h3>
                 <div className="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedArea.longDescription) }} />
@@ -664,14 +651,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
                 </ul>
               </div>
 
-              <div className="bg-slate-900/5 dark:bg-white/5 rounded-xl p-5 border border-slate-900/10 dark:border-white/10 h-fit">
-                <h4 className="text-slate-900 dark:text-white font-medium mb-4 flex items-center gap-2">
-                  {(() => { const Icon = ICON_MAP[selectedArea.iconName] || Users; return <Icon size={18} className="text-brand-600 dark:text-brand-400" />; })()} Destaques
-                </h4>
-                <div className="space-y-4 text-sm">
-                  <p className="text-slate-500 dark:text-slate-400">Procura envolver-se nesta área? Estamos sempre à procura de voluntários e novas ideias.</p>
-                  <Button className="w-full" onClick={() => { setSelectedArea(null); onContact('Direção'); }}>Contactar Direção</Button>
-                </div>
+              <div className="h-fit rounded-2xl bg-slate-900/[0.03] p-5 ring-1 ring-slate-900/10 dark:bg-white/[0.03] dark:ring-white/10">
+                <h4 className="mb-3 font-medium text-slate-900 dark:text-white">Quer participar?</h4>
+                <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                  Estamos sempre à procura de voluntários e de novas ideias para esta área. Fale com a direção e diga como
+                  gostaria de ajudar.
+                </p>
               </div>
             </div>
           </div>

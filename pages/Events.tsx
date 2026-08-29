@@ -157,6 +157,43 @@ export const EventsPage: React.FC = () => {
         }
     };
 
+    const registrationOpen = Boolean(
+        selectedEvent?.registrationOpen && selectedEvent && new Date(selectedEvent.date) >= new Date(),
+    );
+    const soldOut = Boolean(
+        selectedEvent?.isTournament && selectedEvent?.maxParticipants
+            ? (selectedEvent.currentParticipants || 0) >= selectedEvent.maxParticipants
+            : false,
+    );
+
+    // One action bar for every state of the event dialog, so the primary action
+    // always sits in the same place
+    const eventModalFooter = !selectedEvent ? undefined
+        : showRegistrationModal && regStep === 1 ? (
+            <div className="flex gap-3">
+                <Button type="button" variant="ghost" onClick={() => setShowRegistrationModal(false)}>Voltar</Button>
+                <Button type="submit" form="event-registration-form" className="flex-1" disabled={submitting}>
+                    {submitting ? 'A enviar…' : 'Confirmar inscrição'}
+                </Button>
+            </div>
+        ) : showRegistrationModal ? (
+            <div className="flex justify-center">
+                <Button variant="outline" onClick={() => { setShowRegistrationModal(false); setSelectedEvent(null); }}>Voltar à agenda</Button>
+            </div>
+        ) : registrationOpen ? (
+            <div className="flex justify-end">
+                {isAuthenticated ? (
+                    <Button onClick={handleOpenRegistration} disabled={soldOut} className="w-full sm:w-auto">
+                        {soldOut ? 'Esgotado' : `Inscrever ${selectedEvent.entryPrice ? `(${selectedEvent.entryPrice}€)` : '· grátis'}`}
+                    </Button>
+                ) : (
+                    <Button variant="outline" onClick={() => { window.location.href = '/'; }} className="w-full sm:w-auto">
+                        <LogIn size={16} /> Iniciar sessão para inscrever
+                    </Button>
+                )}
+            </div>
+        ) : undefined;
+
     return (
         <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg">
             <title>{`Eventos & Atividades — ${settings.siteName}`}</title>
@@ -405,25 +442,25 @@ export const EventsPage: React.FC = () => {
             </div>
 
             {/* Details & Registration Modal */}
-            <Modal isOpen={!!selectedEvent} onClose={() => { setSelectedEvent(null); setShowRegistrationModal(false); }} title={selectedEvent?.title} size="lg">
+            <Modal
+                isOpen={!!selectedEvent}
+                onClose={() => { setSelectedEvent(null); setShowRegistrationModal(false); }}
+                title={showRegistrationModal ? 'Inscrição' : (selectedEvent?.title ?? '')}
+                eyebrow={selectedEvent ? (showRegistrationModal ? selectedEvent.title : `${new Date(selectedEvent.date).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })} · ${selectedEvent.location}`) : undefined}
+                description={showRegistrationModal ? 'Confirme os dados para garantir o seu lugar.' : undefined}
+                icon={selectedEvent?.isTournament ? <Trophy size={20} /> : <CalendarPlus size={20} />}
+                size="lg"
+                footer={eventModalFooter}
+            >
                 {selectedEvent && !showRegistrationModal && (
                     <div className="space-y-6">
-                        <div className="relative h-64 md:h-80 rounded-xl overflow-hidden w-full group">
+                        <div className="h-56 w-full overflow-hidden rounded-2xl md:h-64">
                             <img
                                 src={selectedEvent.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop'}
                                 alt={selectedEvent.title}
-                                className="w-full h-full object-cover"
+                                className="h-full w-full object-cover"
                                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop'; }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                            <div className="absolute bottom-4 left-4 text-white">
-                                <div className="font-serif text-2xl">{selectedEvent.title}</div>
-                                <div className="flex gap-4 text-sm mt-2 text-slate-300">
-                                    <span>{new Date(selectedEvent.date).toLocaleDateString()}</span>
-                                    <span>•</span>
-                                    <span>{selectedEvent.location}</span>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="prose dark:prose-invert max-w-none">
@@ -431,36 +468,16 @@ export const EventsPage: React.FC = () => {
                             <div className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEvent.description) }} />
                         </div>
 
-                        {selectedEvent.registrationOpen && new Date(selectedEvent.date) >= new Date() && (
-                            <div className="pt-6 border-t border-slate-900/10 dark:border-white/10">
-                                <div className="bg-brand-500/10 dark:bg-brand-900/20 border border-brand-500/20 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-4">
-                                    <div>
-                                        <div className="text-brand-600 dark:text-brand-400 font-bold uppercase text-xs tracking-wider mb-1">Inscrições Abertas</div>
-                                        <div className="text-slate-900 dark:text-white text-sm">
-                                            {selectedEvent.isTournament && selectedEvent.maxParticipants
-                                                ? `Vagas: ${selectedEvent.maxParticipants - (selectedEvent.currentParticipants || 0)} restantes`
-                                                : 'Garanta o seu lugar neste evento.'}
-                                        </div>
+                        {registrationOpen && (
+                            <div className="flex items-center gap-3 rounded-2xl bg-brand-500/10 p-4 ring-1 ring-brand-500/20">
+                                <CheckCircle2 size={18} className="shrink-0 text-brand-600 dark:text-brand-400" />
+                                <div>
+                                    <div className="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">Inscrições abertas</div>
+                                    <div className="text-sm text-slate-700 dark:text-slate-200">
+                                        {selectedEvent.isTournament && selectedEvent.maxParticipants
+                                            ? `${selectedEvent.maxParticipants - (selectedEvent.currentParticipants || 0)} vagas restantes`
+                                            : 'Garanta o seu lugar neste evento.'}
                                     </div>
-                                    {isAuthenticated ? (
-                                        <Button
-                                            className="bg-brand-600 hover:bg-brand-500 shadow-[0_0_20px_rgba(223,61,50,0.3)] w-full sm:w-auto"
-                                            onClick={handleOpenRegistration}
-                                            disabled={selectedEvent.isTournament && selectedEvent.maxParticipants ? (selectedEvent.currentParticipants || 0) >= selectedEvent.maxParticipants : false}
-                                        >
-                                            {selectedEvent.isTournament && selectedEvent.maxParticipants && (selectedEvent.currentParticipants || 0) >= selectedEvent.maxParticipants
-                                                ? "Esgotado"
-                                                : `Inscrever ${selectedEvent.entryPrice ? `(${selectedEvent.entryPrice}€)` : 'Grátis'}`
-                                            }
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            className="bg-slate-700 hover:bg-slate-600 border-slate-600 w-full sm:w-auto"
-                                            onClick={() => window.location.href = '/'}
-                                        >
-                                            <LogIn size={16} className="mr-2" /> Iniciar Sessão para Inscrever
-                                        </Button>
-                                    )}
                                 </div>
                             </div>
                         )}
@@ -471,14 +488,8 @@ export const EventsPage: React.FC = () => {
                 {selectedEvent && showRegistrationModal && (
                     <div className="h-full flex flex-col">
                         {regStep === 1 && (
-                            <form onSubmit={handleRegistrationSubmit} className="space-y-6 animate-fade-in-up">
-                                <div className="flex items-center gap-2 text-brand-600 dark:text-brand-400 bg-brand-500/10 dark:bg-brand-900/10 p-3 rounded-lg border border-brand-500/20">
-                                    <Trophy size={18} />
-                                    <span className="text-sm font-medium">Inscrição para: {selectedEvent.title}</span>
-                                </div>
-
-                                {/* Horizontal padding keeps input focus rings from being clipped by the scroll container */}
-                                <div className="space-y-4 max-h-[50vh] overflow-y-auto px-1.5 -mx-1.5 pr-2 custom-scrollbar">
+                            <form id="event-registration-form" onSubmit={handleRegistrationSubmit} className="space-y-6 animate-fade-in-up">
+                                <div className="space-y-4">
                                     {!selectedEvent.registrationFields || selectedEvent.registrationFields.length === 0 ? (
                                         <div className="py-2 space-y-4">
                                             <p className="text-center text-slate-500 text-sm">Este evento não requer dados específicos. Confirme apenas a sua intenção de participar.</p>
@@ -531,10 +542,6 @@ export const EventsPage: React.FC = () => {
                                     </div>
                                 )}
 
-                                <div className="flex gap-3 pt-4 border-t border-slate-900/10 dark:border-white/10">
-                                    <Button type="button" variant="ghost" onClick={() => setShowRegistrationModal(false)}>Cancelar</Button>
-                                    <Button type="submit" className="w-full" disabled={submitting}>{submitting ? 'A enviar…' : 'Confirmar Inscrição'}</Button>
-                                </div>
                             </form>
                         )}
 
@@ -578,7 +585,6 @@ export const EventsPage: React.FC = () => {
                                     <div><h3 className="text-2xl font-serif text-slate-900 dark:text-white mb-2">Inscrição Recebida!</h3><p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto">A sua presença foi confirmada.</p></div>
                                 )}
 
-                                <Button onClick={() => { setShowRegistrationModal(false); setSelectedEvent(null); }}>Voltar à Agenda</Button>
                             </div>
                         )}
                     </div>

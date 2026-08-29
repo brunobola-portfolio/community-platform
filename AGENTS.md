@@ -112,6 +112,9 @@ npm run preview      # Servir o build local
 - Radius: `rounded-xl`/`rounded-2xl`/`rounded-3xl`. Foco visível:
   `focus-visible:ring-2 focus-visible:ring-brand-500` em todos os interativos.
 - Lightbox partilhado: `components/ui/Lightbox.tsx` (controlado por index).
+- Diálogos: SEMPRE `components/ui/Modal.tsx` com os slots `icon`/`eyebrow`/`title`/
+  `description`/`footer` — nunca recriar cabeçalho, banner informativo ou barra de ações
+  dentro do corpo; o submit de um formulário vive no footer via `<form id>` + `form=`.
 
 ## Acessibilidade e performance
 
