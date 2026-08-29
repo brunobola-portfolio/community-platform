@@ -475,7 +475,15 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
         )}
 
         {/* Payment Modal */}
-        <Modal isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} title="Pagamento de Quota" size="md">
+        <Modal
+            isOpen={showPaymentModal}
+            onClose={() => setShowPaymentModal(false)}
+            title="Pagamento de quota"
+            eyebrow="Quotas"
+            description="Escolha um dos métodos disponíveis. O registo é atualizado pela direção após a confirmação."
+            icon={<CreditCard size={20} />}
+            size="md"
+          >
             <PaymentModalContent settings={settings} />
         </Modal>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button, Badge } from './UIComponents';
-import { CheckCircle2, ShieldCheck, Trophy, Sparkles, Send, Building2, ArrowLeft, ArrowRight, Star } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Trophy, Sparkles, Send, Building2, Handshake, ArrowLeft, ArrowRight, Star } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { FormInput } from './FormField';
 import { useMutation } from 'convex/react';
@@ -20,13 +20,14 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
     const [error, setError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    const getTierIcon = (id: string) => {
-        switch (id) {
-            case 'platinum': return Sparkles;
-            case 'gold': return Trophy;
-            case 'silver': return ShieldCheck;
-            default: return Star;
-        }
+    // Tier ids and names are instance data (pt or en), so match on both
+    const getTierIcon = (tier: { id: unknown; name?: string }) => {
+        const haystack = (String(tier.id) + ' ' + (tier.name || '')).toLowerCase();
+        if (haystack.includes('platin') || haystack.includes('vision')) return Sparkles;
+        if (haystack.includes('ouro') || haystack.includes('gold')) return Trophy;
+        if (haystack.includes('prata') || haystack.includes('silver')) return ShieldCheck;
+        if (haystack.includes('institu')) return Building2;
+        return Star;
     };
 
     const handleSelectTier = (id: string) => {
@@ -68,152 +69,164 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
         onClose();
     }
 
+    const tierName = sponsorTiers.find(t => String(t.id) === selectedTier)?.name || selectedTier || '';
+
+    const stepMeta = {
+        1: {
+            eyebrow: 'Passo 1 de 3',
+            title: 'Torne-se Parceiro',
+            description: 'Apoiar a associação é investir na cultura e no desporto da comunidade. Escolha o nível de impacto.',
+            icon: <Handshake size={20} />,
+            size: 'xl' as const,
+        },
+        2: {
+            eyebrow: 'Passo 2 de 3',
+            title: 'Formalizar apoio',
+            description: 'Preencha os dados de contacto para iniciarmos esta parceria.',
+            icon: <Building2 size={20} />,
+            size: 'md' as const,
+        },
+        3: {
+            eyebrow: 'Pedido enviado',
+            title: 'Obrigado pelo apoio',
+            description: 'A direção entrará em contacto brevemente para formalizar a parceria.',
+            icon: <CheckCircle2 size={20} />,
+            size: 'md' as const,
+        },
+    }[step as 1 | 2 | 3];
+
+    const footer = step === 1 ? (
+        <div className="flex flex-col items-center gap-1 text-center">
+            <p className="text-xs text-slate-500">Tem uma proposta diferente ou donativo pontual?</p>
+            <Button variant="link" onClick={() => handleSelectTier('custom')}>Falar diretamente com a direção</Button>
+        </div>
+    ) : step === 2 ? (
+        <div className="flex gap-3">
+            <Button type="button" variant="ghost" onClick={() => setStep(1)} className="flex-1">
+                <ArrowLeft size={16} /> Voltar
+            </Button>
+            <Button type="submit" form="sponsorship-form" disabled={submitting} className="flex-1">
+                {submitting ? 'A enviar…' : <>Confirmar <Send size={16} /></>}
+            </Button>
+        </div>
+    ) : (
+        <div className="flex justify-center">
+            <Button variant="outline" onClick={reset}>Voltar ao site</Button>
+        </div>
+    );
+
     return (
-        <Modal isOpen={isOpen} onClose={reset} title="Torne-se Parceiro" size="xl">
+        <Modal
+            isOpen={isOpen}
+            onClose={reset}
+            title={stepMeta.title}
+            eyebrow={stepMeta.eyebrow}
+            description={stepMeta.description}
+            icon={stepMeta.icon}
+            size={stepMeta.size}
+            footer={footer}
+        >
             {/* Step 1: Choose Tier */}
             {step === 1 && (
-                <div className="space-y-8 pb-4">
-                    <div className="text-center relative">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-brand-500/10 rounded-full blur-[80px] pointer-events-none"></div>
-                        <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-3 relative z-10">Invista na Comunidade</h3>
-                        <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto text-lg font-light relative z-10 leading-relaxed">
-                            Ao apoiar a associação, contribui diretamente para a cultura e o desporto da comunidade. Escolha o seu nível de impacto.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 perspective-1000">
-                        {sponsorTiers.map(tier => {
-                            const Icon = getTierIcon(String(tier.id));
-                            // Dynamically determine gradient based on mock data or fallback
-                            const gradient = tier.color?.includes('from-') ? tier.color : 'from-brand-600 to-blue-600';
-
-                            return (
-                                <div
-                                    key={tier.id}
-                                    className="relative group bg-white dark:bg-dark-surface/40 border border-slate-900/10 dark:border-white/10 rounded-[2rem] p-1 overflow-hidden cursor-pointer hover:-translate-y-2 transition-transform duration-500"
-                                    onClick={() => handleSelectTier(String(tier.id))}
-                                >
-                                    {/* Glass Container */}
-                                    <div className="relative h-full bg-slate-900/[0.03] dark:bg-black/20 backdrop-blur-xl rounded-[1.8rem] p-6 flex flex-col z-10">
-
-                                        {/* Icon Header */}
-                                        <div className="mb-6 flex justify-between items-start">
-                                            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} p-[1px] shadow-lg group-hover:scale-110 transition-transform duration-500`}>
-                                                <div className="w-full h-full bg-white dark:bg-black/60 backdrop-blur-md rounded-2xl flex items-center justify-center">
-                                                    <Icon className={`text-slate-800 dark:text-white`} size={24} />
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-lg font-bold text-slate-900 dark:text-white">{tier.price}</div>
-                                                <div className="text-[10px] text-slate-500 uppercase tracking-widest">Doação Anual</div>
-                                            </div>
-                                        </div>
-
-                                        <h4 className={`text-xl font-serif font-bold text-slate-900 dark:text-white mb-6 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r ${gradient} transition-all`}>
-                                            {tier.name}
-                                        </h4>
-
-                                        <ul className="space-y-3 mb-8 flex-1">
-                                            {tier.benefits.map((b, i) => (
-                                                <li key={i} className="flex items-start gap-3 text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                                                    <CheckCircle2 size={14} className="text-brand-500 shrink-0 mt-0.5" />
-                                                    <span className="leading-snug">{b}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-
-                                        <Button className="w-full text-xs bg-slate-900/5 dark:bg-white/5 hover:bg-slate-900/10 dark:hover:bg-white/10 border border-slate-900/10 dark:border-white/10 text-slate-700 dark:text-white group-hover:border-brand-500/30 group-hover:text-slate-900 dark:group-hover:text-white transition-all rounded-xl">
-                                            Selecionar <ArrowRight size={12} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                                        </Button>
-                                    </div>
-
-                                    {/* Hover Glow Background */}
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    {sponsorTiers.map(tier => {
+                        const Icon = getTierIcon(tier);
+                        const isPricedTier = /[0-9]/.test(String(tier.price || ''));
+                        return (
+                            <button
+                                key={tier.id}
+                                type="button"
+                                onClick={() => handleSelectTier(String(tier.id))}
+                                className="group flex flex-col rounded-2xl bg-slate-900/[0.03] p-5 text-left ring-1 ring-slate-900/10 transition-all hover:-translate-y-1 hover:bg-white hover:shadow-xl hover:ring-brand-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/[0.03] dark:ring-white/10 dark:hover:bg-white/[0.06]"
+                            >
+                                <div className="mb-5 flex items-start justify-between gap-3">
+                                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-600 ring-1 ring-brand-600/20 transition-transform group-hover:scale-105 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25">
+                                        <Icon size={20} />
+                                    </span>
+                                    <span className="text-right">
+                                        <span className="block text-base font-bold text-slate-900 dark:text-white">{tier.price}</span>
+                                        {isPricedTier && (
+                                            <span className="block text-[10px] uppercase tracking-widest text-slate-400">Doação anual</span>
+                                        )}
+                                    </span>
                                 </div>
-                            )
-                        })}
-                    </div>
 
-                    <div className="text-center pt-8 border-t border-slate-900/5 dark:border-white/5">
-                        <p className="text-xs text-slate-500 mb-3">Tem uma proposta diferente ou donativo pontual?</p>
-                        <Button variant="link" onClick={() => handleSelectTier('custom')} className="text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300">Falar diretamente com a Direção</Button>
-                    </div>
+                                <h4 className="mb-4 font-serif text-lg font-bold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-400">
+                                    {tier.name}
+                                </h4>
+
+                                <ul className="mb-6 flex-1 space-y-2.5">
+                                    {tier.benefits.map((b, i) => (
+                                        <li key={i} className="flex items-start gap-2.5 text-xs leading-snug text-slate-600 dark:text-slate-300">
+                                            <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-brand-500" />
+                                            <span>{b}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-400">
+                                    Selecionar <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
             )}
 
             {/* Step 2: Form */}
             {step === 2 && (
-                <form onSubmit={handleSubmit} className="space-y-8 max-w-md mx-auto py-8">
-                    <div className="text-center">
-                        <div className="w-16 h-16 bg-gradient-to-tr from-brand-600 to-brand-400 rounded-2xl flex items-center justify-center mx-auto mb-6 text-white shadow-[0_0_30px_rgba(223,61,50,0.4)]">
-                            <Building2 size={32} />
-                        </div>
-                        <h3 className="text-2xl font-serif text-slate-900 dark:text-white mb-2">Formalizar Apoio</h3>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm">Preencha os dados para iniciarmos esta parceria.</p>
-                    </div>
+                <form id="sponsorship-form" onSubmit={handleSubmit} className="space-y-5">
+                    <FormInput
+                        label="Nome / Empresa"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        placeholder="Nome da entidade"
+                        required
+                    />
+                    <FormInput
+                        label="Email de Contacto"
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        placeholder="email@empresa.com"
+                        required
+                    />
+                    <FormInput
+                        label="Telefone"
+                        type="tel"
+                        value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                        placeholder="+351 9xx xxx xxx"
+                        required
+                    />
 
-                    <div className="space-y-5 bg-slate-900/5 dark:bg-white/5 p-8 rounded-[2rem] border border-slate-900/10 dark:border-white/10 shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-                        <FormInput
-                            label="Nome / Empresa"
-                            value={form.name}
-                            onChange={(e) => setForm({ ...form, name: e.target.value })}
-                            placeholder="Nome da Entidade"
-                            required
-                        />
-                        <FormInput
-                            label="Email de Contacto"
-                            type="email"
-                            value={form.email}
-                            onChange={(e) => setForm({ ...form, email: e.target.value })}
-                            placeholder="email@empresa.com"
-                            required
-                        />
-                        <FormInput
-                            label="Telefone"
-                            type="tel"
-                            value={form.phone}
-                            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                            placeholder="+351 9xx xxx xxx"
-                            required
-                        />
-
-                        <div className="bg-white dark:bg-black/40 p-4 rounded-xl text-xs text-slate-600 dark:text-slate-300 flex justify-between items-center border border-slate-900/5 dark:border-white/5 mt-2">
-                            <span>Nível Selecionado:</span>
-                            <Badge className="bg-brand-500/20 text-brand-600 dark:text-brand-400 border-none px-3 py-1 text-xs font-bold shadow-lg">{(sponsorTiers.find(t => String(t.id) === selectedTier)?.name || selectedTier || '').toUpperCase()}</Badge>
-                        </div>
+                    <div className="flex items-center justify-between rounded-2xl bg-slate-900/[0.03] px-4 py-3 text-xs text-slate-600 ring-1 ring-slate-900/5 dark:bg-white/[0.03] dark:text-slate-300 dark:ring-white/10">
+                        <span>Nível selecionado</span>
+                        <Badge className="border-brand-500/20 bg-brand-500/15 px-3 py-1 text-brand-700 dark:text-brand-400">
+                            {tierName.toUpperCase()}
+                        </Badge>
                     </div>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm p-3 rounded-xl text-center">
+                        <p className="rounded-xl bg-red-500/10 p-3 text-center text-sm text-red-600 ring-1 ring-red-500/20 dark:text-red-400" role="alert">
                             Erro ao enviar pedido. Tente novamente.
-                        </div>
+                        </p>
                     )}
-
-                    <div className="flex gap-4">
-                        <Button type="button" variant="ghost" onClick={() => setStep(1)} className="flex-1 hover:bg-slate-900/5 dark:hover:bg-white/5 rounded-xl"><ArrowLeft size={16} className="mr-2" /> Voltar</Button>
-                        <Button type="submit" disabled={submitting} className="flex-1 bg-brand-600 hover:bg-brand-500 shadow-[0_0_20px_rgba(223,61,50,0.3)] border-none rounded-xl">{submitting ? 'A enviar…' : 'Confirmar'} <Send size={16} className="ml-2" /></Button>
-                    </div>
                 </form>
             )}
 
             {/* Step 3: Success */}
             {step === 3 && (
-                <div className="text-center py-16 space-y-8 animate-fade-in-up">
-                    <div className="relative w-24 h-24 mx-auto">
-                        <div className="absolute inset-0 bg-green-500/30 rounded-full animate-ping"></div>
-                        <div className="relative w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-700 rounded-full flex items-center justify-center text-white shadow-2xl border border-white/20">
-                            <CheckCircle2 size={48} />
-                        </div>
+                <div className="flex flex-col items-center py-10 text-center animate-fade-in-up">
+                    <div className="relative mb-6 h-20 w-20">
+                        <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500/20" />
+                        <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-lg ring-1 ring-white/20">
+                            <CheckCircle2 size={40} />
+                        </span>
                     </div>
-                    <div>
-                        <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-4">Obrigado pelo Apoio!</h3>
-                        <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto text-lg font-light leading-relaxed">
-                            O seu pedido foi registado com sucesso. A direção entrará em contacto brevemente para formalizar a parceria.
-                        </p>
-                    </div>
-                    <Button onClick={reset} variant="outline" className="border-slate-900/20 dark:border-white/20 hover:bg-slate-900/10 dark:hover:bg-white/10 px-8 rounded-full">Voltar ao Site</Button>
+                    <p className="max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                        O seu pedido foi registado com sucesso. Guardámos o nível <strong className="font-semibold text-slate-700 dark:text-slate-200">{tierName}</strong> e entramos em contacto pelo email indicado.
+                    </p>
                 </div>
             )}
         </Modal>

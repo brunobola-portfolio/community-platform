@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-08-29
+
+### Added
+
+- Dialog shell with slots (`components/ui/Modal.tsx`): branded icon chip, eyebrow,
+  title, description and a sticky footer for the actions, plus `aria-describedby`,
+  focus on the first body control instead of the close button, Escape bound to the
+  document (multi-step dialogs kept losing it) and Tab pulling focus back into the
+  dialog after a step change
+
+### Changed
+
+- **Every dialog uniformised on the new shell**: agenda, contact, login, event
+  details, event registration, partner details, sponsorship wizard, action area and
+  quota payment now share one header rhythm, one scrolling body and one action bar;
+  the ad-hoc info banners, duplicated titles and per-modal footers are gone
+- Agenda redesigned: month sections with counts, a date chip on every row (also on
+  mobile), truncation-safe layout and a real empty state
+- Sponsorship wizard shows the step in the eyebrow, tier cards flattened to one
+  consistent card style, tier icons matched on id or name (pt and en) instead of
+  English-only ids, and "Doação anual" only shows for priced tiers
+- Contact modal dropped the external texture image (third-party request) and the
+  gradient banner that repeated the header
+- `EmptyState` is theme-aware (it was dark-only) and now used by the agenda
+
 ## [2.3.0] - 2026-08-29
 
 ### Added
@@ -98,7 +123,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.0.0...v2.2.0
 [2.0.0]: https://github.com/brunobola-portfolio/community-platform/releases/tag/v2.0.0

@@ -79,7 +79,9 @@ pode transmitir informação essencial.
 | Componente | Contrato |
 |-----------|----------|
 | `Lightbox` | Único lightbox do site, controlado por index; setas + teclado; usado em Galeria, Equipa, História |
-| `Button` / `Badge` / `Modal` | Base atómica; variantes por props, nunca por CSS ad-hoc |
+| `Button` / `Badge` / `Input` | Base atómica; variantes por props, nunca por CSS ad-hoc |
+| `Modal` (`components/ui/Modal.tsx`) | Único diálogo do portal. Slots: `icon`, `eyebrow`, `title`, `description`, corpo com scroll e `footer` fixo com as ações. Nunca recriar cabeçalho, banner informativo ou barra de ações dentro do corpo — passar pelos slots; formulários usam `<form id>` + `<Button form=…>` para o botão viver no footer |
+| `EmptyState` | Estado vazio partilhado (listas e diálogos), claro e escuro |
 | `RichTextEditor` / `MediaStudio` / `FormBuilder` | Editores do admin (`pages/admin/editors/`) |
 | `AIModal` + `ai/ChatMessage` | Assistente ancorado em baixo à direita (bottom sheet em mobile): shell/estado no modal, turnos no `ChatMessage`; identidade visual `Sparkles` + gradiente brand |
 | `.custom-scrollbar` | Scrollbar fina temática para corpos de modal e rails horizontais |

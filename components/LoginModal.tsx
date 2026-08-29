@@ -61,78 +61,72 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={flow === 'signUp' ? "Criar Conta" : (isAdmin ? "Acesso Administrativo" : "Portal do Sócio")}
+      title={flow === 'signUp' ? 'Criar Conta' : (isAdmin ? 'Acesso Administrativo' : 'Portal do Sócio')}
+      eyebrow={isAdmin ? 'Área reservada' : 'Área de sócio'}
+      description={
+        flow === 'signUp'
+          ? 'Crie uma conta para aceder aos serviços da associação.'
+          : (isAdmin
+            ? 'Introduza as credenciais de gestão para aceder ao backoffice.'
+            : 'Aceda aos seus documentos, quotas e cartão digital.')
+      }
+      icon={isAdmin ? <ShieldCheck size={20} /> : <UserCircle size={20} />}
       size="sm"
-    >
-      <form onSubmit={handleAuth} className="space-y-6 pt-4">
-        <div className="text-center mb-6">
-          <div className={cn(
-            "w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border transition-all duration-500",
-            isAdmin
-              ? "bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.1)]"
-              : "bg-brand-500/10 text-brand-600 dark:text-brand-400 border-brand-500/20 shadow-[0_0_30px_rgba(223,61,50,0.1)]"
-          )}>
-            {isAdmin ? <ShieldCheck size={40} /> : <UserCircle size={40} />}
-          </div>
-          <p className="text-slate-500 dark:text-slate-400 text-sm px-4">
-            {flow === 'signUp'
-              ? "Crie uma nova conta para aceder aos serviços."
-              : (isAdmin
-                ? "Introduza as credenciais de gestão para aceder ao backoffice."
-                : "Bem-vindo de volta! Aceda aos seus documentos e cartão digital.")}
-          </p>
-        </div>
-
-        {error && <div className="text-red-600 dark:text-red-400 text-xs text-center">{error}</div>}
-
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-2">Email</label>
-            <Input
-              placeholder={isAdmin ? "admin@exemplo.pt" : "socio@email.com"}
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="bg-slate-900/[0.03] dark:bg-white/[0.03] border-slate-900/5 dark:border-white/5 focus:border-brand-500/40"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-2">Palavra-passe</label>
-            <Input
-              placeholder="••••••••"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="bg-slate-900/[0.03] dark:bg-white/[0.03] border-slate-900/5 dark:border-white/5 focus:border-brand-500/40"
-            />
-          </div>
-        </div>
-
-        <Button
-          type="submit"
-          className={cn(
-            "w-full h-16 text-lg font-bold shadow-2xl transition-all duration-300",
-            isAdmin
-              ? "bg-amber-600 hover:bg-amber-500 border-amber-500 shadow-amber-900/20"
-              : "bg-brand-600 hover:bg-brand-500 border-brand-500 shadow-brand-900/20"
-          )}
-          disabled={isLoading}
-        >
-          {isLoading ? <Loader2 className="animate-spin" /> : <><LogIn size={20} className="mr-3" /> {flow === 'signUp' ? 'Registar' : 'Entrar no Sistema'}</>}
-        </Button>
-
-        <div className="text-center pt-2">
+      footer={
+        <div className="space-y-3">
+          <Button
+            type="submit"
+            form="login-form"
+            className={cn(
+              'h-12 w-full text-base font-semibold',
+              isAdmin && 'border-amber-500/50 bg-amber-600 hover:bg-amber-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgba(245,158,11,0.3)]',
+            )}
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader2 className="animate-spin" /> : <><LogIn size={18} /> {flow === 'signUp' ? 'Registar' : 'Entrar'}</>}
+          </Button>
           <button
             type="button"
             onClick={() => setFlow(flow === 'signIn' ? 'signUp' : 'signIn')}
-            className="text-xs text-slate-500 hover:text-brand-600 dark:hover:text-brand-400 transition-colors uppercase tracking-widest font-bold"
+            className="w-full rounded-lg py-1 text-[11px] font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
           >
-            {flow === 'signIn' ? "Não tem conta? Registar" : "Já tem conta? Entrar"}
+            {flow === 'signIn' ? 'Não tem conta? Registar' : 'Já tem conta? Entrar'}
           </button>
+        </div>
+      }
+    >
+      <form id="login-form" onSubmit={handleAuth} className="space-y-4">
+        {error && (
+          <p className="rounded-xl bg-red-500/10 px-3 py-2 text-center text-xs text-red-600 ring-1 ring-red-500/20 dark:text-red-400" role="alert">
+            {error}
+          </p>
+        )}
+
+        <div className="space-y-1.5">
+          <label htmlFor="login-email" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Email</label>
+          <Input
+            id="login-email"
+            placeholder={isAdmin ? 'admin@exemplo.pt' : 'socio@email.com'}
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="border-slate-900/5 bg-slate-900/[0.03] focus:border-brand-500/40 dark:border-white/5 dark:bg-white/[0.03]"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label htmlFor="login-password" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Palavra-passe</label>
+          <Input
+            id="login-password"
+            placeholder="••••••••"
+            type="password"
+            autoComplete={flow === 'signUp' ? 'new-password' : 'current-password'}
+            required
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="border-slate-900/5 bg-slate-900/[0.03] focus:border-brand-500/40 dark:border-white/5 dark:bg-white/[0.03]"
+          />
         </div>
       </form>
     </Modal>

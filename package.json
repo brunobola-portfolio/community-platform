@@ -1,6 +1,6 @@
 {
   "name": "community-platform",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "White-label community platform for cultural and recreational associations — realtime backend, AI assistant with RAG, and a full self-service backoffice. Live showcase: arcva.pt",
   "type": "module",
   "author": {

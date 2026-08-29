@@ -7,8 +7,7 @@
  * These components are designed to be reusable, accessible, and themable.
  */
 
-import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import React from 'react';
 import { cn } from '../../utils/cn';
 
 // Re-export cn so existing consumers that import from UIComponents still work
@@ -107,113 +106,6 @@ export const Badge: React.FC<BadgeProps> = ({ className, variant = 'default', co
 };
 
 // --- Modal / Dialog Component ---
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
-}
-
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 'md' }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
-  const titleId = useRef(`modal-title-${Math.random().toString(36).slice(2, 9)}`).current;
-
-  // Callers pass inline arrows for onClose; keeping it out of the effect deps
-  // stops the focus trap from re-running (and stealing focus to the close
-  // button) on every keystroke inside modal forms
-  const onCloseRef = useRef(onClose);
-  useEffect(() => { onCloseRef.current = onClose; });
-
-  // Focus trap, Escape key, and body scroll lock
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const modal = modalRef.current;
-    if (!modal) return;
-
-    const previousFocus = document.activeElement as HTMLElement;
-    const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-
-    const getFocusable = () => modal.querySelectorAll<HTMLElement>(focusableSelector);
-
-    // Focus first focusable element
-    const firstFocusable = getFocusable()[0];
-    firstFocusable?.focus();
-
-    document.body.style.overflow = 'hidden';
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { onCloseRef.current(); return; }
-      if (e.key !== 'Tab') return;
-
-      const focusable = getFocusable();
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last?.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first?.focus();
-      }
-    };
-
-    modal.addEventListener('keydown', handleKeyDown);
-    return () => {
-      modal.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
-      previousFocus?.focus();
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-  };
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-slate-900/40 dark:bg-black/80 backdrop-blur-sm transition-opacity duration-300"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Modal Content */}
-      <div
-        ref={modalRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className={cn(
-          "relative w-full bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-[2.5rem] shadow-2xl transform transition-all duration-300 animate-fade-in-up overflow-hidden flex flex-col max-h-[90vh]",
-          sizeClasses[size]
-        )}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 sm:p-8 border-b border-slate-900/5 dark:border-white/5 bg-slate-900/[0.02] dark:bg-white/[0.02]">
-          <h3 id={titleId} className="text-2xl font-serif font-semibold text-slate-900 dark:text-white tracking-tight">{title}</h3>
-          <button
-            onClick={onClose}
-            aria-label="Fechar"
-            className="p-3 rounded-2xl hover:bg-slate-900/5 dark:hover:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors border border-transparent hover:border-slate-900/10 dark:hover:border-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto custom-scrollbar">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-};
+// Implementation lives in ./Modal.tsx; re-exported so every consumer keeps
+// importing dialogs from the atomic barrel
+export { Modal, type ModalProps } from './Modal';
