@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import { Mail, Phone, Clock, Trash2, CheckCircle, X, Archive, Inbox } from 'lucide-react';
+import { Mail, Phone, Clock, Trash2, CheckCircle, X, Archive, Inbox, Handshake } from 'lucide-react';
 import { Button, Badge, cn } from '../../components/ui/UIComponents';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { DeleteConfirmDialog } from './components/DeleteConfirmDialog';
+import type { Id } from '../../convex/_generated/dataModel';
 
 type ContactStatus = 'pending' | 'replied' | 'archived';
 type SponsorshipStatus = 'pending' | 'contacted' | 'confirmed' | 'rejected';
@@ -36,6 +39,8 @@ const formatTimestamp = (ts: number) =>
 
 export const AdminLeadsTab: React.FC = () => {
     const [section, setSection] = useState<'contact' | 'sponsorship'>('contact');
+    const [pendingDelete, setPendingDelete] = useState<{ kind: 'contact' | 'sponsorship'; id: string; title: string } | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const contacts = useQuery(api.contact.list);
     const sponsorships = useQuery(api.sponsorshipRequests.list);
@@ -48,17 +53,20 @@ export const AdminLeadsTab: React.FC = () => {
     const pendingContactCount = contacts?.filter(c => c.status === 'pending').length ?? 0;
     const pendingSponsorshipCount = sponsorships?.filter(s => s.status === 'pending').length ?? 0;
 
+    const confirmDelete = async () => {
+        if (!pendingDelete) return;
+        setIsDeleting(true);
+        try {
+            if (pendingDelete.kind === 'contact') await removeContact({ id: pendingDelete.id as Id<'contactSubmissions'> });
+            else await removeSponsorship({ id: pendingDelete.id as Id<'sponsorshipRequests'> });
+        } finally {
+            setIsDeleting(false);
+            setPendingDelete(null);
+        }
+    };
+
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-                <div>
-                    <h1 className="text-3xl font-serif text-white font-bold">Leads & Contactos</h1>
-                    <p className="text-slate-400 text-sm mt-1">
-                        Submissões públicas de formulários de contacto e pedidos de parceria.
-                    </p>
-                </div>
-            </div>
-
             <div className="flex gap-2 border-b border-white/5 pb-px">
                 <button
                     onClick={() => setSection('contact')}
@@ -92,11 +100,14 @@ export const AdminLeadsTab: React.FC = () => {
 
             {section === 'contact' && (
                 <div className="space-y-3">
-                    {contacts === undefined && <div className="text-slate-500 text-sm">A carregar…</div>}
+                    {contacts === undefined && [0, 1, 2].map(i => <div key={i} className="h-28 animate-pulse rounded-2xl bg-white/5" />)}
                     {contacts !== undefined && contacts.length === 0 && (
-                        <div className="text-center py-16 border border-dashed border-white/5 rounded-2xl">
-                            <Inbox size={32} className="mx-auto text-slate-600 mb-3" />
-                            <p className="text-slate-400">Sem submissões de contacto ainda.</p>
+                        <div className="rounded-2xl border border-white/10 bg-dark-surface">
+                            <EmptyState
+                                icon={Inbox}
+                                title="Sem mensagens de contacto"
+                                description="As mensagens enviadas pelo formulário público do portal aparecem aqui."
+                            />
                         </div>
                     )}
                     {contacts?.map(c => (
@@ -141,9 +152,9 @@ export const AdminLeadsTab: React.FC = () => {
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        onClick={() => {
-                                            if (confirm('Apagar esta submissão?')) removeContact({ id: c._id });
-                                        }}
+                                        aria-label={`Apagar mensagem de ${c.name}`}
+                                        title="Apagar"
+                                        onClick={() => setPendingDelete({ kind: 'contact', id: c._id, title: c.name })}
                                         className="text-red-400 hover:text-red-300"
                                     >
                                         <Trash2 size={14} />
@@ -163,11 +174,14 @@ export const AdminLeadsTab: React.FC = () => {
 
             {section === 'sponsorship' && (
                 <div className="space-y-3">
-                    {sponsorships === undefined && <div className="text-slate-500 text-sm">A carregar…</div>}
+                    {sponsorships === undefined && [0, 1, 2].map(i => <div key={i} className="h-28 animate-pulse rounded-2xl bg-white/5" />)}
                     {sponsorships !== undefined && sponsorships.length === 0 && (
-                        <div className="text-center py-16 border border-dashed border-white/5 rounded-2xl">
-                            <Inbox size={32} className="mx-auto text-slate-600 mb-3" />
-                            <p className="text-slate-400">Sem pedidos de parceria ainda.</p>
+                        <div className="rounded-2xl border border-white/10 bg-dark-surface">
+                            <EmptyState
+                                icon={Handshake}
+                                title="Sem pedidos de parceria"
+                                description="Os pedidos submetidos no formulário “Torne-se Parceiro” do portal aparecem aqui."
+                            />
                         </div>
                     )}
                     {sponsorships?.map(s => (
@@ -229,9 +243,9 @@ export const AdminLeadsTab: React.FC = () => {
                                     <Button
                                         size="sm"
                                         variant="ghost"
-                                        onClick={() => {
-                                            if (confirm('Apagar este pedido?')) removeSponsorship({ id: s._id });
-                                        }}
+                                        aria-label={`Apagar pedido de ${s.name}`}
+                                        title="Apagar"
+                                        onClick={() => setPendingDelete({ kind: 'sponsorship', id: s._id, title: s.name })}
                                         className="text-red-400 hover:text-red-300"
                                     >
                                         <Trash2 size={14} />
@@ -241,6 +255,15 @@ export const AdminLeadsTab: React.FC = () => {
                         </div>
                     ))}
                 </div>
+            )}
+
+            {pendingDelete && (
+                <DeleteConfirmDialog
+                    deleteConfirm={{ type: pendingDelete.kind === 'contact' ? 'contactSubmission' : 'sponsorshipRequest', id: pendingDelete.id, title: pendingDelete.title }}
+                    isDeleting={isDeleting}
+                    onCancel={() => setPendingDelete(null)}
+                    onConfirm={confirmDelete}
+                />
             )}
         </div>
     );

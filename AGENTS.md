@@ -72,6 +72,17 @@ npm run preview      # Servir o build local
   notícias, settings) no system prompt. Histórico multi-turno: últimas 6 mensagens.
 - **Listas públicas vs backoffice**: `DataContext` expõe `events`/`posts` (só publicados) e
   `adminEvents`/`adminPosts` (incluem rascunhos via `listAll`). Não misturar.
+- **Backoffice é dark-only e declara-o**: a raiz do `/admin` e do `/setup` tem a classe
+  `dark`, por isso os componentes partilhados (diálogos, inputs, estados vazios) seguem o
+  tema escuro mesmo quando o visitante tem o portal em claro — sem isso, as variantes
+  `dark:` não se aplicavam e o backoffice ficava com texto escuro sobre fundo escuro.
+- **Listas do backoffice têm um único componente**: `pages/admin/components/EntityList.tsx`
+  (toolbar de pesquisa/filtros/ordenação, tabela desktop, cartões mobile, estado vazio da
+  coleção e estado sem resultados, com as MESMAS ações nas duas vistas). Uma tab nova é uma
+  configuração de colunas — nunca uma tabela nova.
+- **Erros de mutation chegam ao utilizador**: os wrappers devolvem `ActionResult`; o
+  `Admin.tsx` traduz o texto com `pages/admin/errors.ts` (`describeActionError`) em vez de
+  mostrar "erro de validação" ou o dump do validador.
 - **Upload de imagens**: sempre Convex storage (`files.generateUploadUrl` + `files.getUrl`)
   via MediaStudio — nunca base64 em documentos.
 - **Admin sem comandos**: BD sem admin redireciona qualquer acesso para o wizard `/setup`.

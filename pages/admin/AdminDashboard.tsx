@@ -21,8 +21,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     onNewEvent,
 }) => {
     const latencyDisplay = aiStats?.avgLatency != null
-        ? `Latência: ${aiStats.avgLatency}ms`
-        : 'Convex Serverless';
+        ? `Assistente IA: ${(aiStats.avgLatency / 1000).toFixed(1)}s de resposta média`
+        : 'Backend Convex em tempo real';
 
     return (
         <div className="space-y-8 animate-fade-in-up">

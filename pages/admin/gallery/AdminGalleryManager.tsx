@@ -6,13 +6,15 @@ import type { Id } from '../../../convex/_generated/dataModel';
 import { Button, cn } from '../../../components/ui/UIComponents';
 import { PhotoUploader } from './PhotoUploader';
 import { AlbumPhotoGrid } from './AlbumPhotoGrid';
-import type { EntityHandlers } from '../AdminEntityTabs';
+import type { AdminRecord, EntityHandlers } from '../types';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 import type { Album, GalleryImage } from '../../../types';
 
 interface AdminGalleryManagerProps extends EntityHandlers {
     albums: Album[];
     onNewAlbum: () => void;
-    notify: (message: string, type: 'success' | 'error') => void;
+    notify: (message: string, type: 'success' | 'error' | 'info') => void;
 }
 
 const formatDate = (iso: string) => {
@@ -28,6 +30,8 @@ const formatDate = (iso: string) => {
  */
 export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums, openEditModal, handleDeleteRequest, onNewAlbum, notify }) => {
     const [selectedId, setSelectedId] = useState<string | null>(albums[0]?.id ?? null);
+    const [pendingPhotos, setPendingPhotos] = useState<string[] | null>(null);
+    const [isDeletingPhotos, setIsDeletingPhotos] = useState(false);
     useEffect(() => {
         if (!selectedId || !albums.some(a => a.id === selectedId)) setSelectedId(albums[0]?.id ?? null);
     }, [albums, selectedId]);
@@ -105,7 +109,14 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
 
             <section className="bg-dark-surface border border-white/10 rounded-2xl p-5 md:p-6 space-y-6 min-w-0">
                 {!selected || !albumId ? (
-                    <p className="text-slate-500 text-sm">Seleciona um álbum à esquerda.</p>
+                    <EmptyState
+                        icon={Images}
+                        title={albums.length === 0 ? 'Ainda não há álbuns' : 'Escolha um álbum'}
+                        description={albums.length === 0
+                            ? 'Crie o primeiro álbum para começar a carregar fotografias para a galeria pública.'
+                            : 'Selecione um álbum na lista à esquerda para gerir as suas fotografias.'}
+                        action={albums.length === 0 ? { label: 'Criar álbum', onClick: onNewAlbum } : undefined}
+                    />
                 ) : (
                     <>
                         <header className="flex flex-col md:flex-row md:items-start gap-4">
@@ -122,7 +133,7 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
                                 {selected.description && <p className="text-sm text-slate-400 mt-2 line-clamp-2">{selected.description}</p>}
                             </div>
                             <div className="flex gap-2 shrink-0">
-                                <Button size="sm" variant="glass" onClick={() => openEditModal('album', selected)}><Edit2 size={14} className="mr-2" /> Editar</Button>
+                                <Button size="sm" variant="glass" onClick={() => openEditModal('album', selected as unknown as AdminRecord)}><Edit2 size={14} className="mr-2" /> Editar</Button>
                                 <Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300" onClick={() => handleDeleteRequest('album', selected.id, selected.title)}><Trash2 size={14} className="mr-2" /> Apagar</Button>
                             </div>
                         </header>
@@ -141,15 +152,37 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
                             onCaption={(id, caption) => void run(() => updateImage({ id: id as Id<'galleryImages'>, caption }))}
                             onMove={move}
                             onSetCover={id => void run(() => setCoverImage({ albumId, imageId: id ? (id as Id<'galleryImages'>) : null }), id ? 'Capa atualizada.' : 'Capa removida.')}
-                            onRemove={id => { if (window.confirm('Apagar esta foto? Esta ação não pode ser anulada.')) void run(() => removeImage({ id: id as Id<'galleryImages'> }), 'Foto apagada.'); }}
-                            onRemoveMany={ids => {
-                                if (!window.confirm(`Apagar ${ids.length} fotos? Esta ação não pode ser anulada.`)) return;
-                                void run(async () => { for (const id of ids) await removeImage({ id: id as Id<'galleryImages'> }); }, `${ids.length} fotos apagadas.`);
-                            }}
+                            onRemove={id => setPendingPhotos([id])}
+                            onRemoveMany={ids => setPendingPhotos(ids)}
                         />
                     </>
                 )}
             </section>
+
+            {pendingPhotos && (
+                <DeleteConfirmDialog
+                    deleteConfirm={{
+                        type: 'galleryPhotos',
+                        id: pendingPhotos.join(','),
+                        title: pendingPhotos.length === 1 ? 'Esta fotografia' : `${pendingPhotos.length} fotografias`,
+                    }}
+                    isDeleting={isDeletingPhotos}
+                    onCancel={() => setPendingPhotos(null)}
+                    onConfirm={async () => {
+                        setIsDeletingPhotos(true);
+                        const count = pendingPhotos.length;
+                        try {
+                            await run(
+                                async () => { for (const id of pendingPhotos) await removeImage({ id: id as Id<'galleryImages'> }); },
+                                count === 1 ? 'Fotografia apagada.' : `${count} fotografias apagadas.`,
+                            );
+                        } finally {
+                            setIsDeletingPhotos(false);
+                            setPendingPhotos(null);
+                        }
+                    }}
+                />
+            )}
         </div>
     );
 };

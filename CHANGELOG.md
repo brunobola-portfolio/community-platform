@@ -6,6 +6,49 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-08-29
+
+### Fixed
+
+- **The backoffice ignored its own dark styling for anyone browsing the portal in
+  light mode**: `/admin` and `/setup` now declare `dark` on their root, so shared
+  dialogs, inputs and buttons stop rendering light-theme colours on a dark panel
+  (form fields were an unreadable grey block, outline buttons looked disabled)
+- Sponsors saved from the backoffice stored the tier display name while the portal
+  looked the tier up by id, so an edited partner lost its level on the public site;
+  both resolve through `utils/sponsorTiers.ts` now, and the form writes the id
+- Long table content is scrollable instead of clipped (the wrapper had
+  `whitespace-nowrap` inside `overflow-hidden`)
+- Delete, duplicate and edit are available on mobile for every entity — sponsors,
+  categories, documents and notifications only offered edit
+- Homepage stats could not be created at all, and their actions only appeared on
+  hover, which never happens on touch
+
+### Added
+
+- `EntityList`: one list surface for every entity tab (search, filter chips with
+  counts, sort, result counter, desktop table, mobile cards, loading skeletons,
+  empty-collection and no-results states) — sponsors, categories, tiers, documents,
+  notifications and milestones gained everything events/news/members already had
+- Real error messages: mutations return their failure text and
+  `describeActionError` turns validator dumps and auth failures into instructions
+  ("Há campos por preencher…", "A sessão expirou…") instead of "Erro de validação"
+- Unsaved-changes guard on the entity form, a busy state on delete, and a settings
+  save that reports success or failure instead of always claiming success
+- Section descriptions in the page header explaining what each tab controls on the
+  public site, plus a "Ver site" shortcut
+- Cascade warnings in the delete dialog (album photos, event registrations,
+  category references) and consistent confirmation across the panel
+
+### Changed
+
+- Activity log entries name the record ("Evento atualizado: Torneio…") instead of
+  printing a document id
+- Registration details, quota removal and the quota form moved onto the shared
+  dialog shell; leads and quotas dropped their duplicated headings
+- Entity forms split into `pages/admin/forms/` (content, people, system) and every
+  admin file is back under the 300-line budget; no `any` left in application code
+
 ## [2.4.0] - 2026-08-29
 
 ### Added
@@ -123,7 +166,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.0.0...v2.2.0

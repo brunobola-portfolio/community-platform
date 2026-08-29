@@ -3,6 +3,7 @@ import { Modal, Button } from './UIComponents';
 import type { Sponsor } from '../../types';
 import { Globe, Handshake, Building2 } from 'lucide-react';
 import { useData } from '../../context/DataContext';
+import { sponsorTierLabel } from '../../utils/sponsorTiers';
 
 interface PartnerDetailsModalProps {
   sponsor: Sponsor | null;
@@ -15,7 +16,7 @@ export const PartnerDetailsModal: React.FC<PartnerDetailsModalProps> = ({ sponso
 
   if (!sponsor) return null;
 
-  const tierName = sponsorTiers.find(t => t.id === sponsor.tier.toLowerCase())?.name ?? sponsor.tier;
+  const tierName = sponsorTierLabel(sponsorTiers, sponsor.tier);
 
   return (
     <Modal

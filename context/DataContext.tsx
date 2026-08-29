@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useMemo, useCallback, useState, useEffect } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import { useQuery, useMutation, useConvexAuth } from "convex/react";
 import { ConvexError } from "convex/values";
 import { api } from "../convex/_generated/api";
@@ -783,6 +783,21 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     [logActivityMut]
   );
 
+  // Activity log entries are read by humans: keep the record's own name in the
+  // ref so a delete or update never shows a raw document id
+  const namedRecordsRef = useRef<Array<{ id: string; title?: string; name?: string; label?: string }>>([]);
+  useEffect(() => {
+    namedRecordsRef.current = [
+      ...adminEvents, ...adminPosts, ...members, ...categories, ...sponsors, ...documents,
+      ...notifications, ...albums, ...milestones, ...actionAreas, ...stats, ...sponsorTiers,
+    ];
+  }, [adminEvents, adminPosts, members, categories, sponsors, documents, notifications, albums, milestones, actionAreas, stats, sponsorTiers]);
+  const describeAction = useCallback((prefix: string, id: string) => {
+    const record = namedRecordsRef.current.find(item => item.id === id);
+    const name = record?.title ?? record?.name ?? record?.label;
+    return name ? `${prefix}: ${name}` : prefix;
+  }, []);
+
   // ── Event Actions ──────────────────────────────────────────────────────────
 
   const addEvent = useCallback(
@@ -825,28 +840,28 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           ...rest,
           ...(status !== undefined ? { status: status as 'published' | 'draft' } : {}),
         });
-        logActivity('update', 'Evento', `Evento atualizado ID: ${id}`);
+        logActivity('update', 'Evento', describeAction('Evento atualizado', id));
         return { success: true };
       } catch (e) {
         console.error("updateEvent error:", e);
         return toActionResult(e);
       }
     },
-    [updateEventMut, logActivity]
+    [updateEventMut, logActivity, describeAction]
   );
 
   const deleteEvent = useCallback(
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteEventMut({ id: id as Id<"events"> });
-        logActivity('delete', 'Evento', `Evento removido ID: ${id}`);
+        logActivity('delete', 'Evento', describeAction('Evento removido', id));
         return { success: true };
       } catch (e) {
         console.error("deleteEvent error:", e);
         return toActionResult(e);
       }
     },
-    [deleteEventMut, logActivity]
+    [deleteEventMut, logActivity, describeAction]
   );
 
   // ── Post Actions ───────────────────────────────────────────────────────────
@@ -888,28 +903,28 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (coverUrl !== undefined) rest.externalImage = coverUrl;
         if (rest.categoryId) rest.categoryId = String(rest.categoryId);
         await updatePostMut({ id: id as Id<"posts">, ...rest });
-        logActivity('update', 'Notícia', `Notícia atualizada ID: ${id}`);
+        logActivity('update', 'Notícia', describeAction('Notícia atualizada', id));
         return { success: true };
       } catch (e) {
         console.error("updatePost error:", e);
         return toActionResult(e);
       }
     },
-    [updatePostMut, logActivity]
+    [updatePostMut, logActivity, describeAction]
   );
 
   const deletePost = useCallback(
     async (id: string): Promise<ActionResult> => {
       try {
         await deletePostMut({ id: id as Id<"posts"> });
-        logActivity('delete', 'Notícia', `Notícia removida ID: ${id}`);
+        logActivity('delete', 'Notícia', describeAction('Notícia removida', id));
         return { success: true };
       } catch (e) {
         console.error("deletePost error:", e);
         return toActionResult(e);
       }
     },
-    [deletePostMut, logActivity]
+    [deletePostMut, logActivity, describeAction]
   );
 
   // ── Member Actions ─────────────────────────────────────────────────────────
@@ -952,14 +967,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteMemberMut({ id: id as Id<"members"> });
-        logActivity('delete', 'Membro', `Membro removido ID: ${id}`);
+        logActivity('delete', 'Membro', describeAction('Membro removido', id));
         return { success: true };
       } catch (e) {
         console.error("deleteMember error:", e);
         return toActionResult(e);
       }
     },
-    [deleteMemberMut, logActivity]
+    [deleteMemberMut, logActivity, describeAction]
   );
 
   // ── Sponsor Actions ────────────────────────────────────────────────────────
@@ -1003,14 +1018,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteSponsorMut({ id: id as Id<"sponsors"> });
-        logActivity('delete', 'Parceiro', `Parceiro removido ID: ${id}`);
+        logActivity('delete', 'Parceiro', describeAction('Parceiro removido', id));
         return { success: true };
       } catch (e) {
         console.error("deleteSponsor error:", e);
         return toActionResult(e);
       }
     },
-    [deleteSponsorMut, logActivity]
+    [deleteSponsorMut, logActivity, describeAction]
   );
 
   // ── Category Actions ───────────────────────────────────────────────────────
@@ -1058,7 +1073,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<{ success: boolean; message: string }> => {
       try {
         await deleteCategoryMut({ id: id as Id<"categories"> });
-        logActivity('delete', 'Categoria', `Categoria removida ID: ${id}`);
+        logActivity('delete', 'Categoria', describeAction('Categoria removida', id));
         return { success: true, message: "OK" };
       } catch (e) {
         console.error("deleteCategory error:", e);
@@ -1066,7 +1081,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { success: false, message };
       }
     },
-    [deleteCategoryMut, logActivity]
+    [deleteCategoryMut, logActivity, describeAction]
   );
 
   // ── Registration Actions ───────────────────────────────────────────────────
@@ -1144,14 +1159,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteDocMut({ id: id as Id<"documents"> });
-        logActivity('delete', 'Documento', `Documento removido ID: ${id}`);
+        logActivity('delete', 'Documento', describeAction('Documento removido', id));
         return { success: true };
       } catch (e) {
         console.error("deleteDocument error:", e);
         return toActionResult(e);
       }
     },
-    [deleteDocMut, logActivity]
+    [deleteDocMut, logActivity, describeAction]
   );
 
   // ── Notification Actions ───────────────────────────────────────────────────
@@ -1174,28 +1189,28 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string, data: Partial<NotificationCreateArgs & { read?: boolean }>): Promise<ActionResult> => {
       try {
         await updateNotifMut({ id: id as Id<"notifications">, ...data });
-        logActivity('update', 'Notificação', `Notificação atualizada ID: ${id}`);
+        logActivity('update', 'Notificação', describeAction('Notificação atualizada', id));
         return { success: true };
       } catch (e) {
         console.error("updateNotification error:", e);
         return toActionResult(e);
       }
     },
-    [updateNotifMut, logActivity]
+    [updateNotifMut, logActivity, describeAction]
   );
 
   const deleteNotification = useCallback(
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteNotifMut({ id: id as Id<"notifications"> });
-        logActivity('delete', 'Notificação', `Notificação removida ID: ${id}`);
+        logActivity('delete', 'Notificação', describeAction('Notificação removida', id));
         return { success: true };
       } catch (e) {
         console.error("deleteNotification error:", e);
         return toActionResult(e);
       }
     },
-    [deleteNotifMut, logActivity]
+    [deleteNotifMut, logActivity, describeAction]
   );
 
   // ── Album Actions ──────────────────────────────────────────────────────────
@@ -1251,14 +1266,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteAlbumMut({ id: id as Id<"albums"> });
-        logActivity('delete', 'Álbum', `Álbum removido ID: ${id}`);
+        logActivity('delete', 'Álbum', describeAction('Álbum removido', id));
         return { success: true };
       } catch (e) {
         console.error("deleteAlbum error:", e);
         return toActionResult(e);
       }
     },
-    [deleteAlbumMut, logActivity]
+    [deleteAlbumMut, logActivity, describeAction]
   );
 
   // ── Milestone Actions ──────────────────────────────────────────────────────
@@ -1306,14 +1321,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteMilestoneMut({ id: id as Id<"milestones"> });
-        logActivity('delete', 'Marco Histórico', `Marco removido ID: ${id}`);
+        logActivity('delete', 'Marco Histórico', describeAction('Marco removido', id));
         return { success: true };
       } catch (e) {
         console.error("deleteMilestone error:", e);
         return toActionResult(e);
       }
     },
-    [deleteMilestoneMut, logActivity]
+    [deleteMilestoneMut, logActivity, describeAction]
   );
 
   // ── Settings Action ────────────────────────────────────────────────────────
@@ -1445,14 +1460,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteActionAreaMut({ id: id as Id<"actionAreas"> });
-        logActivity('delete', 'Área de Atuação', `Área de atuação removida ID: ${id}`);
+        logActivity('delete', 'Área de Atuação', describeAction('Área de atuação removida', id));
         return { success: true };
       } catch (e) {
         console.error("deleteActionArea error:", e);
         return toActionResult(e);
       }
     },
-    [deleteActionAreaMut, logActivity]
+    [deleteActionAreaMut, logActivity, describeAction]
   );
 
   // ── Stat Actions ───────────────────────────────────────────────────────────
@@ -1478,14 +1493,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteStatMut({ id: id as Id<"stats"> });
-        logActivity('delete', 'Estatística', `Estatística removida ID: ${id}`);
+        logActivity('delete', 'Estatística', describeAction('Estatística removida', id));
         return { success: true };
       } catch (e) {
         console.error("deleteStat error:", e);
         return toActionResult(e);
       }
     },
-    [deleteStatMut, logActivity]
+    [deleteStatMut, logActivity, describeAction]
   );
 
   // ── Sponsor Tier Actions ───────────────────────────────────────────────────
@@ -1511,14 +1526,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     async (id: string): Promise<ActionResult> => {
       try {
         await deleteSponsorTierMut({ id: id as Id<"sponsorTiers"> });
-        logActivity('delete', 'Nível de Parceiro', `Nível de parceria removido ID: ${id}`);
+        logActivity('delete', 'Nível de Parceiro', describeAction('Nível de parceria removido', id));
         return { success: true };
       } catch (e) {
         console.error("deleteSponsorTier error:", e);
         return toActionResult(e);
       }
     },
-    [deleteSponsorTierMut, logActivity]
+    [deleteSponsorTierMut, logActivity, describeAction]
   );
 
   // ── Context Value (memoized) ───────────────────────────────────────────────

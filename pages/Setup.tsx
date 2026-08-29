@@ -142,7 +142,7 @@ export const SetupPage: React.FC = () => {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-slate-950 text-white">
+        <div className="dark relative min-h-screen overflow-hidden bg-slate-950 text-white">
             <BackgroundDecor />
 
             <div className="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6">

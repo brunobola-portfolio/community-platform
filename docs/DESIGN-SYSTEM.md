@@ -90,6 +90,23 @@ pode transmitir informação essencial.
 Padrões proibidos: inline `style={{}}`, cores fora dos tokens, componentes aninhados,
 `ring-*` de foco ad-hoc fora do padrão acima.
 
+## Backoffice (`/admin`)
+
+Dark-only por definição: a raiz tem a classe `dark`, o que faz os componentes partilhados
+seguirem o tema escuro independentemente da preferência do visitante.
+
+| Peça | Contrato |
+|------|----------|
+| `AdminPageHeader` | Título, contagem, uma linha a explicar o que a secção controla no portal, ação primária e atalho "Ver site" |
+| `EntityList` | Lista única do backoffice: toolbar (pesquisa `/`, filtros com contagens, ordenação, contador), tabela desktop com scroll horizontal, cartões mobile e dois estados vazios. As ações (duplicar/editar/apagar) são iguais em desktop e mobile |
+| `EmptyState` | Coleção vazia, com ação de criação quando existe |
+| `Toast` | `success` / `error` / `info`, com `role` adequado, fecho manual e erros a durar mais |
+| `DeleteConfirmDialog` | Confirmação com a consequência real (cascatas, storage) e estado ocupado |
+| `AdminFormModal` | Diálogo partilhado com barra de ações fixa, aviso de alterações por guardar e mensagens de erro traduzidas |
+
+Formulários por entidade vivem em `pages/admin/forms/` (conteúdo, pessoas, sistema);
+o modal é só a casca e o encaminhamento.
+
 ## White-label
 
 A escala `brand` é o único ponto de cor por instância — trocar em
