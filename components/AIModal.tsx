@@ -18,6 +18,7 @@ import { useData } from '../context/DataContext';
 import { cn } from '../utils/cn';
 import { ChatMessage, AssistantAvatar, type ChatMessageData, type GroundingChunk } from './ai/ChatMessage';
 import { ConvexError } from 'convex/values';
+import { getSessionId } from '../utils/session';
 
 interface AIModalProps {
   isOpen: boolean;
@@ -60,7 +61,7 @@ const getAiErrorMessage = (error: unknown): string => {
 
 export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery, onInitialQueryConsumed }) => {
   const chatAction = useAction(api.ai.chat);
-  const ttsAction = useAction(api.ai.tts);
+  const ttsAction = useAction(api.aiMedia.tts);
   const navigate = useNavigate();
   const { settings } = useData();
   const welcomeMessage = buildWelcomeMessage(settings.siteName);
@@ -111,7 +112,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
         .filter((_, idx) => idx > 0)
         .slice(-6)
         .map(m => ({ role: m.role, text: m.text }));
-      const result = await chatAction({ message: userMsg, useMapsTool: useMaps, history: historyForApi });
+      const result = await chatAction({ message: userMsg, useMapsTool: useMaps, history: historyForApi, sessionId: getSessionId() });
 
       const reply = result.text;
       const links = result.groundingChunks as GroundingChunk[] | undefined;
@@ -177,7 +178,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
   const speak = async (text: string, index: number) => {
     setIsSpeaking(index);
     try {
-      const result = await ttsAction({ text });
+      const result = await ttsAction({ text, sessionId: getSessionId() });
       await playBase64Audio(result.audioBase64);
     } catch (e) {
       console.error("TTS Error:", e);

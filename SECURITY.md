@@ -52,8 +52,8 @@ Documented so deployers can decide whether they matter for their association:
   policy, no sign-up link on the admin dialog. Planned: an email-verification provider.
 - **No sign-in throttling at the auth HTTP routes.** Convex Auth does not expose a hook for
   it; the password policy (10+ chars, mixed case, digit) is the current control.
-- **Documents are all world-readable.** `documents.list` has no visibility flag; do not
-  upload minutes or member lists you would not publish on the site.
+- **Documents are visible to every signed-in account**, not only to dues-paying members;
+  `documents.list` refuses anonymous callers but has no per-document visibility flag.
 - **Images uploaded through the Media Studio are referenced by URL**, so deleting the
   entity leaves the blob in Convex storage. Remove orphans from the Convex dashboard.
 - **Chat classification fails open.** If the classifier call errors, the message is treated

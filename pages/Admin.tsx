@@ -85,8 +85,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         upsertSponsorTier, deleteSponsorTier
     } = useData();
 
-    const generateImageAction = useAction(api.ai.generateImage);
-    const enhanceTextAction = useAction(api.ai.enhanceText);
+    const generateImageAction = useAction(api.aiMedia.generateImage);
+    const enhanceTextAction = useAction(api.aiText.enhanceText);
     const aiStats = useQuery(api.aiLogs.getStats, { days: 7 }) as AIStats | undefined;
 
     // ── State ────────────────────────────────────────────────────────────────
