@@ -1,6 +1,6 @@
 "use node";
 
-import { action } from "./_generated/server";
+import { action, type ActionCtx } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { GoogleGenAI, Modality } from "@google/genai";
 import { api, internal } from "./_generated/api";
@@ -68,6 +68,24 @@ function classifyProviderError(raw: string): string {
     return "ERR_UNAVAILABLE";
   }
   return "ERR_GENERIC";
+}
+
+/**
+ * Two buckets for a public AI action: one for the caller (user id, or the
+ * browser session id anonymous visitors send) and one global anonymous ceiling
+ * keyed only by the action, so rotating session ids still meets a hard cap.
+ */
+async function consumePublicBudget(
+  ctx: { runMutation: ActionCtx["runMutation"] },
+  key: string,
+  userId: string | null,
+  sessionId: string | undefined,
+) {
+  const caller = userId ?? (sessionId ? `session:${sessionId.slice(0, 64)}` : undefined);
+  await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, { key, userId: caller });
+  if (!userId) {
+    await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, { key: `${key}:anonymous` });
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -199,7 +217,8 @@ export const chat = action({
   args: {
     message: v.string(),
     useMapsTool: v.boolean(),
-    model: v.optional(v.string()),
+    /** Random per-browser id so anonymous visitors get their own bucket. */
+    sessionId: v.optional(v.string()),
     history: v.optional(
       v.array(
         v.object({
@@ -213,16 +232,16 @@ export const chat = action({
     const startTime = Date.now();
     let selectedModel = "unknown";
     try {
-      // Public chatbot: logged-in users get per-user rate limits, anonymous
-      // visitors share a single bucket keyed just by the action name.
+      // Public chatbot: a per-user (or per-browser session) bucket plus a
+      // global anonymous ceiling, so one client cannot drain the whole quota
       const userId = await ctx.runQuery(api.lib.actionAuth.getOptionalAuth);
-      await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, {
-        key: "ai:chat",
-        userId: (userId as string | null) ?? undefined,
-      });
+      await consumePublicBudget(ctx, "ai:chat", userId as string | null, args.sessionId);
 
       // AI model configuration from DB settings (internal query), env vars, or defaults
       const settings = await ctx.runQuery(internal.settings.getForAI);
+      if (settings?.enableChatbot === false) throw new ConvexError("ERR_UNAVAILABLE");
+      // The client already caps the message; the server is the boundary
+      const message = args.message.slice(0, 2000);
       const chatModel = settings?.chatModel ?? process.env.GEMINI_CHAT_MODEL ?? DEFAULT_CHAT_MODEL;
       const chatModelFallback = settings?.chatModelFallback ?? process.env.GEMINI_CHAT_MODEL_FALLBACK ?? DEFAULT_CHAT_MODEL_FALLBACK;
       // Site identity for prompts and canned replies; DB-first, generic fallback
@@ -242,8 +261,8 @@ export const chat = action({
       // --- Step 1: Classify the query (if guardrails enabled) ---
       const classification = guardrailsEnabled
         ? ai
-          ? await classifyQuery(ai, args.message, chatModelFallback, allowedTopics, forbiddenTopics)
-          : await classifyQueryViaProvider(provider, args.message, allowedTopics, forbiddenTopics)
+          ? await classifyQuery(ai, message, chatModelFallback, allowedTopics, forbiddenTopics)
+          : await classifyQueryViaProvider(provider, message, allowedTopics, forbiddenTopics)
         : "GERAL";
 
       // userId used for analytics logging; anonymous visitors get a stable label
@@ -324,22 +343,20 @@ export const chat = action({
       }
       contents.push({
         role: "user",
-        parts: [{ text: args.message }],
+        parts: [{ text: message }],
       });
 
       // --- Step 4: Model selection ---
-      const lowerMsg = args.message.toLowerCase();
+      const lowerMsg = message.toLowerCase();
       const isSimpleQuery =
-        args.message.length < 50 &&
+        message.length < 50 &&
         !lowerMsg.includes("explica") &&
         !lowerMsg.includes("como") &&
         !lowerMsg.includes("porque");
 
       selectedModel = provider.kind !== "gemini"
         ? provider.model ?? "openai-compatible"
-        : args.model
-          ? args.model
-          : args.useMapsTool
+        : args.useMapsTool
             ? chatModelFallback
             : isSimpleQuery
               ? chatModelFallback
@@ -504,6 +521,7 @@ export const tts = action({
   args: {
     text: v.string(),
     voiceName: v.optional(v.string()),
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const startTime = Date.now();
@@ -511,10 +529,9 @@ export const tts = action({
     try {
       // Public TTS: optional auth, shared rate-limit bucket for anonymous use
       const userId = await ctx.runQuery(api.lib.actionAuth.getOptionalAuth);
-      await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, {
-        key: "ai:tts",
-        userId: (userId as string | null) ?? undefined,
-      });
+      await consumePublicBudget(ctx, "ai:tts", userId as string | null, args.sessionId);
+      const aiSettings = await ctx.runQuery(internal.settings.getForAI);
+      if (aiSettings?.enableChatbot === false) throw new ConvexError("ERR_UNAVAILABLE");
 
       const ai = getAI();
 
@@ -522,8 +539,8 @@ export const tts = action({
       const settings = await ctx.runQuery(api.settings.getPublic);
       ttsModel = settings?.ttsModel ?? process.env.GEMINI_TTS_MODEL ?? DEFAULT_TTS_MODEL;
 
-      // Truncate text to 4000 chars for safety
-      const safeText = args.text.slice(0, 4000);
+      // Read-aloud of a chat reply never needs more than this
+      const safeText = args.text.slice(0, 1500);
       const voiceName = args.voiceName ?? "Kore";
 
       const response = await ai.models.generateContent({
@@ -596,17 +613,17 @@ export const tts = action({
 export const geoQuery = action({
   args: {
     query: v.string(),
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const startTime = Date.now();
     let geoModel = "unknown";
     try {
-      // Public geo queries: optional auth, shared rate-limit bucket for anonymous use
+      // Public geo queries: per-session bucket plus the global ceiling
       const userId = await ctx.runQuery(api.lib.actionAuth.getOptionalAuth);
-      await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, {
-        key: "ai:geoQuery",
-        userId: (userId as string | null) ?? undefined,
-      });
+      await consumePublicBudget(ctx, "ai:geoQuery", userId as string | null, args.sessionId);
+      const aiSettings = await ctx.runQuery(internal.settings.getForAI);
+      if (aiSettings?.enableChatbot === false) throw new ConvexError("ERR_UNAVAILABLE");
 
       // Input sanitization: length limit and injection check
       const safeQuery = args.query.slice(0, 500);

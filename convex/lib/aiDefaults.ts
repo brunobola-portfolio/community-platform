@@ -10,6 +10,25 @@ export const DEFAULT_CHAT_MODEL = "gemini-3.5-flash";
 export const DEFAULT_CHAT_MODEL_FALLBACK = "gemini-3.5-flash-lite";
 export const DEFAULT_TTS_MODEL = "gemini-2.5-flash-preview-tts";
 export const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image";
+
+/** Curated Gemini catalogue for the admin selectors; one list, three screens. */
+export const GEMINI_CHAT_MODELS = [
+  { id: "gemini-3.7-flash", label: "Gemini 3.7 Flash (mais recente)" },
+  { id: "gemini-3.5-flash", label: "Gemini 3.5 Flash (recomendado)" },
+  { id: "gemini-3.5-flash-lite", label: "Gemini 3.5 Flash Lite" },
+  { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash (económico)" },
+  { id: "gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite" },
+] as const;
+export const GEMINI_TTS_MODELS = [
+  { id: "gemini-2.5-flash-preview-tts", label: "Gemini 2.5 Flash TTS" },
+  { id: "gemini-3.1-flash-tts-preview", label: "Gemini 3.1 Flash TTS (preview)" },
+] as const;
+export const GEMINI_IMAGE_MODELS = [
+  { id: "gemini-3.1-flash-lite-image", label: "NanoBanana 2 Lite (económico)" },
+  { id: "gemini-3.1-flash-image", label: "NanoBanana 2 (recomendado)" },
+  { id: "gemini-3-pro-image", label: "NanoBanana Pro (qualidade máxima)" },
+  { id: "gemini-2.5-flash-image", label: "NanoBanana (legado)" },
+] as const;
 // OpenRouter fallback when the configured slug disappears (free-tier slugs
 // rotate often): Google open-weights MoE, 4B active params — fast, free,
 // solid Portuguese

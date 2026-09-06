@@ -30,6 +30,10 @@ glassmorphism sobre neutros slate, com uma cor brand quente por instância.
 
 Regra de contraste: em dark, a brand para texto é `brand-400`; `brand-600` é para light.
 
+A segunda cor de destaque é o dourado `accent-gold` (gradientes de título `from-brand-600
+to-accent-gold`, glows, faixa superior dos cartões). Não existe roxo/azul na paleta pública;
+o tom "info" das notificações usa `brand-500/10`.
+
 Cores de categoria (eventos e notícias) vêm da BD como classes Tailwind: a paleta
 autorizada é `utils/categoryColors.ts`, importada pelo `safelist` do
 [tailwind.config.ts](../tailwind.config.ts). Sem essa entrada a classe não é compilada
@@ -100,6 +104,7 @@ seguirem o tema escuro independentemente da preferência do visitante.
 | `AdminPageHeader` | Título, contagem, uma linha a explicar o que a secção controla no portal, ação primária e atalho "Ver site" |
 | `EntityList` | Lista única do backoffice: toolbar (pesquisa `/`, filtros com contagens, ordenação, contador), tabela desktop com scroll horizontal, cartões mobile e dois estados vazios. As ações (duplicar/editar/apagar) são iguais em desktop e mobile |
 | `EmptyState` | Coleção vazia, com ação de criação quando existe |
+| `Field` | Par label + controlo do backoffice: id gerado, `htmlFor`, asterisco nos obrigatórios e `hint` opcional |
 | `Toast` | `success` / `error` / `info`, com `role` adequado, fecho manual e erros a durar mais |
 | `DeleteConfirmDialog` | Confirmação com a consequência real (cascatas, storage) e estado ocupado |
 | `AdminFormModal` | Diálogo partilhado com barra de ações fixa, aviso de alterações por guardar e mensagens de erro traduzidas |

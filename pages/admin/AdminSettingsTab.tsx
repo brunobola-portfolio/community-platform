@@ -7,6 +7,7 @@ import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import type { AdminSettingsTabProps } from './types';
 import type { AboutPillar } from '../../types';
 import { AdminIdentitySection } from './AdminIdentitySection';
+import { Field } from './components/Field';
 
 // Icon options must match PILLAR_ICONS in pages/About.tsx
 const PILLAR_ICON_OPTIONS = ['Target', 'Shield', 'Users', 'Heart', 'Trophy', 'Handshake', 'Star', 'Sparkles'];
@@ -34,18 +35,13 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                     <Globe className="text-brand-400" /> Geral
                 </h3>
                 <div className="space-y-4">
+                    <Field label="Nome do Site"><input value={settingsForm.siteName} onChange={e => update('siteName', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <Field label="Email"><input value={settingsForm.contactEmail} onChange={e => update('contactEmail', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                     <div>
-                        <label className={LABEL_CLASS}>Nome do Site</label>
-                        <input value={settingsForm.siteName} onChange={e => update('siteName', e.target.value)} className={STD_INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Email</label>
-                        <input value={settingsForm.contactEmail} onChange={e => update('contactEmail', e.target.value)} className={STD_INPUT_CLASS} />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>URL do Logótipo</label>
+                        <label htmlFor="settings-logo-url" className={LABEL_CLASS}>URL do logótipo</label>
                         <div className="flex gap-2">
                             <input
+                                id="settings-logo-url"
                                 placeholder="https://... ou /logo.svg"
                                 value={settingsForm.logoUrl ?? ''}
                                 onChange={e => update('logoUrl', e.target.value)}
@@ -84,36 +80,15 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                 </h3>
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className={LABEL_CLASS}>Telefone</label>
-                            <input value={settingsForm.phone ?? ''} onChange={e => update('phone', e.target.value)} className={STD_INPUT_CLASS} placeholder="+351 212 345 678" />
-                        </div>
-                        <div>
-                            <label className={LABEL_CLASS}>Mandato Atual</label>
-                            <input value={settingsForm.currentMandate ?? ''} onChange={e => update('currentMandate', e.target.value)} className={STD_INPUT_CLASS} placeholder="2024-2026" />
-                        </div>
+                        <Field label="Telefone"><input value={settingsForm.phone ?? ''} onChange={e => update('phone', e.target.value)} className={STD_INPUT_CLASS} placeholder="+351 212 345 678" /></Field>
+                        <Field label="Mandato Atual"><input value={settingsForm.currentMandate ?? ''} onChange={e => update('currentMandate', e.target.value)} className={STD_INPUT_CLASS} placeholder="2024-2026" /></Field>
                     </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Morada</label>
-                        <input value={settingsForm.address ?? ''} onChange={e => update('address', e.target.value)} className={STD_INPUT_CLASS} placeholder="Rua da Associação, 1, 0000-000 Localidade" />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Horário de Funcionamento</label>
-                        <input value={settingsForm.openingHours ?? ''} onChange={e => update('openingHours', e.target.value)} className={STD_INPUT_CLASS} placeholder="Seg–Sex: 9:00–18:00 · Sáb–Dom: 13:00–23:00" />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>URL do Google Maps</label>
-                        <input value={settingsForm.mapsUrl ?? ''} onChange={e => update('mapsUrl', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://maps.app.goo.gl/..." />
-                    </div>
+                    <Field label="Morada"><input value={settingsForm.address ?? ''} onChange={e => update('address', e.target.value)} className={STD_INPUT_CLASS} placeholder="Rua da Associação, 1, 0000-000 Localidade" /></Field>
+                    <Field label="Horário de Funcionamento"><input value={settingsForm.openingHours ?? ''} onChange={e => update('openingHours', e.target.value)} className={STD_INPUT_CLASS} placeholder="Seg–Sex: 9:00–18:00 · Sáb–Dom: 13:00–23:00" /></Field>
+                    <Field label="URL do Google Maps"><input value={settingsForm.mapsUrl ?? ''} onChange={e => update('mapsUrl', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://maps.app.goo.gl/..." /></Field>
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className={LABEL_CLASS}>Latitude</label>
-                            <input value={settingsForm.latitude ?? ''} onChange={e => update('latitude', e.target.value)} className={STD_INPUT_CLASS} placeholder="39.515469" />
-                        </div>
-                        <div>
-                            <label className={LABEL_CLASS}>Longitude</label>
-                            <input value={settingsForm.longitude ?? ''} onChange={e => update('longitude', e.target.value)} className={STD_INPUT_CLASS} placeholder="-8.586681" />
-                        </div>
+                        <Field label="Latitude"><input value={settingsForm.latitude ?? ''} onChange={e => update('latitude', e.target.value)} className={STD_INPUT_CLASS} placeholder="39.515469" /></Field>
+                        <Field label="Longitude"><input value={settingsForm.longitude ?? ''} onChange={e => update('longitude', e.target.value)} className={STD_INPUT_CLASS} placeholder="-8.586681" /></Field>
                     </div>
                 </div>
             </div>
@@ -126,28 +101,13 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                 <p className="text-slate-500 text-sm mb-6">Dados mostrados aos sócios na Área de Sócio. Campos vazios ficam ocultos; sem nenhum configurado, o sócio vê a indicação para contactar a direção.</p>
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className={LABEL_CLASS}>Valor da Quota</label>
-                            <input value={settingsForm.quotaAmount ?? ''} onChange={e => update('quotaAmount', e.target.value)} className={STD_INPUT_CLASS} placeholder="12€ / ano" />
-                        </div>
-                        <div>
-                            <label className={LABEL_CLASS}>MB WAY</label>
-                            <input value={settingsForm.mbwayNumber ?? ''} onChange={e => update('mbwayNumber', e.target.value)} className={STD_INPUT_CLASS} placeholder="+351 912 345 678" />
-                        </div>
+                        <Field label="Valor da Quota"><input value={settingsForm.quotaAmount ?? ''} onChange={e => update('quotaAmount', e.target.value)} className={STD_INPUT_CLASS} placeholder="12€ / ano" /></Field>
+                        <Field label="MB WAY"><input value={settingsForm.mbwayNumber ?? ''} onChange={e => update('mbwayNumber', e.target.value)} className={STD_INPUT_CLASS} placeholder="+351 912 345 678" /></Field>
                     </div>
-                    <div>
-                        <label className={LABEL_CLASS}>IBAN</label>
-                        <input value={settingsForm.iban ?? ''} onChange={e => update('iban', e.target.value)} className={STD_INPUT_CLASS} placeholder="PT50 0000 0000 0000 0000 0000 0" />
-                    </div>
+                    <Field label="IBAN"><input value={settingsForm.iban ?? ''} onChange={e => update('iban', e.target.value)} className={STD_INPUT_CLASS} placeholder="PT50 0000 0000 0000 0000 0000 0" /></Field>
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className={LABEL_CLASS}>Entidade Multibanco</label>
-                            <input value={settingsForm.multibancoEntity ?? ''} onChange={e => update('multibancoEntity', e.target.value)} className={STD_INPUT_CLASS} placeholder="12345" />
-                        </div>
-                        <div>
-                            <label className={LABEL_CLASS}>Referência Multibanco</label>
-                            <input value={settingsForm.multibancoReference ?? ''} onChange={e => update('multibancoReference', e.target.value)} className={STD_INPUT_CLASS} placeholder="123 456 789" />
-                        </div>
+                        <Field label="Entidade Multibanco"><input value={settingsForm.multibancoEntity ?? ''} onChange={e => update('multibancoEntity', e.target.value)} className={STD_INPUT_CLASS} placeholder="12345" /></Field>
+                        <Field label="Referência Multibanco"><input value={settingsForm.multibancoReference ?? ''} onChange={e => update('multibancoReference', e.target.value)} className={STD_INPUT_CLASS} placeholder="123 456 789" /></Field>
                     </div>
                 </div>
             </div>
@@ -158,18 +118,15 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                     <BookOpen className="text-amber-400" /> Página Sobre
                 </h3>
                 <div className="space-y-4">
-                    <div>
-                        <label className={LABEL_CLASS}>Missão (parágrafo de destaque)</label>
-                        <textarea
+                    <Field label="Missão (parágrafo de destaque)"><textarea
                             rows={3}
                             value={settingsForm.aboutMission ?? ''}
                             onChange={e => update('aboutMission', e.target.value)}
                             className={STD_INPUT_CLASS}
                             placeholder="A associação promove a vida recreativa, cultural e desportiva da comunidade..."
-                        />
-                    </div>
+                        /></Field>
                     <div>
-                        <label className={LABEL_CLASS}>Pilares (cartões da secção de valores)</label>
+                        <span className={LABEL_CLASS}>Pilares (cartões da secção de valores)</span>
                         <div className="space-y-3">
                             {(settingsForm.aboutPillars ?? []).map((pillar, i) => {
                                 const setPillar = (patch: Partial<AboutPillar>) => {
@@ -235,18 +192,9 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                     <Facebook className="text-blue-400" /> Redes Sociais
                 </h3>
                 <div className="space-y-4">
-                    <div>
-                        <label className={LABEL_CLASS}>Facebook Page ID</label>
-                        <input value={settingsForm.facebookPageId ?? ''} onChange={e => update('facebookPageId', e.target.value)} className={STD_INPUT_CLASS} placeholder="ID da página do Facebook" />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Facebook Access Token</label>
-                        <input type="password" value={settingsForm.facebookAccessToken ?? ''} onChange={e => update('facebookAccessToken', e.target.value)} className={STD_INPUT_CLASS} placeholder="Token de acesso (mantido seguro)" />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Instagram (URL)</label>
-                        <input value={settingsForm.instagramUrl ?? ''} onChange={e => update('instagramUrl', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://www.instagram.com/a-tua-associacao/" />
-                    </div>
+                    <Field label="Facebook Page ID"><input value={settingsForm.facebookPageId ?? ''} onChange={e => update('facebookPageId', e.target.value)} className={STD_INPUT_CLASS} placeholder="ID da página do Facebook" /></Field>
+                    <Field label="Facebook Access Token"><input type="password" value={settingsForm.facebookAccessToken ?? ''} onChange={e => update('facebookAccessToken', e.target.value)} className={STD_INPUT_CLASS} placeholder="Token de acesso (mantido seguro)" /></Field>
+                    <Field label="Instagram (URL)"><input value={settingsForm.instagramUrl ?? ''} onChange={e => update('instagramUrl', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://www.instagram.com/a-tua-associacao/" /></Field>
                 </div>
             </div>
 

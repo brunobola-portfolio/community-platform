@@ -7,17 +7,19 @@
  * public site data the context exists to serve.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useMutation, useQuery } from 'convex/react';
 import { ConvexError } from 'convex/values';
-import { Edit2, Plus, Search, Trash2, Wallet } from 'lucide-react';
+import { Plus, Wallet } from 'lucide-react';
 import { Button, Modal, cn } from '../../components/ui/UIComponents';
-import { EmptyState } from '../../components/ui/EmptyState';
 import { DeleteConfirmDialog } from './components/DeleteConfirmDialog';
 import { QuotaPill } from './components/QuotaPill';
+import { EntityList } from './components/EntityList';
+import type { ListFilter, ListSort } from '../../hooks/useAdminList';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
-import { LABEL_CLASS, STD_INPUT_CLASS } from './constants';
+import { STD_INPUT_CLASS } from './constants';
+import { Field } from './components/Field';
 
 interface MemberProfileRow {
     id: Id<'memberProfiles'>;
@@ -34,13 +36,25 @@ interface FormState {
     notes: string;
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+const FILTERS: ListFilter<MemberProfileRow>[] = [
+    { key: 'all', label: 'Todos', predicate: () => true },
+    { key: 'paid', label: 'Em dia', predicate: r => Number(r.quotaPaidUntil) >= CURRENT_YEAR },
+    { key: 'late', label: 'Atrasada', predicate: r => Boolean(r.quotaPaidUntil) && Number(r.quotaPaidUntil) < CURRENT_YEAR },
+    { key: 'none', label: 'Sem ano', predicate: r => !r.quotaPaidUntil },
+];
+const SORTS: ListSort<MemberProfileRow>[] = [
+    { key: 'email', label: 'Email A–Z', compare: (a, b) => a.email.localeCompare(b.email, 'pt') },
+    { key: 'number', label: 'Nº sócio', compare: (a, b) => (a.memberNumber || '').localeCompare(b.memberNumber || '', 'pt', { numeric: true }) },
+    { key: 'year', label: 'Quota · mais recente', compare: (a, b) => (b.quotaPaidUntil || '').localeCompare(a.quotaPaidUntil || '') },
+];
+
 const EMPTY_FORM: FormState = { email: '', memberNumber: '', quotaPaidUntil: '', notes: '' };
 export const AdminMemberQuotasTab: React.FC = () => {
     const profiles = useQuery(api.memberProfiles.list);
     const upsertProfile = useMutation(api.memberProfiles.upsert);
     const removeProfile = useMutation(api.memberProfiles.remove);
 
-    const [search, setSearch] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState<Id<'memberProfiles'> | null>(null);
     const [form, setForm] = useState<FormState>(EMPTY_FORM);
@@ -48,15 +62,6 @@ export const AdminMemberQuotasTab: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [pendingRemove, setPendingRemove] = useState<{ id: Id<'memberProfiles'>; email: string } | null>(null);
     const [isRemoving, setIsRemoving] = useState(false);
-
-    const filtered = useMemo<MemberProfileRow[]>(() => {
-        if (!profiles) return [];
-        const term = search.trim().toLowerCase();
-        if (!term) return profiles;
-        return profiles.filter(
-            (p) => p.email.toLowerCase().includes(term) || p.memberNumber.toLowerCase().includes(term)
-        );
-    }, [profiles, search]);
 
     const openNewModal = () => {
         setEditingId(null);
@@ -117,97 +122,32 @@ export const AdminMemberQuotasTab: React.FC = () => {
                 </Button>
             </div>
 
-            {profiles === undefined && (
-                <div className="space-y-2">
-                    {[0, 1, 2].map((i) => (
-                        <div key={i} className="h-14 bg-dark-surface border border-white/10 rounded-2xl animate-pulse" />
-                    ))}
-                </div>
-            )}
-
-            {profiles !== undefined && profiles.length === 0 && (
-                <div className="rounded-2xl border border-white/10 bg-dark-surface">
-                    <EmptyState
-                        icon={Wallet}
-                        title="Ainda não há registos de sócios"
-                        description="Cada registo liga um email de sócio ao número e ao ano de quota mostrados na área reservada."
-                        action={{ label: 'Adicionar sócio', onClick: openNewModal }}
-                    />
-                </div>
-            )}
-
-            {profiles !== undefined && profiles.length > 0 && (
-                <>
-                    <div className="relative max-w-sm">
-                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Pesquisar por email ou nº sócio..."
-                            className={cn(STD_INPUT_CLASS, 'pl-9')}
-                        />
-                    </div>
-
-                    <div className="bg-dark-surface border border-white/10 rounded-2xl overflow-x-auto">
-                        <table className="w-full text-sm text-left whitespace-nowrap">
-                            <thead className="bg-white/5 text-slate-400">
-                                <tr>
-                                    <th className="p-4">Email</th>
-                                    <th className="p-4">Nº Sócio</th>
-                                    <th className="p-4">Quota paga até</th>
-                                    <th className="p-4">Notas</th>
-                                    <th className="p-4 text-right">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {filtered.map((row) => (
-                                    <tr key={row.id} className="hover:bg-white/[0.02]">
-                                        <td className="p-4 text-white font-medium">{row.email}</td>
-                                        <td className="p-4 text-slate-400">{row.memberNumber || '—'}</td>
-                                        <td className="p-4">
-                                            <QuotaPill year={row.quotaPaidUntil} />
-                                        </td>
-                                        <td className="p-4 text-slate-400 max-w-xs">
-                                            <span className="line-clamp-1">{row.notes || '—'}</span>
-                                        </td>
-                                        <td className="p-4">
-                                            <div className="flex justify-end gap-1">
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={() => openEditModal(row)}
-                                                    aria-label={`Editar ${row.email}`}
-                                                    className="focus-visible:ring-2 focus-visible:ring-brand-500"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={() => setPendingRemove({ id: row.id, email: row.email })}
-                                                    aria-label={`Remover ${row.email}`}
-                                                    title="Remover"
-                                                    className="text-red-400 hover:text-red-300 focus-visible:ring-2 focus-visible:ring-brand-500"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </Button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {filtered.length === 0 && (
-                                    <tr>
-                                        <td colSpan={5} className="p-6 text-center text-slate-500">
-                                            Sem resultados para "{search}".
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </>
-            )}
+            <EntityList<MemberProfileRow>
+                items={profiles ?? []}
+                isLoading={profiles === undefined}
+                getKey={row => row.id}
+                getTitle={row => row.email}
+                getSubtitle={row => row.memberNumber ? `Nº ${row.memberNumber}` : 'Sem número de sócio'}
+                getStatus={row => <QuotaPill year={row.quotaPaidUntil} />}
+                search={row => `${row.email} ${row.memberNumber} ${row.notes}`}
+                filters={FILTERS}
+                sorts={SORTS}
+                searchPlaceholder="Pesquisar por email ou nº de sócio"
+                noun={['sócio', 'sócios']}
+                columns={[
+                    { header: 'Email', cell: row => <span className="font-medium text-white">{row.email}</span> },
+                    { header: 'Nº sócio', cell: row => <span className="text-slate-400">{row.memberNumber || '—'}</span> },
+                    { header: 'Quota paga até', cell: row => <QuotaPill year={row.quotaPaidUntil} /> },
+                    { header: 'Notas', className: 'max-w-xs', cell: row => <span className="line-clamp-1 text-slate-400">{row.notes || '—'}</span> },
+                ]}
+                onEdit={openEditModal}
+                onDelete={row => setPendingRemove({ id: row.id, email: row.email })}
+                emptyIcon={Wallet}
+                emptyTitle="Ainda não há registos de sócios"
+                emptyDescription="Cada registo liga um email de sócio ao número e ao ano de quota mostrados na área reservada."
+                onCreate={openNewModal}
+                createLabel="Adicionar sócio"
+            />
 
             {pendingRemove && (
                 <DeleteConfirmDialog
@@ -241,45 +181,33 @@ export const AdminMemberQuotasTab: React.FC = () => {
                             {formError}
                         </div>
                     )}
-                    <div>
-                        <label className={LABEL_CLASS}>Email</label>
-                        <input
+                    <Field label="Email"><input
                             type="email"
                             required
                             disabled={!!editingId}
                             value={form.email}
                             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                             className={cn(STD_INPUT_CLASS, editingId && 'opacity-60 cursor-not-allowed')}
-                        />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Nº Sócio</label>
-                        <input
+                        /></Field>
+                    <Field label="Nº Sócio"><input
                             type="text"
                             value={form.memberNumber}
                             onChange={(e) => setForm((f) => ({ ...f, memberNumber: e.target.value }))}
                             className={STD_INPUT_CLASS}
-                        />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Quota paga até</label>
-                        <input
+                        /></Field>
+                    <Field label="Quota paga até"><input
                             type="text"
                             placeholder="2026"
                             value={form.quotaPaidUntil}
                             onChange={(e) => setForm((f) => ({ ...f, quotaPaidUntil: e.target.value }))}
                             className={STD_INPUT_CLASS}
-                        />
-                    </div>
-                    <div>
-                        <label className={LABEL_CLASS}>Notas</label>
-                        <textarea
+                        /></Field>
+                    <Field label="Notas"><textarea
                             rows={3}
                             value={form.notes}
                             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                             className={STD_INPUT_CLASS}
-                        />
-                    </div>
+                        /></Field>
                 </form>
             </Modal>
         </div>

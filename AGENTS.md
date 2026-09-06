@@ -58,6 +58,11 @@ npm run preview      # Servir o build local
 - **Identidade do assistente IA é dinâmica**: `convex/ai.ts` constrói o system prompt com
   `settings.siteName`/`address` (via `settings.getForAI`, que é um subconjunto explícito de
   campos — ao precisar de um campo novo numa action, adicioná-lo lá, não usar `getAdmin`).
+- **Ações públicas de IA têm dois orçamentos**: bucket por utilizador ou por `sessionId` do
+  browser mais um teto global anónimo (`ai:*:anonymous` em `convex/lib/rateLimit.ts`); o
+  cliente nunca escolhe o modelo (o argumento `model` foi removido) e `enableChatbot` é
+  verificado no servidor, não só na UI. Dados de pagamento das quotas saem de
+  `settings.getPaymentDetails` (requer sessão), nunca de `getPublic`.
 - **Chaves de provedor são write-only**: aceites em `settings.update`, removidas de
   `getPublic`/`getAdmin` (substituídas por flags `has*ApiKey`). Nunca devolver segredos
   em queries. `GEMINI_API_KEY` vive só no deployment Convex, nunca em `.env`/bundle.
@@ -80,6 +85,13 @@ npm run preview      # Servir o build local
   (toolbar de pesquisa/filtros/ordenação, tabela desktop, cartões mobile, estado vazio da
   coleção e estado sem resultados, com as MESMAS ações nas duas vistas). Uma tab nova é uma
   configuração de colunas — nunca uma tabela nova.
+- **Campos do backoffice usam `pages/admin/components/Field.tsx`**: gera o `id`, liga o
+  `label` e marca os obrigatórios. Nunca escrever `<label className={LABEL_CLASS}>` solto
+  ao lado de um input; um `<span>` com essa classe só serve para títulos de grupo.
+- **Catálogo de modelos Gemini** (`GEMINI_*_MODELS` em `convex/lib/aiDefaults.ts`) alimenta
+  os selects do admin, o Media Studio e `aiProviderTools.listModels` — uma lista, três ecrãs.
+- **Dados reais de uma instância nunca entram aqui**: as migrações com conteúdo real
+  (`migrations.ts`) vivem no repositório privado da instância, não em `convex/`.
 - **Erros de mutation chegam ao utilizador**: os wrappers devolvem `ActionResult`; o
   `Admin.tsx` traduz o texto com `pages/admin/errors.ts` (`describeActionError`) em vez de
   mostrar "erro de validação" ou o dump do validador.

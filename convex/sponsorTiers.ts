@@ -47,11 +47,12 @@ export const remove = mutation({
         await requireAdmin(ctx);
         const tier = await ctx.db.get(args.id);
         if (tier) {
-            // Use by_tier index on sponsors to check dependents
-            const dependents = await ctx.db
-                .query("sponsors")
-                .withIndex("by_tier", (q) => q.eq("tier", tier.name))
-                .collect();
+            // Sponsors store the tier id; rows seeded before that hold the name
+            const [byId, byName] = await Promise.all([
+                ctx.db.query("sponsors").withIndex("by_tier", (q) => q.eq("tier", String(tier._id))).collect(),
+                ctx.db.query("sponsors").withIndex("by_tier", (q) => q.eq("tier", tier.name)).collect(),
+            ]);
+            const dependents = [...byId, ...byName];
             if (dependents.length > 0) {
                 throw new Error(`Não é possível apagar: ${dependents.length} parceiro(s) usam este nível.`);
             }

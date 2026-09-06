@@ -12,7 +12,7 @@ export const list = query({
             .query("contactSubmissions")
             .withIndex("by_timestamp")
             .order("desc")
-            .collect();
+            .take(300);
     },
 });
 
@@ -31,6 +31,8 @@ export const create = mutation({
             key: "contact:create",
             userId: args.email.trim().toLowerCase() || "anonymous",
         });
+        // The email is attacker-supplied, so a global bucket caps total volume
+        await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, { key: "contact:create:global" });
         validateRequired(args, ["name", "email", "subject", "message"]);
         validateMaxLength(args.subject, "assunto", 200);
         validateMaxLength(args.email, "email", 254);

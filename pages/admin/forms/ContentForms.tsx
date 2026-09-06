@@ -13,6 +13,7 @@ import { MediaStudio } from '../editors/MediaStudio';
 import { RegistrationFormBuilder } from '../editors/RegistrationFormBuilder';
 import type { AdminFormData, AdminFormModalProps } from '../types';
 import type { FieldHelpers, NumHelper } from './types';
+import { Field } from '../components/Field';
 
 // ── Event Form ──────────────────────────────────────────────────────────────
 
@@ -34,16 +35,13 @@ export const EventForm: React.FC<EventFormProps> = ({
 }) => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-6">
-            <div><label className={LABEL_CLASS}>Título</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></div>
-            <div><label className={LABEL_CLASS}>Categoria</label><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</AdminSelect></div>
-            <div><label className={LABEL_CLASS}>Data</label><input type="datetime-local" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} required /></div>
-            <div>
-                <label className={LABEL_CLASS}>Estado</label>
-                <AdminSelect value={str('status', 'published')} onChange={e => setField('status', e.target.value)}>
+            <Field label="Título"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+            <Field label="Categoria"><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</AdminSelect></Field>
+            <Field label="Data"><input type="datetime-local" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} required /></Field>
+            <Field label="Estado"><AdminSelect value={str('status', 'published')} onChange={e => setField('status', e.target.value)}>
                     <option value="published">Publicado</option>
                     <option value="draft">Rascunho</option>
-                </AdminSelect>
-            </div>
+                </AdminSelect></Field>
             <MediaStudio imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
         </div>
         <div className="md:col-span-2 space-y-6">
@@ -51,9 +49,9 @@ export const EventForm: React.FC<EventFormProps> = ({
             <div className="bg-white/5 p-4 rounded-xl border border-white/5">
                 <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><SettingsIcon size={16} /> Configurações de Evento</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div><label className={LABEL_CLASS}>Local</label><input value={str('location')} onChange={e => setField('location', e.target.value)} className={STD_INPUT_CLASS} /></div>
-                    <div><label className={LABEL_CLASS}>Preço (EUR)</label><input type="number" value={str('entryPrice', '0')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></div>
-                    <div><label className={LABEL_CLASS}>Máx Participantes</label><input type="number" value={str('maxParticipants', '0')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></div>
+                    <Field label="Local"><input value={str('location')} onChange={e => setField('location', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <Field label="Preço (EUR)"><input type="number" value={str('entryPrice', '0')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <Field label="Máx Participantes"><input type="number" value={str('maxParticipants', '0')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                     <div className="flex items-center gap-2 pt-6">
                         <input type="checkbox" className="accent-brand-500 w-4 h-4" checked={bool('isHighlight')} onChange={e => setField('isHighlight', e.target.checked)} />
                         <span className="text-sm text-slate-300">Destaque (Homepage)</span>
@@ -110,9 +108,9 @@ export const PostForm: React.FC<PostFormProps> = ({
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1 space-y-6">
-                <div><label className={LABEL_CLASS}>Título</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></div>
-                <div><label className={LABEL_CLASS}>Categoria</label><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</AdminSelect></div>
-                <div><label className={LABEL_CLASS}>Data</label><input type="datetime-local" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} required /></div>
+                <Field label="Título"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                <Field label="Categoria"><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</AdminSelect></Field>
+                <Field label="Data"><input type="datetime-local" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} required /></Field>
                 <div className="flex items-center gap-2">
                     <input type="checkbox" id="post-published" className="accent-brand-500 w-4 h-4" checked={bool('published')} onChange={e => setField('published', e.target.checked)} />
                     <label htmlFor="post-published" className="text-sm text-slate-300">Publicado (visível no portal)</label>
@@ -121,12 +119,12 @@ export const PostForm: React.FC<PostFormProps> = ({
             </div>
             <div className="md:col-span-2 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label className={LABEL_CLASS}>Autor (Nome)</label><input value={str('author')} onChange={e => setField('author', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></div>
-                    <div><label className={LABEL_CLASS}>Cargo do Autor</label><input value={str('authorRole')} onChange={e => setField('authorRole', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></div>
-                    <div><label className={LABEL_CLASS}>Avatar do Autor (URL)</label><input value={str('authorAvatar')} onChange={e => setField('authorAvatar', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://..." /></div>
-                    <div><label className={LABEL_CLASS}>Tempo de Leitura</label><input value={str('readTime')} onChange={e => setField('readTime', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: 5 min" /></div>
+                    <Field label="Autor (Nome)"><input value={str('author')} onChange={e => setField('author', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></Field>
+                    <Field label="Cargo do Autor"><input value={str('authorRole')} onChange={e => setField('authorRole', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></Field>
+                    <Field label="Avatar do Autor (URL)"><input value={str('authorAvatar')} onChange={e => setField('authorAvatar', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://..." /></Field>
+                    <Field label="Tempo de Leitura"><input value={str('readTime')} onChange={e => setField('readTime', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: 5 min" /></Field>
                 </div>
-                <div><label className={LABEL_CLASS}>Tags (Separadas por vírgula)</label><input value={tagsValue} onChange={e => setField('tags', e.target.value)} className={STD_INPUT_CLASS} placeholder="Associação, Comunidade, Evento" /></div>
+                <Field label="Tags (Separadas por vírgula)"><input value={tagsValue} onChange={e => setField('tags', e.target.value)} className={STD_INPUT_CLASS} placeholder="Associação, Comunidade, Evento" /></Field>
                 <RichTextEditor label="Notícia" value={str('content')} onChange={(v: string) => setField('content', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-96" />
             </div>
         </div>
@@ -144,11 +142,11 @@ export const MilestoneForm: React.FC<MilestoneFormProps> = ({ str, num, setField
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div><label className={LABEL_CLASS}>Ano</label><input type="number" required value={num('year', new Date().getFullYear())} onChange={e => setField('year', parseInt(e.target.value) || new Date().getFullYear())} className={STD_INPUT_CLASS} /></div>
-                <div><label className={LABEL_CLASS}>Ordem na Timeline</label><input type="number" value={num('order', 1)} onChange={e => setField('order', parseInt(e.target.value) || 1)} className={STD_INPUT_CLASS} /></div>
+                <Field label="Ano"><input type="number" required value={num('year', new Date().getFullYear())} onChange={e => setField('year', parseInt(e.target.value) || new Date().getFullYear())} className={STD_INPUT_CLASS} /></Field>
+                <Field label="Ordem na Timeline"><input type="number" value={num('order', 1)} onChange={e => setField('order', parseInt(e.target.value) || 1)} className={STD_INPUT_CLASS} /></Field>
             </div>
-            <div><label className={LABEL_CLASS}>Título</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: A Fundação" /></div>
-            <div><label className={LABEL_CLASS}>Descrição</label><textarea required value={str('description')} onChange={e => setField('description', e.target.value)} className={cn(STD_INPUT_CLASS, 'h-40')} placeholder="O que aconteceu neste marco da história da associação..." /></div>
+            <Field label="Título"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: A Fundação" /></Field>
+            <Field label="Descrição"><textarea required value={str('description')} onChange={e => setField('description', e.target.value)} className={cn(STD_INPUT_CLASS, 'h-40')} placeholder="O que aconteceu neste marco da história da associação..." /></Field>
         </div>
         <MediaStudio imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle="Historical documentary photo, warm tones, community" />
     </div>
@@ -173,25 +171,19 @@ export const ActionAreaForm: React.FC<ActionAreaFormProps> = ({
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div><label className={LABEL_CLASS}>Título</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></div>
-                <div><label className={LABEL_CLASS}>Subtítulo</label><input required value={str('subtitle')} onChange={e => setField('subtitle', e.target.value)} className={STD_INPUT_CLASS} /></div>
+                <Field label="Título"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                <Field label="Subtítulo"><input required value={str('subtitle')} onChange={e => setField('subtitle', e.target.value)} className={STD_INPUT_CLASS} /></Field>
             </div>
-            <div><label className={LABEL_CLASS}>Descrição Curta (Grid)</label><textarea required value={str('description')} onChange={e => setField('description', e.target.value)} className={cn(STD_INPUT_CLASS, 'h-20')} /></div>
+            <Field label="Descrição Curta (Grid)"><textarea required value={str('description')} onChange={e => setField('description', e.target.value)} className={cn(STD_INPUT_CLASS, 'h-20')} /></Field>
             <RichTextEditor label="Descrição Longa (Modal)" value={str('longDescription')} onChange={(v: string) => setField('longDescription', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-48" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label className={LABEL_CLASS}>Ícone</label>
-                    <AdminSelect value={str('iconName', 'Users')} onChange={e => setField('iconName', e.target.value)}>
+                <Field label="Ícone"><AdminSelect value={str('iconName', 'Users')} onChange={e => setField('iconName', e.target.value)}>
                         {Object.keys(ICON_MAP).map(icon => <option key={icon} value={icon}>{icon}</option>)}
-                    </AdminSelect>
-                </div>
-                <div><label className={LABEL_CLASS}>Ordem de Exibição</label><input type="number" value={num('order')} onChange={e => setField('order', parseInt(e.target.value))} className={STD_INPUT_CLASS} /></div>
+                    </AdminSelect></Field>
+                <Field label="Ordem de Exibição"><input type="number" value={num('order')} onChange={e => setField('order', parseInt(e.target.value))} className={STD_INPUT_CLASS} /></Field>
             </div>
             <MediaStudio imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} />
-            <div>
-                <label className={LABEL_CLASS}>Funcionalidades (Uma por linha)</label>
-                <textarea className={cn(STD_INPUT_CLASS, 'h-32')} value={features.join('\n')} onChange={e => onFormDataChange({ ...formData, features: e.target.value.split('\n') })} placeholder={'Gestão do Bar\nSala de Jogos...'} />
-            </div>
+            <Field label="Funcionalidades (Uma por linha)"><textarea className={cn(STD_INPUT_CLASS, 'h-32')} value={features.join('\n')} onChange={e => onFormDataChange({ ...formData, features: e.target.value.split('\n') })} placeholder={'Gestão do Bar\nSala de Jogos...'} /></Field>
         </div>
     );
 };
@@ -207,11 +199,11 @@ interface AlbumFormProps extends FieldHelpers {
 // managed in the Galeria tab by AdminGalleryManager
 export const AlbumForm: React.FC<AlbumFormProps> = ({ str, setField, isGeneratingImage, onGenerateImage }) => (
     <div className="space-y-6">
-        <div><label className={LABEL_CLASS}>Título do Álbum</label><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></div>
-        <div><label className={LABEL_CLASS}>Data</label><input type="date" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} /></div>
-        <div><label className={LABEL_CLASS}>Descrição (opcional)</label><textarea rows={3} value={str('description')} onChange={e => setField('description', e.target.value)} className={STD_INPUT_CLASS} placeholder="Uma frase sobre o evento ou a ocasião" /></div>
+        <Field label="Título do Álbum"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+        <Field label="Data"><input type="date" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+        <Field label="Descrição (opcional)"><textarea rows={3} value={str('description')} onChange={e => setField('description', e.target.value)} className={STD_INPUT_CLASS} placeholder="Uma frase sobre o evento ou a ocasião" /></Field>
         <div>
-            <label className={LABEL_CLASS}>Capa (opcional)</label>
+            <span className={LABEL_CLASS}>Capa (opcional)</span>
             <p className="text-xs text-slate-500 mb-2">Podes também escolher a capa entre as fotos do álbum, na tab Galeria (estrela).</p>
             <MediaStudio imageUrl={str('coverUrl')} onChange={(url: string) => setField('coverUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} />
         </div>

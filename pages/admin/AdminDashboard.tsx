@@ -169,6 +169,11 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ activityLogs }) => 
             <History size={18} className="text-slate-400" /> Logs do Sistema
         </h3>
         <div className="space-y-4 overflow-y-auto custom-scrollbar pr-2">
+            {activityLogs.length === 0 && (
+                <p className="rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-slate-500">
+                    Ainda não há atividade registada. As alterações feitas no backoffice aparecem aqui.
+                </p>
+            )}
             {activityLogs.slice(0, 10).map((log, i) => (
                 <div key={log.id} className="flex gap-3 text-sm group">
                     <div className="flex flex-col items-center">

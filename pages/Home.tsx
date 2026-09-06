@@ -23,6 +23,7 @@ import { cn } from '../utils/cn';
 import { sanitizeHtml, sanitizeText } from '../utils/security';
 import type { Event, Sponsor, ActionArea } from '../types';
 import type { LayoutOutletContext } from '../layouts/types';
+import { OrganizationJsonLd } from '../components/StructuredData';
 
 // Helper to map string names from DB to Lucide components
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -31,12 +32,14 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 interface HomePageProps {
   onNavigate: (page: string) => void;
+  /** Opens the events page with the given event's dialog already open. */
+  onOpenEvent: (eventId: string) => void;
   onAskAI: (query?: string) => void;
   onViewPost: (id: string) => void;
   onContact: (subject: string) => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewPost, onContact }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onAskAI, onViewPost, onContact }) => {
   const { posts, events, sponsors, actionAreas, stats, isLoading, settings } = useData();
   const [searchValue, setSearchValue] = useState('');
 
@@ -101,6 +104,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
   return (
     <div className="w-full overflow-x-hidden">
       <title>{settings.siteName}</title>
+      <OrganizationJsonLd />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
@@ -110,7 +114,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
           <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-50/90 to-slate-50 dark:from-dark-bg dark:via-dark-bg/90 dark:to-dark-bg"></div>
           {/* Animated Glow Orbs */}
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 dark:bg-brand-500/20 rounded-full blur-[120px] animate-float"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-[120px] animate-float [animation-delay:2s]"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent-gold/5 dark:bg-accent-gold/10 rounded-full blur-[120px] animate-float [animation-delay:2s]"></div>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 flex flex-col items-center text-center pb-20">
@@ -137,7 +141,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
 
           {/* AI Search Bar Mockup */}
           <div className="w-full max-w-lg mx-auto mb-12 animate-fade-in-up relative group [animation-delay:0.25s]">
-            <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-purple-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-brand-800 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
             <div className={cn(
               'relative flex items-center bg-white/80 dark:bg-black/60 border rounded-full px-4 py-2 backdrop-blur-xl transition-colors',
               isListening ? 'border-red-500/40' : 'border-slate-900/10 dark:border-white/10',
@@ -161,7 +165,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
                   <button
                     className={cn(
                       'p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
-                      isListening ? 'text-red-400 bg-red-500/10' : 'hover:text-brand-600 dark:hover:text-brand-400 text-slate-500',
+                      isListening ? 'text-red-600 dark:text-red-400 bg-red-500/10' : 'hover:text-brand-600 dark:hover:text-brand-400 text-slate-500',
                     )}
                     onClick={toggleVoice}
                     aria-label={isListening ? 'Parar de ouvir' : 'Perguntar por voz'}
@@ -174,7 +178,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
               </div>
             </div>
             {voiceError && (
-              <p className="absolute -bottom-7 inset-x-0 text-center text-xs text-red-400" role="alert">{voiceError}</p>
+              <p className="absolute -bottom-7 inset-x-0 text-center text-xs text-red-600 dark:text-red-400" role="alert">{voiceError}</p>
             )}
           </div>
 
@@ -269,7 +273,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
                   </div>
 
                   {/* Border Glow */}
-                  <div className="absolute -inset-px bg-gradient-to-b from-brand-500 to-purple-600 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none p-px -z-10"></div>
+                  <div className="absolute -inset-px bg-gradient-to-b from-brand-500 to-brand-800 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none p-px -z-10"></div>
 
                   <div className="relative z-10 flex flex-col h-full p-8">
                     <div className="w-14 h-14 rounded-2xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-brand-600 dark:text-brand-400 flex items-center justify-center mb-auto group-hover:bg-brand-500 group-hover:text-white group-hover:border-transparent transition-all duration-500">
@@ -351,7 +355,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
             {/* Secondary Post 1 */}
             {secondaryPosts[0] && (
               <div className="md:col-span-2 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface cursor-pointer flex items-center" onClick={() => onViewPost(secondaryPosts[0].slug || secondaryPosts[0].id)}>
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 to-purple-500/10 dark:from-brand-900/20 dark:to-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 to-accent-gold/10 dark:from-brand-900/20 dark:to-amber-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="w-1/3 h-full relative">
                   <img src={secondaryPosts[0].coverUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'} alt={secondaryPosts[0].title} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'; }} />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white dark:to-dark-surface"></div>
@@ -481,7 +485,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
               onClick={() => onNavigate('events')}
             >
               <Calendar size={32} className="mb-3" />
-              <span className="font-medium">Ver Calendário Completo</span>
+              <span className="font-medium">Ver calendário completo</span>
             </div>
           </div>
           ) : (
@@ -553,7 +557,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
             <Button variant="ghost" onClick={() => { setSelectedEvent(null); onNavigate('events'); }}>Ver agenda</Button>
             {eventCanRegister && !eventIsFull ? (
-              <Button onClick={() => { setSelectedEvent(null); onNavigate('events'); }}>
+              <Button onClick={() => { const id = selectedEvent.id; setSelectedEvent(null); onOpenEvent(id); }}>
                 <CheckCircle2 size={16} />
                 {selectedEvent.entryPrice && selectedEvent.entryPrice > 0 ? `Inscrever (${selectedEvent.entryPrice}€)` : 'Inscrever-me'}
               </Button>
@@ -604,7 +608,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onAskAI, onViewP
                       <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">Vagas</div>
                       <div className="text-lg font-bold text-slate-900 dark:text-white">
                         {selectedEvent.currentParticipants ?? 0} / {selectedEvent.maxParticipants}
-                        {isFull && <span className="ml-2 text-xs text-red-400 font-normal">Esgotado</span>}
+                        {isFull && <span className="ml-2 text-xs text-red-600 dark:text-red-400 font-normal">Esgotado</span>}
                       </div>
                     </div>
                   )}
@@ -693,6 +697,7 @@ export const HomePageWrapper: React.FC = () => {
         };
         navigate(pathMap[page] || '/');
       }}
+      onOpenEvent={(eventId: string) => navigate('/events', { state: { eventId } })}
       onAskAI={onAskAI}
       onViewPost={(id: string) => {
         navigate(`/blog/${id}`);

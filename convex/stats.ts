@@ -24,10 +24,9 @@ export const upsert = mutation({
         if (id) {
             await ctx.db.patch(id, data);
         } else {
-            // TODO: use by_label index once added to schema
             const existing = await ctx.db
                 .query("stats")
-                .filter((q) => q.eq(q.field("label"), args.label))
+                .withIndex("by_label", (q) => q.eq("label", args.label))
                 .first();
             if (existing) return existing._id;
 

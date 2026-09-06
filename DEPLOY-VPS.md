@@ -107,7 +107,7 @@ A renovação fica automática (`systemctl list-timers | grep certbot`).
 
 Repetir passos 1-2 (build + unzip por cima) e `sudo systemctl reload nginx`.
 Alterações de backend: `npx convex deploy` a partir do repositório local.
-Migrações de conteúdo: `npx convex run migrations:applyOriginalContent --prod`
+Migrações de conteúdo de uma instância vivem no repositório privado dessa instância (ver `docs/INSTANCE-REPO.md`), nunca aqui
 (idempotente).
 
 ## 7. Backup dos dados (Convex)

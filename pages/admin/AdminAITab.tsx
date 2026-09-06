@@ -6,6 +6,8 @@ import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import { AdminSelect } from './components/AdminSelect';
 import { ProviderConfigSection } from './components/ProviderConfigSection';
 import type { AdminAITabProps } from './types';
+import { Field } from './components/Field';
+import { GEMINI_CHAT_MODELS, GEMINI_TTS_MODELS, GEMINI_IMAGE_MODELS } from '../../convex/lib/aiDefaults';
 
 /**
  * AI & Chatbot configuration tab.
@@ -147,39 +149,26 @@ const ChatbotConfig: React.FC<ConfigSectionProps> = ({ settingsForm, update }) =
             <ToggleRow label="Chatbot Ativo" description="Ativa ou desativa o chatbot no portal público" checked={settingsForm.enableChatbot} onChange={v => update('enableChatbot', v)} />
             <ToggleRow label="Mostrar Bolha Flutuante" description="Mostra o botão flutuante do chatbot no canto inferior direito" checked={settingsForm.showChatbotBubble} onChange={v => update('showChatbotBubble', v)} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className={LABEL_CLASS}>Modelo Principal</label>
-                    <AdminSelect value={settingsForm.chatModel} onChange={e => update('chatModel', e.target.value)}>
-                        <option value="gemini-3.7-flash">Gemini 3.7 Flash (mais recente)</option>
-                        <option value="gemini-3.5-flash">Gemini 3.5 Flash (recomendado)</option>
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (económico)</option>
-                    </AdminSelect>
-                </div>
-                <div>
-                    <label className={LABEL_CLASS}>Modelo Fallback</label>
-                    <AdminSelect value={settingsForm.chatModelFallback} onChange={e => update('chatModelFallback', e.target.value)}>
-                        <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite (recomendado)</option>
-                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
-                    </AdminSelect>
-                </div>
+                <Field label="Modelo Principal"><AdminSelect value={settingsForm.chatModel} onChange={e => update('chatModel', e.target.value)}>
+                        {GEMINI_CHAT_MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+                    </AdminSelect></Field>
+                <Field label="Modelo Fallback"><AdminSelect value={settingsForm.chatModelFallback} onChange={e => update('chatModelFallback', e.target.value)}>
+                        {GEMINI_CHAT_MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+                    </AdminSelect></Field>
             </div>
+            <Field label="Modelo TTS (Voz)"><AdminSelect value={settingsForm.ttsModel} onChange={e => update('ttsModel', e.target.value)}>
+                    {GEMINI_TTS_MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+                </AdminSelect></Field>
             <div>
-                <label className={LABEL_CLASS}>Modelo TTS (Voz)</label>
-                <AdminSelect value={settingsForm.ttsModel} onChange={e => update('ttsModel', e.target.value)}>
-                    <option value="gemini-2.5-flash-preview-tts">Gemini 2.5 Flash TTS</option>
-                    <option value="gemini-3.1-flash-tts-preview">Gemini 3.1 Flash TTS (Preview)</option>
-                </AdminSelect>
-            </div>
-            <div>
-                <label className={LABEL_CLASS}>Orçamento de Raciocínio (Thinking Budget)</label>
+                <label htmlFor="ai-thinking-budget" className={LABEL_CLASS}>Orçamento de raciocínio (thinking budget)</label>
                 <div className="flex items-center gap-4">
-                    <input type="range" min="128" max="2048" step="128" value={settingsForm.thinkingBudget} onChange={e => update('thinkingBudget', parseInt(e.target.value))} className="flex-1 accent-brand-500" />
+                    <input id="ai-thinking-budget" type="range" min="128" max="2048" step="128" value={settingsForm.thinkingBudget} onChange={e => update('thinkingBudget', parseInt(e.target.value))} className="flex-1 accent-brand-500" />
                     <span className="text-brand-400 font-mono text-sm w-16 text-right">{settingsForm.thinkingBudget}</span>
                 </div>
             </div>
             <div>
-                <label className={LABEL_CLASS}>Instruções Extra do Sistema</label>
-                <textarea rows={3} value={settingsForm.aiSystemPromptExtra ?? ''} onChange={e => update('aiSystemPromptExtra', e.target.value)} className={STD_INPUT_CLASS} placeholder="Instruções adicionais para personalizar o comportamento do chatbot..." />
+                <label htmlFor="ai-prompt-extra" className={LABEL_CLASS}>Instruções extra do sistema</label>
+                <textarea id="ai-prompt-extra" rows={3} value={settingsForm.aiSystemPromptExtra ?? ''} onChange={e => update('aiSystemPromptExtra', e.target.value)} className={STD_INPUT_CLASS} placeholder="Instruções adicionais para personalizar o comportamento do chatbot..." />
                 <p className="text-slate-600 text-xs mt-1">Estas instruções são adicionadas ao prompt base do sistema.</p>
             </div>
         </div>
@@ -196,13 +185,13 @@ const GuardrailsConfig: React.FC<ConfigSectionProps> = ({ settingsForm, update }
         <div className="space-y-4">
             <ToggleRow label="Guardrails Ativos" description="Classifica e filtra perguntas fora do âmbito da associação" checked={settingsForm.aiGuardrailsEnabled} onChange={v => update('aiGuardrailsEnabled', v)} />
             <div>
-                <label className={LABEL_CLASS}>Tópicos Permitidos</label>
-                <input value={settingsForm.aiAllowedTopics ?? ''} onChange={e => update('aiAllowedTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="associação, localidade, eventos, cultura, desporto, comunidade" />
+                <label htmlFor="ai-allowed-topics" className={LABEL_CLASS}>Tópicos permitidos</label>
+                <input id="ai-allowed-topics" value={settingsForm.aiAllowedTopics ?? ''} onChange={e => update('aiAllowedTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="associação, localidade, eventos, cultura, desporto, comunidade" />
                 <p className="text-slate-600 text-xs mt-1">Separados por vírgula. O chatbot foca-se nestes temas.</p>
             </div>
             <div>
-                <label className={LABEL_CLASS}>Tópicos Proibidos</label>
-                <input value={settingsForm.aiForbiddenTopics ?? ''} onChange={e => update('aiForbiddenTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="política partidária, religião, aconselhamento médico, conteúdo adulto" />
+                <label htmlFor="ai-forbidden-topics" className={LABEL_CLASS}>Tópicos proibidos</label>
+                <input id="ai-forbidden-topics" value={settingsForm.aiForbiddenTopics ?? ''} onChange={e => update('aiForbiddenTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="política partidária, religião, aconselhamento médico, conteúdo adulto" />
                 <p className="text-slate-600 text-xs mt-1">Separados por vírgula. Perguntas sobre estes temas são recusadas educadamente.</p>
             </div>
         </div>
@@ -218,37 +207,22 @@ const ImageGenerationConfig: React.FC<ConfigSectionProps> = ({ settingsForm, upd
         </h3>
         <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className={LABEL_CLASS}>Modelo de Imagem</label>
-                    <AdminSelect value={settingsForm.imageModel} onChange={e => update('imageModel', e.target.value)}>
-                        <option value="gemini-3.1-flash-lite-image">NanoBanana 2 Lite -- económico</option>
-                        <option value="gemini-3.1-flash-image">NanoBanana 2 -- recomendado</option>
-                        <option value="gemini-3-pro-image">NanoBanana Pro -- qualidade máxima</option>
-                        <option value="gemini-2.5-flash-image">NanoBanana (legado)</option>
-                    </AdminSelect>
-                </div>
-                <div>
-                    <label className={LABEL_CLASS}>Resolução Padrão</label>
-                    <AdminSelect value={settingsForm.imageResolution ?? '1k'} onChange={e => update('imageResolution', e.target.value)}>
+                <Field label="Modelo de Imagem"><AdminSelect value={settingsForm.imageModel} onChange={e => update('imageModel', e.target.value)}>
+                        {GEMINI_IMAGE_MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+                    </AdminSelect></Field>
+                <Field label="Resolução Padrão"><AdminSelect value={settingsForm.imageResolution ?? '1k'} onChange={e => update('imageResolution', e.target.value)}>
                         <option value="1k">1K (1024x1024) -- Rápido</option>
                         <option value="2k">2K (2048x2048) -- Qualidade</option>
                         <option value="4k">4K (4096x4096) -- Máxima (só Pro)</option>
-                    </AdminSelect>
-                </div>
+                    </AdminSelect></Field>
             </div>
-            <div>
-                <label className={LABEL_CLASS}>Estilo Visual Padrão</label>
-                <textarea rows={2} value={settingsForm.defaultImageStyle} onChange={e => update('defaultImageStyle', e.target.value)} className={STD_INPUT_CLASS} placeholder="Cinematic lighting, photorealistic, 4k, community atmosphere, warm tones" />
-            </div>
-            <div>
-                <label className={LABEL_CLASS}>Tom do Conteúdo</label>
-                <AdminSelect value={settingsForm.contentTone} onChange={e => update('contentTone', e.target.value)}>
+            <Field label="Estilo Visual Padrão"><textarea rows={2} value={settingsForm.defaultImageStyle} onChange={e => update('defaultImageStyle', e.target.value)} className={STD_INPUT_CLASS} placeholder="Cinematic lighting, photorealistic, 4k, community atmosphere, warm tones" /></Field>
+            <Field label="Tom do Conteúdo"><AdminSelect value={settingsForm.contentTone} onChange={e => update('contentTone', e.target.value)}>
                     <option value="Profissional e Inspirador">Profissional e Inspirador</option>
                     <option value="Informal e Amigável">Informal e Amigável</option>
                     <option value="Formal e Institucional">Formal e Institucional</option>
                     <option value="Jovem e Dinâmico">Jovem e Dinâmico</option>
-                </AdminSelect>
-            </div>
+                </AdminSelect></Field>
         </div>
     </div>
 );

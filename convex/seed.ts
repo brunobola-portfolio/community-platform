@@ -1,10 +1,16 @@
 import { internalAction } from "./_generated/server";
 import { internal } from "./_generated/api";
 import {
+
     INITIAL_EVENTS, INITIAL_POSTS, INITIAL_MEMBERS, INITIAL_SPONSORS,
     INITIAL_CATEGORIES, INITIAL_NOTIFICATIONS,
     INITIAL_ACTION_AREAS, INITIAL_STATS, INITIAL_SPONSOR_TIERS, INITIAL_DOCUMENTS
 } from "./mockData";
+
+// Seed rows carry client-side fields (numeric ids, joined category) that the
+// mutations do not accept; typing them here keeps the destructuring honest
+type SeedEvent = (typeof INITIAL_EVENTS)[number] & { status?: string; category?: string; createdAt?: string; updatedAt?: string };
+type SeedPost = (typeof INITIAL_POSTS)[number] & { category?: string; updatedAt?: string };
 
 // Hardened fetch profile to avoid hotlink/UA blocks on Wikimedia, gov.pt, etc.
 const FETCH_HEADERS: Record<string, string> = {
@@ -172,7 +178,7 @@ export const seed = internalAction({
         const categorySlugMap: Record<number, string> = {};
         for (const cat of INITIAL_CATEGORIES) {
             const convexCats = await ctx.runQuery(internal.seedHelpers.listCategories, {});
-            const match = convexCats.find((c: any) => c.slug === cat.slug);
+            const match = convexCats.find((c: { slug: string }) => c.slug === cat.slug);
             if (match) categorySlugMap[cat.id] = match._id;
         }
 
@@ -180,7 +186,7 @@ export const seed = internalAction({
         console.log("Seeding Events...");
         const eventIdMap: Record<number, string> = {};
         for (const eventItem of INITIAL_EVENTS) {
-            const event = eventItem as any;
+            const event = eventItem as SeedEvent;
             const storageId = await uploadImage(event.imageUrl, event.title);
 
             const { id, imageUrl, categoryId, category, createdAt, updatedAt, ...eventData } = event;
@@ -198,7 +204,7 @@ export const seed = internalAction({
         // 3. Posts
         console.log("Seeding Posts...");
         for (const postItem of INITIAL_POSTS) {
-            const post = postItem as any;
+            const post = postItem as SeedPost;
             const storageId = await uploadImage(post.coverUrl, post.title);
 
             const { id, coverUrl, categoryId, category, updatedAt, ...postData } = post;

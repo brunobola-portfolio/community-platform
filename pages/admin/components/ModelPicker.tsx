@@ -65,8 +65,9 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
 
     return (
         <div>
-            <label className={LABEL_CLASS}>Modelo</label>
+            <label htmlFor={`model-picker-${provider}`} className={LABEL_CLASS}>Modelo</label>
             <input
+                id={`model-picker-${provider}`}
                 value={model}
                 onChange={e => onModelChange(e.target.value)}
                 className={STD_INPUT_CLASS}

@@ -55,7 +55,8 @@ export default defineSchema({
   })
     .index("by_date", ["date"])
     .index("by_slug", ["slug"])
-    .index("by_status", ["status", "date"]),
+    .index("by_status", ["status", "date"])
+    .index("by_category", ["categoryId"]),
 
   // Blog Posts
   posts: defineTable({

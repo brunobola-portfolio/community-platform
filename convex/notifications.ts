@@ -15,7 +15,7 @@ export const list = query({
             .query("notifications")
             .withIndex("by_timestamp")
             .order("desc")
-            .collect();
+            .take(200);
 
         let filtered;
         if (isAdmin) filtered = all;

@@ -35,7 +35,6 @@ import type * as lib_validation from "../lib/validation.js";
 import type * as maintenance from "../maintenance.js";
 import type * as memberProfiles from "../memberProfiles.js";
 import type * as members from "../members.js";
-import type * as migrations from "../migrations.js";
 import type * as milestones from "../milestones.js";
 import type * as mockData from "../mockData.js";
 import type * as notifications from "../notifications.js";
@@ -85,7 +84,6 @@ declare const fullApi: ApiFromModules<{
   maintenance: typeof maintenance;
   memberProfiles: typeof memberProfiles;
   members: typeof members;
-  migrations: typeof migrations;
   milestones: typeof milestones;
   mockData: typeof mockData;
   notifications: typeof notifications;

@@ -2,6 +2,7 @@ import path from 'node:path';
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { createHash } from 'crypto';
 
 /**
  * Vite Configuration (Vite 8 / Rolldown)
@@ -31,12 +32,41 @@ const MIME: Record<string, string> = {
   '.txt': 'text/plain', '.xml': 'application/xml', '.pdf': 'application/pdf',
 };
 
+/** Escapes a value dropped into an attribute or text node of index.html. */
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/**
+ * Content-Security-Policy for production builds. The theme bootstrap is the
+ * only inline script, so it is allowed by hash instead of 'unsafe-inline';
+ * dev keeps no meta CSP because Vite and React Refresh inject inline code.
+ */
+export function buildCsp(html: string): string {
+  const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match =>
+    `'sha256-${createHash('sha256').update(match[1]).digest('base64')}'`);
+  return [
+    "default-src 'self'",
+    `script-src 'self' ${hashes.join(' ')}`.trim(),
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' https: data: blob:",
+    "connect-src 'self' https://*.convex.cloud wss://*.convex.cloud",
+    "media-src 'self' blob:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'self'",
+  ].join('; ');
+}
+
 function siteMeta(env: Record<string, string>): Plugin {
   return {
     name: 'site-meta',
-    transformIndexHtml(html) {
-      return html.replace(/%(VITE_[A-Z0-9_]+)%/g, (_match, key: string) =>
-        env[key] ?? process.env[key] ?? META_DEFAULTS[key] ?? '');
+    transformIndexHtml(html, ctx) {
+      const filled = html.replace(/%(VITE_[A-Z0-9_]+)%/g, (_match, key: string) =>
+        escapeHtml(env[key] ?? process.env[key] ?? META_DEFAULTS[key] ?? ''));
+      if (ctx.server) return filled;
+      return filled.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(filled)}">`);
     },
   };
 }

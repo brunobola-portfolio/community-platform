@@ -6,6 +6,7 @@ import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
 import type { AdminRecord, EntityHandlers } from '../types';
 import type { Sponsor, SponsorTier } from '../../../types';
 import { sponsorTierLabel } from '../../../utils/sponsorTiers';
+import { sanitizeUrl } from '../../../utils/security';
 
 const SORTS: ListSort<Sponsor>[] = [
     { key: 'name', label: 'Nome A–Z', compare: (a, b) => a.name.localeCompare(b.name, 'pt') },
@@ -69,7 +70,7 @@ export const SponsorsTab: React.FC<SponsorsTabProps> = ({ sponsors, sponsorTiers
                 {
                     header: 'Website',
                     cell: s => (s.website
-                        ? <a href={s.website} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-400 hover:underline">{s.website.replace(/^https?:\/\//, '')}</a>
+                        ? <a href={sanitizeUrl(s.website)} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-400 hover:underline">{s.website.replace(/^https?:\/\//, '')}</a>
                         : <span className="text-xs text-slate-600">—</span>),
                 },
             ]}

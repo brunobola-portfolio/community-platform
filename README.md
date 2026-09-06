@@ -253,9 +253,9 @@ All configurable per-instance in Admin > AI & Chatbot; defaults live in
 
 | Function | Default model | Fallback |
 |----------|--------------|----------|
-| Chat | `gemini-3-flash-preview` | `gemini-2.5-flash` |
+| Chat | `gemini-3.5-flash` | `gemini-3.5-flash-lite` |
 | TTS | `gemini-2.5-flash-preview-tts` | — |
-| Image | `gemini-2.5-flash-image` | Unsplash placeholder |
+| Image | `gemini-3.1-flash-image` | Unsplash placeholder |
 
 ### Rate limits (token bucket)
 
@@ -266,6 +266,9 @@ All configurable per-instance in Admin > AI & Chatbot; defaults live in
 | ai:generateImage | 3 | 3 |
 | content:create / content:update | 20 / 30 | 10 / 15 |
 | registration:create | 5 | 5 |
+| contact:create / sponsorship:create (per email) | 3 | 1 |
+| contact:create:global / sponsorship:create:global | 30 / 20 | 10 / 5 |
+| ai:chat:anonymous / ai:tts:anonymous / ai:geoQuery:anonymous (global) | 120 / 30 / 60 | 60 / 15 / 30 |
 
 ### Graceful degradation
 

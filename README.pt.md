@@ -255,9 +255,9 @@ Configuráveis por instância em Admin > IA & Chatbot; defaults em
 
 | Função | Modelo default | Fallback |
 |--------|---------------|----------|
-| Chat | `gemini-3-flash-preview` | `gemini-2.5-flash` |
+| Chat | `gemini-3.5-flash` | `gemini-3.5-flash-lite` |
 | TTS | `gemini-2.5-flash-preview-tts` | — |
-| Imagem | `gemini-2.5-flash-image` | Placeholder Unsplash |
+| Imagem | `gemini-3.1-flash-image` | Placeholder Unsplash |
 
 ### Rate limits (token bucket)
 
@@ -268,6 +268,9 @@ Configuráveis por instância em Admin > IA & Chatbot; defaults em
 | ai:generateImage | 3 | 3 |
 | content:create / content:update | 20 / 30 | 10 / 15 |
 | registration:create | 5 | 5 |
+| contact:create / sponsorship:create (per email) | 3 | 1 |
+| contact:create:global / sponsorship:create:global | 30 / 20 | 10 / 5 |
+| ai:chat:anonymous / ai:tts:anonymous / ai:geoQuery:anonymous (global) | 120 / 30 / 60 | 60 / 15 / 30 |
 
 ### Degradação graceful
 

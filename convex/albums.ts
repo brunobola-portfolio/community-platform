@@ -69,13 +69,16 @@ export const listSummary = query({
     handler: async (ctx) => {
         const albums = await ctx.db.query("albums").order("desc").collect();
 
-        // Batch: fetch all gallery images once, group counts by albumId
-        const allImages = await ctx.db.query("galleryImages").collect();
+        // One indexed lookup per album keeps the public subscription small
+        // instead of shipping every photo row just to count them
         const countByAlbum = new Map<string, number>();
-        for (const img of allImages) {
-            const key = String(img.albumId);
-            countByAlbum.set(key, (countByAlbum.get(key) ?? 0) + 1);
-        }
+        await Promise.all(albums.map(async (album) => {
+            const images = await ctx.db
+                .query("galleryImages")
+                .withIndex("by_album", (q) => q.eq("albumId", album._id))
+                .collect();
+            countByAlbum.set(String(album._id), images.length);
+        }));
 
         return Promise.all(
             albums.map(async (a) => ({

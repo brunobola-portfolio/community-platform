@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { ArticleMeta } from '../components/StructuredData';
 import { useData } from '../context/DataContext';
 import { ArrowLeft, Calendar, Share2, Volume2, Clock, Tag, Loader2 } from 'lucide-react';
 import { Button, Badge } from '../components/ui/UIComponents';
@@ -20,7 +21,7 @@ const computeReadTime = (html: string): string => {
 };
 
 export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) => {
-   const { posts, settings } = useData();
+   const { posts, settings, isLoading } = useData();
    const navigate = useNavigate();
    const ttsAction = useAction(api.ai.tts);
    const [isNarrating, setIsNarrating] = useState(false);
@@ -82,11 +83,32 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
       }
    }, [post]);
 
-   if (!post) return <div className="pt-40 text-center text-slate-900 dark:text-white">Notícia não encontrada.</div>;
+   if (!post && isLoading) {
+      return (
+         <div className="min-h-screen bg-slate-50 pt-32 dark:bg-dark-bg">
+            <div className="mx-auto max-w-3xl space-y-6 px-4 animate-pulse">
+               <div className="h-72 rounded-3xl bg-slate-900/5 dark:bg-white/5" />
+               <div className="h-8 w-2/3 rounded bg-slate-900/5 dark:bg-white/5" />
+               <div className="h-4 w-full rounded bg-slate-900/5 dark:bg-white/5" />
+               <div className="h-4 w-5/6 rounded bg-slate-900/5 dark:bg-white/5" />
+            </div>
+         </div>
+      );
+   }
+   if (!post) {
+      return (
+         <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-slate-50 px-6 text-center dark:bg-dark-bg">
+            <h1 className="font-serif text-3xl text-slate-900 dark:text-white">Notícia não encontrada</h1>
+            <p className="max-w-md text-slate-500 dark:text-slate-400">A notícia pode ter sido removida ou o endereço está incorreto.</p>
+            <Button onClick={() => navigate('/blog')}><ArrowLeft size={16} /> Voltar às notícias</Button>
+         </div>
+      );
+   }
 
    return (
       <div className="bg-slate-50 dark:bg-dark-bg min-h-screen pb-24 selection:bg-brand-500/30">
          <title>{`${post.title} — ${settings.siteName}`}</title>
+         <ArticleMeta title={post.title} description={post.excerpt} image={post.coverUrl} path={`/blog/${post.slug}`} />
          {/* Cinematic Hero Header */}
          <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden">
             <div className="absolute top-8 left-8 z-50">

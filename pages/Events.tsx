@@ -2,16 +2,21 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { useConvexAuth } from 'convex/react';
+import { useOutletContext, useLocation } from 'react-router-dom';
+import type { LayoutOutletContext } from '../layouts/types';
+import { EventsJsonLd } from '../components/StructuredData';
 import { MapPin, Clock, Search, CalendarPlus, Trophy, CheckCircle2, Download, X, History, CalendarOff, Smartphone, CreditCard, LogIn } from 'lucide-react';
 import { Button, Badge, Input, Modal, cn } from '../components/ui/UIComponents';
 import { sanitizeHtml, sanitizeText } from '../utils/security';
 import { categoryColorClass } from '../utils/categoryColors';
+import { normalize, progressWidthClass } from '../utils/text';
 import { EventCardSkeleton } from '../components/ui/Skeleton';
 import type { Event } from '../types';
 
 export const EventsPage: React.FC = () => {
     const { events, categories, addRegistration, isLoading, settings } = useData();
     const { isAuthenticated } = useConvexAuth();
+    const { openMemberLogin } = useOutletContext<LayoutOutletContext>();
     const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'all'>('upcoming');
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -24,6 +29,15 @@ export const EventsPage: React.FC = () => {
     // Dynamic Form State
     const [dynamicForm, setDynamicForm] = useState<Record<string, string>>({});
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+    // The home page hands over an event to open (registration CTA)
+    const location = useLocation();
+    useEffect(() => {
+        const wanted = (location.state as { eventId?: string } | null)?.eventId;
+        if (!wanted || selectedEvent) return;
+        const match = events.find(e => e.id === wanted);
+        if (match) { setSelectedEvent(match); window.history.replaceState({}, ''); }
+    }, [location.state, events, selectedEvent]);
 
     // Debounce search input (500ms)
     useEffect(() => {
@@ -65,7 +79,6 @@ export const EventsPage: React.FC = () => {
     const filteredEvents = useMemo(() => {
         return events.filter(event => {
             const eventDate = new Date(event.date);
-            const normalize = (str: string) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const search = normalize(searchTerm);
 
             // Search Filter
@@ -187,7 +200,7 @@ export const EventsPage: React.FC = () => {
                         {soldOut ? 'Esgotado' : `Inscrever ${selectedEvent.entryPrice ? `(${selectedEvent.entryPrice}€)` : '· grátis'}`}
                     </Button>
                 ) : (
-                    <Button variant="outline" onClick={() => { window.location.href = '/'; }} className="w-full sm:w-auto">
+                    <Button variant="outline" onClick={openMemberLogin} className="w-full sm:w-auto">
                         <LogIn size={16} /> Iniciar sessão para inscrever
                     </Button>
                 )}
@@ -197,12 +210,13 @@ export const EventsPage: React.FC = () => {
     return (
         <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg">
             <title>{`Eventos & Atividades — ${settings.siteName}`}</title>
+            <EventsJsonLd events={events.filter(e => new Date(e.date) >= new Date(todayStr))} />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
                 <div className="text-center mb-12 animate-fade-in-up">
                     <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Agenda Cultural</span>
-                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Eventos & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-purple-500 dark:to-purple-300">Atividades</span></h1>
+                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Eventos & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-accent-gold dark:to-amber-300">Atividades</span></h1>
                     <p className="text-xl text-slate-500 dark:text-slate-400 font-light max-w-2xl mx-auto">
                         {settings.locality ? `O ponto de encontro da comunidade de ${settings.locality}.` : "O ponto de encontro da comunidade."}
                     </p>
@@ -412,7 +426,7 @@ export const EventsPage: React.FC = () => {
                                                     <span>{Math.round(capacityPercent)}%</span>
                                                 </div>
                                                 <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={event.maxParticipants || 0} aria-valuenow={event.currentParticipants || 0}>
-                                                    <div className={cn("h-full rounded-full transition-all duration-500", capacityPercent > 90 ? "bg-red-500" : "bg-brand-500")} style={{ width: `${capacityPercent}%` }}></div>
+                                                    <div className={cn("h-full rounded-full transition-all duration-500", capacityPercent > 90 ? "bg-red-500" : "bg-brand-500", progressWidthClass(capacityPercent))}></div>
                                                 </div>
                                             </div>
                                         )}

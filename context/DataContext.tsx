@@ -9,6 +9,7 @@ import {
 } from '../types';
 import type { RegistrationStatus, NotificationType, NotificationTarget, EventStatus } from '../types';
 import { INITIAL_SETTINGS } from '../utils/defaultSettings';
+import { slugify } from '../utils/text';
 
 // ── Convex Document Types ──────────────────────────────────────────────────────
 // Raw shapes returned by Convex queries (with _id, _creationTime).
@@ -495,16 +496,6 @@ function toActionResult(error: unknown): ActionResult {
   return { success: false, error: message };
 }
 
-// URL-safe slug from a title; guarantees a non-empty value for schema fields.
-function slugify(text: string): string {
-  const slug = text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-  return slug || `registo-${Date.now()}`;
-}
 
 // Plain-text excerpt derived from HTML content for posts saved without one.
 function excerptFromContent(content: string, max = 160): string {
@@ -607,7 +598,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     }
     if (settingsAdminRaw) {
-      const adminOnlyKeys = ['aiProvider', 'openrouterModel', 'customApiUrl', 'customModel', 'hasOpenrouterApiKey', 'hasCustomApiKey'] as const;
+      const adminOnlyKeys = ['aiProvider', 'openrouterModel', 'customApiUrl', 'customModel', 'aiSystemPromptExtra', 'hasOpenrouterApiKey', 'hasCustomApiKey', 'hasFacebookAccessToken'] as const;
       for (const key of adminOnlyKeys) {
         const value = (settingsAdminRaw as Record<string, unknown>)[key];
         if (value !== undefined && value !== null) {

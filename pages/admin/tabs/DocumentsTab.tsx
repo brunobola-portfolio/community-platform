@@ -5,6 +5,7 @@ import { EntityList } from '../components/EntityList';
 import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
 import type { AdminRecord, EntityHandlers } from '../types';
 import type { Document as AppDocument } from '../../../types';
+import { sanitizeUrl } from '../../../utils/security';
 
 const SORTS: ListSort<AppDocument>[] = [
     { key: 'date-desc', label: 'Data · mais recentes', compare: (a, b) => (b.date ?? '').localeCompare(a.date ?? '') },
@@ -50,7 +51,7 @@ export const DocumentsTab: React.FC<EntityHandlers & { documents: AppDocument[] 
                     header: 'Ficheiro',
                     cell: d => (d.externalUrl
                         ? (
-                            <a href={d.externalUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-brand-400 hover:underline">
+                            <a href={sanitizeUrl(d.externalUrl)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-brand-400 hover:underline">
                                 <ExternalLink size={12} /> Abrir
                             </a>
                         )

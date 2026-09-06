@@ -50,7 +50,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     return (
         <div className="space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
-                <label className={LABEL_CLASS}>{label}</label>
+                <span className={LABEL_CLASS}>{label}</span>
                 <div className="flex items-center gap-2">
                     {onEnhance && (
                         <button
@@ -72,15 +72,15 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <div className="border border-slate-700 rounded-xl overflow-hidden bg-slate-950/50 relative group focus-within:border-brand-500/50 transition-colors">
                 {viewMode === 'edit' && (
                     <div className="flex gap-1 p-2 border-b border-slate-800 bg-slate-900/50 overflow-x-auto no-scrollbar touch-pan-x">
-                        <button type="button" onClick={() => insertTag('bold')}   className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Negrito"><Bold size={16} /></button>
-                        <button type="button" onClick={() => insertTag('italic')} className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Itálico"><Italic size={16} /></button>
-                        <button type="button" onClick={() => insertTag('h3')}     className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Título"><Heading size={16} /></button>
-                        <button type="button" onClick={() => insertTag('ul')}     className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Lista"><List size={16} /></button>
-                        <button type="button" onClick={() => insertTag('p')}      className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Parágrafo"><Type size={16} /></button>
+                        <button type="button" onClick={() => insertTag('bold')}   className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Negrito" aria-label="Negrito"><Bold size={16} /></button>
+                        <button type="button" onClick={() => insertTag('italic')} className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Itálico" aria-label="Itálico"><Italic size={16} /></button>
+                        <button type="button" onClick={() => insertTag('h3')}     className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Título" aria-label="Título"><Heading size={16} /></button>
+                        <button type="button" onClick={() => insertTag('ul')}     className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Lista" aria-label="Lista"><List size={16} /></button>
+                        <button type="button" onClick={() => insertTag('p')}      className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Parágrafo" aria-label="Parágrafo"><Type size={16} /></button>
                     </div>
                 )}
                 {viewMode === 'edit' ? (
-                    <textarea
+                    <textarea aria-label="Conteúdo"
                         ref={textareaRef}
                         className={cn("w-full bg-transparent border-none p-4 text-white font-mono text-sm outline-none resize-none custom-scrollbar leading-relaxed focus:ring-0", height)}
                         value={value}

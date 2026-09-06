@@ -4,12 +4,8 @@ import { useState, useMemo } from 'react';
  * Normalizes a string for accent-insensitive, case-insensitive comparison.
  * Strips diacritics and lowercases the input.
  */
-export function normalize(str: string): string {
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-}
+import { normalize } from '../utils/text';
+export { normalize };
 
 interface UseSearchFilterConfig<T> {
   searchFields: (keyof T)[];

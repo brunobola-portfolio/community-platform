@@ -46,11 +46,11 @@ export const AdminIdentitySection: React.FC<AdminIdentitySectionProps> = ({ sett
                 const wide = Boolean(rows);
                 return (
                     <div key={key} className={wide ? 'md:col-span-2' : undefined}>
-                        <label className={LABEL_CLASS}>{label}</label>
+                        <label htmlFor={`identity-${key}`} className={LABEL_CLASS}>{label}</label>
                         {rows ? (
-                            <textarea rows={rows} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
+                            <textarea id={`identity-${key}`} rows={rows} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
                         ) : (
-                            <input value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
+                            <input id={`identity-${key}`} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
                         )}
                         {hint && <p className="text-xs text-slate-500 mt-1">{hint}</p>}
                     </div>

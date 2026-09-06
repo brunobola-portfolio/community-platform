@@ -9,6 +9,7 @@
 import React from 'react';
 import { MapPin, Mail, Phone, Facebook, Instagram, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { useData } from '../context/DataContext';
+import { sanitizeUrl } from '../utils/security';
 
 interface FooterProps {
   onContact?: () => void;
@@ -51,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
               )}
               {settings.instagramUrl && (
                 <a
-                  href={settings.instagramUrl}
+                  href={sanitizeUrl(settings.instagramUrl ?? '')}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Instagram da ${settings.siteName}`}
@@ -84,7 +85,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
                 {settings.address && (
                   <li className="flex items-start space-x-3 group">
                     <MapPin size={18} className="text-brand-500 shrink-0 group-hover:text-slate-900 dark:group-hover:text-white" />
-                    <a href={settings.mapsUrl || '#'} target="_blank" rel="noopener noreferrer" className="group-hover:text-slate-900 dark:group-hover:text-white">
+                    <a href={sanitizeUrl(settings.mapsUrl ?? '') || '#'} target="_blank" rel="noopener noreferrer" className="group-hover:text-slate-900 dark:group-hover:text-white">
                       {addressLine1}{addressLine2 && <><br/>{addressLine2}</>}
                     </a>
                   </li>

@@ -74,10 +74,9 @@ export const remove = mutation({
             .withIndex("by_category", (q) => q.eq("categoryId", categoryIdStr))
             .collect();
 
-        // TODO: use events.by_category index once added to schema
         const events = await ctx.db
             .query("events")
-            .filter((q) => q.eq(q.field("categoryId"), categoryIdStr))
+            .withIndex("by_category", (q) => q.eq("categoryId", categoryIdStr))
             .collect();
 
         if (posts.length > 0 || events.length > 0) {
@@ -110,10 +109,9 @@ export const cleanupDuplicates = mutation({
                     await ctx.db.patch(p._id, { categoryId: masterId });
                 }
 
-                // TODO: use events.by_category index once added to schema
                 const events = await ctx.db
                     .query("events")
-                    .filter((q) => q.eq(q.field("categoryId"), catIdStr))
+                    .withIndex("by_category", (q) => q.eq("categoryId", catIdStr))
                     .collect();
                 for (const e of events) {
                     await ctx.db.patch(e._id, { categoryId: masterId });
