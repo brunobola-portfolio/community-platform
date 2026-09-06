@@ -33,6 +33,8 @@ import {
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { cn } from '../utils/cn';
+import { sanitizeUrl } from '../utils/security';
+import { EmptyState } from '../components/ui/EmptyState';
 import type { Document, Notification, Settings } from '../types';
 
 // --- Sub-Components (defined at module level to avoid re-creation on every render) ---
@@ -221,6 +223,9 @@ interface DocumentsTabProps {
 const DocumentsTab: React.FC<DocumentsTabProps> = ({ documents }) => (
   <div className="space-y-6 animate-fade-in-up">
       <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-6">Documentos Privados</h3>
+      {documents.length === 0 && (
+          <EmptyState icon={FileText} title="Sem documentos" description="Quando a direção publicar estatutos, atas ou regulamentos, aparecem aqui." />
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {documents.map(doc => (
               <div key={doc.id} className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl p-5 hover:border-brand-500/30 transition-colors group">
@@ -236,7 +241,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ documents }) => (
                       </div>
                       {doc.url || doc.externalUrl ? (
                           <a
-                              href={doc.url || doc.externalUrl}
+                              href={sanitizeUrl(doc.url || doc.externalUrl || '')}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5"
@@ -263,12 +268,15 @@ interface NotificationsTabProps {
 const NotificationsTab: React.FC<NotificationsTabProps> = ({ notifications }) => (
   <div className="space-y-6 animate-fade-in-up">
       <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-6">Notificações</h3>
+      {notifications.length === 0 && (
+          <EmptyState icon={Bell} title="Sem notificações" description="Os avisos da associação para os sócios aparecem aqui." />
+      )}
       <div className="space-y-4">
           {notifications.map(n => (
               <div key={n.id} className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl p-5 hover:border-brand-500/30 transition-colors">
                   <div className="flex items-start gap-4">
-                      <div className={`p-2 rounded-lg ${n.type === 'info' ? 'bg-blue-500/20' : n.type === 'warning' ? 'bg-amber-500/20' : 'bg-green-500/20'}`}>
-                          <Bell size={18} className={n.type === 'info' ? 'text-blue-600 dark:text-blue-400' : n.type === 'warning' ? 'text-amber-600 dark:text-amber-400' : 'text-green-600 dark:text-green-400'} />
+                      <div className={`p-2 rounded-lg ${n.type === 'warning' || n.type === 'urgent' ? 'bg-amber-500/20' : n.type === 'success' ? 'bg-green-500/20' : 'bg-brand-500/10'}`}>
+                          <Bell size={18} className={n.type === 'warning' || n.type === 'urgent' ? 'text-amber-600 dark:text-amber-400' : n.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-brand-600 dark:text-brand-400'} />
                       </div>
                       <div className="flex-1">
                           <h4 className="text-slate-900 dark:text-white font-medium mb-1">{n.title}</h4>
@@ -320,12 +328,21 @@ interface PaymentModalContentProps {
   settings: Settings;
 }
 
-/** Body of the quota payment modal: lists configured payment methods, or a contact-the-direção empty state. */
-const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings }) => {
+/**
+ * Body of the quota payment modal. Bank details come from an auth-gated query
+ * rather than the public settings, so they never reach anonymous visitors.
+ */
+const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: publicSettings }) => {
+  const payment = useQuery(api.settings.getPaymentDetails, {});
+  const settings = { ...publicSettings, ...(payment ?? {}) };
   const hasMbway = Boolean(settings.mbwayNumber);
   const hasIban = Boolean(settings.iban);
   const hasMultibanco = Boolean(settings.multibancoEntity && settings.multibancoReference);
   const hasAnyMethod = hasMbway || hasIban || hasMultibanco;
+
+  if (payment === undefined) {
+    return <div className="space-y-3 py-2">{[0, 1].map(i => <div key={i} className="h-16 animate-pulse rounded-2xl bg-slate-900/5 dark:bg-white/5" />)}</div>;
+  }
 
   if (!hasAnyMethod) {
     return (

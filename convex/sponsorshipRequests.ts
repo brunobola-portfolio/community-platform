@@ -12,7 +12,7 @@ export const list = query({
             .query("sponsorshipRequests")
             .withIndex("by_timestamp")
             .order("desc")
-            .collect();
+            .take(300);
     },
 });
 
@@ -31,6 +31,7 @@ export const create = mutation({
             key: "sponsorship:create",
             userId: args.email.trim().toLowerCase() || "anonymous",
         });
+        await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, { key: "sponsorship:create:global" });
         validateRequired(args, ["name", "email", "phone", "tier"]);
         validateMaxLength(args.phone, "telefone", 20);
         validateMaxLength(args.email, "email", 254);

@@ -49,16 +49,17 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                 <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
                     {fields.map((field, idx) => (
                         <div key={field.id} className="flex gap-2 items-start bg-black/20 p-3 rounded-lg border border-white/5 group hover:border-brand-500/30 transition-colors">
-                            <div className="grid grid-cols-12 gap-2 flex-1">
-                                <div className="col-span-4">
+                            <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-12">
+                                <div className="col-span-2 sm:col-span-4">
                                     <input
+                                        aria-label="Nome do campo"
                                         value={field.label}
                                         onChange={e => updateField(idx, { label: e.target.value })}
                                         className="w-full bg-transparent text-xs text-white border-b border-slate-700 focus:border-brand-500 outline-none"
                                         placeholder="Label"
                                     />
                                 </div>
-                                <div className="col-span-3">
+                                <div className="col-span-1 sm:col-span-3">
                                     <AdminSelect
                                         value={field.type}
                                         onChange={e => updateField(idx, { type: e.target.value as RegistrationFieldDefinition['type'] })}
@@ -73,16 +74,18 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                                         <option value="textarea">Área</option>
                                     </AdminSelect>
                                 </div>
-                                <div className="col-span-3">
+                                <div className="col-span-1 sm:col-span-3">
                                     <input
+                                        aria-label="Texto de ajuda do campo"
                                         value={field.placeholder || ''}
                                         onChange={e => updateField(idx, { placeholder: e.target.value })}
                                         className="w-full bg-transparent text-xs text-slate-400 border-b border-slate-700 focus:border-brand-500 outline-none"
                                         placeholder="Placeholder"
                                     />
                                 </div>
-                                <div className="col-span-2 flex items-center justify-center">
+                                <div className="col-span-2 flex items-center justify-center gap-1.5 sm:col-span-2">
                                     <input
+                                        aria-label="Campo obrigatório"
                                         type="checkbox"
                                         checked={field.required}
                                         onChange={e => updateField(idx, { required: e.target.checked })}
@@ -90,7 +93,7 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                                     />
                                 </div>
                             </div>
-                            <button type="button" onClick={() => removeField(idx)} className="text-slate-600 hover:text-red-400 p-1">
+                            <button type="button" onClick={() => removeField(idx)} aria-label="Remover campo" title="Remover campo" className="rounded p-1 text-slate-600 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                                 <Trash2 size={14} />
                             </button>
                         </div>

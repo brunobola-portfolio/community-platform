@@ -7,6 +7,7 @@ import { AdminSelect } from '../components/AdminSelect';
 import { STD_INPUT_CLASS, LABEL_CLASS } from '../constants';
 import { api } from '../../../convex/_generated/api';
 import { DEFAULT_IMAGE_MODEL } from '../../../convex/lib/aiDefaults';
+import { GEMINI_IMAGE_MODELS } from '../../../convex/lib/aiDefaults';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -66,13 +67,13 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
 
     return (
         <div className="space-y-4">
-            <label className={LABEL_CLASS}>Media Studio</label>
+            <span className={LABEL_CLASS}>Media Studio</span>
             <div className="bg-slate-950/50 border border-slate-800 rounded-xl overflow-hidden">
                 <div className="relative h-48 w-full bg-black/40 flex items-center justify-center group bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
                     {imageUrl ? (
                         <>
                             <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
                                 <button type="button" onClick={() => onChange('')} className="p-3 bg-red-600 rounded-full text-white hover:bg-red-500 shadow-lg transform hover:scale-110 transition-all" aria-label="Remover imagem">
                                     <Trash2 size={20} />
                                 </button>
@@ -103,10 +104,7 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                             <div className="flex gap-2">
                                 <div className="min-w-0 flex-1">
                                     <AdminSelect value={aiModel} onChange={e => setAiModel(e.target.value)} aria-label="Modelo de geração de imagem" className="text-xs">
-                                        <option value="gemini-3.1-flash-lite-image">NanoBanana 2 Lite</option>
-                                        <option value="gemini-3.1-flash-image">NanoBanana 2</option>
-                                        <option value="gemini-3-pro-image">NanoBanana Pro</option>
-                                        <option value="gemini-2.5-flash-image">NanoBanana (legado)</option>
+                                        {GEMINI_IMAGE_MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
                                     </AdminSelect>
                                 </div>
                                 <div className="w-24 shrink-0">

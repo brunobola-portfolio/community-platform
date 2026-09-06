@@ -9,6 +9,7 @@
 import React from 'react';
 import { ArrowUpRight, CloudOff, Globe, MapPin, Sparkles, Volume2 } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { sanitizeUrl } from '../../utils/security';
 
 export interface GroundingChunk {
   web?: { uri: string; title?: string };
@@ -69,7 +70,7 @@ const renderText = (text: string, onNavigate: (path: string) => void): React.Rea
         return (
           <a
             key={`${lineIdx}-${i}`}
-            href={linkPath}
+            href={sanitizeUrl(linkPath)}
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-brand-600 underline decoration-brand-500/40 underline-offset-2 hover:decoration-brand-500 dark:text-brand-300"
@@ -173,7 +174,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             {message.links.map((link, lIdx) => (
               <a
                 key={lIdx}
-                href={link.web?.uri || link.maps?.uri}
+                href={sanitizeUrl(link.web?.uri || link.maps?.uri || '')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex max-w-full items-center gap-1 rounded-lg bg-slate-900/5 px-2 py-1 text-[10px] text-slate-500 ring-1 ring-slate-900/5 transition-colors hover:text-brand-600 dark:bg-white/5 dark:text-slate-400 dark:ring-white/10 dark:hover:text-brand-400"

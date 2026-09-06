@@ -1,11 +1,11 @@
 #!/bin/bash
-# ARCVA 2.0 - Setup Automatizado
+# Community Platform - Setup Automatizado
 # Uso: bash scripts/setup.sh
 
 set -e
 
 echo ""
-echo "  ARCVA 2.0 - Setup"
+echo "  Community Platform - Setup"
 echo "  ===================="
 echo ""
 

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { normalize } from '../utils/text';
 
 export interface ListFilter<T> {
     key: string;
@@ -36,7 +37,6 @@ export interface AdminListState<T> {
     counts: Record<string, number>;
 }
 
-const normalize = (value: string) => value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 /**
  * Search + filter chips + sort for backoffice lists. Pure client-side: the

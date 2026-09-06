@@ -1,10 +1,10 @@
-# ARCVA 2.0 - Setup Automatizado (Windows PowerShell)
+# Community Platform - Setup Automatizado (Windows PowerShell)
 # Uso: powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
 
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "  ARCVA 2.0 - Setup" -ForegroundColor Cyan
+Write-Host "  Community Platform - Setup" -ForegroundColor Cyan
 Write-Host "  ====================" -ForegroundColor Cyan
 Write-Host ""
 

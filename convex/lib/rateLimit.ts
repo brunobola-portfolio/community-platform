@@ -8,6 +8,10 @@ const RATE_LIMITS: Record<string, { maxTokens: number; refillPerMinute: number }
   "ai:chat": { maxTokens: 10, refillPerMinute: 10 },
   "ai:tts": { maxTokens: 5, refillPerMinute: 5 },
   "ai:geoQuery": { maxTokens: 10, refillPerMinute: 10 },
+  // Global ceilings for anonymous traffic, on top of the per-session buckets
+  "ai:chat:anonymous": { maxTokens: 120, refillPerMinute: 60 },
+  "ai:tts:anonymous": { maxTokens: 30, refillPerMinute: 15 },
+  "ai:geoQuery:anonymous": { maxTokens: 60, refillPerMinute: 30 },
   "ai:generateImage": { maxTokens: 3, refillPerMinute: 3 },
   "ai:enhanceText": { maxTokens: 10, refillPerMinute: 10 },
   "content:create": { maxTokens: 20, refillPerMinute: 10 },
@@ -16,6 +20,9 @@ const RATE_LIMITS: Record<string, { maxTokens: number; refillPerMinute: number }
   // Public forms: tighter buckets keyed per submitted email
   "contact:create": { maxTokens: 3, refillPerMinute: 1 },
   "sponsorship:create": { maxTokens: 3, refillPerMinute: 1 },
+  // Global caps so rotating the submitted email does not mint fresh buckets
+  "contact:create:global": { maxTokens: 30, refillPerMinute: 10 },
+  "sponsorship:create:global": { maxTokens: 20, refillPerMinute: 5 },
 };
 
 /**

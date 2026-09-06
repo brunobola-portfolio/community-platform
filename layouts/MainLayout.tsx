@@ -139,7 +139,7 @@ export const MainLayout: React.FC = () => {
         />
 
         <main id="main-content" className="flex-grow">
-          <Outlet context={{ onAskAI: openAI, openContact, handleLogout }} />
+          <Outlet context={{ onAskAI: openAI, openContact, openMemberLogin: () => handleOpenLogin('USER'), handleLogout }} />
         </main>
 
         {/* Floating AI Action Button */}

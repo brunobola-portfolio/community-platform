@@ -9,5 +9,7 @@ export interface LayoutOutletContext {
   /** Opens the AI chat modal; a non-empty query is auto-sent on open. */
   onAskAI: (query?: string) => void;
   openContact: (subject: string) => void;
+  /** Opens the member login dialog without leaving the page. */
+  openMemberLogin: () => void;
   handleLogout: () => void;
 }

@@ -54,6 +54,11 @@ const failureText = (result: unknown): string | undefined => {
     return undefined;
 };
 
+/** Derived image URLs the queries attach to records for display. */
+const MEDIA_KEYS = ['imageUrl', 'coverUrl', 'logoUrl', 'photoUrl'] as const;
+const pickMedia = (item: AdminRecord): Record<string, unknown> =>
+    Object.fromEntries(MEDIA_KEYS.filter(k => k in item).map(k => [k, item[k]]));
+
 /** Entity type created by the primary action of each list tab. */
 const NEW_ENTITY_BY_TAB: Partial<Record<Tab, string>> = {
     news: 'post', events: 'event', members: 'member', gallery: 'album', notifications: 'notification',
@@ -150,9 +155,14 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const openEditModal = (type: string, item: AdminRecord) => {
         setEditingId(item.id);
         setEditingTierId(type === 'tier' ? item.id : null);
-        const d: AdminFormData = { ...item };
+        // Queries return derived fields (resolved storage URLs, photo counts,
+        // the photo list of an album). Keep them for display but remember the
+        // originals so an untouched image is not re-saved as an external URL and
+        // an album edit never rewrites its photo set
+        const { photos: _photos, photoCount: _photoCount, ...editable } = item;
+        void _photos; void _photoCount;
+        const d: AdminFormData = { ...editable, _originalMedia: pickMedia(item) };
         if ((type === 'event' || type === 'post') && typeof item.date === 'string') d.date = formatDateForInput(item.date);
-        if (type === 'album' && !item.photos) d.photos = [];
         if (type === 'event' && !item.registrationFields) d.registrationFields = [];
         if (type === 'tier' && Array.isArray(item.benefits)) d.benefits = item.benefits.join('\n');
         setFormData(d);
@@ -237,8 +247,13 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         if (!showModal || isSubmitting) return;
         setIsSubmitting(true);
         try {
-            const { _id, _creationTime, id, ...rest } = formData;
+            const { _id, _creationTime, id, _originalMedia, ...rest } = formData;
             void _id; void _creationTime; void id;
+            // An image the admin did not change must not travel back as a URL
+            const original = (_originalMedia ?? {}) as Record<string, unknown>;
+            for (const key of MEDIA_KEYS) {
+                if (key in rest && rest[key] === original[key]) delete rest[key];
+            }
             const payload = buildPayload(showModal, rest);
 
             // The wrappers each take their own args type; the form is a loose record

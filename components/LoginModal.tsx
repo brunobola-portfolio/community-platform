@@ -85,13 +85,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
           >
             {isLoading ? <Loader2 className="animate-spin" /> : <><LogIn size={18} /> {flow === 'signUp' ? 'Registar' : 'Entrar'}</>}
           </Button>
-          <button
+          {!isAdmin && <button
             type="button"
             onClick={() => setFlow(flow === 'signIn' ? 'signUp' : 'signIn')}
             className="w-full rounded-lg py-1 text-[11px] font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
           >
             {flow === 'signIn' ? 'Não tem conta? Registar' : 'Já tem conta? Entrar'}
-          </button>
+          </button>}
         </div>
       }
     >

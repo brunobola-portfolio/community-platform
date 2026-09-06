@@ -6,6 +6,71 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-09-06
+
+Five-front audit (public UX, backoffice, code, docs/SEO, security) consolidated into one
+release.
+
+### Security
+
+- `ai.chat` no longer accepts a `model` argument from the client; anonymous AI traffic
+  gets a per-browser session bucket plus a global ceiling instead of one shared bucket
+  that any visitor could drain; `enableChatbot` is enforced server-side; chat input is
+  capped at 2000 chars and TTS at 1500
+- Contact and partnership forms add a global rate-limit bucket, since the per-email
+  bucket was keyed on attacker-supplied input
+- Quota payment details (IBAN, MB WAY, Multibanco) moved out of `settings.getPublic`
+  into `settings.getPaymentDetails` (requires a session)
+- Password policy: 10+ characters with upper, lower and digit; the admin login dialog no
+  longer offers sign-up
+- Content-Security-Policy generated at build with the inline theme script allowed by hash
+  (no `'unsafe-inline'` for scripts), plus `object-src`, `base-uri`, `form-action`,
+  `frame-ancestors`; mirrored as an IIS header; HSTS `preload`
+- `sanitizeUrl` now guards every database- or model-supplied `href` (chat links, grounding
+  sources, documents, partner websites, footer)
+- Build-time `%VITE_*%` values are HTML-escaped; deploy workflow passes repository
+  variables through `env:` instead of the command line
+- Real instance content (`convex/migrations.ts`) left the public repository
+
+### Fixed
+
+- Editing an album's title or description wiped all its photos: the edit form carried the
+  query's empty `photos` array back into the update, which `setImages` honoured
+- Saving any settings section blanked the AI system prompt extra (it was missing from the
+  admin overlay); same fix for the Facebook token flag
+- Untouched images were re-saved as external URLs on every edit
+- Tier delete guard compared against the tier name while sponsors store the id
+- Registrations list returned the 500 oldest rows instead of the newest
+- "Iniciar sessão para inscrever" reloaded the home page; it now opens the login dialog
+  in place. The home page's "Inscrever-me" opens the event on the events page
+- Article page showed "not found" while still loading, with no way back
+- Light-theme contrast on error text (`text-red-400` without a light pair)
+- Category deletion and stats upsert use indexes instead of table scans; notifications,
+  contacts, sponsorship requests and the gallery summary are bounded queries
+
+### Added
+
+- `Field` component: every backoffice label is linked to its control, required fields
+  are marked, hints are announced (82 label/input pairs converted)
+- Organization JSON-LD on the home page, Event JSON-LD on the events page, per-article
+  Open Graph/Twitter tags and canonical on news articles
+- PNG icons (192/512/maskable) and `apple-touch-icon`
+- Sócios & Quotas on the shared `EntityList` (search, quota-state filters, sort, mobile
+  cards); empty states for the member area's documents and notifications and for the
+  dashboard activity log; gallery album skeleton
+- One Gemini model catalogue (`GEMINI_*_MODELS`) feeding the admin selects, Media Studio
+  and the provider test tool
+- `SECURITY.md` "Known limitations" section
+
+### Changed
+
+- Public accent colour is the brand gold instead of purple (headings, glows, hover
+  borders); notification "info" tone uses the brand instead of blue
+- Shared `normalize`/`slugify`/`progressWidthClass` helpers replace four copies; the
+  last inline `style={{}}` and the `any` casts in seeds are gone
+- README model and rate-limit tables match the code; `VITE_INSTAGRAM_URL` documented in
+  the env examples; setup scripts carry the product name
+
 ## [2.5.0] - 2026-08-29
 
 ### Fixed
@@ -166,7 +231,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.2.0...v2.3.0

@@ -52,4 +52,7 @@ jobs:
 
       - name: Install on IIS (backup, smoke test, rollback)
         shell: powershell
-        run: .\deploy\install.ps1 -SitePath "${{ vars.SITE_PATH || 'C:\inetpub\wwwroot' }}" -SiteUrl "${{ vars.SITE_URL || 'https://www.example.org/' }}"
+        env:
+          SITE_PATH: ${{ vars.SITE_PATH || 'C:\inetpub\wwwroot' }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.example.org/' }}
+        run: .\deploy\install.ps1 -SitePath $env:SITE_PATH -SiteUrl $env:SITE_URL

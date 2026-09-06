@@ -1,6 +1,6 @@
 import { query, mutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
-import { requireAdmin, isAdmin } from "./lib/auth";
+import { requireAuth, requireAdmin, isAdmin } from "./lib/auth";
 import { validateMaxLength } from "./lib/validation";
 
 export const getPublic = query({
@@ -47,13 +47,29 @@ export const getPublic = query({
             aboutMission: settings.aboutMission,
             aboutPillars: settings.aboutPillars,
             quotaAmount: settings.quotaAmount,
+            showChatbotBubble: settings.showChatbotBubble,
+            ttsModel: settings.ttsModel,
+            aiProvider: settings.aiProvider,
+        };
+    },
+});
+
+/**
+ * Bank and MB WAY details for paying quotas. Only members with a session need
+ * them, and exposing them publicly invites payment-redirect phishing.
+ */
+export const getPaymentDetails = query({
+    args: {},
+    handler: async (ctx) => {
+        await requireAuth(ctx);
+        const settings = await ctx.db.query("settings").first();
+        if (!settings) return null;
+        return {
+            quotaAmount: settings.quotaAmount,
             mbwayNumber: settings.mbwayNumber,
             iban: settings.iban,
             multibancoEntity: settings.multibancoEntity,
             multibancoReference: settings.multibancoReference,
-            showChatbotBubble: settings.showChatbotBubble,
-            ttsModel: settings.ttsModel,
-            aiProvider: settings.aiProvider,
         };
     },
 });
@@ -88,6 +104,7 @@ export const getForAI = internalQuery({
             siteFullName: doc.siteFullName,
             locality: doc.locality,
             address: doc.address,
+            enableChatbot: doc.enableChatbot,
             chatModel: doc.chatModel,
             chatModelFallback: doc.chatModelFallback,
             aiGuardrailsEnabled: doc.aiGuardrailsEnabled,

@@ -36,10 +36,10 @@ export const HistoryPage: React.FC = () => {
         {/* Intro Narrative */}
         <div className="text-center mb-24 animate-fade-in-up">
            <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.3em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">O Nosso Legado</span>
-           <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-12">História & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-purple-500 dark:to-purple-300">Tradição</span></h1>
+           <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-12">História & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-accent-gold dark:to-amber-300">Tradição</span></h1>
 
            <div className="relative max-w-4xl mx-auto text-left bg-white dark:bg-dark-surface/50 p-8 md:p-12 rounded-3xl border border-slate-900/10 dark:border-white/10 backdrop-blur-md shadow-2xl">
-             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-purple-500 to-brand-500 opacity-50"></div>
+             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-accent-gold to-brand-500 opacity-50"></div>
              
              <div className="space-y-6 text-lg md:text-xl text-slate-600 dark:text-slate-300 font-light leading-relaxed">
                {introParagraphs.map((paragraph, i) => (

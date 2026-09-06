@@ -5,6 +5,7 @@
  * back to the stored key (write-only fields never round-trip to the client).
  */
 
+import { GEMINI_CHAT_MODELS } from "./lib/aiDefaults";
 import { action } from "./_generated/server";
 import { v, ConvexError } from "convex/values";
 import { api, internal } from "./_generated/api";
@@ -128,13 +129,7 @@ export const listModels = action({
 
         // Gemini has no public list endpoint worth exposing; curated set kept
         // in sync with the AdminAITab selectors (2.0 family retired 2026-06)
-        return [
-            { id: "gemini-3.7-flash", name: "Gemini 3.7 Flash" },
-            { id: "gemini-3.5-flash", name: "Gemini 3.5 Flash" },
-            { id: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash Lite" },
-            { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
-            { id: "gemini-2.5-flash-lite", name: "Gemini 2.5 Flash Lite" },
-        ];
+        return GEMINI_CHAT_MODELS.map((m) => ({ id: m.id, name: m.label }));
     },
 });
 

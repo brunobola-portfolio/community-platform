@@ -16,7 +16,7 @@ export const list = query({
                 .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
                 .collect();
         }
-        return await ctx.db.query("registrations").take(500);
+        return await ctx.db.query("registrations").order("desc").take(500);
     },
 });
 

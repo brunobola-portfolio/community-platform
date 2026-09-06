@@ -80,7 +80,7 @@ export const ProviderConfigSection: React.FC<ConfigSectionProps> = ({ settingsFo
 
             <div className="space-y-4">
                 <div>
-                    <label className={LABEL_CLASS}>Fornecedor do Chat</label>
+                    <span className={LABEL_CLASS}>Fornecedor do chat</span>
                     <div role="radiogroup" aria-label="Fornecedor do Chat" className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {PROVIDER_CARDS.map(card => (
                             <ProviderCard
@@ -99,8 +99,9 @@ export const ProviderConfigSection: React.FC<ConfigSectionProps> = ({ settingsFo
                 {provider === 'openrouter' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className={LABEL_CLASS}>Chave OpenRouter</label>
+                            <label htmlFor="provider-openrouter-key" className={LABEL_CLASS}>Chave OpenRouter</label>
                             <input
+                                id="provider-openrouter-key"
                                 type="password"
                                 value={settingsForm.openrouterApiKey ?? ''}
                                 onChange={e => update('openrouterApiKey', e.target.value)}
@@ -124,8 +125,9 @@ export const ProviderConfigSection: React.FC<ConfigSectionProps> = ({ settingsFo
                 {provider === 'custom' && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label className={LABEL_CLASS}>URL Base</label>
+                            <label htmlFor="provider-custom-url" className={LABEL_CLASS}>URL base</label>
                             <input
+                                id="provider-custom-url"
                                 value={settingsForm.customApiUrl ?? ''}
                                 onChange={e => update('customApiUrl', e.target.value)}
                                 className={STD_INPUT_CLASS}
@@ -134,8 +136,9 @@ export const ProviderConfigSection: React.FC<ConfigSectionProps> = ({ settingsFo
                             <p className="text-slate-600 text-xs mt-1">Endpoint compatível OpenAI (Ollama, LM Studio, vLLM).</p>
                         </div>
                         <div>
-                            <label className={LABEL_CLASS}>Chave API (opcional)</label>
+                            <label htmlFor="provider-custom-key" className={LABEL_CLASS}>Chave API (opcional)</label>
                             <input
+                                id="provider-custom-key"
                                 type="password"
                                 value={settingsForm.customApiKey ?? ''}
                                 onChange={e => update('customApiKey', e.target.value)}

@@ -5,6 +5,7 @@ import { EntityList } from '../components/EntityList';
 import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
 import type { AdminRecord, EntityHandlers } from '../types';
 import type { Event } from '../../../types';
+import { progressWidthClass } from '../../../utils/text';
 
 type AdminEvent = Event & { category: string };
 
@@ -26,15 +27,11 @@ const SORTS: ListSort<AdminEvent>[] = [
     { key: 'fill', label: 'Ocupação', compare: (a, b) => fill(b) - fill(a) },
 ];
 
-// Static class list so Tailwind can see every width (no inline styles); the
-// bar is quantized to 10% steps, which is all a 128px bar can show anyway
-const WIDTH_CLASSES = ['w-0', 'w-[10%]', 'w-[20%]', 'w-[30%]', 'w-[40%]', 'w-[50%]', 'w-[60%]', 'w-[70%]', 'w-[80%]', 'w-[90%]', 'w-full'];
-
 const Occupancy: React.FC<{ event: AdminEvent }> = ({ event }) => {
     if (!event.isTournament || !event.maxParticipants) return <span className="text-xs text-slate-500">—</span>;
     const current = event.currentParticipants ?? 0;
     const percent = Math.min(100, Math.round((current / event.maxParticipants) * 100));
-    const width = WIDTH_CLASSES[Math.min(10, Math.max(current > 0 ? 1 : 0, Math.round(percent / 10)))];
+    const width = progressWidthClass(percent);
     return (
         <div className="w-32">
             <div className="mb-1 flex justify-between text-[10px] tabular-nums text-slate-400">

@@ -1,4 +1,5 @@
 
+import { INITIAL_SETTINGS } from '../utils/defaultSettings';
 import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Target, Shield, Users, MapPin, Navigation, Mail, Phone, Clock, Send, CheckCircle2, Sparkles, LocateFixed, Search, RotateCw, ExternalLink, Volume2, Loader2, Heart, Trophy, Handshake, Star } from 'lucide-react';
@@ -52,7 +53,7 @@ const LocationCommand: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   const LOCATION = {
-    lat: parseFloat(settings.latitude) || 39.515469,
+    lat: parseFloat(settings.latitude) || parseFloat(INITIAL_SETTINGS.latitude),
     lon: parseFloat(settings.longitude) || -8.586681
   };
   const ADDRESS = settings.address || "";
@@ -347,7 +348,7 @@ const ContactForm: React.FC = () => {
                 <textarea required rows={4} aria-label="Mensagem" value={formState.message} onChange={e=>setFormState({...formState, message: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white outline-none focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-slate-700 shadow-inner" placeholder="O que tem em mente?"/>
               </div>
               {error && (
-                <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-3 rounded-lg">
+                <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm p-3 rounded-lg">
                   {error}
                 </div>
               )}
@@ -375,7 +376,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
           <Badge className="mb-8 border-brand-500/30 px-6 py-2">{`${settings.foundedYear ? `Desde ${settings.foundedYear} ` : ""}ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}`}</Badge>
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif text-slate-900 dark:text-white mb-10 leading-[0.95] tracking-tighter">
             A apoiar a <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-300 via-brand-500 dark:via-brand-300 to-purple-500 dark:to-purple-300 font-bold">Comunidade</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-300 via-brand-500 dark:via-brand-300 to-accent-gold dark:to-amber-300 font-bold">Comunidade</span>
           </h1>
           <p className="text-2xl md:text-3xl text-slate-500 dark:text-slate-400 font-light leading-relaxed mb-16 max-w-4xl mx-auto">
             {settings.aboutMission}
