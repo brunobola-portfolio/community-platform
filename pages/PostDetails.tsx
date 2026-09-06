@@ -8,6 +8,7 @@ import { useAction, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { sanitizeHtml } from '../utils/security';
 import { playBase64Audio } from '../utils/audio';
+import { getSessionId } from '../utils/session';
 
 interface PostDetailsProps {
    postId: string;
@@ -23,7 +24,7 @@ const computeReadTime = (html: string): string => {
 export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) => {
    const { posts, settings, isLoading } = useData();
    const navigate = useNavigate();
-   const ttsAction = useAction(api.ai.tts);
+   const ttsAction = useAction(api.aiMedia.tts);
    const [isNarrating, setIsNarrating] = useState(false);
    const summary = posts.find(p => p.id === postId || p.slug === postId);
    // Full content loads on demand: the site-wide subscription only carries summaries
@@ -52,7 +53,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
          const plainText = post.content.replace(/<[^>]*>/g, '').slice(0, 2000);
          const prompt = `Lê este artigo de notícias de forma clara e profissional: Título: ${post.title}. Conteúdo: ${post.excerpt}. Texto completo: ${plainText}`;
 
-         const result = await ttsAction({ text: prompt, voiceName: 'Puck' });
+         const result = await ttsAction({ text: prompt, voiceName: 'Puck', sessionId: getSessionId() });
          await playBase64Audio(result.audioBase64, () => setIsNarrating(false));
       } catch (e) {
          console.error("TTS Error:", e);

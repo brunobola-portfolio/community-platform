@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.6.1] - 2026-09-06
+
+### Changed
+
+- `context/DataContext.tsx` (1676 lines) split into `context/data/`: document and
+  argument types, helpers, and one `use<Entity>Actions` hook per domain; the provider
+  keeps queries, mapping and the memoised value (414 lines)
+- `convex/ai.ts` (927 lines) split: chat stays in `ai.ts`, TTS and image generation in
+  `aiMedia.ts`, geo and text enhancement in `aiText.ts`, shared helpers in
+  `lib/aiShared.ts` — client references moved to `api.aiMedia.*` / `api.aiText.*`
+- Anonymous visitors now send a per-browser `sessionId` (`utils/session.ts`) with chat,
+  TTS and geo calls, so the per-session bucket introduced in 2.6.0 is actually used
+
+### Security
+
+- `documents.list` returns nothing to anonymous callers and the client no longer
+  subscribes to it without a session: the members' archive was world-readable
+
 ## [2.6.0] - 2026-09-06
 
 Five-front audit (public UX, backoffice, code, docs/SEO, security) consolidated into one
@@ -231,7 +249,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.0...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.1...HEAD
+[2.6.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.3.0...v2.4.0

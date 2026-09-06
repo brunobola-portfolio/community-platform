@@ -1,12 +1,14 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { requireAdmin } from "./lib/auth";
+import { getCurrentUser, requireAdmin } from "./lib/auth";
 import { cleanupStorageOnDelete } from "./lib/cascade";
 import { validateMaxLength } from "./lib/validation";
 
 export const list = query({
     args: { category: v.optional(v.string()) },
     handler: async (ctx, args) => {
+        // Documents are the members' private archive: anonymous callers get nothing
+        if (!(await getCurrentUser(ctx))) return [];
         const docs = args.category
             ? await ctx.db
                 .query("documents")

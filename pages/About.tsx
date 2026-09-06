@@ -1,5 +1,6 @@
 
 import { INITIAL_SETTINGS } from '../utils/defaultSettings';
+import { getSessionId } from '../utils/session';
 import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Target, Shield, Users, MapPin, Navigation, Mail, Phone, Clock, Send, CheckCircle2, Sparkles, LocateFixed, Search, RotateCw, ExternalLink, Volume2, Loader2, Heart, Trophy, Handshake, Star } from 'lucide-react';
@@ -43,8 +44,8 @@ const getGeoErrorMessage = (error: unknown): string => {
 // Internal component to handle Location logic using context
 const LocationCommand: React.FC = () => {
   const { settings } = useData();
-  const geoQueryAction = useAction(api.ai.geoQuery);
-  const ttsAction = useAction(api.ai.tts);
+  const geoQueryAction = useAction(api.aiText.geoQuery);
+  const ttsAction = useAction(api.aiMedia.tts);
   const [query, setQuery] = useState('');
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [aiError, setAiError] = useState(false);
@@ -64,7 +65,7 @@ const LocationCommand: React.FC = () => {
     setAiResponse(null);
     setAiError(false);
     try {
-      const result = await geoQueryAction({ query });
+      const result = await geoQueryAction({ query, sessionId: getSessionId() });
       setAiResponse(result.text);
     } catch (e) {
       // Log once and never rethrow — the widget degrades gracefully instead
@@ -81,7 +82,7 @@ const LocationCommand: React.FC = () => {
     if (!aiResponse) return;
     setIsSpeaking(true);
     try {
-      const result = await ttsAction({ text: aiResponse });
+      const result = await ttsAction({ text: aiResponse, sessionId: getSessionId() });
       await playBase64Audio(result.audioBase64);
     } catch (e) {
       console.error("TTS Error:", e);

@@ -75,6 +75,10 @@ npm run preview      # Servir o build local
   SEMPRE Gemini, independentemente do provedor de chat.
 - **RAG**: `convex/lib/aiContext.ts` injeta dados reais do portal (eventos, equipa,
   notícias, settings) no system prompt. Histórico multi-turno: últimas 6 mensagens.
+- **`DataContext` é só o provider**: tipos em `context/data/types.ts`, wrappers de mutation
+  em `context/data/use<Entidade>Actions.ts` (um hook por domínio, devolve `ActionResult`).
+  Actions IA: `convex/ai.ts` (chat), `aiMedia.ts` (TTS, imagem), `aiText.ts` (geo,
+  enhance), helpers em `lib/aiShared.ts`.
 - **Listas públicas vs backoffice**: `DataContext` expõe `events`/`posts` (só publicados) e
   `adminEvents`/`adminPosts` (incluem rascunhos via `listAll`). Não misturar.
 - **Backoffice é dark-only e declara-o**: a raiz do `/admin` e do `/setup` tem a classe
