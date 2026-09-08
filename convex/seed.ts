@@ -4,7 +4,7 @@ import {
 
     INITIAL_EVENTS, INITIAL_POSTS, INITIAL_MEMBERS, INITIAL_SPONSORS,
     INITIAL_CATEGORIES, INITIAL_NOTIFICATIONS,
-    INITIAL_ACTION_AREAS, INITIAL_STATS, INITIAL_SPONSOR_TIERS, INITIAL_DOCUMENTS, INITIAL_ALBUMS
+    INITIAL_ACTION_AREAS, INITIAL_STATS, INITIAL_SPONSOR_TIERS, INITIAL_DOCUMENTS, INITIAL_ALBUMS, INITIAL_MILESTONES
 } from "./mockData";
 
 // Seed rows carry client-side fields (numeric ids, joined category) that the
@@ -311,6 +311,12 @@ export const seed = internalAction({
                 console.error(`Failed to create document ${doc.title}:`, err);
                 throw err;
             }
+        }
+
+        // History timeline
+        console.log("Seeding Milestones...");
+        for (const milestone of INITIAL_MILESTONES) {
+            await ctx.runMutation(internal.seedHelpers.createMilestone, milestone);
         }
 
         // 11. Gallery albums (external photos; the board replaces them from the backoffice)

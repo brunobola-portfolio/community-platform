@@ -11,6 +11,8 @@ export interface RichTextEditorProps {
     onEnhance?: () => void;
     isEnhancing?: boolean;
     label: string;
+    /** Shows the same asterisk as Field; the server rejects an empty value */
+    required?: boolean;
     height?: string;
 }
 
@@ -20,6 +22,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     onEnhance,
     isEnhancing,
     label,
+    required = false,
     height = "h-64"
 }) => {
     const [viewMode, setViewMode] = useState<'edit' | 'preview'>('edit');
@@ -50,7 +53,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     return (
         <div className="space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className={LABEL_CLASS}>{label}</span>
+                <span className={LABEL_CLASS}>{label}{required && <span aria-hidden="true" className="ml-1 text-brand-400">*</span>}</span>
                 <div className="flex items-center gap-2">
                     {onEnhance && (
                         <button

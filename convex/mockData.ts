@@ -108,6 +108,14 @@ export const INITIAL_NOTIFICATIONS = [
     { title: "Quotas", message: "O pagamento de quotas para o novo ano já se encontra disponível.", type: 'Info', target: 'all' },
 ];
 
+export const INITIAL_MILESTONES = [
+    { year: 1985, title: "Fundação", description: "Um grupo de vizinhos funda a associação para dar à vila um espaço de encontro, cultura e desporto.", order: 1 },
+    { year: 1992, title: "A sede", description: "Inauguração da sede própria, com salão, bar e sala de jogos construídos em regime de voluntariado.", order: 2 },
+    { year: 2004, title: "Recinto desportivo", description: "Abertura do recinto exterior e início dos torneios que hoje marcam o calendário da vila.", order: 3 },
+    { year: 2015, title: "Renovação", description: "Obras de modernização da sede e novas atividades para todas as idades.", order: 4 },
+    { year: 2026, title: "Portal comunitário", description: "A associação passa a gerir eventos, sócios, quotas e comunicação num portal próprio.", order: 5 },
+];
+
 export const INITIAL_ALBUMS = [
     { title: "Festas e Convívios", date: "2025-08-01", coverUrl: IMG.festival, photos: [IMG.festival, IMG.party, IMG.fado, IMG.gallery1] },
     { title: "Torneios e Desporto", date: "2025-06-01", coverUrl: IMG.futsal, photos: [IMG.futsal, IMG.snooker, IMG.outdoor, IMG.gallery2] },

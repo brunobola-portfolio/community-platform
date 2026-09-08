@@ -63,11 +63,18 @@ export function validateMaxLength(value: string, field: string, max: number) {
 /**
  * Validate required string fields are not empty.
  */
+/** Form labels for the schema keys that can be reported as missing; the raw key is a last resort. */
+const FIELD_LABELS: Record<string, string> = {
+  title: "Título", description: "Descrição", location: "Local", date: "Data", name: "Nome",
+  email: "Email", phone: "Telefone", tier: "Nível", subject: "Assunto", message: "Mensagem",
+  role: "Cargo", excerpt: "Resumo", content: "Conteúdo", author: "Autor",
+};
+
 export function validateRequired(fields: Record<string, unknown>, requiredKeys: string[]) {
   for (const key of requiredKeys) {
     const val = fields[key];
     if (val === undefined || val === null || (typeof val === "string" && val.trim() === "")) {
-      throw new ConvexError(`O campo "${key}" é obrigatório.`);
+      throw new ConvexError(`O campo "${FIELD_LABELS[key] ?? key}" é obrigatório.`);
     }
   }
 }
