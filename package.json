@@ -1,7 +1,7 @@
 {
   "name": "community-platform",
   "version": "2.7.2",
-  "description": "White-label community platform for cultural and recreational associations — realtime backend, AI assistant with RAG, and a full self-service backoffice. Live showcase: arcva.pt",
+  "description": "White-label community platform for associations, communities and institutions — realtime backend, AI assistant with RAG, and a full self-service backoffice. Self-hosted or hosted and operated by BolaLabs.",
   "type": "module",
   "author": {
     "name": "BolaLabs",

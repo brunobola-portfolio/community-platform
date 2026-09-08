@@ -1,6 +1,9 @@
-# White-Label — Lançar o portal de uma associação
+# White-Label — Lançar o portal de uma organização
 
-O repositório é um produto genérico: nenhum ficheiro versionado nomeia uma associação real.
+Serve associações, comunidades e instituições — associações culturais e recreativas, clubes
+desportivos, juntas de freguesia, IPSS e outras instituições locais.
+
+O repositório é um produto genérico: nenhum ficheiro versionado nomeia uma organização real.
 O conteúdo demo (seed) é uma associação fictícia, "ACR Vila Nova". Tudo o que identifica
 uma instância real vive em **três camadas privadas**, nunca no git:
 
