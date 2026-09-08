@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.7.1] - 2026-09-08
+
+### Fixed
+
+- The CSP meta tag hashed the inline theme script before Vite re-indented it, so browsers
+  blocked the script and logged a violation on every page load (the header was right, the
+  meta was not); the hash is now taken from the HTML that is actually emitted, and
+  `frame-ancestors` stays in the header only, where browsers honour it
+- Events opens on the full list when nothing is scheduled yet, instead of an empty
+  "upcoming" tab
+
 ## [2.7.0] - 2026-09-08
 
 Demo that stands on its own, and a fresh clone that actually starts.
@@ -277,7 +288,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.0...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.1...HEAD
+[2.7.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.1...v2.7.0
 [2.6.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.5.0...v2.6.0
