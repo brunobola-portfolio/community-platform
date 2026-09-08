@@ -19,10 +19,10 @@ const BRAND_DIR = '.brand/public';
 
 const META_DEFAULTS: Record<string, string> = {
   VITE_SITE_NAME: 'Community Platform',
-  VITE_SITE_FULL_NAME: 'Portal comunitário para associações',
+  VITE_SITE_FULL_NAME: 'Portal comunitário para associações, comunidades e instituições',
   VITE_SITE_URL: 'https://example.org',
   VITE_SITE_DESCRIPTION: 'Portal comunitário com eventos, notícias, área de sócio e assistente IA.',
-  VITE_SITE_KEYWORDS: 'associação, comunidade, eventos, cultura, desporto',
+  VITE_SITE_KEYWORDS: 'associação, comunidade, instituição, eventos, cultura, desporto',
   VITE_OG_TAGLINE: 'A casa digital da nossa comunidade.',
 };
 

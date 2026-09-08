@@ -1,9 +1,11 @@
 # AGENTS.md — Community Platform
 
-Plataforma white-label para associações culturais e recreativas, construída pela
-[BolaLabs](https://bolalabs.pt). A instância de referência em produção é o portal da
-**ARCVA** ([arcva.pt](https://arcva.pt)) — todo o conteúdo ARCVA no repositório é seed/demo,
-a identidade em runtime vem das settings da BD (ver `docs/WHITE-LABEL.md`).
+Plataforma white-label para associações, comunidades e instituições (associações culturais
+e recreativas, clubes desportivos, juntas de freguesia, IPSS), construída pela
+[BolaLabs](https://bolalabs.pt). O cliente de referência é a **ARCVA**
+([arcva.pt](https://arcva.pt)), que corre a sua própria instância — todo o conteúdo ARCVA no
+repositório é seed/demo, a identidade em runtime vem das settings da BD (ver
+`docs/WHITE-LABEL.md`).
 
 SPA em **React 19 + TypeScript 5 + Vite 8 (Rolldown)** com **Tailwind CSS 3** e backend
 realtime **Convex** (queries, mutations, actions IA, storage, crons — nada corre em servidor

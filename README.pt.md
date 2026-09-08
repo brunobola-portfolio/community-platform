@@ -2,7 +2,7 @@
 
 # Community Platform
 
-### A casa digital autogerida para associações culturais e recreativas
+### A casa digital autogerida para associações, comunidades e instituições
 
 <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&labelColor=0f172a" alt="React 19" />
 <img src="https://img.shields.io/badge/TypeScript-5%20strict-3178C6?logo=typescript&logoColor=white&labelColor=0f172a" alt="TypeScript 5" />
@@ -13,15 +13,16 @@
 <img src="https://img.shields.io/badge/licen%C3%A7a-MIT-7fc528?labelColor=0f172a" alt="MIT" />
 <a href="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml"><img src="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
 
-Plataforma comunitária white-label: backend serverless em tempo real, assistente IA que
-responde com o conteúdo publicado da própria associação (RAG) e um backoffice completo para
-a direção gerir tudo — eventos, notícias, sócios, quotas, galerias — sem programador.
+Plataforma comunitária white-label para associações, clubes, juntas de freguesia, IPSS e
+outras instituições locais: backend serverless em tempo real, assistente IA que responde
+com o conteúdo publicado da própria organização (RAG) e um backoffice completo para a
+direção gerir tudo — eventos, notícias, sócios, quotas, galerias — sem programador.
 
-**Instância de referência:** [arcva.pt](https://arcva.pt) — o portal da ARCVA, associação
-cultural portuguesa, a correr exatamente este código. **Página do produto:**
-[bolalabs.pt/pt/community-platform](https://bolalabs.pt/pt/community-platform).
+**Cliente de referência:** [arcva.pt](https://arcva.pt), o portal da ARCVA, associação
+cultural e recreativa portuguesa, corre a sua própria instância desta plataforma.
+**Página do produto:** [bolalabs.pt/pt/community-platform](https://bolalabs.pt/pt/community-platform).
 
-[Funcionalidades](#funcionalidades) · [Instalação](#instalação) · [Arquitetura](#arquitetura) · [Assistente IA](#assistente-ia) · [White-Label](#lançar-a-tua-associação) · [Deploy](#deploy-para-produção)
+[Funcionalidades](#funcionalidades) · [Instalação](#instalação) · [Arquitetura](#arquitetura) · [Assistente IA](#assistente-ia) · [White-Label](#lançar-o-teu-portal) · [Deploy](#deploy-para-produção)
 
 [English](README.md) · **Português**
 
@@ -29,13 +30,24 @@ cultural portuguesa, a correr exatamente este código. **Página do produto:**
 
 ---
 
+### Formas de a usar
+
+Isto não é SaaS: não há registo, não há tenant e não há plano de subscrição. Ou corres a
+plataforma tu próprio, ou pedes à BolaLabs para a correr por ti.
+
+| Opção | O que significa |
+| --- | --- |
+| **Autoalojamento** | Clonar o repositório e fazer deploy no teu projeto Convex e no teu servidor. Gratuito e MIT, sem contrato com ninguém. |
+| **Alojamento gerido pela BolaLabs** | A pedido, a [BolaLabs](https://bolalabs.pt) instala, aloja e opera a tua instância — deploys, atualizações e backups incluídos. |
+| **Desenvolvimento à medida** | Funcionalidades, integrações ou design específicos da tua organização, sobre o mesmo código. |
+
 ### Quem deve ler o quê
 
 | Se és… | Começa aqui |
 | --- | --- |
 | Qualquer pessoa — técnica ou não | Esta página, de cima a baixo (~5 minutos) |
 | Developer a configurar localmente | [Instalação](#instalação) → [Comandos](#comandos) |
-| A lançar o portal de outra associação | [White-Label](#lançar-a-tua-associação) → **[docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)** |
+| A lançar o portal de outra organização | [White-Label](#lançar-o-teu-portal) → **[docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)** |
 | A operar instâncias para clientes (repo privado + deploy automático) | **[docs/INSTANCE-REPO.md](docs/INSTANCE-REPO.md)** + [templates/instance/](templates/instance/) |
 | A fazer release ou deploy | [Deploy](#deploy-para-produção) → **[DEPLOY.md](DEPLOY.md)** (IIS) / **[DEPLOY-VPS.md](DEPLOY-VPS.md)** (nginx) |
 | A alterar UI / design visual | **[docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)** |
@@ -61,27 +73,29 @@ run seed:seed`), sem marca de nenhum cliente. A visita guiada de um minuto está
 
 ## Sobre
 
-A maioria das pequenas associações depende de um voluntário com conhecimentos técnicos — e
-para quando essa pessoa sai. Esta plataforma elimina a dependência: depois do deploy
+Associações culturais e recreativas, clubes desportivos, juntas de freguesia, IPSS e outras
+instituições locais dependem quase sempre de um voluntário com conhecimentos técnicos — e
+param quando essa pessoa sai. Esta plataforma elimina a dependência: depois do deploy
 inicial, **tudo se gere no painel de administração**. Eventos com formulários de inscrição
 dinâmicos, notícias com editor rich text, equipa, galerias, quotas de sócios, documentos,
 notificações, definições do site e o próprio assistente IA — tudo DB-first, tudo editável
 pela direção.
 
-**Nada neste repositório nomeia uma associação real.** O seed demo é um clube fictício;
+**Nada neste repositório nomeia uma organização real.** O seed demo é um clube fictício;
 uma instância real vive em três camadas privadas que nunca chegam ao git — a base de dados
 (painel admin), um `.env.production` gitignored para as meta tags de build, e um overlay
 `.brand/` gitignored para logos, fotos e OG image. Um deployment novo torna-se a *tua*
-associação preenchendo as definições no admin, não fazendo fork do código. Ver
+organização preenchendo as definições no admin, não fazendo fork do código. Ver
 [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md).
 
 ### Nasceu de uma necessidade real
 
 A plataforma começou como o novo portal da **ARCVA** — uma associação recreativa e
 cultural portuguesa — construído pela [BolaLabs](https://bolalabs.pt) para substituir um
-site estático que ninguém conseguia atualizar. Cresceu para produto genérico, e a ARCVA é a
-sua **parceira fundadora e instância de referência**: cada funcionalidade corre primeiro em
-produção para uma comunidade real.
+site estático que ninguém conseguia atualizar. Cresceu para produto genérico, ao serviço de
+qualquer organização comunitária, e a ARCVA continua a ser a sua **parceira fundadora e
+cliente de referência**: cada funcionalidade corre primeiro em produção para uma comunidade
+real.
 
 ## Funcionalidades
 
@@ -283,7 +297,7 @@ Configuráveis por instância em Admin > IA & Chatbot; defaults em
 Sem chave API, as funcionalidades IA mostram mensagens de indisponibilidade; o portal
 funciona normalmente sem IA.
 
-## Lançar a Tua Associação
+## Lançar o Teu Portal
 
 A versão curta — checklist completa em **[docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)**:
 
@@ -312,7 +326,8 @@ npm run dist
 ```
 
 O resultado é uma pasta estática — qualquer servidor web com fallback de SPA serve. A
-instância de referência corre em IIS com rollback em <60s (trocar o Physical Path de volta).
+instância do cliente de referência corre em IIS com rollback em <60s (trocar o Physical
+Path de volta).
 
 ## Design System
 
@@ -336,20 +351,21 @@ Reportes de segurança: [SECURITY.md](SECURITY.md). Histórico de versões: [CHA
 
 ## Apoiar o projeto
 
-A plataforma é gratuita e MIT. Se poupa um programador à tua associação, podes ajudar a
+A plataforma é gratuita e MIT. Se poupa um programador à tua organização, podes ajudar a
 mantê-la em andamento:
 
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-brunobola-FF5E5B?logo=ko-fi&logoColor=white&labelColor=0f172a)](https://ko-fi.com/brunobola)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-brunobola-FFDD00?logo=buymeacoffee&logoColor=black&labelColor=0f172a)](https://buymeacoffee.com/brunobola)
 
-Consultoria, alojamento e desenvolvimento à medida para associações: [bolalabs.pt](https://bolalabs.pt).
+Alojamento gerido pela BolaLabs, consultoria e desenvolvimento à medida para associações,
+comunidades e instituições: [bolalabs.pt](https://bolalabs.pt).
 
 ## Licença
 
 O código é MIT — ver [LICENSE](LICENSE).
 
 **Os ativos de marca não estão cobertos pela licença MIT.** O repositório não inclui o
-nome, logo ou fotografias de nenhuma associação real; a instância de referência guarda-os
+nome, logo ou fotografias de nenhuma organização real; a instância de um cliente guarda-os
 num overlay privado (ver [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)). O nome e logo ARCVA
 pertencem à associação. Material de terceiros usado pela plataforma:
 
@@ -363,12 +379,12 @@ Guia de contribuição: [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.m
 ## Contacto
 
 - **Plataforma / técnico**: [bruno@bolalabs.pt](mailto:bruno@bolalabs.pt) · [bolalabs.pt](https://bolalabs.pt)
-- **ARCVA (instância de referência)**: [geral@arcva.pt](mailto:geral@arcva.pt) · [arcva.pt](https://arcva.pt)
+- **ARCVA (cliente de referência, corre a sua própria instância)**: [geral@arcva.pt](mailto:geral@arcva.pt) · [arcva.pt](https://arcva.pt)
 
 ---
 
 <div align="center">
 
-Construída pela **[BolaLabs](https://bolalabs.pt)** · Em produção desde 2026 em [arcva.pt](https://arcva.pt)
+Construída pela **[BolaLabs](https://bolalabs.pt)** · Em produção desde 2026 em [arcva.pt](https://arcva.pt), o nosso cliente de referência
 
 </div>

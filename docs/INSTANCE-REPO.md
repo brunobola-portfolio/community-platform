@@ -1,6 +1,6 @@
 # Instance repositories — running the platform for a client
 
-The platform is generic; **each association is an instance**: its own Convex project, its
+The platform is generic; **each organisation is an instance**: its own Convex project, its
 own private repository with the identity layers, and its own server (or a folder on a
 shared one). This document is the operator's playbook for launching and running instances
 without ever putting client data in the public product.
