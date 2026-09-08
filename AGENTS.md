@@ -1,4 +1,4 @@
-# AGENTS.md — Community Platform (ARCVA 2.0)
+# AGENTS.md — Community Platform
 
 Plataforma white-label para associações culturais e recreativas, construída pela
 [BolaLabs](https://bolalabs.pt). A instância de referência em produção é o portal da
@@ -94,6 +94,11 @@ npm run preview      # Servir o build local
   ao lado de um input; um `<span>` com essa classe só serve para títulos de grupo.
 - **Catálogo de modelos Gemini** (`GEMINI_*_MODELS` em `convex/lib/aiDefaults.ts`) alimenta
   os selects do admin, o Media Studio e `aiProviderTools.listModels` — uma lista, três ecrãs.
+- **O seed é a demonstração do produto**: `convex/mockData.ts` gera datas de eventos relativas
+  ao dia em que corre (`inDays`), inclui formulários de inscrição e álbuns, e a identidade é a
+  associação fictícia "ACR Vila Nova" — capturas, vídeo e README usam esta instância, nunca um
+  cliente. O nome opcional do registo passa pelo `profile` do provider Password em
+  `convex/auth.ts` e alimenta o cartão de sócio e a saudação do backoffice.
 - **Dados reais de uma instância nunca entram aqui**: as migrações com conteúdo real
   (`migrations.ts`) vivem no repositório privado da instância, não em `convex/`.
 - **Erros de mutation chegam ao utilizador**: os wrappers devolvem `ActionResult`; o

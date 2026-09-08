@@ -6,6 +6,34 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-09-08
+
+Demo that stands on its own, and a fresh clone that actually starts.
+
+### Added
+
+- Optional name at sign-up (member registration and the `/setup` wizard); the member
+  card and the backoffice greeting use it instead of the email prefix
+- Demo seed: three gallery albums, per-event registration forms on three events, and
+  event dates relative to the day the seed runs, so a new install opens on a live agenda
+  instead of an empty "upcoming" list
+
+### Fixed
+
+- `npx convex dev` failed on a fresh clone: four files did not pass the strict typecheck
+  Convex runs before pushing (implicit `any` through the `chat` action, `undefined`
+  index arguments, a widened seed status)
+- `/setup` showed the raw request id when the deployment had no auth variables; it now
+  says what is missing
+- Docs told operators to pass `--allow-dirty-git-state` to the auth CLI; the flag does
+  not exist
+
+### Changed
+
+- README, AGENTS.md and the docs speak about Community Platform as the product; ARCVA is
+  named only as the founding partner and the reference instance, and every screenshot
+  comes from the fictitious demo association
+
 ## [2.6.1] - 2026-09-06
 
 ### Changed
@@ -249,7 +277,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.1...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.1...v2.7.0
 [2.6.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.0...v2.6.1
 [2.6.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.4.0...v2.5.0

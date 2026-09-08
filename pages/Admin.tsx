@@ -87,6 +87,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
     const generateImageAction = useAction(api.aiMedia.generateImage);
     const enhanceTextAction = useAction(api.aiText.enhanceText);
+    const me = useQuery(api.users.me);
     const aiStats = useQuery(api.aiLogs.getStats, { days: 7 }) as AIStats | undefined;
 
     // ── State ────────────────────────────────────────────────────────────────
@@ -340,7 +341,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
                 <div className="mx-auto max-w-7xl p-4 pb-24 md:p-8 md:pb-8">
                     <AdminPageHeader
-                        title={activeTab === 'dashboard' ? `${getGreeting()}, Admin` : TAB_NAMES[activeTab]}
+                        title={activeTab === 'dashboard' ? `${getGreeting()}, ${me?.name?.split(' ')[0] || 'Admin'}` : TAB_NAMES[activeTab]}
                         description={TAB_DESCRIPTIONS[activeTab]}
                         count={tabCounts[activeTab]}
                         action={showNewButton ? { label: NEW_LABELS[activeTab] ?? 'Novo registo', onClick: openNewModal } : undefined}

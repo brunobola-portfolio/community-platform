@@ -28,6 +28,7 @@ import {
     Lock,
     Mail,
     ArrowRight,
+    UserRound,
 } from 'lucide-react';
 import { Button, Input, cn } from '../components/ui/UIComponents';
 
@@ -75,6 +76,7 @@ export const SetupPage: React.FC = () => {
         }
     };
 
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirm, setConfirm] = useState('');
@@ -111,7 +113,7 @@ export const SetupPage: React.FC = () => {
 
         try {
             setPhase('creating');
-            await signIn('password', { email: email.trim(), password, flow: 'signUp' });
+            await signIn('password', { email: email.trim(), password, name: name.trim(), flow: 'signUp' });
 
             setPhase('promoting');
             await waitForAuthPropagation();
@@ -135,6 +137,10 @@ export const SetupPage: React.FC = () => {
             } else if (lower.includes('administrador configurado')) {
                 setError('Setup já foi concluído por outra pessoa. A redirecionar para a homepage.');
                 setTimeout(() => navigate('/'), 2000);
+            } else if (lower.includes('server error') || lower.includes('environment variable')) {
+                // The raw message names a request id, not the cause; the cause is almost always auth env
+                console.error('[Setup] signIn failed:', msg);
+                setError('O backend recusou o pedido. Confirma que o deployment Convex tem a autenticação configurada (SITE_URL, JWT_PRIVATE_KEY, JWKS) e tenta de novo.');
             } else {
                 setError(msg || 'Erro inesperado ao criar a conta de administrador.');
             }
@@ -172,6 +178,23 @@ export const SetupPage: React.FC = () => {
                             <SuccessState email={email} />
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-5">
+                                <Field
+                                    icon={<UserRound className="h-4 w-4" />}
+                                    label="Nome"
+                                    hint="Aparece na saudação do backoffice e no cartão de sócio."
+                                >
+                                    <Input
+                                        type="text"
+                                        autoComplete="name"
+                                        maxLength={80}
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        disabled={submitting}
+                                        placeholder="O seu nome"
+                                        className="bg-white/[0.04] border-white/5 focus-visible:border-brand-400/40"
+                                    />
+                                </Field>
+
                                 <Field
                                     icon={<Mail className="h-4 w-4" />}
                                     label="Email do administrador"
@@ -255,7 +278,7 @@ export const SetupPage: React.FC = () => {
                                 </Field>
 
                                 {error && (
-                                    <div className="flex items-start gap-2.5 rounded-2xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-300">
+                                    <div role="alert" className="flex items-start gap-2.5 rounded-2xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-300">
                                         <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                                         <span>{error}</span>
                                     </div>

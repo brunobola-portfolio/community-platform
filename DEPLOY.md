@@ -105,7 +105,7 @@ npx convex env set GEMINI_API_KEY "AIza..." --prod
 
 # Autenticação: gera SITE_URL, JWT_PRIVATE_KEY e JWKS para produção
 # Troca example.org pelo TEU domínio real
-npx @convex-dev/auth --prod --web-server-url https://www.example.org --skip-git-check --allow-dirty-git-state
+npx @convex-dev/auth --prod --web-server-url https://www.example.org --skip-git-check
 ```
 
 Confirma que ficou tudo:
@@ -360,7 +360,7 @@ O frontend não consegue falar com a Convex. Confirma que `VITE_CONVEX_URL` (no 
 O build apontou para o backend errado. Refaz: confirma `.env.production` (passo 1.3), `npm run build`, recopia o `dist/`.
 
 **"No auth provider found — Check convex/auth.config.ts"**
-Faltam `SITE_URL`/`JWKS`/`JWT_PRIVATE_KEY` em produção. Corre `npx @convex-dev/auth --prod --web-server-url https://teu-dominio --skip-git-check --allow-dirty-git-state`.
+Faltam `SITE_URL`/`JWKS`/`JWT_PRIVATE_KEY` em produção. Corre `npx @convex-dev/auth --prod --web-server-url https://teu-dominio --skip-git-check`.
 
 **Login/registo não grava**
 Confirma que o passo 1.4 (`@convex-dev/auth --prod`) correu e que o `--web-server-url` é o teu domínio real.
@@ -403,7 +403,7 @@ npm run preview                   # pré-visualizar o build
 npx convex deploy                                             # backend -> cloud
 npx convex env set GEMINI_API_KEY "AIza..." --prod           # chave IA
 npx @convex-dev/auth --prod --web-server-url https://www.example.org `
-    --skip-git-check --allow-dirty-git-state                 # autenticação
+    --skip-git-check                 # autenticação
 npx convex run seed:seed --prod                              # dados de exemplo (opcional)
 npm run dist                                                 # gerar o site + community-platform-dist.zip (valida tudo)
 

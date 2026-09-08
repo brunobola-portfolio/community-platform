@@ -18,7 +18,8 @@ from the association's own published content (RAG), and a complete backoffice so
 runs everything — events, news, members, dues, galleries — without a developer.
 
 **Live showcase:** [arcva.pt](https://arcva.pt) — the portal of ARCVA, a Portuguese cultural
-association, running this exact codebase.
+association, running this exact codebase. **Product page:**
+[bolalabs.pt/en/community-platform](https://bolalabs.pt/en/community-platform).
 
 [Features](#features) · [Getting Started](#getting-started) · [Architecture](#architecture) · [AI Assistant](#ai-assistant) · [White-Label](#launching-your-own-association) · [Deploy](#deploying-to-production)
 
@@ -42,19 +43,21 @@ association, running this exact codebase.
 
 ## Screenshots
 
-Reference instance ([arcva.pt](https://arcva.pt)) — everything below is managed from the admin panel:
+Every screen below is the demo association that ships with the repository (`npx convex run
+seed:seed`), captured with no client branding. The one-minute tour lives on the
+[product page](https://bolalabs.pt/en/community-platform).
 
-| Public portal (dark) | Public portal (light) |
+| Public portal (dark) | Events with registrations |
 |:---:|:---:|
-| ![Home, dark theme](docs/assets/home-dark.png) | ![Home, light theme](docs/assets/home-light.png) |
+| ![Home, dark theme](docs/assets/home-dark.png) | ![Events page](docs/assets/events.png) |
 
-| Events with filters and registrations | Admin backoffice |
+| AI assistant grounded in the portal's content | Member area: digital card and dues |
 |:---:|:---:|
-| ![Events page](docs/assets/events-dark.png) | ![Admin dashboard](docs/assets/admin-dashboard.png) |
+| ![AI assistant](docs/assets/ai-assistant.png) | ![Member area](docs/assets/member-area.png) |
 
-| Gallery manager: multi-upload, captions, ordering, cover |
-|:---:|
-| ![Gallery manager](docs/assets/admin-gallery.png) |
+| Backoffice dashboard | Events list: search, filters, sort |
+|:---:|:---:|
+| ![Admin dashboard](docs/assets/admin-dashboard.png) | ![Admin events](docs/assets/admin-events.png) |
 
 ## About
 
@@ -152,7 +155,9 @@ Browser (React 19 + Vite)
 - **Auth guards**: `requireAdmin(ctx)` first line of every admin mutation, `requireAuth(ctx)` for user mutations
 - **Soft auth**: `isAdmin(ctx)` in queries that return `[]` for non-admins (no throw)
 - **Rate limiting**: token bucket per action and per user
-- **Sanitization**: server-side + DOMPurify client-side; restrictive CSP in `index.html`
+- **Sanitization**: server-side + DOMPurify client-side; restrictive CSP generated at build
+  time (`vite.config.ts`), injected into the built HTML and mirrored as a response header in
+  `public/web.config`
 - **Write-only secrets**: provider API keys accepted by `settings.update`, never echoed back (`has*ApiKey` flags)
 - **`GEMINI_API_KEY`**: Convex environment variable only — never in code, `.env` files, or the bundle
 
@@ -193,7 +198,7 @@ npx convex env set GEMINI_API_KEY "AIza..."
 
 # 4. Authentication (generates SITE_URL, JWT_PRIVATE_KEY, JWKS)
 npx @convex-dev/auth --web-server-url http://localhost:3000 \
-    --skip-git-check --allow-dirty-git-state
+    --skip-git-check
 
 # 5. Seed the database with demo data
 npx convex run seed:seed
@@ -206,7 +211,8 @@ npm run dev             # Terminal 2 — frontend (http://localhost:3000)
 ### Create the admin account
 
 No commands needed. While the database has no admin, every visit redirects to the
-**`/setup` wizard**: create email + password (>= 12 characters) and you land in `/admin`.
+**`/setup` wizard**: create email + password (10+ characters, with an uppercase letter, a
+lowercase letter and a digit) and you land in `/admin`.
 
 > Reset (rare): delete the user's `role` field in the Convex Dashboard, or use the CLI
 > fallback `npx convex run lib/bootstrapAdmin:setUserRole '{"email":"...","role":"admin"}'`.
@@ -295,7 +301,7 @@ Step-by-step guides: **[DEPLOY.md](DEPLOY.md)** (IIS/Windows) and
 npx convex deploy
 npx convex env set GEMINI_API_KEY "AIza..." --prod
 npx @convex-dev/auth --prod --web-server-url https://your-domain.example \
-    --skip-git-check --allow-dirty-git-state
+    --skip-git-check
 
 # Frontend (validates .env.production, builds, zips)
 cp .env.production.example .env.production

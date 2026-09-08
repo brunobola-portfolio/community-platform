@@ -18,7 +18,8 @@ responde com o conteúdo publicado da própria associação (RAG) e um backoffic
 a direção gerir tudo — eventos, notícias, sócios, quotas, galerias — sem programador.
 
 **Instância de referência:** [arcva.pt](https://arcva.pt) — o portal da ARCVA, associação
-cultural portuguesa, a correr exatamente este código.
+cultural portuguesa, a correr exatamente este código. **Página do produto:**
+[bolalabs.pt/pt/community-platform](https://bolalabs.pt/pt/community-platform).
 
 [Funcionalidades](#funcionalidades) · [Instalação](#instalação) · [Arquitetura](#arquitetura) · [Assistente IA](#assistente-ia) · [White-Label](#lançar-a-tua-associação) · [Deploy](#deploy-para-produção)
 
@@ -42,19 +43,21 @@ cultural portuguesa, a correr exatamente este código.
 
 ## Screenshots
 
-Instância de referência ([arcva.pt](https://arcva.pt)) — tudo o que se vê é gerido no painel de administração:
+Todos os ecrãs abaixo são da associação de demonstração que vem no repositório (`npx convex
+run seed:seed`), sem marca de nenhum cliente. A visita guiada de um minuto está na
+[página do produto](https://bolalabs.pt/pt/community-platform).
 
-| Portal público (escuro) | Portal público (claro) |
+| Portal público (escuro) | Eventos com inscrições |
 |:---:|:---:|
-| ![Home, tema escuro](docs/assets/home-dark.png) | ![Home, tema claro](docs/assets/home-light.png) |
+| ![Home, tema escuro](docs/assets/home-dark.png) | ![Página de eventos](docs/assets/events.png) |
 
-| Eventos com filtros e inscrições | Backoffice de administração |
+| Assistente IA com base no conteúdo do portal | Área de sócio: cartão digital e quotas |
 |:---:|:---:|
-| ![Página de eventos](docs/assets/events-dark.png) | ![Dashboard admin](docs/assets/admin-dashboard.png) |
+| ![Assistente IA](docs/assets/ai-assistant.png) | ![Área de sócio](docs/assets/member-area.png) |
 
-| Gestor de galeria: upload múltiplo, legendas, ordenação, capa |
-|:---:|
-| ![Gestor de galeria](docs/assets/admin-gallery.png) |
+| Dashboard do backoffice | Lista de eventos: pesquisa, filtros, ordenação |
+|:---:|:---:|
+| ![Dashboard admin](docs/assets/admin-dashboard.png) | ![Eventos no admin](docs/assets/admin-events.png) |
 
 ## Sobre
 
@@ -154,7 +157,9 @@ Browser (React 19 + Vite)
 - **Auth guards**: `requireAdmin(ctx)` na primeira linha de todas as mutations admin, `requireAuth(ctx)` nas de user
 - **Soft auth**: `isAdmin(ctx)` em queries que devolvem `[]` para não-admins (sem throw)
 - **Rate limiting**: token bucket por ação e por utilizador
-- **Sanitização**: server-side + DOMPurify no cliente; CSP restritiva no `index.html`
+- **Sanitização**: server-side + DOMPurify no cliente; CSP restritiva gerada em build
+  (`vite.config.ts`), injetada no HTML final e replicada como header de resposta em
+  `public/web.config`
 - **Segredos write-only**: chaves de provedor aceites em `settings.update`, nunca devolvidas (`has*ApiKey`)
 - **`GEMINI_API_KEY`**: apenas variável de ambiente Convex — nunca no código, `.env` ou bundle
 
@@ -195,7 +200,7 @@ npx convex env set GEMINI_API_KEY "AIza..."
 
 # 4. Autenticação (gera SITE_URL, JWT_PRIVATE_KEY, JWKS)
 npx @convex-dev/auth --web-server-url http://localhost:3000 \
-    --skip-git-check --allow-dirty-git-state
+    --skip-git-check
 
 # 5. Popular a base de dados com dados demo
 npx convex run seed:seed
@@ -208,7 +213,8 @@ npm run dev             # Terminal 2 — frontend (http://localhost:3000)
 ### Criar a conta admin
 
 Sem comandos. Enquanto a base de dados não tem admin, qualquer acesso redireciona para o
-**wizard `/setup`**: cria email + password (>= 12 caracteres) e entras no `/admin`.
+**wizard `/setup`**: cria email + password (10+ caracteres, com maiúscula, minúscula e
+dígito) e entras no `/admin`.
 
 > Reset (raro): apaga o campo `role` do utilizador no Convex Dashboard, ou usa o fallback
 > CLI `npx convex run lib/bootstrapAdmin:setUserRole '{"email":"...","role":"admin"}'`.
@@ -298,7 +304,7 @@ Guias passo-a-passo: **[DEPLOY.md](DEPLOY.md)** (IIS/Windows) e
 npx convex deploy
 npx convex env set GEMINI_API_KEY "AIza..." --prod
 npx @convex-dev/auth --prod --web-server-url https://o-teu-dominio.exemplo \
-    --skip-git-check --allow-dirty-git-state
+    --skip-git-check
 
 # Frontend (valida .env.production, faz o build e cria o zip)
 cp .env.production.example .env.production

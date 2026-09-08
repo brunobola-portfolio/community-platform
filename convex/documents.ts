@@ -9,10 +9,11 @@ export const list = query({
     handler: async (ctx, args) => {
         // Documents are the members' private archive: anonymous callers get nothing
         if (!(await getCurrentUser(ctx))) return [];
-        const docs = args.category
+        const category = args.category;
+        const docs = category
             ? await ctx.db
                 .query("documents")
-                .withIndex("by_category", (q) => q.eq("category", args.category))
+                .withIndex("by_category", (q) => q.eq("category", category))
                 .collect()
             : await ctx.db.query("documents").collect();
 

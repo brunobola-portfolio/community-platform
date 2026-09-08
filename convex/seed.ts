@@ -4,12 +4,12 @@ import {
 
     INITIAL_EVENTS, INITIAL_POSTS, INITIAL_MEMBERS, INITIAL_SPONSORS,
     INITIAL_CATEGORIES, INITIAL_NOTIFICATIONS,
-    INITIAL_ACTION_AREAS, INITIAL_STATS, INITIAL_SPONSOR_TIERS, INITIAL_DOCUMENTS
+    INITIAL_ACTION_AREAS, INITIAL_STATS, INITIAL_SPONSOR_TIERS, INITIAL_DOCUMENTS, INITIAL_ALBUMS
 } from "./mockData";
 
 // Seed rows carry client-side fields (numeric ids, joined category) that the
 // mutations do not accept; typing them here keeps the destructuring honest
-type SeedEvent = (typeof INITIAL_EVENTS)[number] & { status?: string; category?: string; createdAt?: string; updatedAt?: string };
+type SeedEvent = (typeof INITIAL_EVENTS)[number] & { status?: 'published' | 'draft'; category?: string; createdAt?: string; updatedAt?: string };
 type SeedPost = (typeof INITIAL_POSTS)[number] & { category?: string; updatedAt?: string };
 
 // Hardened fetch profile to avoid hotlink/UA blocks on Wikimedia, gov.pt, etc.
@@ -196,7 +196,7 @@ export const seed = internalAction({
                 categoryId: categorySlugMap[categoryId] || String(categoryId),
                 image: storageId,
                 externalImage: imageUrl,
-                status: event.status || 'published'
+                status: event.status ?? 'published'
             });
             eventIdMap[id] = realId;
         }
@@ -311,6 +311,17 @@ export const seed = internalAction({
                 console.error(`Failed to create document ${doc.title}:`, err);
                 throw err;
             }
+        }
+
+        // 11. Gallery albums (external photos; the board replaces them from the backoffice)
+        console.log("Seeding Albums...");
+        for (const album of INITIAL_ALBUMS) {
+            await ctx.runMutation(internal.seedHelpers.createAlbum, {
+                title: album.title,
+                date: album.date,
+                externalCover: album.coverUrl,
+                photos: album.photos,
+            });
         }
 
         // 11. Settings
