@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.7.2] - 2026-09-08
+
+### Fixed
+
+- The instance build on a Windows runner checked `index.html` out with CRLF, so the inline
+  theme script no longer matched the LF hash in the `web.config` header and browsers blocked
+  it; the build now emits LF regardless of the checkout, and `.gitattributes` pins the EOL
+- The events list puts what is next first and the archive after it, newest first
+
 ## [2.7.1] - 2026-09-08
 
 ### Fixed
@@ -288,7 +297,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.1...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.2...HEAD
+[2.7.2]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.1...v2.7.2
 [2.7.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.1...v2.7.0
 [2.6.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.0...v2.6.1

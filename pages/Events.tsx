@@ -105,10 +105,13 @@ export const EventsPage: React.FC = () => {
 
             return matchesSearch && matchesTime && matchesCategory;
         }).sort((a, b) => {
-            // Sort upcoming ASC (soonest first), past DESC (most recent first)
-            return activeTab === 'past'
-                ? new Date(b.date).getTime() - new Date(a.date).getTime()
-                : new Date(a.date).getTime() - new Date(b.date).getTime();
+            // Upcoming soonest first, past most recent first; "all" shows what is next
+            // before the archive instead of starting at the oldest event
+            const ta = new Date(a.date).getTime(), tb = new Date(b.date).getTime();
+            const today = new Date(todayStr).getTime();
+            const aPast = ta < today, bPast = tb < today;
+            if (aPast !== bPast) return aPast ? 1 : -1;
+            return aPast ? tb - ta : ta - tb;
         });
     }, [events, activeTab, categoryFilter, searchTerm, todayStr]);
 

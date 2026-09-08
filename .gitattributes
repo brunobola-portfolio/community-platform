@@ -1,0 +1,3 @@
+# The CSP hash of the inline theme script is computed over LF bytes (vite.config.ts, public/web.config)
+index.html text eol=lf
+public/web.config text eol=lf
