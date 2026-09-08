@@ -134,14 +134,13 @@ export const cleanupRateLimits = internalMutation({
         const oneHourAgo = Date.now() - 3600000;
         const staleEntries = await ctx.db
             .query("rateLimits")
-            .collect();
+            .withIndex("by_lastRefill", (q) => q.lt("lastRefill", oneHourAgo))
+            .take(1000);
 
         let cleaned = 0;
         for (const entry of staleEntries) {
-            if (entry.lastRefill < oneHourAgo) {
-                await ctx.db.delete(entry._id);
-                cleaned++;
-            }
+            await ctx.db.delete(entry._id);
+            cleaned++;
         }
 
         if (cleaned > 0) {
@@ -156,8 +155,8 @@ export const cleanupOldLogs = internalMutation({
         const ninetyDaysAgo = Date.now() - 90 * 24 * 3600000;
         const oldLogs = await ctx.db
             .query("activityLogs")
-            .withIndex("by_timestamp")
-            .collect();
+            .withIndex("by_timestamp", (q) => q.lt("timestamp", ninetyDaysAgo))
+            .take(1000);
 
         let cleaned = 0;
         for (const log of oldLogs) {

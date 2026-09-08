@@ -1,6 +1,6 @@
 {
   "name": "community-platform",
-  "version": "2.7.3",
+  "version": "2.7.4",
   "description": "White-label community platform for associations, communities and institutions — realtime backend, AI assistant with RAG, and a full self-service backoffice. Self-hosted or hosted and operated by BolaLabs.",
   "type": "module",
   "author": {

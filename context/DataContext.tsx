@@ -117,7 +117,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     }
     if (settingsAdminRaw) {
-      const adminOnlyKeys = ['aiProvider', 'openrouterModel', 'customApiUrl', 'customModel', 'aiSystemPromptExtra', 'hasOpenrouterApiKey', 'hasCustomApiKey', 'hasFacebookAccessToken'] as const;
+      // Payment details left getPublic in 2.6.0 (members read them from getPaymentDetails); the admin form still edits them
+      const adminOnlyKeys = ['aiProvider', 'openrouterModel', 'customApiUrl', 'customModel', 'aiSystemPromptExtra', 'hasOpenrouterApiKey', 'hasCustomApiKey', 'hasFacebookAccessToken', 'mbwayNumber', 'iban', 'multibancoEntity', 'multibancoReference'] as const;
       for (const key of adminOnlyKeys) {
         const value = (settingsAdminRaw as Record<string, unknown>)[key];
         if (value !== undefined && value !== null) {

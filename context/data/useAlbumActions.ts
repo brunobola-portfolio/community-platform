@@ -10,6 +10,7 @@ import type { ActionDeps } from './deps';
 /** Album wrappers: Convex mutations behind an ActionResult and an activity log entry. */
 export function useAlbumActions({ logActivity, describeAction }: ActionDeps) {
   const createAlbumMut = useMutation(api.albums.create);
+  const clearStorageMut = useMutation(api.albums.clearStorageImage);
   const updateAlbumMut = useMutation(api.albums.update);
   const deleteAlbumMut = useMutation(api.albums.remove);
   const setAlbumImagesMut = useMutation(api.albums.setImages);
@@ -48,6 +49,7 @@ export function useAlbumActions({ logActivity, describeAction }: ActionDeps) {
           externalCover: data.coverUrl !== undefined ? data.coverUrl : data.externalCover,
           description: data.description,
         });
+        if (data.coverUrl === '') await clearStorageMut({ id: id as Id<"albums"> });
         if (data.photos !== undefined) {
           await setAlbumImagesMut({ albumId: id as Id<"albums">, photos: data.photos });
         }
@@ -58,7 +60,7 @@ export function useAlbumActions({ logActivity, describeAction }: ActionDeps) {
         return toActionResult(e);
       }
     },
-    [updateAlbumMut, setAlbumImagesMut, logActivity]
+    [updateAlbumMut, setAlbumImagesMut, clearStorageMut, logActivity]
   );
 
   const deleteAlbum = useCallback(

@@ -1,7 +1,8 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useData } from '../context/DataContext';
-import { useConvexAuth } from 'convex/react';
+import { useConvexAuth, useQuery } from 'convex/react';
+import { api } from '../convex/_generated/api';
 import { useOutletContext, useLocation } from 'react-router-dom';
 import type { LayoutOutletContext } from '../layouts/types';
 import { EventsJsonLd } from '../components/StructuredData';
@@ -16,6 +17,8 @@ import type { Event } from '../types';
 export const EventsPage: React.FC = () => {
     const { events, categories, addRegistration, isLoading, settings } = useData();
     const { isAuthenticated } = useConvexAuth();
+    // The server only accepts the signed-in member's own email; prefill it so nobody types another
+    const me = useQuery(api.users.me, isAuthenticated ? {} : 'skip');
     const { openMemberLogin } = useOutletContext<LayoutOutletContext>();
     const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'all'>('upcoming');
     const tabTouched = useRef(false);
@@ -118,7 +121,7 @@ export const EventsPage: React.FC = () => {
     const handleOpenRegistration = () => {
         if (!selectedEvent) return;
         setRegStep(1);
-        setDynamicForm({}); // Reset form
+        setDynamicForm({ ...(me?.name ? { name: me.name } : {}), ...(me?.email ? { email: me.email } : {}) });
         setFormErrors({}); // Reset errors
         setShowRegistrationModal(true);
     };
@@ -522,16 +525,16 @@ export const EventsPage: React.FC = () => {
                                                 <label htmlFor="reg-name" className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1 block">
                                                     Nome <span className="text-red-600 dark:text-red-400">*</span>
                                                 </label>
-                                                <Input id="reg-name" placeholder="O seu nome completo" type="text" autoComplete="name" required onChange={e => setDynamicForm({ ...dynamicForm, name: e.target.value })} />
+                                                <Input id="reg-name" placeholder="O seu nome completo" type="text" autoComplete="name" required value={String(dynamicForm['name'] ?? '')} onChange={e => setDynamicForm({ ...dynamicForm, name: e.target.value })} />
                                                 {formErrors.contactName && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{formErrors.contactName}</p>}
                                             </div>
                                             <div>
                                                 <label htmlFor="reg-email" className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1 block">
                                                     Email <span className="text-red-600 dark:text-red-400">*</span>
                                                 </label>
-                                                <Input id="reg-email" placeholder="email@exemplo.pt" type="email" autoComplete="email" required onChange={e => setDynamicForm({ ...dynamicForm, email: e.target.value })} />
+                                                <Input id="reg-email" placeholder="email@exemplo.pt" type="email" autoComplete="email" required readOnly={Boolean(me?.email)} value={String(dynamicForm['email'] ?? '')} onChange={e => setDynamicForm({ ...dynamicForm, email: e.target.value })} />
                                                 {formErrors.contactEmail && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{formErrors.contactEmail}</p>}
-                                                <p className="text-slate-500 dark:text-slate-600 text-xs mt-1">Usado apenas para confirmar a inscrição.</p>
+                                                <p className="text-slate-500 dark:text-slate-600 text-xs mt-1">{me?.email ? 'A inscrição fica associada à conta com que entrou.' : 'Usado apenas para confirmar a inscrição.'}</p>
                                             </div>
                                         </div>
                                     ) : (

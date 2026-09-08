@@ -10,6 +10,7 @@ import type { ActionDeps } from './deps';
 /** Member wrappers: Convex mutations behind an ActionResult and an activity log entry. */
 export function useMemberActions({ logActivity, describeAction }: ActionDeps) {
   const createMemberMut = useMutation(api.members.create);
+  const clearStorageMut = useMutation(api.members.clearStorageImage);
   const updateMemberMut = useMutation(api.members.update);
   const deleteMemberMut = useMutation(api.members.remove);
 
@@ -36,7 +37,10 @@ export function useMemberActions({ logActivity, describeAction }: ActionDeps) {
       try {
         const { photoUrl, ...rest } = data;
         if (photoUrl !== undefined) rest.externalPhoto = photoUrl;
+        // '' also has to drop the stored file, which the read side prefers over the URL
+        const clearStored = photoUrl === '';
         await updateMemberMut({ id: id as Id<"members">, ...rest });
+        if (clearStored) await clearStorageMut({ id: id as Id<"members"> });
         logActivity('update', 'Membro', `Membro atualizado: ${data.name || id}`);
         return { success: true };
       } catch (e) {
@@ -44,7 +48,7 @@ export function useMemberActions({ logActivity, describeAction }: ActionDeps) {
         return toActionResult(e);
       }
     },
-    [updateMemberMut, logActivity]
+    [updateMemberMut, clearStorageMut, logActivity]
   );
 
   const deleteMember = useCallback(

@@ -1,7 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
-import { validateMaxLength } from "./lib/validation";
+import { assertUniqueSlug, validateMaxLength } from "./lib/validation";
 
 export const list = query({
     args: {},
@@ -44,6 +44,7 @@ export const update = mutation({
         await requireAdmin(ctx);
         if (args.name) validateMaxLength(args.name, "name", 100);
         if (args.slug) validateMaxLength(args.slug, "slug", 100);
+        if (args.slug) await assertUniqueSlug(ctx, "categories", args.slug, String(args.id));
         const { id, ...updates } = args;
         await ctx.db.patch(id, updates);
     },
@@ -66,20 +67,16 @@ export const remove = mutation({
         const category = await ctx.db.get(args.id);
         if (!category) return;
 
-        const categoryIdStr = String(args.id);
+        // Content may reference a category by id, by slug or by name (seed and legacy rows)
+        const refs = [String(args.id), category.slug, category.name];
+        let inUse = false;
+        for (const ref of refs) {
+            const post = await ctx.db.query("posts").withIndex("by_category", (q) => q.eq("categoryId", ref)).first();
+            const event = await ctx.db.query("events").withIndex("by_category", (q) => q.eq("categoryId", ref)).first();
+            if (post || event) { inUse = true; break; }
+        }
 
-        // Referential check using by_category index on posts
-        const posts = await ctx.db
-            .query("posts")
-            .withIndex("by_category", (q) => q.eq("categoryId", categoryIdStr))
-            .collect();
-
-        const events = await ctx.db
-            .query("events")
-            .withIndex("by_category", (q) => q.eq("categoryId", categoryIdStr))
-            .collect();
-
-        if (posts.length > 0 || events.length > 0) {
+        if (inUse) {
             throw new ConvexError("Categoria em uso. Remova primeiro os conteúdos associados.");
         }
 

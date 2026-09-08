@@ -97,7 +97,7 @@ export const create = mutation({
             .collect();
         const count = activeRegistrations.filter((r) => r.status !== "cancelled").length;
 
-        if (event.maxParticipants !== undefined && count >= event.maxParticipants) {
+        if (event.maxParticipants && count >= event.maxParticipants) {
             throw new ConvexError("Vagas esgotadas para este evento.");
         }
 
