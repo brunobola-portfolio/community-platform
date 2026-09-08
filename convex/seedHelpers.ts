@@ -225,6 +225,23 @@ export const upsertSponsorTier = internalMutation({
     },
 });
 
+export const createAlbum = internalMutation({
+    args: {
+        title: v.string(),
+        date: v.string(),
+        externalCover: v.optional(v.string()),
+        photos: v.array(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const albumId = await ctx.db.insert("albums", { title: args.title, date: args.date, externalCover: args.externalCover });
+        let order = 0;
+        for (const url of args.photos) {
+            await ctx.db.insert("galleryImages", { albumId, externalUrl: url, order: order++, uploadedAt: Date.now() });
+        }
+        return albumId;
+    },
+});
+
 export const createDocument = internalMutation({
     args: {
         title: v.string(),

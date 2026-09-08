@@ -10,10 +10,11 @@ export const list = query({
     args: { eventId: v.optional(v.id("events")) },
     handler: async (ctx, args) => {
         if (!(await isAdmin(ctx))) return [];
-        if (args.eventId) {
+        const eventId = args.eventId;
+        if (eventId) {
             return await ctx.db
                 .query("registrations")
-                .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
+                .withIndex("by_event", (q) => q.eq("eventId", eventId))
                 .collect();
         }
         return await ctx.db.query("registrations").order("desc").take(500);

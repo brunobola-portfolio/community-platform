@@ -25,7 +25,7 @@ npx convex login
 npx convex dev --once --configure=new     # creates the dev deployment, writes .env.local
 npx convex deploy --yes                   # creates the production deployment
 npx convex env set GEMINI_API_KEY "AIza..." --prod
-npx @convex-dev/auth --prod --web-server-url https://www.<domain> --skip-git-check --allow-dirty-git-state
+npx @convex-dev/auth --prod --web-server-url https://www.<domain> --skip-git-check
 ```
 
 Note the two deployment names (`npx convex dashboard`); they go into the instance's env files.

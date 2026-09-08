@@ -21,6 +21,7 @@ export interface LoginModalProps {
 export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, onLogin }) => {
   const { signIn } = useAuthActions();
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [flow, setFlow] = useState<'signIn' | 'signUp'>('signIn');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +32,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
     setIsLoading(true);
     setError('');
     try {
-      await signIn("password", { email, password, flow });
+      await signIn("password", flow === 'signUp' ? { email, password, name, flow } : { email, password, flow });
       onLogin(mode);
       onClose();
     } catch (err) {
@@ -102,6 +103,21 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
           </p>
         )}
 
+        {flow === 'signUp' && (
+          <div className="space-y-1.5">
+            <label htmlFor="login-name" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Nome</label>
+            <Input
+              id="login-name"
+              placeholder="O seu nome"
+              type="text"
+              autoComplete="name"
+              maxLength={80}
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="border-slate-900/5 bg-slate-900/[0.03] focus:border-brand-500/40 dark:border-white/5 dark:bg-white/[0.03]"
+            />
+          </div>
+        )}
         <div className="space-y-1.5">
           <label htmlFor="login-email" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Email</label>
           <Input

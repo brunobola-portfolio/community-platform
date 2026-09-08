@@ -15,6 +15,13 @@ import { getAI, classifyProviderError, consumePublicBudget, classifyQuery, class
 // Action 1: chat
 // Grounded chat with RAG context, multi-turn history, and query classification
 // ---------------------------------------------------------------------------
+/** What the assistant returns to the client; explicit so the action type never references itself through `internal`. */
+interface ChatReply {
+  text: string;
+  groundingChunks: unknown;
+  suggestedActions: { label: string; action: string }[];
+}
+
 export const chat = action({
   args: {
     message: v.string(),
@@ -30,7 +37,7 @@ export const chat = action({
       )
     ),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<ChatReply> => {
     const startTime = Date.now();
     let selectedModel = "unknown";
     try {
@@ -243,9 +250,9 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
         // (retired/paid-only/rate-limited slugs are common on OpenRouter),
         // then Gemini when a key exists. Only OpenRouter walks the chain;
         // custom endpoints surface their own error.
-        const candidates = provider.kind === "openrouter"
+        const candidates: string[] = provider.kind === "openrouter"
           ? [provider.model, ...OPENROUTER_FALLBACK_MODELS].filter((m, i, all): m is string => Boolean(m) && all.indexOf(m) === i)
-          : [provider.model];
+          : provider.model ? [provider.model] : [];
         let lastError: unknown = null;
         text = "";
         for (const candidate of candidates) {
