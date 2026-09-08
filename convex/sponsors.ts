@@ -8,7 +8,7 @@ import { validateRequired, validateMaxLength } from "./lib/validation";
 export const list = query({
     args: {},
     handler: async (ctx) => {
-        const sponsors = await ctx.db.query("sponsors").collect();
+        const sponsors = await ctx.db.query("sponsors").take(500);
 
         return Promise.all(
             sponsors.map(async (s) => ({

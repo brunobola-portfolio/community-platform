@@ -338,7 +338,7 @@ export default defineSchema({
     key: v.string(),
     tokens: v.number(),
     lastRefill: v.number(),
-  }).index("by_key", ["key"]),
+  }).index("by_key", ["key"]).index("by_lastRefill", ["lastRefill"]),
 
   // AI Usage Logs (analytics tracking)
   aiUsageLogs: defineTable({

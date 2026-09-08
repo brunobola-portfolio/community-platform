@@ -228,6 +228,8 @@ export const setImages = mutation({
                 }
             }
             await ctx.db.delete(img._id);
+            const album = await ctx.db.get(args.albumId);
+            if (album?.coverImageId === img._id) await ctx.db.patch(args.albumId, { coverImageId: undefined });
         }
         let order = existing.length;
         for (const url of wanted) {

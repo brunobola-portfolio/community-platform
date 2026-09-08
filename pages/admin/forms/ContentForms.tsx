@@ -30,9 +30,12 @@ interface EventFormProps extends FieldHelpers, NumHelper {
 }
 
 export const EventForm: React.FC<EventFormProps> = ({
-    formData, setField, str, bool, categories, settings,
+    formData, setField, str, num, bool, categories, settings,
     isGeneratingImage, isEnhancingText, onGenerateImage, onEnhanceText, onFormDataChange,
-}) => (
+}) => {
+    // Stored as a number, edited as a string: show whichever the record currently holds
+    const numStr = (key: string) => str(key) || (Number.isNaN(num(key, NaN)) ? '' : String(num(key, NaN)));
+    return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-6">
             <Field label="Título"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></Field>
@@ -50,18 +53,18 @@ export const EventForm: React.FC<EventFormProps> = ({
                 <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><SettingsIcon size={16} /> Configurações de Evento</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                     <Field label="Local"><input required value={str('location')} onChange={e => setField('location', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                    <Field label="Preço (EUR)"><input type="number" value={str('entryPrice', '0')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                    <Field label="Máx Participantes"><input type="number" value={str('maxParticipants', '0')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                    <div className="flex items-center gap-2 pt-6">
+                    <Field label="Preço (EUR)"><input type="number" value={numStr('entryPrice')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <Field label="Máx Participantes"><input type="number" value={numStr('maxParticipants')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <label className="flex items-center gap-2 pt-6 cursor-pointer">
                         <input type="checkbox" className="accent-brand-500 w-4 h-4" checked={bool('isHighlight')} onChange={e => setField('isHighlight', e.target.checked)} />
                         <span className="text-sm text-slate-300">Destaque (Homepage)</span>
-                    </div>
+                    </label>
                 </div>
                 <div className="flex flex-wrap gap-6 mb-4 pt-4 border-t border-white/5">
-                    <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" className="accent-brand-500 w-4 h-4" checked={bool('isTournament')} onChange={e => setField('isTournament', e.target.checked)} />
                         <span className="text-sm text-slate-300">Modo Torneio</span>
-                    </div>
+                    </label>
                     {bool('isTournament') && (
                         <div className="flex items-center gap-2">
                             <AdminSelect className="text-xs w-32" value={str('tournamentType', 'Outro')} onChange={e => setField('tournamentType', e.target.value)}>
@@ -69,10 +72,10 @@ export const EventForm: React.FC<EventFormProps> = ({
                             </AdminSelect>
                         </div>
                     )}
-                    <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" className="accent-brand-500 w-4 h-4" checked={bool('registrationOpen')} onChange={e => setField('registrationOpen', e.target.checked)} />
                         <span className="text-sm text-slate-300">Inscrições Abertas</span>
-                    </div>
+                    </label>
                 </div>
                 <RegistrationFormBuilder
                     fields={Array.isArray(formData.registrationFields) ? formData.registrationFields as Array<{ id: string; label: string; type: string; required: boolean; placeholder?: string }> : []}
@@ -82,6 +85,8 @@ export const EventForm: React.FC<EventFormProps> = ({
         </div>
     </div>
 );
+};
+
 
 // ── Post Form ───────────────────────────────────────────────────────────────
 

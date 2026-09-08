@@ -8,7 +8,7 @@ import { validateRequired, validateMaxLength, sanitizeContentServer } from "./li
 export const list = query({
     args: {},
     handler: async (ctx) => {
-        const members = await ctx.db.query("members").collect();
+        const members = await ctx.db.query("members").take(500);
 
         const groupPriority: Record<string, number> = {
             "Direção": 1,

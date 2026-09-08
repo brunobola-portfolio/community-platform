@@ -214,7 +214,13 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const buildPayload = (type: string, rest: AdminFormData): AdminFormData => {
         switch (type) {
             case 'event':
-                return { ...rest, categoryId: rest.categoryId || categories[0]?.id || '', entryPrice: Number(rest.entryPrice) || 0, maxParticipants: Number(rest.maxParticipants) || 0, registrationFields: rest.registrationFields || [] };
+                {
+                // currentParticipants is owned by the registrations mutations: sending the snapshot
+                // taken when the modal opened would roll back sign-ups made meanwhile
+                const { currentParticipants: _count, ...event } = rest;
+                const limit = Number(event.maxParticipants);
+                return { ...event, categoryId: event.categoryId || categories[0]?.id || '', entryPrice: Number(event.entryPrice) || 0, maxParticipants: limit > 0 ? limit : undefined, registrationFields: event.registrationFields || [] };
+            }
             case 'post':
                 return {
                     ...rest,
@@ -228,7 +234,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 return { ...rest, benefits: typeof rest.benefits === 'string' ? rest.benefits.split('\n').filter(x => x.trim()) : (rest.benefits ?? []), order: Number(rest.order) || sponsorTiers.length + 1 };
             case 'document':
                 // Whitelist mutation args: the form keeps the legacy `url` key and edits carry read-only fields the validator rejects
-                return { title: rest.title, description: rest.description, category: rest.category || 'Outros', date: rest.date, size: rest.size, externalUrl: rest.externalUrl || rest.url || undefined };
+                return { title: rest.title, description: rest.description, category: rest.category || 'Outros', date: rest.date, size: rest.size, externalUrl: rest.externalUrl || (rest.fileId ? undefined : rest.url) || undefined };
             case 'notification':
                 return { title: rest.title, message: rest.message, type: rest.type || 'info', target: rest.target || 'all' };
             case 'milestone':

@@ -343,7 +343,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Highlights: function components only, st
 TypeScript (no `any`), Tailwind exclusively, `requireAdmin(ctx)` first line of admin
 mutations, files < 300 lines.
 
-Security reports: see [SECURITY.md](SECURITY.md). Release history: [CHANGELOG.md](CHANGELOG.md).
+Security reports: see [SECURITY.md](SECURITY.md). Release history: [CHANGELOG.md](CHANGELOG.md). Planned work: [ROADMAP.md](ROADMAP.md).
 
 ## Support the project
 

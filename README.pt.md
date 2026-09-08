@@ -347,7 +347,7 @@ Ver [CONTRIBUTING.md](CONTRIBUTING.md). Destaques: function components only, Typ
 strict (sem `any`), Tailwind exclusivamente, `requireAdmin(ctx)` na primeira linha das
 mutations admin, ficheiros < 300 linhas.
 
-Reportes de segurança: [SECURITY.md](SECURITY.md). Histórico de versões: [CHANGELOG.md](CHANGELOG.md).
+Reportes de segurança: [SECURITY.md](SECURITY.md). Histórico de versões: [CHANGELOG.md](CHANGELOG.md). Trabalho planeado: [ROADMAP.md](ROADMAP.md).
 
 ## Apoiar o projeto
 

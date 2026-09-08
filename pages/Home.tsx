@@ -10,7 +10,7 @@
  * 5. Modals for event details and partnership applications.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ArrowRight, Calendar, MapPin, ChevronRight, Sparkles, Target, Heart, Users, Search, Mic, Lightbulb, CheckCircle2, ChevronLeft, Handshake, LucideIcon, Activity, Shield, Trophy } from 'lucide-react';
 import { Button, Badge, Modal } from '../components/ui/UIComponents';
@@ -41,6 +41,12 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onAskAI, onViewPost, onContact }) => {
   const { posts, events, sponsors, actionAreas, stats, isLoading, settings } = useData();
+  // The carousel is a teaser: the next eight, not the whole archive as image cards
+  const carouselEvents = useMemo(() => {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const upcoming = events.filter(e => new Date(e.date) >= today);
+    return (upcoming.length > 0 ? upcoming : events).slice(0, 8);
+  }, [events]);
   const [searchValue, setSearchValue] = useState('');
 
   const {
@@ -437,7 +443,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             ref={eventsContainerRef}
             className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar [scrollbar-width:none]"
           >
-            {events.map(event => (
+            {carouselEvents.map(event => (
               <div
                 key={event.id}
                 className="min-w-[300px] md:min-w-[340px] snap-center group relative bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl overflow-hidden hover:border-brand-500/40 transition-all duration-300 hover:-translate-y-2"

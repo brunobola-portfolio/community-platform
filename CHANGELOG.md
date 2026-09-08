@@ -6,6 +6,38 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.7.4] - 2026-09-08
+
+Data-integrity and performance review of the backoffice, verified end to end on the demo
+instance (16 flows, including a public registration on an event created from the backoffice).
+
+### Fixed
+
+- Events saved from the backoffice got `maxParticipants: 0`, which the registration
+  mutation read as "sold out": nobody could register in an event created or edited from
+  the form. Zero or empty now means no limit, on both sides
+- The event form showed price and capacity as 0 regardless of the stored value
+- Saving an event sent back the `currentParticipants` snapshot taken when the modal
+  opened, undoing registrations made meanwhile; server-owned counters no longer travel
+- MB WAY, IBAN and Multibanco fields were blank in the backoffice since 2.6.0 moved them
+  out of the public settings query; the admin overlay carries them again
+- Removing an image in the Media Studio cleared the URL but left the stored file, which
+  the portal kept showing (events, news, team, album covers)
+- Editing an uploaded document turned it into an external link to its own storage URL
+- Category rename could produce duplicate slugs; category delete missed content that
+  referenced it by slug or name
+- Replacing an album's photos could leave its cover pointing at a deleted photo
+- Registration form prefills and locks the signed-in member's email instead of
+  rejecting a different one after submit; checkbox options in the event form are real
+  labels
+
+### Changed
+
+- Home carousel shows the next eight events instead of every event as an image card
+- Cleanup crons range over an index instead of scanning the whole table; public team and
+  partner lists are bounded
+- `ROADMAP.md` lists the planned work, including the lighter public subscriptions
+
 ## [2.7.3] - 2026-09-08
 
 Backoffice validation sweep on a clean demo instance (16 tabs on desktop and mobile, CRUD
@@ -310,7 +342,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.3...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.4...HEAD
+[2.7.4]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.3...v2.7.4
 [2.7.3]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.2...v2.7.3
 [2.7.2]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.1...v2.7.2
 [2.7.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.0...v2.7.1
