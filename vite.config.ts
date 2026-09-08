@@ -68,7 +68,9 @@ function siteMeta(env: Record<string, string>): Plugin {
       // earlier no longer matches what the browser executes
       order: 'post',
       handler(html, ctx) {
-        const filled = html.replace(/%(VITE_[A-Z0-9_]+)%/g, (_match, key: string) =>
+        // A Windows checkout with autocrlf hands Vite a CRLF template; the browser hashes the
+        // bytes it receives, and the header in web.config is computed over LF. One line ending.
+        const filled = html.replace(/\r\n/g, '\n').replace(/%(VITE_[A-Z0-9_]+)%/g, (_match, key: string) =>
           escapeHtml(env[key] ?? process.env[key] ?? META_DEFAULTS[key] ?? ''));
         if (ctx.server) return filled;
         return filled.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(filled, 'meta')}">`);
