@@ -45,11 +45,11 @@ export const EventForm: React.FC<EventFormProps> = ({
             <MediaStudio imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
         </div>
         <div className="md:col-span-2 space-y-6">
-            <RichTextEditor label="Conteúdo Principal" value={str('description')} onChange={(v: string) => setField('description', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-64" />
+            <RichTextEditor label="Conteúdo Principal" required value={str('description')} onChange={(v: string) => setField('description', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-64" />
             <div className="bg-white/5 p-4 rounded-xl border border-white/5">
                 <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><SettingsIcon size={16} /> Configurações de Evento</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <Field label="Local"><input value={str('location')} onChange={e => setField('location', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <Field label="Local"><input required value={str('location')} onChange={e => setField('location', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                     <Field label="Preço (EUR)"><input type="number" value={str('entryPrice', '0')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                     <Field label="Máx Participantes"><input type="number" value={str('maxParticipants', '0')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                     <div className="flex items-center gap-2 pt-6">

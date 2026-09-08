@@ -225,6 +225,11 @@ export const upsertSponsorTier = internalMutation({
     },
 });
 
+export const createMilestone = internalMutation({
+    args: { year: v.number(), title: v.string(), description: v.string(), order: v.number() },
+    handler: async (ctx, args) => ctx.db.insert("milestones", args),
+});
+
 export const createAlbum = internalMutation({
     args: {
         title: v.string(),

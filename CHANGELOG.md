@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.7.3] - 2026-09-08
+
+Backoffice validation sweep on a clean demo instance (16 tabs on desktop and mobile, CRUD
+and draft/publish flows, realtime sync with the public portal, settings, quotas): no
+console errors, no horizontal overflow, 14/14 flows passing.
+
+### Fixed
+
+- A required field reported by the server used its schema key (`"description"`); the
+  message now uses the form label, and the event form marks description and location as
+  required
+- The demo seed had no history milestones, so a fresh install opened the History tab empty
+
 ## [2.7.2] - 2026-09-08
 
 ### Fixed
@@ -297,7 +310,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.2...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.3...HEAD
+[2.7.3]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.2...v2.7.3
 [2.7.2]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.1...v2.7.2
 [2.7.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.6.1...v2.7.0
