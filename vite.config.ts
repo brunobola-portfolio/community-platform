@@ -41,7 +41,7 @@ const escapeHtml = (value: string) =>
  * only inline script, so it is allowed by hash instead of 'unsafe-inline';
  * dev keeps no meta CSP because Vite and React Refresh inject inline code.
  */
-export function buildCsp(html: string): string {
+export function buildCsp(html: string, target: 'header' | 'meta' = 'header'): string {
   const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match =>
     `'sha256-${createHash('sha256').update(match[1]).digest('base64')}'`);
   return [
@@ -55,18 +55,24 @@ export function buildCsp(html: string): string {
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "frame-ancestors 'self'",
+    // Browsers ignore frame-ancestors in a meta tag and log a warning; the header keeps it
+    ...(target === 'header' ? ["frame-ancestors 'self'"] : []),
   ].join('; ');
 }
 
 function siteMeta(env: Record<string, string>): Plugin {
   return {
     name: 'site-meta',
-    transformIndexHtml(html, ctx) {
-      const filled = html.replace(/%(VITE_[A-Z0-9_]+)%/g, (_match, key: string) =>
-        escapeHtml(env[key] ?? process.env[key] ?? META_DEFAULTS[key] ?? ''));
-      if (ctx.server) return filled;
-      return filled.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(filled)}">`);
+    transformIndexHtml: {
+      // After Vite's own HTML pass: it re-indents the inline theme script, and a hash taken
+      // earlier no longer matches what the browser executes
+      order: 'post',
+      handler(html, ctx) {
+        const filled = html.replace(/%(VITE_[A-Z0-9_]+)%/g, (_match, key: string) =>
+          escapeHtml(env[key] ?? process.env[key] ?? META_DEFAULTS[key] ?? ''));
+        if (ctx.server) return filled;
+        return filled.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(filled, 'meta')}">`);
+      },
     },
   };
 }

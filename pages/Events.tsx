@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useData } from '../context/DataContext';
 import { useConvexAuth } from 'convex/react';
 import { useOutletContext, useLocation } from 'react-router-dom';
@@ -18,6 +18,7 @@ export const EventsPage: React.FC = () => {
     const { isAuthenticated } = useConvexAuth();
     const { openMemberLogin } = useOutletContext<LayoutOutletContext>();
     const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'all'>('upcoming');
+    const tabTouched = useRef(false);
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [inputValue, setInputValue] = useState('');
@@ -75,6 +76,13 @@ export const EventsPage: React.FC = () => {
     // Split events for counts (memoized)
     const upcomingCount = useMemo(() => events.filter(e => new Date(e.date) >= new Date(todayStr)).length, [events, todayStr]);
     const pastCount = useMemo(() => events.filter(e => new Date(e.date) < new Date(todayStr)).length, [events, todayStr]);
+
+    // Nothing scheduled yet: open on the full list instead of an empty "upcoming" tab,
+    // unless the visitor already picked a tab
+    useEffect(() => {
+        if (isLoading || tabTouched.current) return;
+        if (upcomingCount === 0 && pastCount > 0) setActiveTab('all');
+    }, [isLoading, upcomingCount, pastCount]);
 
     const filteredEvents = useMemo(() => {
         return events.filter(event => {
@@ -265,7 +273,7 @@ export const EventsPage: React.FC = () => {
                             ].map(tab => (
                                 <button
                                     key={tab.id}
-                                    onClick={() => setActiveTab(tab.id)}
+                                    onClick={() => { tabTouched.current = true; setActiveTab(tab.id); }}
                                     aria-label={`Filtrar eventos: ${tab.label}`}
                                     aria-pressed={activeTab === tab.id}
                                     className={cn(
@@ -356,7 +364,7 @@ export const EventsPage: React.FC = () => {
                                     : "Não encontrámos eventos correspondentes à sua pesquisa."}
                             </p>
                             {activeTab === 'upcoming' && pastCount > 0 && (
-                                <Button variant="outline" onClick={() => setActiveTab('past')}>
+                                <Button variant="outline" onClick={() => { tabTouched.current = true; setActiveTab('past'); }}>
                                     <History size={16} className="mr-2" /> Explorar o Arquivo
                                 </Button>
                             )}
