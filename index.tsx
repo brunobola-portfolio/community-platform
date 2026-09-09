@@ -13,6 +13,10 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
+import { initMonitoring } from './utils/monitoring';
+
+// Before the tree mounts, so a crash during the first render is still captured
+initMonitoring();
 
 // Fail fast on missing backend URL instead of constructing a broken client
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;

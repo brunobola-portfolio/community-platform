@@ -192,6 +192,26 @@ curl -s https://example.org/ | grep generator
 meta tag is there for anyone who just opens the page. In the portal footer, the
 "Community Platform by BolaLabs" line carries the same version as its tooltip.
 
+### Error monitoring
+
+Optional and per instance. Set `VITE_SENTRY_DSN` in the build environment and the portal
+reports uncaught errors to that Sentry project; leave it empty and the SDK is never
+downloaded — the public demo and any instance without monitoring send nothing anywhere.
+
+- The Sentry release is the platform version, so an error is attributed to the build that
+  produced it, and `VITE_SENTRY_ENVIRONMENT` separates staging from production
+- The DSN origin is added to `connect-src` in the generated CSP automatically; every other
+  instance keeps the tighter policy
+- No personal data leaves the browser: `sendDefaultPii` is off, the user object is dropped
+  and query strings are stripped, because an association portal carries member names
+- `VITE_SENTRY_TRACES_SAMPLE_RATE` defaults to `0`; performance tracing is billed and a
+  community portal rarely needs it
+- Server-side exceptions are a Convex feature, not a build one: Deployment Settings →
+  Integrations → Exception Reporting takes the same DSN (Convex Professional)
+
+The admin dashboard shows whether monitoring is on, alongside the version this browser is
+running and the one the server is serving.
+
 ### Configuration hierarchy
 
 ```

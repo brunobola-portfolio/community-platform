@@ -1,6 +1,6 @@
 {
   "name": "community-platform",
-  "version": "2.9.1",
+  "version": "2.10.0",
   "description": "White-label community platform for associations, communities and institutions — realtime backend, AI assistant with RAG, and a full self-service backoffice. Self-hosted or hosted and operated by BolaLabs.",
   "type": "module",
   "author": {
@@ -52,12 +52,15 @@
     "build": "tsc && vite build",
     "dist": "node scripts/dist.mjs",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.95",
     "@google/genai": "^1.52.0",
+    "@sentry/react": "^10.74.0",
     "clsx": "^2.1.1",
     "convex": "^1.45.0",
     "dompurify": "^3.4.14",
@@ -83,6 +86,7 @@
     "postcss": "^8.5.28",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vitest": "^5.0.0"
   }
 }

@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from './ui/UIComponents';
+import { reportError } from '../utils/monitoring';
 
 interface Props {
     children?: ReactNode;
@@ -22,6 +23,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error("Uncaught error:", error, errorInfo);
+        // The copy below promises the team was notified; this is what keeps it true
+        reportError(error, { componentStack: errorInfo.componentStack });
     }
 
     private handleReload = () => {

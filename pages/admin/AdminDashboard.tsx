@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/UIComponents';
 import type { AdminDashboardProps } from './types';
+import { PlatformVersionCard } from './components/PlatformVersionCard';
 
 /**
  * Dashboard tab for the admin panel.
@@ -72,7 +73,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     onNewPost={onNewPost}
                     onNewEvent={onNewEvent}
                 />
-                <ActivityLogPanel activityLogs={activityLogs} />
+                <div className="space-y-6">
+                    <ActivityLogPanel activityLogs={activityLogs} />
+                    <PlatformVersionCard />
+                </div>
             </div>
         </div>
     );

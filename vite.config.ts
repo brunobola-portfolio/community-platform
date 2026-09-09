@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
+import { createReadStream, existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createHash } from 'crypto';
@@ -76,16 +76,17 @@ const escapeHtml = (value: string) =>
  * only inline script, so it is allowed by hash instead of 'unsafe-inline';
  * dev keeps no meta CSP because Vite and React Refresh inject inline code.
  */
-export function buildCsp(html: string, target: 'header' | 'meta' = 'header'): string {
+export function buildCsp(html: string, target: 'header' | 'meta' = 'header', connectExtra: string[] = []): string {
   const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match =>
     `'sha256-${createHash('sha256').update(match[1]).digest('base64')}'`);
+  const connect = ["'self'", 'https://*.convex.cloud', 'wss://*.convex.cloud', ...connectExtra];
   return [
     "default-src 'self'",
     `script-src 'self' ${hashes.join(' ')}`.trim(),
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' https: data: blob:",
-    "connect-src 'self' https://*.convex.cloud wss://*.convex.cloud",
+    `connect-src ${connect.join(' ')}`,
     "media-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
@@ -93,6 +94,47 @@ export function buildCsp(html: string, target: 'header' | 'meta' = 'header'): st
     // Browsers ignore frame-ancestors in a meta tag and log a warning; the header keeps it
     ...(target === 'header' ? ["frame-ancestors 'self'"] : []),
   ].join('; ');
+}
+
+/**
+ * An instance that reports errors needs its own Sentry ingest host in connect-src.
+ * Deriving it from the configured DSN keeps the policy of every other instance
+ * exactly as tight as it was.
+ */
+function monitoringOrigins(env: Record<string, string>): string[] {
+  const dsn = env.VITE_SENTRY_DSN ?? process.env.VITE_SENTRY_DSN;
+  if (!dsn) return [];
+  try {
+    return [new URL(dsn).origin];
+  } catch {
+    throw new Error(`VITE_SENTRY_DSN is not a valid URL: ${dsn}`);
+  }
+}
+
+/**
+ * The CSP travels twice: as a meta tag inside index.html and as a response header
+ * in web.config. Generating the header from the built HTML is what keeps them
+ * equal — the script hash used to be copied by hand, and a stale copy blocks the
+ * theme bootstrap in production while every local check still passes.
+ */
+function webConfigCsp(env: Record<string, string>, outDir: string): Plugin {
+  return {
+    name: 'web-config-csp',
+    apply: 'build',
+    closeBundle() {
+      const htmlPath = path.join(outDir, 'index.html');
+      const configPath = path.join(outDir, 'web.config');
+      if (!existsSync(htmlPath) || !existsSync(configPath)) return;
+
+      const csp = buildCsp(readFileSync(htmlPath, 'utf8'), 'header', monitoringOrigins(env));
+      const config = readFileSync(configPath, 'utf8');
+      const header = /(<add name="Content-Security-Policy" value=")[^"]*(")/;
+      if (!header.test(config)) {
+        throw new Error('web.config has no Content-Security-Policy header to fill.');
+      }
+      writeFileSync(configPath, config.replace(header, `$1${csp}$2`));
+    },
+  };
 }
 
 function siteMeta(env: Record<string, string>): Plugin {
@@ -110,7 +152,7 @@ function siteMeta(env: Record<string, string>): Plugin {
         const stamped = filled.replace('</title>', `</title>\n    <meta name="generator" content="${escapeHtml(`${PLATFORM_LABEL} ${pkg.version}`)}">`);
         if (ctx.server) return stamped;
         // The CSP hash covers inline scripts only: the meta tags around it do not move it
-        return stamped.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(stamped, 'meta')}">`);
+        return stamped.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(stamped, 'meta', monitoringOrigins(env))}">`);
       },
     },
   };
@@ -146,7 +188,7 @@ export default defineConfig(({ mode }) => {
         port: serverPort,
         host: serverHost,
       },
-      plugins: [react(), siteMeta(env), brandOverlay(), versionManifest()],
+      plugins: [react(), siteMeta(env), brandOverlay(), versionManifest(), webConfigCsp(env, 'dist')],
       build: {
         rolldownOptions: {
           output: {
@@ -157,6 +199,8 @@ export default defineConfig(({ mode }) => {
                 { name: 'vendor-react', test: /node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/ },
                 { name: 'vendor-convex', test: /node_modules[\\/](convex|@convex-dev)[\\/]/ },
                 { name: 'vendor-icons', test: /node_modules[\\/]lucide-react[\\/]/ },
+                // Only present when the instance configured a DSN; loaded on demand
+                { name: 'vendor-sentry', test: /node_modules[\\/]@sentry[\\/]/ },
               ],
             },
           },

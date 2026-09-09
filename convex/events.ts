@@ -4,16 +4,10 @@ import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cascadeDeleteEvent, cleanupStorageOnUpdate } from "./lib/cascade";
 import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
-
 // Rich-text descriptions are the largest field on the table and every visitor
 // subscribes to the whole list, so the public query ships a plain-text excerpt
 // and the detail view loads the body on demand through getById.
-const EXCERPT_LENGTH = 300;
-
-function toExcerpt(description: string): string {
-    const text = description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    return text.length > EXCERPT_LENGTH ? `${text.slice(0, EXCERPT_LENGTH).trimEnd()}…` : text;
-}
+import { toExcerpt } from "./lib/text";
 
 export const list = query({
     args: {},

@@ -6,6 +6,32 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.10.0] - 2026-09-09
+
+### Added
+
+- Optional error monitoring per instance: set `VITE_SENTRY_DSN` and the portal reports
+  uncaught errors, with the platform version as the Sentry release. With no DSN the SDK is
+  never downloaded, so an instance without monitoring pays nothing for the feature and sends
+  nothing anywhere. PII is off, the user object is dropped and query strings are stripped
+  before an event leaves the browser
+- A test suite for the logic that fails quietly (`npm test`, Vitest, 42 tests): token bucket
+  arithmetic, excerpt truncation, the generated CSP, text helpers, the `ERR_*` provider
+  tokens and the release guard. Rendering and database behaviour are still verified by
+  running the app, not by mocking Convex
+- The admin dashboard shows the platform version this browser is running next to the one the
+  server is serving, and offers a reload when a deploy happened while the tab was open
+
+### Changed
+
+- The `web.config` Content-Security-Policy header is generated from the built HTML instead
+  of being maintained by hand. The inline theme script's hash lives in two places — the meta
+  tag and the response header — and a stale copy blocks the script in production while every
+  local check passes; they cannot drift now
+- The rate limiter's arithmetic moved to `convex/lib/tokenBucket.ts` and the excerpt helper
+  to `convex/lib/text.ts`, so both are exercised directly by tests instead of through a
+  mutation
+
 ## [2.9.1] - 2026-09-09
 
 Release and deploy integrity: what a release claims, what the artifact contains and what a
