@@ -1,5 +1,8 @@
 /// <reference types="vite/client" />
 
+/** Platform version, replaced at build time from package.json (vite.config.ts). */
+declare const __PLATFORM_VERSION__: string;
+
 interface Window {
   webkitAudioContext: typeof AudioContext;
 }

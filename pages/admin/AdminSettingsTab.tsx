@@ -193,7 +193,6 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                 </h3>
                 <div className="space-y-4">
                     <Field label="Facebook Page ID"><input value={settingsForm.facebookPageId ?? ''} onChange={e => update('facebookPageId', e.target.value)} className={STD_INPUT_CLASS} placeholder="ID da página do Facebook" /></Field>
-                    <Field label="Facebook Access Token"><input type="password" value={settingsForm.facebookAccessToken ?? ''} onChange={e => update('facebookAccessToken', e.target.value)} className={STD_INPUT_CLASS} placeholder="Token de acesso (mantido seguro)" /></Field>
                     <Field label="Instagram (URL)"><input value={settingsForm.instagramUrl ?? ''} onChange={e => update('instagramUrl', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://www.instagram.com/a-tua-associacao/" /></Field>
                 </div>
             </div>

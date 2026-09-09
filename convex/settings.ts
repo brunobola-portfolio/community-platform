@@ -84,10 +84,9 @@ export const getAdmin = query({
         if (!doc) return null;
         // Secrets are write-only: replaced with a presence flag so the admin
         // UI can show "configured" without ever echoing the value
-        const { facebookAccessToken, openrouterApiKey, customApiKey, ...safeDoc } = doc;
+        const { facebookAccessToken: _deprecatedFacebookToken, openrouterApiKey, customApiKey, ...safeDoc } = doc;
         return {
             ...safeDoc,
-            hasFacebookAccessToken: Boolean(facebookAccessToken),
             hasOpenrouterApiKey: Boolean(openrouterApiKey),
             hasCustomApiKey: Boolean(customApiKey),
         };
@@ -174,7 +173,6 @@ export const update = mutation({
             title: v.string(),
             description: v.string(),
         }))),
-        facebookAccessToken: v.optional(v.string()),
         showChatbotBubble: v.optional(v.boolean()),
         ttsModel: v.optional(v.string()),
         aiProvider: v.optional(v.string()),
@@ -226,7 +224,6 @@ export const update = mutation({
         if (args.latitude !== undefined) validateMaxLength(args.latitude, "latitude", 20);
         if (args.longitude !== undefined) validateMaxLength(args.longitude, "longitude", 20);
         if (args.facebookPageId !== undefined) validateMaxLength(args.facebookPageId, "facebookPageId", 100);
-        if (args.facebookAccessToken !== undefined) validateMaxLength(args.facebookAccessToken, "facebookAccessToken", 500);
         if (args.quotaAmount !== undefined) validateMaxLength(args.quotaAmount, "quotaAmount", 50);
         if (args.mbwayNumber !== undefined) validateMaxLength(args.mbwayNumber, "mbwayNumber", 30);
         if (args.iban !== undefined) validateMaxLength(args.iban, "iban", 40);
@@ -290,7 +287,6 @@ export const update = mutation({
                 iban: args.iban,
                 multibancoEntity: args.multibancoEntity,
                 multibancoReference: args.multibancoReference,
-                facebookAccessToken: args.facebookAccessToken,
                 showChatbotBubble: args.showChatbotBubble,
                 ttsModel: args.ttsModel,
                 aiProvider: args.aiProvider,
