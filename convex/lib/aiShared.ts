@@ -2,7 +2,7 @@ import type { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { GoogleGenAI } from "@google/genai";
 import { openAiCompatibleChat, type ResolvedProvider } from "./aiProvider";
-import { isModelNotFoundError } from "./aiDefaults";
+import { DEFAULT_CHAT_MODEL_FALLBACK, isAuthError, isModelNotFoundError } from "./aiDefaults";
 
 /**
  * Helpers shared by the AI actions: client factory, error classification,
@@ -102,6 +102,29 @@ Categorias:
 Mensagem: "${safeMessage}"`;
 }
 
+/**
+ * Returned when the classifier could not run. Guardrails are a security
+ * control: with no verdict there is no way to tell an injection attempt from
+ * an ordinary question, so the caller refuses the turn instead of letting the
+ * message reach the main model unchecked.
+ */
+export const CLASSIFICATION_UNAVAILABLE = "UNAVAILABLE";
+
+/** One retry absorbs a single transient provider hiccup before failing closed. */
+async function classifyWithRetry(run: () => Promise<string>): Promise<string> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return (await run()).trim().toUpperCase();
+    } catch (error) {
+      // Bad credentials and retired model ids fail every attempt alike;
+      // retrying those only adds latency to a verdict that will not come
+      const raw = error instanceof Error ? error.message : String(error);
+      if (isModelNotFoundError(raw) || isAuthError(raw)) break;
+    }
+  }
+  return CLASSIFICATION_UNAVAILABLE;
+}
+
 export async function classifyQuery(
   ai: GoogleGenAI,
   message: string,
@@ -111,15 +134,13 @@ export async function classifyQuery(
 ): Promise<string> {
   if (injectionPatterns.test(message)) return "INJECTION";
 
-  try {
+  return classifyWithRetry(async () => {
     const response = await ai.models.generateContent({
       model,
       contents: buildClassificationPrompt(message, allowedTopics, forbiddenTopics),
     });
-    return (response.text ?? "GERAL").trim().toUpperCase();
-  } catch {
-    return "GERAL"; // fail-open for classification errors
-  }
+    return response.text ?? "GERAL";
+  });
 }
 
 export async function classifyQueryViaProvider(
@@ -130,14 +151,18 @@ export async function classifyQueryViaProvider(
 ): Promise<string> {
   if (injectionPatterns.test(message)) return "INJECTION";
 
-  try {
-    const text = await openAiCompatibleChat(provider, [
+  const verdict = await classifyWithRetry(() =>
+    openAiCompatibleChat(provider, [
       { role: "user", content: buildClassificationPrompt(message, allowedTopics, forbiddenTopics) },
-    ]);
-    return text.trim().toUpperCase();
-  } catch {
-    return "GERAL"; // fail-open for classification errors
-  }
+    ])
+  );
+  if (verdict !== CLASSIFICATION_UNAVAILABLE) return verdict;
+
+  // The chat itself walks a fallback chain and lands on Gemini, so a throttled
+  // or retired slug on the configured provider must not be enough to mute an
+  // answer the chain could still produce. The guardrail gets the same anchor.
+  if (!process.env.GEMINI_API_KEY) return CLASSIFICATION_UNAVAILABLE;
+  return classifyQuery(getAI(), message, DEFAULT_CHAT_MODEL_FALLBACK, allowedTopics, forbiddenTopics);
 }
 
 // ---------------------------------------------------------------------------

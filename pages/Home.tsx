@@ -19,6 +19,7 @@ import { PartnerDetailsModal } from '../components/ui/PartnerDetailsModal';
 import { Skeleton } from '../components/ui/Skeleton';
 import { useData } from '../context/DataContext';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useEventDescription } from '../hooks/useEventDescription';
 import { cn } from '../utils/cn';
 import { sanitizeHtml, sanitizeText } from '../utils/security';
 import type { Event, Sponsor, ActionArea } from '../types';
@@ -70,6 +71,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
     setSearchValue('');
   };
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  // The list subscription carries excerpts; the open event pulls its own body
+  const { html: selectedEventBody, isLoading: isBodyLoading } = useEventDescription(selectedEvent);
   const [selectedArea, setSelectedArea] = useState<ActionArea | null>(null);
   const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
   const [showSponsorshipModal, setShowSponsorshipModal] = useState(false);
@@ -596,7 +599,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   )}
                 </div>
                 {/* Descriptions come from the rich-text editor as HTML */}
-                <div className="leading-relaxed text-slate-600 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEvent.description) }} />
+                <div className="leading-relaxed text-slate-600 dark:text-slate-300" aria-busy={isBodyLoading} dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEventBody) }} />
               </div>
 
               {(selectedEvent.isTournament || selectedEvent.entryPrice !== undefined || selectedEvent.maxParticipants !== undefined) && (

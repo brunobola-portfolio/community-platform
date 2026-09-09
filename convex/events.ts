@@ -5,6 +5,16 @@ import { internal } from "./_generated/api";
 import { cascadeDeleteEvent, cleanupStorageOnUpdate } from "./lib/cascade";
 import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
 
+// Rich-text descriptions are the largest field on the table and every visitor
+// subscribes to the whole list, so the public query ships a plain-text excerpt
+// and the detail view loads the body on demand through getById.
+const EXCERPT_LENGTH = 300;
+
+function toExcerpt(description: string): string {
+    const text = description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    return text.length > EXCERPT_LENGTH ? `${text.slice(0, EXCERPT_LENGTH).trimEnd()}…` : text;
+}
+
 export const list = query({
     args: {},
     handler: async (ctx) => {
@@ -19,6 +29,30 @@ export const list = query({
                 ...event,
                 imageUrl: event.image ? await ctx.storage.getUrl(event.image) : event.externalImage,
             }))
+        );
+    },
+});
+
+// Public listing without the rich-text body. Same shape as `list` otherwise,
+// so the client can keep one mapping for both subscriptions.
+export const listSummary = query({
+    args: {},
+    handler: async (ctx) => {
+        const published = await ctx.db
+            .query("events")
+            .withIndex("by_status", (q) => q.eq("status", "published"))
+            .order("desc")
+            .take(200);
+
+        return Promise.all(
+            published.map(async (event) => {
+                const { description, ...rest } = event;
+                return {
+                    ...rest,
+                    excerpt: toExcerpt(description),
+                    imageUrl: event.image ? await ctx.storage.getUrl(event.image) : event.externalImage,
+                };
+            })
         );
     },
 });
