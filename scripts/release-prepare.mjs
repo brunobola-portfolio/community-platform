@@ -18,8 +18,10 @@ const outIndex = rest.indexOf('--out');
 const outFile = outIndex === -1 ? 'RELEASE_NOTES.md' : rest[outIndex + 1];
 
 function fail(message) {
-  // GitHub renders the annotation; the plain line keeps local runs readable
-  console.error(`::error::${message}`);
+  // The annotation is only meaningful inside Actions, and emitting it elsewhere
+  // makes a passing run look broken: the tests that exercise this script would
+  // otherwise decorate a green workflow with their own fixtures' errors
+  if (process.env.GITHUB_ACTIONS === 'true') console.error(`::error::${message}`);
   console.error(`\n  ${message}\n`);
   process.exit(1);
 }
