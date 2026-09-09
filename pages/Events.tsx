@@ -10,8 +10,9 @@ import { MapPin, Clock, Search, CalendarPlus, Trophy, CheckCircle2, Download, X,
 import { Button, Badge, Input, Modal, cn } from '../components/ui/UIComponents';
 import { sanitizeHtml, sanitizeText } from '../utils/security';
 import { categoryColorClass } from '../utils/categoryColors';
-import { normalize, progressWidthClass } from '../utils/text';
+import { eventSummaryText, normalize, progressWidthClass } from '../utils/text';
 import { EventCardSkeleton } from '../components/ui/Skeleton';
+import { useEventDescription } from '../hooks/useEventDescription';
 import type { Event } from '../types';
 
 export const EventsPage: React.FC = () => {
@@ -26,6 +27,8 @@ export const EventsPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [inputValue, setInputValue] = useState('');
     const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+    // The list subscription carries excerpts; the open event pulls its own body
+    const { html: selectedEventBody, isLoading: isBodyLoading } = useEventDescription(selectedEvent);
     const [showRegistrationModal, setShowRegistrationModal] = useState(false);
     const [regStep, setRegStep] = useState(1);
     const [submitting, setSubmitting] = useState(false);
@@ -54,7 +57,7 @@ export const EventsPage: React.FC = () => {
         const startDate = new Date(event.date);
         const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
         const formatDate = (date: Date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-        const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nURL:${window.location.href}\nDTSTART:${formatDate(startDate)}\nDTEND:${formatDate(endDate)}\nSUMMARY:${event.title}\nDESCRIPTION:${sanitizeText(event.description)}\nLOCATION:${event.location}\nEND:VEVENT\nEND:VCALENDAR`;
+        const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nURL:${window.location.href}\nDTSTART:${formatDate(startDate)}\nDTEND:${formatDate(endDate)}\nSUMMARY:${event.title}\nDESCRIPTION:${sanitizeText(eventSummaryText(event))}\nLOCATION:${event.location}\nEND:VEVENT\nEND:VCALENDAR`;
         const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
@@ -69,7 +72,7 @@ export const EventsPage: React.FC = () => {
         const startDate = new Date(event.date);
         const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
         const formatDate = (date: Date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-        const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${encodeURIComponent(sanitizeText(event.description))}&location=${encodeURIComponent(event.location)}`;
+        const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${encodeURIComponent(sanitizeText(eventSummaryText(event)))}&location=${encodeURIComponent(event.location)}`;
         window.open(url, '_blank');
     };
 
@@ -95,7 +98,7 @@ export const EventsPage: React.FC = () => {
             // Search Filter
             const matchesSearch = !searchTerm ||
                 normalize(event.title).includes(search) ||
-                normalize(event.description).includes(search) ||
+                normalize(eventSummaryText(event)).includes(search) ||
                 normalize(event.location).includes(search);
 
             // Tab Filter
@@ -423,7 +426,7 @@ export const EventsPage: React.FC = () => {
                                         </h3>
 
                                         <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base line-clamp-2 mb-4 max-w-3xl">
-                                            {sanitizeText(event.description)}
+                                            {sanitizeText(eventSummaryText(event))}
                                         </p>
 
                                         <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
@@ -493,7 +496,7 @@ export const EventsPage: React.FC = () => {
 
                         <div className="prose dark:prose-invert max-w-none">
                             {/* Descriptions come from the rich-text editor as HTML */}
-                            <div className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEvent.description) }} />
+                            <div className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg" aria-busy={isBodyLoading} dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEventBody) }} />
                         </div>
 
                         {registrationOpen && (

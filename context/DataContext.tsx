@@ -31,9 +31,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { isAuthenticated } = useConvexAuth();
 
   // ── Queries (undefined = loading, "skip" = not subscribed) ────────────────
-  const eventsPublicRaw = useQuery(api.events.list);
-  // Summary variant strips post content: full articles load on demand via
-  // posts.getBySlug in the article page
+  // Summary variants strip the rich-text bodies: the event modal loads one via
+  // events.getById and the article page via posts.getBySlug, on demand
+  const eventsPublicRaw = useQuery(api.events.listSummary);
   const postsPublicRaw = useQuery(api.posts.listSummary, {});
   // Admin variants include drafts; they return null for non-admins so we can
   // fall back to the public lists without extra role plumbing on the client
@@ -134,7 +134,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // ── Data Mapping (Convex _id -> id, safe fallback to []) ───────────────────
 
   const eventsMapped = useMemo(
-    () => (eventsRaw ?? []).map((e: ConvexEvent) => ({ ...e, id: e._id as string })),
+    () => (eventsRaw ?? []).map((e: ConvexEvent) => ({ ...e, id: e._id as string, description: e.description ?? '' })),
     [eventsRaw]
   );
 

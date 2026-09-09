@@ -150,7 +150,9 @@ export interface Event {
   id: string;
   title: string;
   slug: string;
+  /** Empty on the public list, which carries `excerpt`; the detail view loads it on demand */
   description: string;
+  excerpt?: string;
   date: string;
   location: string;
   imageUrl?: string;

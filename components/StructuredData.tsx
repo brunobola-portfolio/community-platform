@@ -1,6 +1,7 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
 import type { Event } from '../types';
+import { eventSummaryText } from '../utils/text';
 
 /** Serialises JSON-LD without letting a "</script>" in content break out. */
 const serialize = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
@@ -52,7 +53,7 @@ export const EventsJsonLd: React.FC<{ events: Event[] }> = ({ events }) => {
         eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
         location: { '@type': 'Place', name: event.location, address: settings.locality || undefined },
         image: event.imageUrl || undefined,
-        description: event.description?.replace(/<[^>]+>/g, '').slice(0, 300) || undefined,
+        description: eventSummaryText(event).replace(/<[^>]+>/g, '').slice(0, 300) || undefined,
         organizer: { '@type': 'Organization', name: settings.siteFullName || settings.siteName, url: siteUrl() },
         offers: event.registrationOpen
           ? { '@type': 'Offer', price: event.entryPrice ?? 0, priceCurrency: 'EUR', availability: 'https://schema.org/InStock', url: `${siteUrl()}/events` }

@@ -6,6 +6,36 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.8.0] - 2026-09-09
+
+Reliability pass on the rate limiter, the chat guardrail and the public event
+subscription, verified against a development deployment.
+
+### Fixed
+
+- The rate limiter stamped the refill clock on every accepted request, so the
+  fraction of a token earned since the previous call was thrown away: once a bucket
+  drained, a caller was credited only when a gap longer than a whole refill interval
+  appeared, which made the burst allowance usable exactly once. Twenty-four chat
+  requests spaced five seconds apart, against a budget that allows twenty-nine, lost
+  eight to a spurious "limite de pedidos atingido". The clock now advances only by
+  the time the credited tokens cost
+
+### Changed
+
+- The guardrail classifier fails closed. With no verdict there is no way to tell an
+  injection attempt from an ordinary question, so the assistant refuses the turn
+  instead of forwarding an unchecked message to the model. Classification first
+  walks the same fallback that the chat itself uses and lands on Gemini, so a
+  throttled or retired slug on the configured provider does not mute a chat the
+  fallback chain can still answer
+- The public event list ships a plain-text excerpt instead of the rich-text body
+  (`events.listSummary`), the way the news list already did; the detail modal loads
+  the description of the open event through `events.getById` and shows the excerpt
+  while it arrives. Event search, calendar exports and structured data read the
+  excerpt, so searching matches the first 300 characters of a body rather than all
+  of it
+
 ## [2.7.4] - 2026-09-08
 
 Data-integrity and performance review of the backoffice, verified end to end on the demo

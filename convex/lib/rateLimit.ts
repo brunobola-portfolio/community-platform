@@ -53,20 +53,28 @@ export const checkAndConsume = internalMutation({
         });
         return;
       }
-      // Refill tokens based on elapsed time
+      // Refill whole tokens based on elapsed time
       const elapsed = (now - existing.lastRefill) / 60000; // minutes
-      const refilled = Math.min(
-        config.maxTokens,
-        Math.floor(existing.tokens + elapsed * config.refillPerMinute)
-      );
+      const credited = Math.floor(elapsed * config.refillPerMinute);
+      const refilled = Math.min(config.maxTokens, existing.tokens + credited);
 
       if (refilled < 1) {
         throw new ConvexError("Limite de pedidos atingido. Aguarde um momento antes de tentar novamente.");
       }
 
+      // Advance the clock only by the time the credited tokens cost. Stamping
+      // `now` on every call discarded the leftover fraction, so a caller whose
+      // requests were spaced just under the refill interval never got a token
+      // back and stalled at the limit. A full bucket resets to now instead, so
+      // idle time cannot accumulate into a burst allowance.
+      const nextRefill =
+        refilled >= config.maxTokens
+          ? now
+          : existing.lastRefill + (credited / config.refillPerMinute) * 60000;
+
       await ctx.db.patch(existing._id, {
         tokens: refilled - 1,
-        lastRefill: now,
+        lastRefill: nextRefill,
       });
     } else {
       // First request — create bucket with one token consumed

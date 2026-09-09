@@ -5,7 +5,7 @@ import { ConvexError, v } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { resolveProvider, openAiCompatibleChat } from "./lib/aiProvider";
 import { DEFAULT_CHAT_MODEL, DEFAULT_CHAT_MODEL_FALLBACK, OPENROUTER_FALLBACK_MODELS, isAuthError, isModelNotFoundError } from "./lib/aiDefaults";
-import { getAI, classifyProviderError, consumePublicBudget, classifyQuery, classifyQueryViaProvider, buildSuggestedActions, injectionPatterns } from "./lib/aiShared";
+import { getAI, classifyProviderError, consumePublicBudget, classifyQuery, classifyQueryViaProvider, buildSuggestedActions, injectionPatterns, CLASSIFICATION_UNAVAILABLE } from "./lib/aiShared";
 
 /**
  * Chat action: grounded RAG chat with guardrails and multi-turn history.
@@ -76,6 +76,24 @@ export const chat = action({
 
       // userId used for analytics logging; anonymous visitors get a stable label
       const logUserId = (userId as string | null) ?? "anonymous";
+
+      // Guardrails fail closed: an unchecked message must not reach the main
+      // model just because the classifier is down. The failure is logged so the
+      // AI usage tab shows why the assistant went quiet.
+      if (classification === CLASSIFICATION_UNAVAILABLE) {
+        try {
+          await ctx.runMutation(internal.aiLogs.log, {
+            userId: logUserId,
+            action: "chat",
+            model: chatModelFallback,
+            classification,
+            latencyMs: Date.now() - startTime,
+            success: false,
+            errorMessage: "ERR_UNAVAILABLE: guardrail classifier unavailable",
+          });
+        } catch { /* ignore logging errors */ }
+        throw new ConvexError("ERR_UNAVAILABLE");
+      }
 
       // Deflect off-topic queries
       if (classification.includes("FORA_DE_TEMA")) {
@@ -300,6 +318,11 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
 
       return { text, groundingChunks, suggestedActions };
     } catch (error) {
+      // A deliberate ERR_* refusal (chatbot disabled, guardrail unavailable)
+      // is already the answer; re-classifying its text would be a coincidence
+      if (error instanceof ConvexError && typeof error.data === "string" && error.data.startsWith("ERR_")) {
+        throw error;
+      }
       const errorMsg =
         error instanceof Error ? error.message : "Erro desconhecido";
       console.error("AI Chat error:", errorMsg);

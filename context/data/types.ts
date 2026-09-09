@@ -16,7 +16,10 @@ export interface ConvexDoc {
 
 export interface ConvexEvent extends ConvexDoc {
   title: string;
-  description: string;
+  /** Absent in the public summary subscription; present in admin listAll */
+  description?: string;
+  /** Plain-text stand-in for the body, only in the public summary */
+  excerpt?: string;
   date: string;
   location: string;
   categoryId: string;
