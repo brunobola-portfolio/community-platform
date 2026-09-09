@@ -11,6 +11,10 @@ on:
 
 permissions:
   contents: write
+  # Build provenance: the attestation is signed with a short-lived OIDC identity
+  # so a downloader can prove the zip came from this workflow, on this tag
+  id-token: write
+  attestations: write
 
 jobs:
   release:
@@ -23,6 +27,13 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Before the build: a tag that disagrees with package.json would publish a
+      # zip whose version.json contradicts the release page
+      - name: Validate the tag and collect the release notes
+        env:
+          TAG: ${{ github.ref_name }}
+        run: node scripts/release-prepare.mjs "$TAG"
+
       - name: Install dependencies
         run: npm ci
 
@@ -34,10 +45,24 @@ jobs:
       - name: Build and package
         run: npm run dist
 
+      # The zip is installed on servers by hand as often as by a runner, so it
+      # travels with a checksum to compare after the download
+      - name: Checksum the package
+        run: sha256sum community-platform-dist.zip | tee community-platform-dist.zip.sha256
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: community-platform-dist.zip
+
       - name: Create GitHub Release with the deploy zip
         uses: softprops/action-gh-release@v3
         with:
-          files: community-platform-dist.zip
+          files: |
+            community-platform-dist.zip
+            community-platform-dist.zip.sha256
+          # Curated notes from the CHANGELOG, with the commit list appended
+          body_path: RELEASE_NOTES.md
           generate_release_notes: true
           # v2.1.0-rc.1 style tags publish as pre-releases
           prerelease: ${{ contains(github.ref_name, '-') }}

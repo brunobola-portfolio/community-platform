@@ -42,7 +42,9 @@ deploy/         install.ps1 — installs a zip on IIS with backup, smoke test, r
 With the self-hosted runner installed on the server, a push that changes
 `platform.lock`, `env/`, `brand/`, `deploy/` or `apply.ps1` deploys automatically:
 backend (if `CONVEX_DEPLOY_KEY` secret exists), then frontend with backup, smoke test and
-automatic rollback.
+automatic rollback. The smoke test reads `/version.json` back from the live site and compares
+its `builtAt` with the package it just installed, so a deploy that never landed — a partial
+copy, a cached response — rolls back instead of reporting success.
 
 ## Rules
 

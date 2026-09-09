@@ -161,6 +161,17 @@ O objetivo é ter o site novo a correr numa **porta de teste (8080)**, sem tocar
 
 ### 3.1 — Copiar e extrair
 
+Se descarregaste o zip de uma [Release](https://github.com/brunobola-portfolio/community-platform/releases),
+confirma-o antes de o instalar — a Release publica o `.sha256` ao lado e uma prova de
+proveniência assinada pelo workflow que o construiu:
+
+```powershell
+(Get-FileHash community-platform-dist.zip -Algorithm SHA256).Hash.ToLower()
+# tem de bater certo com o conteudo de community-platform-dist.zip.sha256
+
+gh attestation verify community-platform-dist.zip --repo brunobola-portfolio/community-platform
+```
+
 1. Abre RDP para o servidor.
 2. Copia `community-platform-dist.zip` do teu PC para o servidor (copy-paste pelo RDP funciona).
 3. Cria a pasta `C:\inetpub\community-platform\`.

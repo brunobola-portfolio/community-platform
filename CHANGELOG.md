@@ -6,6 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.9.1] - 2026-09-09
+
+Release and deploy integrity: what a release claims, what the artifact contains and what a
+server ends up serving are now checked against each other instead of assumed equal.
+
+### Added
+
+- Releases carry a `.sha256` next to the zip and a signed build-provenance attestation, so a
+  download can be verified before it is installed on a server
+  (`gh attestation verify community-platform-dist.zip --repo <owner>/<repo>`)
+- `scripts/release-prepare.mjs` runs before the release build and refuses a tag that
+  disagrees with `package.json` — which would publish a zip whose `version.json` contradicts
+  the release page — or a version with no `CHANGELOG.md` section. The section becomes the
+  release notes, with the commit list appended
+- The instance deploy smoke test reads `/version.json` back from the live site and compares
+  its `builtAt` with the package it just installed. A deploy that never landed (a partial
+  copy, a cached response) now rolls back instead of reporting success
+
+### Changed
+
+- The instance template checks out with `actions/checkout@v7`; v4 forced the runner onto a
+  deprecated Node and warned on every deploy
+
 ## [2.9.0] - 2026-09-09
 
 ### Added
