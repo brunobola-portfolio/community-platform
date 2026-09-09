@@ -33,9 +33,12 @@ function workspace(version: string, changelog = CHANGELOG) {
 }
 
 /** Runs the guard the way the release workflow does, returning stdout or the failure. */
-function run(dir: string, tag: string) {
+function run(dir: string, tag: string, actions = false) {
+  // Cleared by default: the child would otherwise inherit GITHUB_ACTIONS from a
+  // CI run and annotate the workflow with failures these fixtures expect
+  const env = { ...process.env, GITHUB_ACTIONS: actions ? 'true' : '' };
   try {
-    const stdout = execFileSync(process.execPath, [SCRIPT, tag], { cwd: dir, encoding: 'utf8' });
+    const stdout = execFileSync(process.execPath, [SCRIPT, tag], { cwd: dir, encoding: 'utf8', env });
     return { ok: true as const, stdout, notes: readFileSync(path.join(dir, 'RELEASE_NOTES.md'), 'utf8') };
   } catch (error) {
     const failure = error as { status: number; stderr: string };
@@ -87,6 +90,17 @@ describe('release-prepare', () => {
     expect(result.ok).toBe(false);
     if (result.ok) return;
     expect(result.stderr).toContain('is empty');
+  });
+
+  it('annotates the workflow only when it runs inside one', () => {
+    const plain = run(workspace('2.9.1'), 'v3.0.0');
+    const inActions = run(workspace('2.9.1'), 'v3.0.0', true);
+    expect(plain.ok).toBe(false);
+    expect(inActions.ok).toBe(false);
+    if (plain.ok || inActions.ok) return;
+    // A green CI run must not be decorated with these fixtures' failures
+    expect(plain.stderr).not.toContain('::error::');
+    expect(inActions.stderr).toContain('::error::');
   });
 
   it('accepts a pre-release tag whose package.json agrees', () => {
