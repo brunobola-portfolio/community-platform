@@ -22,12 +22,17 @@ npm run build        # tsc && vite build
 npm run dist         # build + validação + community-platform-dist.zip pronto para o servidor
 npm run type-check   # tsc --noEmit
 npm run lint         # ESLint, zero warnings
+npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
 npm run preview      # Servir o build local
 ```
 
-- **Não existem testes.** Não inventar `npm test` nem criar ficheiros de teste sem pedido
-  explícito. A verificação mínima antes de dar por terminado: `npm run type-check` +
-  `npm run lint` (+ `npm run build` para mudanças de build/config).
+- **Testes: só lógica pura e subtil** (`npm test`, Vitest, em `tests/`). Cobrem o token
+  bucket do rate limit, o excerto das listas públicas, a CSP gerada, os helpers de texto, os
+  tokens `ERR_*` e o guarda da release. Não há testes de componentes nem de Convex — o que
+  depende de BD ou de render valida-se a correr a app. Ao mexer nessa lógica, o teste
+  acompanha; para o resto, não inventar cobertura. A verificação mínima antes de dar por
+  terminado: `npm run type-check` + `npm run lint` + `npm test` (+ `npm run build` para
+  mudanças de build/config).
 - `convex/_generated/` está **commitado** (recomendação oficial do Convex — sem ele o
   typecheck falharia num clone fresco). Nunca editar à mão; regenera-se com
   `npx convex codegen` ou automaticamente durante `npx convex dev`.

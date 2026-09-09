@@ -1,10 +1,11 @@
 import { internalMutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
+import { consume, openBucket, type BucketConfig } from "./tokenBucket";
 
 /**
  * Rate limit configuration per AI action.
  */
-const RATE_LIMITS: Record<string, { maxTokens: number; refillPerMinute: number }> = {
+const RATE_LIMITS: Record<string, BucketConfig> = {
   "ai:chat": { maxTokens: 10, refillPerMinute: 10 },
   "ai:tts": { maxTokens: 5, refillPerMinute: 5 },
   "ai:geoQuery": { maxTokens: 10, refillPerMinute: 10 },
@@ -27,7 +28,8 @@ const RATE_LIMITS: Record<string, { maxTokens: number; refillPerMinute: number }
 
 /**
  * Internal mutation to check and consume a rate limit token.
- * Returns true if allowed, throws if rate limited.
+ * Returns normally if allowed, throws if rate limited. The arithmetic lives in
+ * lib/tokenBucket.ts; this function only reads and writes the row.
  */
 export const checkAndConsume = internalMutation({
   args: { key: v.string(), userId: v.optional(v.string()) },
@@ -37,52 +39,23 @@ export const checkAndConsume = internalMutation({
 
     const storageKey = args.userId ? `${args.key}:${args.userId}` : args.key;
     const now = Date.now();
-    const ONE_HOUR = 60 * 60 * 1000;
 
     const existing = await ctx.db
       .query("rateLimits")
       .withIndex("by_key", (q) => q.eq("key", storageKey))
       .first();
 
-    if (existing) {
-      // Cleanup if entry is stale (> 1 hour old)
-      if (now - existing.lastRefill > ONE_HOUR) {
-        await ctx.db.patch(existing._id, {
-          tokens: config.maxTokens - 1,
-          lastRefill: now,
-        });
-        return;
-      }
-      // Refill whole tokens based on elapsed time
-      const elapsed = (now - existing.lastRefill) / 60000; // minutes
-      const credited = Math.floor(elapsed * config.refillPerMinute);
-      const refilled = Math.min(config.maxTokens, existing.tokens + credited);
-
-      if (refilled < 1) {
-        throw new ConvexError("Limite de pedidos atingido. Aguarde um momento antes de tentar novamente.");
-      }
-
-      // Advance the clock only by the time the credited tokens cost. Stamping
-      // `now` on every call discarded the leftover fraction, so a caller whose
-      // requests were spaced just under the refill interval never got a token
-      // back and stalled at the limit. A full bucket resets to now instead, so
-      // idle time cannot accumulate into a burst allowance.
-      const nextRefill =
-        refilled >= config.maxTokens
-          ? now
-          : existing.lastRefill + (credited / config.refillPerMinute) * 60000;
-
-      await ctx.db.patch(existing._id, {
-        tokens: refilled - 1,
-        lastRefill: nextRefill,
-      });
-    } else {
-      // First request — create bucket with one token consumed
-      await ctx.db.insert("rateLimits", {
-        key: storageKey,
-        tokens: config.maxTokens - 1,
-        lastRefill: now,
-      });
+    if (!existing) {
+      await ctx.db.insert("rateLimits", { key: storageKey, ...openBucket(config, now) });
+      return;
     }
+
+    const decision = consume(existing, config, now);
+    if (!decision.allowed) {
+      // The throw rolls the transaction back, so a rejected request leaves the
+      // clock where it was and the caller earns tokens by waiting, not by retrying
+      throw new ConvexError("Limite de pedidos atingido. Aguarde um momento antes de tentar novamente.");
+    }
+    await ctx.db.patch(existing._id, decision.state);
   },
 });

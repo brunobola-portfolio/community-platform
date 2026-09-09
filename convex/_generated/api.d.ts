@@ -34,6 +34,8 @@ import type * as lib_bootstrapAdmin from "../lib/bootstrapAdmin.js";
 import type * as lib_cascade from "../lib/cascade.js";
 import type * as lib_cleanupTestUsers from "../lib/cleanupTestUsers.js";
 import type * as lib_rateLimit from "../lib/rateLimit.js";
+import type * as lib_text from "../lib/text.js";
+import type * as lib_tokenBucket from "../lib/tokenBucket.js";
 import type * as lib_validation from "../lib/validation.js";
 import type * as maintenance from "../maintenance.js";
 import type * as memberProfiles from "../memberProfiles.js";
@@ -86,6 +88,8 @@ declare const fullApi: ApiFromModules<{
   "lib/cascade": typeof lib_cascade;
   "lib/cleanupTestUsers": typeof lib_cleanupTestUsers;
   "lib/rateLimit": typeof lib_rateLimit;
+  "lib/text": typeof lib_text;
+  "lib/tokenBucket": typeof lib_tokenBucket;
   "lib/validation": typeof lib_validation;
   maintenance: typeof maintenance;
   memberProfiles: typeof memberProfiles;
