@@ -61,7 +61,6 @@ export function useSettingsActions({ logActivity }: ActionDeps) {
           multibancoReference: s.multibancoReference,
           // Secrets are write-only and never echoed to the form: an empty
           // string means "unchanged", so drop it instead of erasing the value
-          facebookAccessToken: s.facebookAccessToken || undefined,
           showChatbotBubble: s.showChatbotBubble,
           ttsModel: s.ttsModel,
           aiProvider: s.aiProvider,

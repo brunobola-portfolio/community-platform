@@ -310,7 +310,6 @@ export const updateSettings = internalMutation({
         latitude: v.optional(v.string()),
         longitude: v.optional(v.string()),
         facebookPageId: v.optional(v.string()),
-        facebookAccessToken: v.optional(v.string()),
         showChatbotBubble: v.optional(v.boolean()),
         ttsModel: v.optional(v.string()),
         // Provider selection and model slugs (never the keys) so an operator
@@ -360,7 +359,6 @@ export const updateSettings = internalMutation({
                 latitude: args.latitude,
                 longitude: args.longitude,
                 facebookPageId: args.facebookPageId,
-                facebookAccessToken: args.facebookAccessToken,
                 showChatbotBubble: args.showChatbotBubble,
                 ttsModel: args.ttsModel,
             });

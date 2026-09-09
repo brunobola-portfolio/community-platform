@@ -258,6 +258,9 @@ export default defineSchema({
     // Social Media
     facebookPageId: v.optional(v.string()),
     instagramUrl: v.optional(v.string()),
+    // Deprecated in 2.9.0: collected by nobody and read by nobody. Kept so
+    // documents written before the removal stay valid; a stored value can be
+    // cleared from the Convex dashboard. Drops in the next major.
     facebookAccessToken: v.optional(v.string()),
     showChatbotBubble: v.optional(v.boolean()),
     ttsModel: v.optional(v.string()),

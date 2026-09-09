@@ -80,7 +80,7 @@ if (existsSync(BRAND_DIR)) {
 
 // 4. Verify the bundle (automates DEPLOY.md "verificar o build")
 step('[4/5] A verificar o build...');
-for (const required of ['dist/index.html', 'dist/web.config', 'dist/og-image.png', 'dist/favicon.svg']) {
+for (const required of ['dist/index.html', 'dist/web.config', 'dist/og-image.png', 'dist/favicon.svg', 'dist/version.json']) {
   if (!existsSync(required)) fail(`${required} nao foi gerado.`);
 }
 const assetDir = 'dist/assets';
@@ -95,7 +95,13 @@ if (!bundleHasUrl) {
 }
 const html = readFileSync('dist/index.html', 'utf8');
 if (/%VITE_[A-Z0-9_]+%/.test(html)) fail('index.html ainda tem placeholders %VITE_*% por preencher.');
-console.log(`        index.html + web.config presentes; bundle aponta para ${convexHost}.`);
+// The version travels in the zip: an instance is identified by what it serves,
+// not by what someone remembers having deployed
+const packagedVersion = JSON.parse(readFileSync('dist/version.json', 'utf8')).version;
+if (!html.includes(`content="Community Platform ${packagedVersion}"`)) {
+  fail('index.html nao tem a meta generator da versao empacotada.');
+}
+console.log(`        index.html + web.config presentes; versao ${packagedVersion}; bundle aponta para ${convexHost}.`);
 
 // 5. Package dist/ contents at the zip root. Tools attempted in order:
 // bsdtar ships with Windows 10+/macOS and needs no PowerShell modules;

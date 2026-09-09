@@ -371,7 +371,6 @@ export interface SettingsUpdateArgs {
   iban?: string;
   multibancoEntity?: string;
   multibancoReference?: string;
-  facebookAccessToken?: string;
   showChatbotBubble?: boolean;
   ttsModel?: string;
   aiProvider?: string;

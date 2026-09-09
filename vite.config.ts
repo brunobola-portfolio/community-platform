@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { createReadStream, existsSync, statSync } from 'node:fs';
+import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createHash } from 'crypto';
@@ -16,6 +16,41 @@ import { createHash } from 'crypto';
  *    (npm run dist copies the same folder over dist/ for production)
  */
 const BRAND_DIR = '.brand/public';
+
+/**
+ * Which platform version an instance runs is otherwise invisible from outside:
+ * every deployment is a private repository with its own brand. The version is
+ * published two ways from this single source of truth - a `generator` meta tag
+ * for whoever opens the page, and /version.json for whoever checks a fleet of
+ * them without parsing HTML.
+ */
+const pkg = JSON.parse(readFileSync(path.join(import.meta.dirname, 'package.json'), 'utf8')) as {
+  name: string;
+  version: string;
+};
+const PLATFORM_LABEL = 'Community Platform';
+
+function versionManifest(): Plugin {
+  const body = () => JSON.stringify({
+    platform: pkg.name,
+    version: pkg.version,
+    builtAt: new Date().toISOString(),
+  }, null, 2) + '\n';
+
+  return {
+    name: 'version-manifest',
+    // Dev answers the same document as production, so a local check is not a lie
+    configureServer(server) {
+      server.middlewares.use('/version.json', (_req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(body());
+      });
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'version.json', source: body() });
+    },
+  };
+}
 
 const META_DEFAULTS: Record<string, string> = {
   VITE_SITE_NAME: 'Community Platform',
@@ -72,8 +107,10 @@ function siteMeta(env: Record<string, string>): Plugin {
         // bytes it receives, and the header in web.config is computed over LF. One line ending.
         const filled = html.replace(/\r\n/g, '\n').replace(/%(VITE_[A-Z0-9_]+)%/g, (_match, key: string) =>
           escapeHtml(env[key] ?? process.env[key] ?? META_DEFAULTS[key] ?? ''));
-        if (ctx.server) return filled;
-        return filled.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(filled, 'meta')}">`);
+        const stamped = filled.replace('</title>', `</title>\n    <meta name="generator" content="${escapeHtml(`${PLATFORM_LABEL} ${pkg.version}`)}">`);
+        if (ctx.server) return stamped;
+        // The CSP hash covers inline scripts only: the meta tags around it do not move it
+        return stamped.replace('</title>', `</title>\n    <meta http-equiv="Content-Security-Policy" content="${buildCsp(stamped, 'meta')}">`);
       },
     },
   };
@@ -109,7 +146,7 @@ export default defineConfig(({ mode }) => {
         port: serverPort,
         host: serverHost,
       },
-      plugins: [react(), siteMeta(env), brandOverlay()],
+      plugins: [react(), siteMeta(env), brandOverlay(), versionManifest()],
       build: {
         rolldownOptions: {
           output: {
@@ -124,6 +161,9 @@ export default defineConfig(({ mode }) => {
             },
           },
         },
+      },
+      define: {
+        __PLATFORM_VERSION__: JSON.stringify(pkg.version),
       },
       resolve: {
         alias: {

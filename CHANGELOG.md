@@ -6,13 +6,37 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### Documentation
+## [2.9.0] - 2026-09-09
 
-- `SECURITY.md` said chat classification fails open; 2.8.0 made it fail closed. The entry
-  now describes the real behaviour and its cost, and records that the Facebook access token
-  is collected by the admin form but read by nothing
-- The instance template ships the automated Convex backend deploy and a reference
-  deployment runs it, so the item left the roadmap
+### Added
+
+- Every build publishes the platform version it was made from: `/version.json`
+  (`{platform, version, builtAt}`) for checking a fleet of instances without parsing HTML,
+  and a `generator` meta tag for whoever opens the page. The portal footer carries the same
+  version as the tooltip of the "Community Platform by BolaLabs" line, and `npm run dist`
+  refuses a package whose HTML does not carry the version it just built
+
+### Removed
+
+- The admin settings form asked for a Facebook access token that no query has ever read —
+  the footer link is built from `facebookPageId` alone. The field, its mutation argument and
+  its presence flag are gone; the schema keeps the column, deprecated, so documents written
+  before this release stay valid, and a stored value can be cleared from the Convex
+  dashboard. A Graph feed that would use it is on the roadmap
+
+### Changed
+
+- The public news list reads the `by_published` index instead of taking the 200 most recent
+  posts and filtering drafts out in JavaScript. The index already existed; the query never
+  used it, so a portal with many drafts served fewer than 200 published posts
+
+### Fixed
+
+- `SECURITY.md` still promised that chat classification fails open, which 2.8.0 inverted;
+  the entry now states that a turn is refused when no verdict can be produced, and what that
+  costs a deployment whose only provider is unreachable
+- The roadmap listed the automated backend deploy as pending; the instance template ships it
+  and a reference deployment runs it
 
 ## [2.8.0] - 2026-09-09
 

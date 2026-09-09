@@ -175,6 +175,23 @@ Browser (React 19 + Vite)
 - **Write-only secrets**: provider API keys accepted by `settings.update`, never echoed back (`has*ApiKey` flags)
 - **`GEMINI_API_KEY`**: Convex environment variable only — never in code, `.env` files, or the bundle
 
+### Knowing which version an instance runs
+
+Every deployment is a private repository with its own brand, so the running version is not
+obvious from the outside. Each build publishes it from `package.json`, in two places:
+
+```bash
+curl -s https://example.org/version.json
+# {"platform":"community-platform","version":"2.9.0","builtAt":"..."}
+
+curl -s https://example.org/ | grep generator
+# <meta name="generator" content="Community Platform 2.9.0">
+```
+
+`version.json` is the one to script against when checking several instances at once; the
+meta tag is there for anyone who just opens the page. In the portal footer, the
+"Community Platform by BolaLabs" line carries the same version as its tooltip.
+
 ### Configuration hierarchy
 
 ```

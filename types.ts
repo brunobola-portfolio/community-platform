@@ -107,7 +107,6 @@ export interface Settings {
   // Social Media Integration (DB-configurable with env fallbacks)
   facebookPageId?: string;
   instagramUrl?: string;
-  facebookAccessToken?: string; // Write-only: stripped from getAdmin response
 
   // AI Provider Selection ('gemini' | 'openrouter' | 'custom')
   aiProvider?: string;

@@ -22,13 +22,13 @@ export const list = query({
         } else {
             posts = await ctx.db
                 .query("posts")
-                .withIndex("by_date")
+                .withIndex("by_published", (q) => q.eq("published", true))
                 .order("desc")
                 .take(200);
         }
 
-        // Filter published at JS level since no dedicated published index exists
-        // TODO: add index by_published or by_status for DB-level filtering
+        // The category index carries no published component, so that branch
+        // still filters in JS; the default branch comes back published already
         const published = posts.filter(p => p.published === true);
 
         return Promise.all(
@@ -54,7 +54,7 @@ export const listSummary = query({
         } else {
             posts = await ctx.db
                 .query("posts")
-                .withIndex("by_date")
+                .withIndex("by_published", (q) => q.eq("published", true))
                 .order("desc")
                 .take(200);
         }

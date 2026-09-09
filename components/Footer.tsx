@@ -116,6 +116,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
               href="https://bolalabs.pt"
               target="_blank"
               rel="noopener noreferrer"
+              title={`Community Platform ${__PLATFORM_VERSION__}`}
               className="block sm:inline text-slate-400 dark:text-slate-600 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               Community Platform by BolaLabs
