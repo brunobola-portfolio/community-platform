@@ -39,11 +39,15 @@ Write-Host "  Site:  $SitePath"
 # 1. Validate the package before touching production
 Write-Host "  [1/5] Validating the package ..."
 Expand-Archive -Path $Zip -DestinationPath $staging -Force
-foreach ($required in 'index.html', 'web.config', 'assets') {
+foreach ($required in 'index.html', 'web.config', 'assets', 'version.json') {
   if (-not (Test-Path (Join-Path $staging $required))) { throw "Invalid zip: $required missing at the root." }
 }
 $html = Get-Content (Join-Path $staging 'index.html') -Raw
 if ($html -match '%VITE_[A-Z0-9_]+%') { throw 'index.html still has %VITE_*% placeholders (built without .env.production).' }
+# Identity of this exact build: the smoke test below reads it back from the live
+# site, so a half-copied or cached deploy cannot pass as a successful one
+$packageStamp = Get-Content (Join-Path $staging 'version.json') -Raw | ConvertFrom-Json
+Write-Host "        package: platform $($packageStamp.version) built $($packageStamp.builtAt)"
 
 # 2. Backup of the current site (rollback in seconds)
 Write-Host "  [2/5] Backup -> $backup"
@@ -67,6 +71,17 @@ try {
   $ok = ($resp.StatusCode -eq 200) -and ($resp.Content -match '<title>') -and ($resp.Content -match '/assets/index-')
   $assets = Invoke-WebRequest -Uri ($SiteUrl.TrimEnd('/') + '/og-image.png') -UseBasicParsing -TimeoutSec 30
   $ok = $ok -and ($assets.StatusCode -eq 200)
+
+  # The site must serve THIS build, not merely a working one. builtAt is unique
+  # per build, so it also catches a redeploy of the same version that never landed.
+  $probe = "$($SiteUrl.TrimEnd('/'))/version.json?cb=$([DateTime]::UtcNow.Ticks)"
+  $served = (Invoke-WebRequest -Uri $probe -UseBasicParsing -TimeoutSec 30).Content | ConvertFrom-Json
+  if ($served.builtAt -ne $packageStamp.builtAt) {
+    $ok = $false
+    Write-Warning "Site serves platform $($served.version) built $($served.builtAt); expected $($packageStamp.version) built $($packageStamp.builtAt)."
+  } else {
+    Write-Host "        serving platform $($served.version) built $($served.builtAt)"
+  }
 } catch { $ok = $false; Write-Warning $_ }
 
 if (-not $ok) {

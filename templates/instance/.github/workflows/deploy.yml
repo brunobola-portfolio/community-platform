@@ -35,7 +35,7 @@ jobs:
     env:
       HAS_CONVEX_KEY: ${{ secrets.CONVEX_DEPLOY_KEY != '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Windows PowerShell 5.1 is always present on Windows Server; pwsh is not
       - name: Build with the instance brand
