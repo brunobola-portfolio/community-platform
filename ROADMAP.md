@@ -11,6 +11,5 @@ in [SECURITY.md](SECURITY.md) and from what reference deployments ask for.
 | Per-document visibility (board only, members, public) | The members' archive is one bucket visible to every signed-in account |
 | Media Studio cleanup of orphaned uploads | Generated images that are never attached stay in storage |
 | A stored photo count per album | The gallery still counts every photo row on each change |
-| Hosted instance template with automated backend deploy | The instance repo deploys the frontend automatically; the Convex backend still needs the deploy key step |
 
 Suggestions and priorities: open an issue on the repository or write to bruno@bolalabs.pt.

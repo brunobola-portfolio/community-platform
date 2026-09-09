@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Documentation
+
+- `SECURITY.md` said chat classification fails open; 2.8.0 made it fail closed. The entry
+  now describes the real behaviour and its cost, and records that the Facebook access token
+  is collected by the admin form but read by nothing
+- The instance template ships the automated Convex backend deploy and a reference
+  deployment runs it, so the item left the roadmap
+
 ## [2.8.0] - 2026-09-09
 
 Reliability pass on the rate limiter, the chat guardrail and the public event

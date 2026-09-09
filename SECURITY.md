@@ -56,5 +56,12 @@ Documented so deployers can decide whether they matter for their association:
   `documents.list` refuses anonymous callers but has no per-document visibility flag.
 - **Images uploaded through the Media Studio are referenced by URL**, so deleting the
   entity leaves the blob in Convex storage. Remove orphans from the Convex dashboard.
-- **Chat classification fails open.** If the classifier call errors, the message is treated
-  as a general question and still answered by the constrained system prompt.
+- **A chat turn is refused when the guardrail classifier cannot run.** Since 2.8.0 the
+  classifier fails closed: it retries, then falls back to Gemini when a key is configured,
+  and if no verdict can be produced the assistant answers `ERR_UNAVAILABLE` rather than
+  forwarding an unchecked message to the model. A deployment whose only provider is an
+  unreachable custom endpoint therefore has no assistant until the endpoint recovers.
+- **The Facebook access token is collected but never used.** `settings.facebookAccessToken`
+  is stored write-only and validated, and the admin form asks for it, but no query reads it:
+  the footer link is built from `facebookPageId` alone. Leave it empty until a Graph feed
+  exists.
