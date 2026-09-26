@@ -45,7 +45,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                     <option value="published">Publicado</option>
                     <option value="draft">Rascunho</option>
                 </AdminSelect></Field>
-            <MediaStudio imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
+            <MediaStudio label="Cartaz ou imagem" imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
         </div>
         <div className="md:col-span-2 space-y-6">
             <RichTextEditor label="Conteúdo Principal" required value={str('description')} onChange={(v: string) => setField('description', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-64" />
@@ -120,7 +120,7 @@ export const PostForm: React.FC<PostFormProps> = ({
                     <input type="checkbox" id="post-published" className="accent-brand-500 w-4 h-4" checked={bool('published')} onChange={e => setField('published', e.target.checked)} />
                     <label htmlFor="post-published" className="text-sm text-slate-300">Publicado (visível no portal)</label>
                 </div>
-                <MediaStudio imageUrl={str('coverUrl')} onChange={(url: string) => setField('coverUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
+                <MediaStudio label="Imagem de capa" imageUrl={str('coverUrl')} onChange={(url: string) => setField('coverUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
             </div>
             <div className="md:col-span-2 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

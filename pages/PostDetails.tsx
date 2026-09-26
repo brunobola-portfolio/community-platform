@@ -1,9 +1,12 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArticleMeta } from '../components/StructuredData';
 import { useData } from '../context/DataContext';
-import { ArrowLeft, Calendar, Share2, Volume2, Clock, Tag, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Volume2, Clock, Tag, Loader2 } from 'lucide-react';
 import { Button, Badge } from '../components/ui/UIComponents';
+import { ShareBar } from '../components/ui/ShareBar';
+import { absoluteUrl, postPath } from '../utils/share';
+import { isLeadRedundant } from '../utils/text';
 import { useAction, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { sanitizeHtml } from '../utils/security';
@@ -61,28 +64,6 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
       }
    };
 
-   const handleShare = useCallback(async () => {
-      if (!post) return;
-      const shareData = {
-         title: post.title,
-         text: post.excerpt,
-         url: window.location.href,
-      };
-      try {
-         if (navigator.share) {
-            await navigator.share(shareData);
-         } else {
-            await navigator.clipboard.writeText(window.location.href);
-         }
-      } catch (e) {
-         // User cancelled share or clipboard failed -- fallback silently
-         try {
-            await navigator.clipboard.writeText(window.location.href);
-         } catch {
-            // Clipboard not available
-         }
-      }
-   }, [post]);
 
    if (!post && isLoading) {
       return (
@@ -173,9 +154,11 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
          <div className="max-w-4xl mx-auto px-6 relative z-30 -mt-16 md:-mt-24">
             <div className="bg-white dark:bg-[#111] border border-slate-900/10 dark:border-white/10 rounded-[2.5rem] md:rounded-[4rem] px-8 py-12 md:p-20 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] dark:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] backdrop-blur-3xl">
                <div className="max-w-2xl mx-auto">
-                  <p className="text-xl md:text-3xl text-slate-800 dark:text-slate-200 font-light leading-relaxed mb-16 italic opacity-90 border-l-4 border-brand-500 pl-8">
-                     {post.excerpt}
-                  </p>
+                  {!(post.content && isLeadRedundant(post.excerpt, post.content)) && (
+                     <p className="text-xl md:text-3xl text-slate-800 dark:text-slate-200 font-light leading-relaxed mb-16 italic opacity-90 border-l-4 border-brand-500 pl-8">
+                        {post.excerpt}
+                     </p>
+                  )}
 
                   <article className="prose prose-xl dark:prose-invert prose-headings:font-serif prose-headings:font-bold prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-loose prose-strong:text-slate-900 dark:prose-strong:text-white prose-a:text-brand-600 dark:prose-a:text-brand-400 hover:prose-a:text-brand-700 dark:hover:prose-a:text-brand-300 transition-all prose-img:rounded-3xl prose-blockquote:border-brand-500 prose-blockquote:bg-brand-500/5 prose-blockquote:py-4 prose-blockquote:px-8 prose-blockquote:rounded-2xl prose-blockquote:font-light">
                      {isContentLoading
@@ -195,15 +178,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                               </Badge>
                            ))}
                         </div>
-                        <div className="flex items-center gap-4">
-                           <Button
-                              variant="glass"
-                              className="rounded-full px-8 bg-brand-500/10 hover:bg-brand-500 text-brand-600 hover:text-white dark:text-brand-400 dark:hover:text-white border-brand-500/30 transition-all font-semibold"
-                              onClick={handleShare}
-                           >
-                              Partilhar <Share2 size={18} className="ml-2" />
-                           </Button>
-                        </div>
+                        <ShareBar url={absoluteUrl(postPath(post.slug))} title={post.title} text={`*${post.title}*`} />
                      </div>
                   </div>
 

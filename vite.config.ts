@@ -117,6 +117,47 @@ function monitoringOrigins(env: Record<string, string>): string[] {
  * equal — the script hash used to be copied by hand, and a stale copy blocks the
  * theme bootstrap in production while every local check still passes.
  */
+/**
+ * Link-preview crawlers (WhatsApp, Facebook, LinkedIn, Telegram...) read HTML
+ * without running JavaScript. Search engines are deliberately absent: they
+ * render the app, and the preview page is noindex.
+ */
+export const PREVIEW_CRAWLERS =
+  'facebookexternalhit|Facebot|WhatsApp|Twitterbot|LinkedInBot|TelegramBot|Slackbot|Discordbot|Pinterestbot|SkypeUriPreview|redditbot|Viber|Iframely|Embedly|Bluesky|Mastodon';
+
+/** Where the deployment's HTTP actions answer: *.convex.cloud serves functions, *.convex.site serves routes. */
+export function convexSiteOrigin(env: Record<string, string | undefined>): string | null {
+  const explicit = env.VITE_CONVEX_SITE_URL;
+  if (explicit) return new URL(explicit).origin;
+  const cloud = env.VITE_CONVEX_URL;
+  if (!cloud) return null;
+  const url = new URL(cloud);
+  if (!url.hostname.endsWith('.convex.cloud')) return null;
+  url.hostname = url.hostname.replace(/\.convex\.cloud$/, '.convex.site');
+  return url.origin;
+}
+
+/**
+ * IIS rule that hands a crawler's request for /events/<slug> or /blog/<slug> to
+ * the preview page in Convex. It needs Application Request Routing with proxy
+ * enabled, so it is opt-in per instance (VITE_SHARE_PREVIEWS=proxy): without
+ * ARR the rewrite fails and the crawler would get an error instead of the
+ * generic site card it gets today.
+ */
+export function sharePreviewRule(siteOrigin: string): string {
+  return [
+    '        <rule name="Link previews for crawlers" stopProcessing="true">',
+    '          <match url="^(events|blog)/([^/]+)/?$" />',
+    '          <conditions>',
+    `            <add input="{HTTP_USER_AGENT}" pattern="${PREVIEW_CRAWLERS}" />`,
+    '          </conditions>',
+    `          <action type="Rewrite" url="${siteOrigin}/share/{R:1}/{R:2}" />`,
+    '        </rule>',
+    '',
+    '',
+  ].join('\n');
+}
+
 function webConfigCsp(env: Record<string, string>, outDir: string): Plugin {
   return {
     name: 'web-config-csp',
@@ -132,7 +173,16 @@ function webConfigCsp(env: Record<string, string>, outDir: string): Plugin {
       if (!header.test(config)) {
         throw new Error('web.config has no Content-Security-Policy header to fill.');
       }
-      writeFileSync(configPath, config.replace(header, `$1${csp}$2`));
+      let generated = config.replace(header, `$1${csp}$2`);
+
+      if ((env.VITE_SHARE_PREVIEWS ?? process.env.VITE_SHARE_PREVIEWS) === 'proxy') {
+        const origin = convexSiteOrigin({ ...process.env, ...env });
+        if (!origin) throw new Error('VITE_SHARE_PREVIEWS=proxy needs VITE_CONVEX_URL on *.convex.cloud or VITE_CONVEX_SITE_URL.');
+        const anchor = '        <rule name="Block dotfiles"';
+        if (!generated.includes(anchor)) throw new Error('web.config has no "Block dotfiles" rule to place the preview rule before.');
+        generated = generated.replace(anchor, `${sharePreviewRule(origin)}${anchor}`);
+      }
+      writeFileSync(configPath, generated);
     },
   };
 }
