@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
                         <div className="space-y-2">
                             <h2 className="text-2xl font-serif font-bold text-slate-900 dark:text-white">Ups! Algo correu mal.</h2>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                            <p className="text-slate-600 dark:text-slate-400 text-sm">
                                 Encontrámos um erro inesperado. A nossa equipa foi notificada.
                             </p>
                             {this.state.error && (
@@ -59,7 +59,7 @@ export class ErrorBoundary extends Component<Props, State> {
                         <div className="flex flex-col sm:flex-row gap-3 pt-2">
                             <Button
                                 onClick={this.handleReload}
-                                className="flex-1 bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20"
+                                className="flex-1 bg-brand-700 hover:bg-brand-800 text-white shadow-lg shadow-brand-500/20"
                             >
                                 <RefreshCw size={18} className="mr-2" /> Tentar Novamente
                             </Button>

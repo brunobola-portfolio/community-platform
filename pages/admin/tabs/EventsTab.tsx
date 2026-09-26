@@ -28,7 +28,7 @@ const SORTS: ListSort<AdminEvent>[] = [
 ];
 
 const Occupancy: React.FC<{ event: AdminEvent }> = ({ event }) => {
-    if (!event.isTournament || !event.maxParticipants) return <span className="text-xs text-slate-500">—</span>;
+    if (!event.isTournament || !event.maxParticipants) return <span className="text-xs text-slate-400">—</span>;
     const current = event.currentParticipants ?? 0;
     const percent = Math.min(100, Math.round((current / event.maxParticipants) * 100));
     const width = progressWidthClass(percent);
@@ -37,7 +37,7 @@ const Occupancy: React.FC<{ event: AdminEvent }> = ({ event }) => {
             <div className="mb-1 flex justify-between text-[10px] tabular-nums text-slate-400">
                 <span>{current}/{event.maxParticipants}</span><span>{percent}%</span>
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-700" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-700" role="progressbar" aria-label="Lotação" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
                 <div className={`h-full rounded-full ${percent > 90 ? 'bg-red-500' : 'bg-brand-500'} ${width}`} />
             </div>
         </div>

@@ -100,7 +100,7 @@ export const HomepageTab: React.FC<HomepageTabProps> = ({ actionAreas, stats, op
                     {stats.map(stat => (
                         <div key={stat.id} className="rounded-2xl border border-white/10 bg-dark-surface p-4">
                             <div className="font-serif text-2xl font-bold text-white">{stat.value}</div>
-                            <div className="mt-1 text-[10px] uppercase tracking-widest text-slate-500">{stat.label}</div>
+                            <div className="mt-1 text-[10px] uppercase tracking-widest text-slate-400">{stat.label}</div>
                             <div className="mt-3 flex justify-end border-t border-white/5 pt-2">
                                 <CardActions
                                     label={stat.label}

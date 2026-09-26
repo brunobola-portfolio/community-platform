@@ -100,7 +100,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
                         <span className="block truncate font-medium text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-400">
                           {event.title}
                         </span>
-                        <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                        <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-400">
                           <span className="flex items-center gap-1">
                             <Clock size={12} /> {date.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
                           </span>

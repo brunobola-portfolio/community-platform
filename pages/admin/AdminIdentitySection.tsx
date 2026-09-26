@@ -1,6 +1,7 @@
 import React from 'react';
 import { Landmark } from 'lucide-react';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
+import { MediaStudio } from './editors/MediaStudio';
 import type { Settings } from '../../types';
 
 interface AdminIdentitySectionProps {
@@ -40,6 +41,16 @@ export const AdminIdentitySection: React.FC<AdminIdentitySectionProps> = ({ sett
         <p className="text-sm text-slate-400 mb-6">
             Tudo o que nomeia a associação no portal público vem daqui. Campos vazios escondem a secção correspondente.
         </p>
+        <div className="mb-6">
+            <MediaStudio
+                label="Fotografia de fundo da página inicial"
+                imageUrl={settingsForm.heroImageUrl ?? ''}
+                onChange={url => onChange('heroImageUrl', url)}
+            />
+            <p className="text-xs text-slate-400 mt-2">
+                Fica discreta, atrás do nome da associação. Resulta melhor uma fotografia horizontal da sede, da terra ou de um evento. Sem fotografia, o fundo é só a cor da marca.
+            </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {FIELDS.map(({ key, label, placeholder, rows, hint }) => {
                 const value = (settingsForm[key] as string | undefined) ?? '';
@@ -52,7 +63,7 @@ export const AdminIdentitySection: React.FC<AdminIdentitySectionProps> = ({ sett
                         ) : (
                             <input id={`identity-${key}`} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
                         )}
-                        {hint && <p className="text-xs text-slate-500 mt-1">{hint}</p>}
+                        {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
                     </div>
                 );
             })}

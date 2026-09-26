@@ -133,8 +133,8 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                           <div className="relative z-10 mt-auto">
                               <div className="text-xl sm:text-2xl text-white font-mono tracking-wider font-medium mb-3 sm:mb-4 truncate text-shadow">{memberData.name}</div>
                               <div className="flex flex-wrap gap-4 sm:gap-8 text-sm items-end">
-                                  <div><div className="text-slate-500 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Sócio Nº</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.number}</div></div>
-                                  <div><div className="text-slate-500 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Desde</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.since}</div></div>
+                                  <div><div className="text-slate-600 dark:text-slate-400 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Sócio Nº</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.number}</div></div>
+                                  <div><div className="text-slate-600 dark:text-slate-400 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Desde</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.since}</div></div>
                                   <div className="ml-auto"><Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">Ativo</Badge></div>
                               </div>
                           </div>
@@ -166,9 +166,9 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                           <Badge className={quotaInfo.badgeClassName}>{quotaInfo.badgeLabel}</Badge>
                       </div>
                       <div>
-                          <div className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Quotas</div>
+                          <div className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Quotas</div>
                           <div className="text-slate-900 dark:text-white font-medium">{quotaInfo.cardText}</div>
-                          <div className="text-brand-600 dark:text-brand-400 text-xs font-medium mt-2">Como pagar &rarr;</div>
+                          <div className="text-brand-700 dark:text-brand-400 text-xs font-medium mt-2">Como pagar &rarr;</div>
                       </div>
                   </div>
               ) : (
@@ -178,7 +178,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                           <div className="h-5 w-20 rounded-xl bg-slate-900/10 dark:bg-white/10" />
                       </div>
                       <div>
-                          <div className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Quotas</div>
+                          <div className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Quotas</div>
                           <div className="h-5 w-32 rounded bg-slate-900/10 dark:bg-white/10" />
                       </div>
                   </div>
@@ -188,17 +188,17 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                       <History className="text-brand-500" size={24} />
                   </div>
                   <div>
-                      <div className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Próximo Pagamento</div>
+                      <div className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Próximo Pagamento</div>
                       <div className="text-slate-900 dark:text-white font-medium">{quotaInfo?.nextPayment ?? '—'}</div>
                   </div>
               </div>
               <div className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl p-6 flex flex-col justify-between hover:border-brand-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
                   <div className="flex items-center justify-between mb-4">
                       <Bell className="text-brand-500" size={24} />
-                      <Badge className="bg-brand-500/20 text-brand-600 dark:text-brand-400 border-brand-500/30">{notificationsCount}</Badge>
+                      <Badge className="bg-brand-500/20 text-brand-700 dark:text-brand-400 border-brand-500/30">{notificationsCount}</Badge>
                   </div>
                   <div>
-                      <div className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Notificações</div>
+                      <div className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Notificações</div>
                       <div className="text-slate-900 dark:text-white font-medium">{notificationsCount} novas</div>
                   </div>
               </div>
@@ -207,7 +207,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                       <FileText className="text-brand-500" size={24} />
                   </div>
                   <div>
-                      <div className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Documentos</div>
+                      <div className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Documentos</div>
                       <div className="text-slate-900 dark:text-white font-medium">{documentsCount} disponíveis</div>
                   </div>
               </div>
@@ -236,7 +236,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ documents }) => (
                           </div>
                           <div>
                               <h4 className="text-slate-900 dark:text-white font-medium mb-1">{doc.title}</h4>
-                              <p className="text-slate-500 dark:text-slate-400 text-sm">{doc.category}</p>
+                              <p className="text-slate-600 dark:text-slate-400 text-sm">{doc.category}</p>
                           </div>
                       </div>
                       {doc.url || doc.externalUrl ? (
@@ -276,12 +276,12 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({ notifications }) =>
               <div key={n.id} className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl p-5 hover:border-brand-500/30 transition-colors">
                   <div className="flex items-start gap-4">
                       <div className={`p-2 rounded-lg ${n.type === 'warning' || n.type === 'urgent' ? 'bg-amber-500/20' : n.type === 'success' ? 'bg-green-500/20' : 'bg-brand-500/10'}`}>
-                          <Bell size={18} className={n.type === 'warning' || n.type === 'urgent' ? 'text-amber-600 dark:text-amber-400' : n.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-brand-600 dark:text-brand-400'} />
+                          <Bell size={18} className={n.type === 'warning' || n.type === 'urgent' ? 'text-amber-600 dark:text-amber-400' : n.type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-brand-700 dark:text-brand-400'} />
                       </div>
                       <div className="flex-1">
                           <h4 className="text-slate-900 dark:text-white font-medium mb-1">{n.title}</h4>
-                          <p className="text-slate-500 dark:text-slate-400 text-sm">{n.message}</p>
-                          <p className="text-slate-500 text-xs mt-2">{n.date ? new Date(n.date).toLocaleDateString('pt-PT') : '\u2014'}</p>
+                          <p className="text-slate-600 dark:text-slate-400 text-sm">{n.message}</p>
+                          <p className="text-slate-600 dark:text-slate-400 text-xs mt-2">{n.date ? new Date(n.date).toLocaleDateString('pt-PT') : '\u2014'}</p>
                       </div>
                   </div>
               </div>
@@ -309,14 +309,14 @@ const CopyableField: React.FC<CopyableFieldProps> = ({ label, value, monospace }
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="min-w-0">
-        <div className="text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">{label}</div>
+        <div className="text-slate-600 dark:text-slate-400 text-[10px] uppercase tracking-wider mb-0.5">{label}</div>
         <div className={cn('text-slate-900 dark:text-white font-medium truncate', monospace && 'font-mono')}>{value}</div>
       </div>
       <button
         type="button"
         onClick={handleCopy}
         aria-label="Copiar"
-        className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
       >
         {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
       </button>
@@ -353,7 +353,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
         </div>
         <a
           href={`mailto:${settings.contactEmail}`}
-          className="inline-flex items-center gap-2 justify-center w-full px-4 py-2.5 rounded-xl bg-brand-500 text-white font-medium hover:bg-brand-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="inline-flex items-center gap-2 justify-center w-full px-4 py-2.5 rounded-xl bg-brand-700 text-white font-medium hover:bg-brand-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <Mail size={16} /> Contactar a Direção
         </a>
@@ -365,7 +365,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
     <div className="space-y-5 py-2">
       {settings.quotaAmount && (
         <div className="text-center">
-          <div className="text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Valor da quota</div>
+          <div className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Valor da quota</div>
           <div className="text-2xl font-serif text-slate-900 dark:text-white">{settings.quotaAmount}</div>
         </div>
       )}
@@ -373,7 +373,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
       <div className="space-y-3">
         {hasMbway && (
           <div className="border border-slate-900/10 dark:border-white/10 rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-2">
               <Smartphone size={14} /> MB WAY
             </div>
             <CopyableField label="Número" value={settings.mbwayNumber as string} />
@@ -381,7 +381,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
         )}
         {hasIban && (
           <div className="border border-slate-900/10 dark:border-white/10 rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-2">
               <Landmark size={14} /> Transferência Bancária
             </div>
             <CopyableField label="IBAN" value={settings.iban as string} monospace />
@@ -389,7 +389,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
         )}
         {hasMultibanco && (
           <div className="border border-slate-900/10 dark:border-white/10 rounded-2xl p-4 space-y-3">
-            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider">
               <CreditCard size={14} /> Multibanco
             </div>
             <CopyableField label="Entidade" value={settings.multibancoEntity as string} monospace />
@@ -398,7 +398,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
         )}
       </div>
 
-      <p className="text-slate-500 dark:text-slate-400 text-xs text-center">
+      <p className="text-slate-600 dark:text-slate-400 text-xs text-center">
         Após o pagamento, a direção confirma e atualiza o estado da tua quota. Em caso de dúvida contacta {settings.contactEmail}.
       </p>
     </div>
@@ -444,11 +444,11 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 animate-fade-in-up">
             <div>
-                <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.3em] text-[10px] font-bold">Portal do Sócio</span>
+                <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.3em] text-[10px] font-bold">Portal do Sócio</span>
                 <h1 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mt-2 mb-2">Área de Sócio</h1>
-                <p className="text-slate-500 dark:text-slate-400">Bem-vindo à sua área reservada.</p>
+                <p className="text-slate-600 dark:text-slate-400">Bem-vindo à sua área reservada.</p>
             </div>
-            <Button variant="ghost" onClick={onLogout} className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+            <Button variant="ghost" onClick={onLogout} className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
                 <LogOut size={18} /> Terminar Sessão
             </Button>
         </div>
@@ -463,8 +463,8 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
                     aria-selected={activeTab === tab.id}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                         activeTab === tab.id
-                            ? 'bg-brand-500 text-white'
-                            : 'bg-white dark:bg-dark-surface text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-900/10 dark:border-white/10'
+                            ? 'bg-brand-700 text-white'
+                            : 'bg-white dark:bg-dark-surface text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-900/10 dark:border-white/10'
                     }`}
                 >
                     <tab.icon size={16} />

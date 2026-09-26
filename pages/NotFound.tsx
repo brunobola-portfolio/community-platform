@@ -12,13 +12,13 @@ export function NotFoundPage() {
             <h1 className="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">
                 Página não encontrada
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md">
+            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-md">
                 A página que procura não existe ou foi movida. Verifique o endereço ou volte à página inicial.
             </p>
             <div className="flex gap-3">
                 <button
                     onClick={() => navigate('/')}
-                    className="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                     Voltar ao Início
                 </button>

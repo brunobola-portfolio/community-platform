@@ -41,7 +41,7 @@ export const DocumentsTab: React.FC<EntityHandlers & { documents: AppDocument[] 
                     cell: d => (
                         <div className="min-w-0">
                             <span className="block truncate font-medium text-white">{d.title}</span>
-                            {d.description && <span className="block truncate text-xs text-slate-500">{d.description}</span>}
+                            {d.description && <span className="block truncate text-xs text-slate-400">{d.description}</span>}
                         </div>
                     ),
                 },

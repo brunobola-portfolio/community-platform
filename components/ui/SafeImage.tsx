@@ -51,8 +51,8 @@ export const SafeImage: React.FC<SafeImageProps> = ({
         aria-label={alt}
       >
         <div className="text-center p-4">
-          <ImageOff className="w-8 h-8 text-slate-500 mx-auto mb-2" />
-          <p className="text-xs text-slate-500 line-clamp-2">{alt}</p>
+          <ImageOff className="w-8 h-8 text-slate-600 dark:text-slate-400 mx-auto mb-2" />
+          <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{alt}</p>
         </div>
       </div>
     );

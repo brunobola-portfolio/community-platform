@@ -5,7 +5,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 /** Quota year with its up-to-date/late reading, as the member sees it. */
 export const QuotaPill: React.FC<{ year: string }> = ({ year }) => {
-    if (!year) return <span className="text-xs text-slate-500">—</span>;
+    if (!year) return <span className="text-xs text-slate-400">—</span>;
     const isUpToDate = Number(year) >= CURRENT_YEAR;
     return (
         <span

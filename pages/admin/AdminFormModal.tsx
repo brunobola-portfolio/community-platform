@@ -88,7 +88,7 @@ export const AdminFormModal: React.FC<AdminFormModalProps> = ({
                 size="xl"
                 footer={
                     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
-                        <span className="mr-auto hidden text-xs text-slate-500 sm:block">
+                        <span className="mr-auto hidden text-xs text-slate-400 sm:block">
                             {isDirty ? 'Alterações por guardar' : 'Sem alterações por guardar'}
                         </span>
                         <Button type="button" variant="ghost" onClick={requestClose} disabled={isSubmitting}>Cancelar</Button>

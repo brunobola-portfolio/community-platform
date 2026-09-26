@@ -144,13 +144,13 @@ export const Modal: React.FC<ModalProps> = ({
           />
           <div className="relative flex items-start gap-4">
             {icon && (
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-600 ring-1 ring-brand-600/20 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25">
                 {icon}
               </span>
             )}
             <div className="min-w-0 flex-1">
               {eyebrow && (
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-600 dark:text-brand-400">
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-400">
                   {eyebrow}
                 </p>
               )}
@@ -163,7 +163,7 @@ export const Modal: React.FC<ModalProps> = ({
                 </h2>
               )}
               {description && (
-                <p id={descriptionId} className="mt-1.5 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                <p id={descriptionId} className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   {description}
                 </p>
               )}
@@ -172,7 +172,7 @@ export const Modal: React.FC<ModalProps> = ({
               onClick={onClose}
               aria-label="Fechar"
               title="Fechar"
-              className="-mr-1 -mt-1 shrink-0 rounded-xl p-2.5 text-slate-500 dark:text-slate-400 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/5 dark:hover:text-white"
+              className="-mr-1 -mt-1 shrink-0 rounded-xl p-2.5 text-slate-600 dark:text-slate-400 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/5 dark:hover:text-white"
             >
               <X size={18} />
             </button>

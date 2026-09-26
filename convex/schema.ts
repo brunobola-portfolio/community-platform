@@ -220,6 +220,7 @@ export default defineSchema({
     foundedYear: v.optional(v.string()),
     heroTagline: v.optional(v.string()),
     heroSubtitle: v.optional(v.string()),
+    heroImageUrl: v.optional(v.string()),
     historyIntro: v.optional(v.string()),
     historyQuote: v.optional(v.string()),
     venueName: v.optional(v.string()),

@@ -20,6 +20,7 @@ export const getPublic = query({
             foundedYear: settings.foundedYear,
             heroTagline: settings.heroTagline,
             heroSubtitle: settings.heroSubtitle,
+            heroImageUrl: settings.heroImageUrl,
             historyIntro: settings.historyIntro,
             historyQuote: settings.historyQuote,
             venueName: settings.venueName,
@@ -137,6 +138,7 @@ export const update = mutation({
         foundedYear: v.optional(v.string()),
         heroTagline: v.optional(v.string()),
         heroSubtitle: v.optional(v.string()),
+        heroImageUrl: v.optional(v.string()),
         historyIntro: v.optional(v.string()),
         historyQuote: v.optional(v.string()),
         venueName: v.optional(v.string()),
@@ -202,6 +204,7 @@ export const update = mutation({
         if (args.foundedYear !== undefined) validateMaxLength(args.foundedYear, "foundedYear", 600);
         if (args.heroTagline !== undefined) validateMaxLength(args.heroTagline, "heroTagline", 600);
         if (args.heroSubtitle !== undefined) validateMaxLength(args.heroSubtitle, "heroSubtitle", 600);
+        if (args.heroImageUrl !== undefined) validateMaxLength(args.heroImageUrl, "heroImageUrl", 500);
         if (args.historyIntro !== undefined) validateMaxLength(args.historyIntro, "historyIntro", 4000);
         if (args.historyQuote !== undefined) validateMaxLength(args.historyQuote, "historyQuote", 600);
         if (args.venueName !== undefined) validateMaxLength(args.venueName, "venueName", 600);
@@ -255,6 +258,7 @@ export const update = mutation({
                 foundedYear: args.foundedYear,
                 heroTagline: args.heroTagline,
                 heroSubtitle: args.heroSubtitle,
+                heroImageUrl: args.heroImageUrl,
                 historyIntro: args.historyIntro,
                 historyQuote: args.historyQuote,
                 venueName: args.venueName,

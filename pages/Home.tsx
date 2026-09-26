@@ -122,7 +122,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         {/* Background Elements */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524591434253-08742636f60d?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center opacity-[0.08] mix-blend-multiply dark:opacity-30 dark:mix-blend-overlay scale-105 animate-pulse-slow"></div>
+          {settings.heroImageUrl && (
+            <img src={settings.heroImageUrl} alt="" aria-hidden="true" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover opacity-[0.08] mix-blend-multiply dark:opacity-30 dark:mix-blend-overlay scale-105 animate-pulse-slow" />
+          )}
           <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-50/90 to-slate-50 dark:from-dark-bg dark:via-dark-bg/90 dark:to-dark-bg"></div>
           {/* Animated Glow Orbs */}
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 dark:bg-brand-500/20 rounded-full blur-[120px] animate-float"></div>
@@ -142,7 +144,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-slate-900 via-slate-800 to-slate-500 dark:from-white dark:via-white dark:to-slate-500 mb-8 leading-[0.9] tracking-tight animate-fade-in-up drop-shadow-2xl [animation-delay:0.1s]">
             {settings.locality || settings.siteName}<br />
             {settings.locality && (
-              <span className="text-4xl md:text-6xl lg:text-7xl font-light italic font-sans text-brand-600 dark:text-brand-400 opacity-90">{settings.siteName}</span>
+              <span className="text-4xl md:text-6xl lg:text-7xl font-light italic font-sans text-brand-700 dark:text-brand-400 opacity-90">{settings.siteName}</span>
             )}
           </h1>
 
@@ -158,7 +160,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               'relative flex items-center bg-white/80 dark:bg-black/60 border rounded-full px-4 py-2 backdrop-blur-xl transition-colors',
               isListening ? 'border-red-500/40' : 'border-slate-900/10 dark:border-white/10',
             )}>
-              <Sparkles className="text-brand-600 dark:text-brand-400 mr-3" size={18} />
+              <Sparkles className="text-brand-700 dark:text-brand-400 mr-3" size={18} />
               <input
                 type="text"
                 placeholder={isListening ? 'A ouvir... fala agora' : 'Pergunte à IA: Quando é o próximo torneio?'}
@@ -177,7 +179,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   <button
                     className={cn(
                       'p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
-                      isListening ? 'text-red-600 dark:text-red-400 bg-red-500/10' : 'hover:text-brand-600 dark:hover:text-brand-400 text-slate-500',
+                      isListening ? 'text-red-600 dark:text-red-400 bg-red-500/10' : 'hover:text-brand-700 dark:hover:text-brand-400 text-slate-600 dark:text-slate-400',
                     )}
                     onClick={toggleVoice}
                     aria-label={isListening ? 'Parar de ouvir' : 'Perguntar por voz'}
@@ -186,7 +188,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                     <Mic size={18} className={isListening ? 'animate-pulse' : ''} />
                   </button>
                 )}
-                <button className="p-2 bg-brand-600 rounded-full text-white hover:bg-brand-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" onClick={handleHeroSearch} aria-label="Pesquisar"><Search size={16} /></button>
+                <button className="p-2 bg-brand-700 rounded-full text-white hover:bg-brand-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" onClick={handleHeroSearch} aria-label="Pesquisar"><Search size={16} /></button>
               </div>
             </div>
             {voiceError && (
@@ -212,7 +214,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.scrollTo({ top: window.innerHeight, behavior: 'smooth' }); } }}
         >
-          <span className="text-[10px] uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Explorar</span>
+          <span className="text-[10px] uppercase tracking-[0.3em] text-brand-700 dark:text-brand-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Explorar</span>
           <div className="w-[1px] h-16 bg-gradient-to-b from-brand-500 via-brand-400 to-transparent opacity-50 group-hover:h-20 group-hover:opacity-100 transition-all duration-500"></div>
         </div>
       </section>
@@ -232,7 +234,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               {stats.map((stat) => (
                 <div key={stat.label} className="py-12 text-center group hover:bg-slate-900/[0.02] dark:hover:bg-white/[0.02] transition-colors cursor-default">
                   <div className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors scale-100 group-hover:scale-110 duration-300 transform">{stat.value}</div>
-                  <div className="text-xs uppercase tracking-widest text-slate-500 font-medium">{stat.label}</div>
+                  <div className="text-xs uppercase tracking-widest text-slate-600 dark:text-slate-400 font-medium">{stat.label}</div>
                 </div>
               ))}
               {stats.length === 0 && [1, 2, 3, 4].map(i => <div key={i} className="py-12 bg-slate-900/5 dark:bg-white/5 animate-pulse"></div>)}
@@ -247,7 +249,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
-            <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.25em] text-xs font-bold mb-4 block">Os Nossos Pilares</span>
+            <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.25em] text-xs font-bold mb-4 block">Os Nossos Pilares</span>
             <h2 className="font-serif text-5xl md:text-6xl text-slate-900 dark:text-white mb-8 leading-tight">Áreas de <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400 dark:from-brand-400 dark:to-brand-200">Impacto</span></h2>
             <p className="text-slate-600 dark:text-slate-300 max-w-3xl mx-auto text-lg font-light leading-relaxed">
               {`Da vida recreativa ao desporto, da cultura à solidariedade — a nossa missão assenta em áreas de ação ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}.`}
@@ -288,19 +290,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   <div className="absolute -inset-px bg-gradient-to-b from-brand-500 to-brand-800 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none p-px -z-10"></div>
 
                   <div className="relative z-10 flex flex-col h-full p-8">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-brand-600 dark:text-brand-400 flex items-center justify-center mb-auto group-hover:bg-brand-500 group-hover:text-white group-hover:border-transparent transition-all duration-500">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-brand-700 dark:text-brand-400 flex items-center justify-center mb-auto group-hover:bg-brand-500 group-hover:text-white group-hover:border-transparent transition-all duration-500">
                       <Icon size={28} />
                     </div>
 
                     <div className="mt-8">
-                      <div className="mb-2 text-xs font-mono uppercase tracking-widest text-brand-600/80 dark:text-brand-400/80">{area.subtitle}</div>
+                      <div className="mb-2 text-xs font-mono uppercase tracking-widest text-brand-700 dark:text-brand-400/80">{area.subtitle}</div>
                       <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-4 group-hover:translate-x-1 transition-transform duration-300">{area.title}</h3>
 
-                      <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">
                         {sanitizeText(area.description)}
                       </p>
 
-                      <div className="mt-6 pt-4 border-t border-slate-900/5 dark:border-white/5 flex items-center text-brand-600 dark:text-brand-400 text-xs font-bold uppercase tracking-wider opacity-80 group-hover:opacity-100">
+                      <div className="mt-6 pt-4 border-t border-slate-900/5 dark:border-white/5 flex items-center text-brand-700 dark:text-brand-400 text-xs font-bold uppercase tracking-wider">
                         Explorar <ArrowRight size={16} className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                       </div>
                     </div>
@@ -320,9 +322,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <div className="flex justify-between items-end mb-16">
             <div>
               <h2 className="font-serif text-5xl text-slate-900 dark:text-white mb-4">Blog & Notícias</h2>
-              <p className="text-slate-500 dark:text-slate-400 max-w-xl text-lg">Acompanhe as novidades da associação.</p>
+              <p className="text-slate-600 dark:text-slate-400 max-w-xl text-lg">Acompanhe as novidades da associação.</p>
             </div>
-            <Button variant="link" className="hidden md:flex group text-brand-600 dark:text-brand-400" onClick={() => onNavigate('blog')}>
+            <Button variant="link" className="hidden md:flex group text-brand-700 dark:text-brand-400" onClick={() => onNavigate('blog')}>
               Ver todas as notícias <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -351,7 +353,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
 
                 <div className="absolute top-6 right-6">
-                  <div className="bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_10px_rgba(223,61,50,0.5)]">Destaque</div>
+                  <div className="bg-brand-700 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_10px_rgba(223,61,50,0.5)]">Destaque</div>
                 </div>
 
                 <div className="absolute bottom-0 left-0 p-8 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
@@ -373,9 +375,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white dark:to-dark-surface"></div>
                 </div>
                 <div className="w-2/3 p-6 relative z-10">
-                  <span className="text-brand-600 dark:text-brand-400 text-xs font-mono mb-2 block">{new Date(secondaryPosts[0].date).toLocaleDateString('pt-PT')}</span>
+                  <span className="text-brand-700 dark:text-brand-400 text-xs font-mono mb-2 block">{new Date(secondaryPosts[0].date).toLocaleDateString('pt-PT')}</span>
                   <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">{secondaryPosts[0].title}</h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">{secondaryPosts[0].excerpt}</p>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{secondaryPosts[0].excerpt}</p>
                 </div>
               </div>
             )}
@@ -388,23 +390,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   <h3 className="text-lg font-serif text-slate-900 dark:text-white leading-snug">{secondaryPosts[1].title}</h3>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-900/5 dark:border-white/5 flex justify-between items-center">
-                  <span className="text-xs text-slate-500">Notícia</span>
-                  <ArrowRight size={16} className="text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+                  <span className="text-xs text-slate-600 dark:text-slate-400">Notícia</span>
+                  <ArrowRight size={16} className="text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
                 </div>
               </div>
             )}
 
             {/* Gallery Link */}
-            <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl bg-brand-600 p-6 flex flex-col justify-center items-center text-center hover:bg-brand-500 transition-colors shadow-[0_0_30px_rgba(223,61,50,0.2)] cursor-pointer" onClick={() => onNavigate('gallery')}>
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+            <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl bg-brand-700 p-6 flex flex-col justify-center items-center text-center hover:bg-brand-800 transition-colors shadow-[0_0_30px_rgba(223,61,50,0.2)] cursor-pointer" onClick={() => onNavigate('gallery')}>
               <h3 className="text-2xl font-serif text-white mb-2 relative z-10">Multimédia</h3>
               <p className="text-brand-100 text-sm mb-4 relative z-10">Explore a galeria de fotos e vídeos.</p>
-              <Button variant="glass" size="sm" className="w-full relative z-10">Ver Galeria</Button>
+              <Button variant="glass" size="sm" className="w-full relative z-10 text-white dark:text-white border-white/30 dark:border-white/30 bg-white/10 hover:bg-white/20">Ver Galeria</Button>
             </div>
           </div>
           ) : (
           <div className="text-center py-12">
-            <p className="text-slate-500 dark:text-slate-400">Sem notícias de momento.</p>
+            <p className="text-slate-600 dark:text-slate-400">Sem notícias de momento.</p>
           </div>
           )}
         </div>
@@ -418,7 +419,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <div className="flex justify-between items-end mb-12">
             <div>
               <h2 className="font-serif text-5xl text-slate-900 dark:text-white mb-4">Agenda Cultural</h2>
-              <p className="text-slate-500 dark:text-slate-400 text-lg">{settings.locality ? `Próximos eventos em ${settings.locality}.` : "Próximos eventos."}</p>
+              <p className="text-slate-600 dark:text-slate-400 text-lg">{settings.locality ? `Próximos eventos em ${settings.locality}.` : "Próximos eventos."}</p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="icon" className="rounded-full border-slate-900/10 dark:border-white/10 hover:bg-slate-900/10 dark:hover:bg-white/10" aria-label="Eventos anteriores" onClick={() => scrollEvents('left')}>
@@ -468,14 +469,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                     {new Date(event.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' }).toUpperCase()}
                   </div>
                   <div className="absolute top-3 left-3">
-                    <Badge className="bg-brand-600 text-white border-none shadow-md text-[10px]">{event.category || 'Geral'}</Badge>
+                    <Badge className="bg-brand-700 text-white border-none shadow-md text-[10px]">{event.category || 'Geral'}</Badge>
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-6">
                   <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors truncate">{event.title}</h3>
-                  <div className="flex items-center text-slate-500 text-xs mb-4">
+                  <div className="flex items-center text-slate-600 dark:text-slate-400 text-xs mb-4">
                     <MapPin size={12} className="mr-1 text-brand-500" />
                     {event.location}
                   </div>
@@ -493,7 +494,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
             {/* View All Card */}
             <div
-              className="min-w-[200px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-900/10 dark:border-white/10 rounded-2xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-brand-500 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all cursor-pointer snap-center"
+              className="min-w-[200px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-900/10 dark:border-white/10 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all cursor-pointer snap-center"
               onClick={() => onNavigate('events')}
             >
               <Calendar size={32} className="mb-3" />
@@ -502,7 +503,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           </div>
           ) : (
           <div className="text-center py-12">
-            <p className="text-slate-500 dark:text-slate-400">Sem eventos agendados de momento.</p>
+            <p className="text-slate-600 dark:text-slate-400">Sem eventos agendados de momento.</p>
           </div>
           )}
         </div>
@@ -511,7 +512,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
       {/* Infinite Partners Marquee */}
       <section className="py-24 border-t border-slate-900/5 dark:border-white/5 bg-slate-900/[0.01] dark:bg-white/[0.01] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
-          <p className="text-slate-500 uppercase tracking-[0.2em] text-xs font-bold">Rede de Parceiros</p>
+          <p className="text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] text-xs font-bold">Rede de Parceiros</p>
         </div>
 
         <div className="relative w-full flex overflow-hidden group">
@@ -525,7 +526,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             {[...sponsors, ...sponsors].map((sponsor, i) => (
               <div
                 key={`${sponsor.id}-${i}`}
-                className="flex-shrink-0 transition-all duration-500 opacity-80 hover:opacity-100 cursor-pointer"
+                className="flex-shrink-0 transition-all duration-500 cursor-pointer"
                 title={sponsor.name}
                 role="button"
                 tabIndex={0}
@@ -535,7 +536,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 {sponsor.logoUrl ? (
                   <div className="h-28 px-8 py-4 bg-white rounded-2xl border border-slate-900/10 dark:border-white/15 shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-2">
                     <img src={sponsor.logoUrl} alt={sponsor.name} loading="lazy" className="h-12 max-w-[180px] w-auto object-contain" />
-                    <span className="text-[9px] uppercase tracking-widest text-slate-500 truncate max-w-[180px]">{sponsor.name}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-slate-700 truncate max-w-[180px]">{sponsor.name}</span>
                   </div>
                 ) : (
                   <div className="h-28 px-8 bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/15 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex items-center justify-center text-slate-900 dark:text-white font-serif font-bold text-xl">
@@ -589,7 +590,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               <EventPoster key={selectedEvent.id} src={selectedEvent.imageUrl} title={selectedEvent.title} />
               <div>
                 <div className="mb-3 flex flex-wrap gap-2">
-                  <Badge className="border-none bg-brand-600 text-white shadow-md">{selectedEvent.category || 'Geral'}</Badge>
+                  <Badge className="border-none bg-brand-700 text-white shadow-md">{selectedEvent.category || 'Geral'}</Badge>
                   {selectedEvent.isHighlight && <Badge className="border-none bg-accent-gold text-black shadow-md">Destaque</Badge>}
                   {selectedEvent.isTournament && selectedEvent.tournamentType && (
                     <Badge className="border-none bg-slate-900 text-white shadow-md dark:bg-white dark:text-slate-900">
@@ -605,7 +606,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 <div className="grid grid-cols-2 gap-3 p-4 bg-slate-900/5 dark:bg-black/30 rounded-xl border border-slate-900/5 dark:border-white/5">
                   {selectedEvent.entryPrice !== undefined && (
                     <div>
-                      <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">Inscrição</div>
+                      <div className="text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Inscrição</div>
                       <div className="text-lg font-bold text-slate-900 dark:text-white">
                         {selectedEvent.entryPrice > 0 ? `${selectedEvent.entryPrice}€` : 'Grátis'}
                       </div>
@@ -613,7 +614,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   )}
                   {selectedEvent.maxParticipants !== undefined && (
                     <div>
-                      <div className="text-xs uppercase tracking-wider text-slate-500 mb-1">Vagas</div>
+                      <div className="text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Vagas</div>
                       <div className="text-lg font-bold text-slate-900 dark:text-white">
                         {selectedEvent.currentParticipants ?? 0} / {selectedEvent.maxParticipants}
                         {isFull && <span className="ml-2 text-xs text-red-600 dark:text-red-400 font-normal">Esgotado</span>}
@@ -660,7 +661,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 <h3 className="text-lg font-serif text-slate-900 dark:text-white mb-3">O que fazemos</h3>
                 <ul className="space-y-3">
                   {selectedArea.features?.map((feature: string) => (
-                    <li key={feature} className="flex items-start gap-3 text-slate-500 dark:text-slate-400 text-sm">
+                    <li key={feature} className="flex items-start gap-3 text-slate-600 dark:text-slate-400 text-sm">
                       <CheckCircle2 className="text-brand-500 shrink-0 mt-0.5" size={16} />
                       <span>{feature}</span>
                     </li>
@@ -670,7 +671,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
               <div className="h-fit rounded-2xl bg-slate-900/[0.03] p-5 ring-1 ring-slate-900/10 dark:bg-white/[0.03] dark:ring-white/10">
                 <h4 className="mb-3 font-medium text-slate-900 dark:text-white">Quer participar?</h4>
-                <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   Estamos sempre à procura de voluntários e de novas ideias para esta área. Fale com a direção e diga como
                   gostaria de ajudar.
                 </p>

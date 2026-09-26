@@ -80,7 +80,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                     <input type="checkbox" className="accent-brand-500 w-5 h-5 mt-0.5" checked={bool('registrationOpen')} onChange={e => setField('registrationOpen', e.target.checked)} />
                     <span>
                         <span className="block text-sm font-bold text-white">Aceitar inscrições pelo site</span>
-                        <span className="block text-xs text-slate-500">As inscrições chegam ao separador Inscrições, onde as confirma, cancela e exporta.</span>
+                        <span className="block text-xs text-slate-400">As inscrições chegam ao separador Inscrições, onde as confirma, cancela e exporta.</span>
                     </span>
                 </label>
                 {bool('registrationOpen') && (
@@ -93,7 +93,7 @@ export const EventForm: React.FC<EventFormProps> = ({
                             <input type="checkbox" className="accent-brand-500 w-4 h-4 mt-0.5" checked={formData.allowGuestRegistration === false} onChange={e => setField('allowGuestRegistration', !e.target.checked)} />
                             <span className="text-sm text-slate-300">
                                 Só sócios com conta se podem inscrever
-                                <span className="block text-xs text-slate-500">Desligado (recomendado): quem abre o evento num link do WhatsApp inscreve-se só com nome e email.</span>
+                                <span className="block text-xs text-slate-400">Desligado (recomendado): quem abre o evento num link do WhatsApp inscreve-se só com nome e email.</span>
                             </span>
                         </label>
                         <RegistrationFormBuilder
@@ -233,7 +233,7 @@ export const AlbumForm: React.FC<AlbumFormProps> = ({ str, setField, isGeneratin
         <Field label="Descrição (opcional)"><textarea rows={3} value={str('description')} onChange={e => setField('description', e.target.value)} className={STD_INPUT_CLASS} placeholder="Uma frase sobre o evento ou a ocasião" /></Field>
         <div>
             <span className={LABEL_CLASS}>Capa (opcional)</span>
-            <p className="text-xs text-slate-500 mb-2">Podes também escolher a capa entre as fotos do álbum, na tab Galeria (estrela).</p>
+            <p className="text-xs text-slate-400 mb-2">Podes também escolher a capa entre as fotos do álbum, na tab Galeria (estrela).</p>
             <MediaStudio imageUrl={str('coverUrl')} onChange={(url: string) => setField('coverUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} />
         </div>
     </div>

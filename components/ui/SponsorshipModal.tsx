@@ -97,7 +97,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
 
     const footer = step === 1 ? (
         <div className="flex flex-col items-center gap-1 text-center">
-            <p className="text-xs text-slate-500">Tem uma proposta diferente ou donativo pontual?</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400">Tem uma proposta diferente ou donativo pontual?</p>
             <Button variant="link" onClick={() => handleSelectTier('custom')}>Falar diretamente com a direção</Button>
         </div>
     ) : step === 2 ? (
@@ -140,7 +140,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                                 className="group flex flex-col rounded-2xl bg-slate-900/[0.03] p-5 text-left ring-1 ring-slate-900/10 transition-all hover:-translate-y-1 hover:bg-white hover:shadow-xl hover:ring-brand-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/[0.03] dark:ring-white/10 dark:hover:bg-white/[0.06]"
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
-                                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-600 ring-1 ring-brand-600/20 transition-transform group-hover:scale-105 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25">
+                                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20 transition-transform group-hover:scale-105 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25">
                                         <Icon size={20} />
                                     </span>
                                     <span className="text-right">
@@ -164,7 +164,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                                     ))}
                                 </ul>
 
-                                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-500 transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-400">
+                                <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 transition-colors group-hover:text-brand-600 dark:group-hover:text-brand-400">
                                     Selecionar <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
                                 </span>
                             </button>
@@ -224,7 +224,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                             <CheckCircle2 size={40} />
                         </span>
                     </div>
-                    <p className="max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                    <p className="max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                         O seu pedido foi registado com sucesso. Guardámos o nível <strong className="font-semibold text-slate-700 dark:text-slate-200">{tierName}</strong> e entramos em contacto pelo email indicado.
                     </p>
                 </div>

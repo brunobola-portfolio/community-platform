@@ -162,7 +162,7 @@ export const AdminLeadsTab: React.FC = () => {
                                 </div>
                             </div>
                             <div className="bg-black/20 rounded-lg p-3 mt-2">
-                                <div className="text-xs text-slate-500 mb-1 font-mono uppercase tracking-wider">
+                                <div className="text-xs text-slate-400 mb-1 font-mono uppercase tracking-wider">
                                     {c.subject}
                                 </div>
                                 <p className="text-slate-300 text-sm whitespace-pre-wrap">{c.message}</p>

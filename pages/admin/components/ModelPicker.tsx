@@ -88,7 +88,7 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
                         href={catalogUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-400 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+                        className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-400 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
                     >
                         Catálogo completo em openrouter.ai/models <ExternalLink size={11} />
                     </a>
@@ -115,10 +115,10 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
                                     placeholder="Filtrar modelos..."
                                     className="flex-1 bg-slate-950/50 border border-slate-800 rounded-md px-2.5 py-1.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-none transition-all focus-visible:ring-2 focus-visible:ring-brand-500"
                                 />
-                                <span className="text-slate-500 text-xs ml-2 shrink-0">{filtered.length} modelos</span>
+                                <span className="text-slate-400 text-xs ml-2 shrink-0">{filtered.length} modelos</span>
                             </div>
                             {filtered.length === 0 ? (
-                                <p className="text-slate-500 text-xs py-2 text-center">Nenhum modelo corresponde ao filtro.</p>
+                                <p className="text-slate-400 text-xs py-2 text-center">Nenhum modelo corresponde ao filtro.</p>
                             ) : (
                                 <ul className="max-h-64 overflow-y-auto space-y-0.5">
                                     {filtered.map(m => (
@@ -132,7 +132,7 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
                                                 className="w-full text-left px-2.5 py-1.5 rounded-md text-xs text-slate-300 hover:bg-white/5 hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                                             >
                                                 <span className="text-white font-mono">{m.id}</span>
-                                                {m.name !== m.id && <span className="text-slate-500 ml-2">{m.name}</span>}
+                                                {m.name !== m.id && <span className="text-slate-400 ml-2">{m.name}</span>}
                                             </button>
                                         </li>
                                     ))}

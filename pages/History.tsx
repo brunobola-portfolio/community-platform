@@ -35,7 +35,7 @@ export const HistoryPage: React.FC = () => {
         
         {/* Intro Narrative */}
         <div className="text-center mb-24 animate-fade-in-up">
-           <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.3em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">O Nosso Legado</span>
+           <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.3em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">O Nosso Legado</span>
            <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-12">História & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-accent-gold dark:to-amber-300">Tradição</span></h1>
 
            <div className="relative max-w-4xl mx-auto text-left bg-white dark:bg-dark-surface/50 p-8 md:p-12 rounded-3xl border border-slate-900/10 dark:border-white/10 backdrop-blur-md shadow-2xl">
@@ -46,7 +46,7 @@ export const HistoryPage: React.FC = () => {
                  <React.Fragment key={i}>
                    <p>{paragraph}</p>
                    {i === 1 && settings.historyQuote && (
-                     <div className="pl-6 border-l-4 border-brand-500 italic text-slate-500 dark:text-slate-400 my-8 py-2 bg-slate-900/5 dark:bg-white/5 rounded-r-xl">
+                     <div className="pl-6 border-l-4 border-brand-500 italic text-slate-600 dark:text-slate-400 my-8 py-2 bg-slate-900/5 dark:bg-white/5 rounded-r-xl">
                        {`"${settings.historyQuote}"`}
                      </div>
                    )}
@@ -66,7 +66,7 @@ export const HistoryPage: React.FC = () => {
 
           <div className="space-y-24">
             {milestones.length === 0 && (
-              <p className="text-center text-slate-500 dark:text-slate-400 py-12">A cronologia será publicada em breve.</p>
+              <p className="text-center text-slate-600 dark:text-slate-400 py-12">A cronologia será publicada em breve.</p>
             )}
             {milestones.map((item, idx) => (
               <div key={idx} className={`relative flex flex-col md:flex-row gap-8 items-center ${idx % 2 !== 0 ? 'md:flex-row-reverse' : ''} group`}>
@@ -79,13 +79,12 @@ export const HistoryPage: React.FC = () => {
                 {/* Content Side */}
                 <div className={`w-full md:w-1/2 pl-12 md:pl-0 ${idx % 2 === 0 ? 'md:pr-16 md:text-right' : 'md:pl-16 md:text-left'}`}>
                    <div className="inline-block">
-                      <span className="text-6xl md:text-8xl font-serif font-bold text-slate-900/5 dark:text-white/5 absolute -top-10 transition-colors duration-500 group-hover:text-brand-500/10 select-none z-0">
-                        {item.year}
-                      </span>
+                      {/* A watermark, not text: drawn by CSS so readers and contrast checks skip it */}
+                      <span aria-hidden="true" data-year={item.year} className="text-6xl md:text-8xl font-serif font-bold text-slate-900/5 dark:text-white/5 absolute -top-10 transition-colors duration-500 group-hover:text-brand-500/10 select-none z-0 before:content-[attr(data-year)]" />
                       <h3 className="relative z-10 text-3xl font-serif text-slate-900 dark:text-white mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{item.title}</h3>
                    </div>
                    <div className={`relative z-10 bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 p-6 rounded-2xl shadow-xl hover:border-brand-500/30 transition-all duration-300 ${idx % 2 === 0 ? 'md:rounded-tr-none' : 'md:rounded-tl-none'}`}>
-                      <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
+                      <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
                         {item.desc}
                       </p>
                    </div>
@@ -146,7 +145,7 @@ export const HistoryPage: React.FC = () => {
                             <span className="font-serif font-bold text-xl">{founder.charAt(0)}</span>
                         </div>
                         <div className="text-left">
-                             <div className="text-xs text-amber-700/70 dark:text-amber-500/60 uppercase tracking-widest font-mono mb-0.5">Sócio Fundador</div>
+                             <div className="text-xs text-amber-800 dark:text-amber-400/80 uppercase tracking-widest font-mono mb-0.5">Sócio Fundador</div>
                              <h3 className="text-slate-800 dark:text-slate-200 font-serif font-medium leading-tight group-hover:text-slate-900 dark:group-hover:text-white transition-colors">{founder}</h3>
                         </div>
                     </div>
@@ -155,7 +154,7 @@ export const HistoryPage: React.FC = () => {
            </div>
            
            <div className="mt-16 flex justify-center">
-              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-slate-500 dark:text-slate-400 text-sm">
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-slate-600 dark:text-slate-400 text-sm">
                  <Scroll size={16} className="text-amber-500"/>
                  <span>{settings.foundersNote}</span>
               </div>

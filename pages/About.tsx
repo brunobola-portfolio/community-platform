@@ -102,28 +102,28 @@ const LocationCommand: React.FC = () => {
           <div>
             <div className="flex items-center gap-3 mb-10">
                <div className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_10px_#df3d32]"></div>
-               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.4em]">{[settings.locality, settings.region].filter(Boolean).join(" · ") || settings.siteName}</span>
+               <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.4em]">{[settings.locality, settings.region].filter(Boolean).join(" · ") || settings.siteName}</span>
             </div>
 
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-slate-900 dark:text-white mb-10 leading-[1.05] tracking-tight">A Nossa <br/><span className="text-brand-600 dark:text-brand-400 italic">Casa</span></h2>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-slate-900 dark:text-white mb-10 leading-[1.05] tracking-tight">A Nossa <br/><span className="text-brand-700 dark:text-brand-400 italic">Casa</span></h2>
 
             <div className="space-y-8 mb-14">
               <div className="flex gap-6 group/item">
-                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/[0.03] border border-slate-900/10 text-brand-600 dark:bg-white/[0.03] dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
+                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/[0.03] border border-slate-900/10 text-brand-700 dark:bg-white/[0.03] dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
                   <MapPin size={26} />
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1 font-bold">Morada</span>
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-widest block mb-1 font-bold">Morada</span>
                   <p className="text-slate-900 dark:text-white text-lg font-medium leading-tight">{ADDRESS}</p>
                 </div>
               </div>
 
               <div className="flex gap-6 group/item">
-                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/[0.03] border border-slate-900/10 text-brand-600 dark:bg-white/[0.03] dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
+                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/[0.03] border border-slate-900/10 text-brand-700 dark:bg-white/[0.03] dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
                   <Clock size={26} />
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-1 font-bold">Horário</span>
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-widest block mb-1 font-bold">Horário</span>
                   <p className="text-emerald-400 text-sm font-medium flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></span> {settings.openingHours}
                   </p>
@@ -136,14 +136,14 @@ const LocationCommand: React.FC = () => {
                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent"></div>
                <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-2">
-                    <Sparkles size={14} className="text-brand-600 dark:text-brand-400" />
+                    <Sparkles size={14} className="text-brand-700 dark:text-brand-400" />
                     <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-widest">Como Chegar · Assistente</span>
                   </div>
                   {aiResponse && (
                     <button
                       onClick={handleSpeak}
                       aria-label="Ouvir resposta"
-                      className={cn("p-2 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-brand-600 dark:text-brand-400 transition-all", isSpeaking && "animate-pulse text-slate-900 dark:text-white bg-brand-500/20")}
+                      className={cn("p-2 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-brand-700 dark:text-brand-400 transition-all", isSpeaking && "animate-pulse text-slate-900 dark:text-white bg-brand-500/20")}
                     >
                       <Volume2 size={16} />
                     </button>
@@ -163,7 +163,7 @@ const LocationCommand: React.FC = () => {
                     onClick={askLocalAI}
                     disabled={isSearching}
                     aria-label="Pesquisar"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-brand-600 hover:text-slate-900 dark:text-brand-400 dark:hover:text-white transition-all disabled:opacity-50"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-brand-700 hover:text-slate-900 dark:text-brand-400 dark:hover:text-white transition-all disabled:opacity-50"
                   >
                     {isSearching ? <Loader2 className="animate-spin" size={18}/> : <Search size={18}/>}
                   </button>
@@ -175,7 +175,7 @@ const LocationCommand: React.FC = () => {
                       <p className="mt-1 text-amber-700/70 dark:text-amber-300/70">Podes sempre usar o botão Obter Direções ao lado.</p>
                    </div>
                  ) : (
-                   <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed animate-fade-in-up italic mt-2">
+                   <div className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed animate-fade-in-up italic mt-2">
                       {aiResponse}
                    </div>
                  )
@@ -186,7 +186,7 @@ const LocationCommand: React.FC = () => {
           <div className="mt-14 pt-8 border-t border-slate-900/5 dark:border-white/5 flex items-center justify-between">
              <button
                 onClick={() => { navigator.clipboard.writeText(`${LOCATION.lat}, ${LOCATION.lon}`); setCopied(true); setTimeout(()=>setCopied(false), 2000); }}
-                className="text-[10px] font-mono text-slate-500 hover:text-brand-600 dark:hover:text-brand-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group/coords"
+                className="text-[10px] font-mono text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group/coords"
              >
                 {copied ? <CheckCircle2 size={12} className="text-green-500"/> : <LocateFixed size={12} className="group-hover/coords:scale-125 transition-transform"/>}
                 {LOCATION.lat}, {LOCATION.lon}
@@ -230,7 +230,7 @@ const LocationCommand: React.FC = () => {
                 href={settings.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${settings.latitude},${settings.longitude}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group/btn flex items-center gap-5 bg-brand-600 hover:bg-brand-500 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgba(223,61,50,0.2)] transition-all hover:scale-105 active:scale-95"
+                className="group/btn flex items-center gap-5 bg-brand-700 hover:bg-brand-800 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgba(223,61,50,0.2)] transition-all hover:scale-105 active:scale-95"
               >
                 <Navigation size={26} className="group-hover/btn:rotate-45 transition-transform duration-500" />
                 <span className="text-lg tracking-widest uppercase">Obter Direções</span>
@@ -295,28 +295,28 @@ const ContactForm: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div>
            <Badge className="mb-8 border-brand-500/20">Canais de Atendimento</Badge>
-           <h2 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mb-10 leading-[1] tracking-tighter">Vamos criar o <span className="text-brand-600 dark:text-brand-400 italic">próximo</span> capítulo?</h2>
-           <p className="text-slate-500 dark:text-slate-400 text-xl mb-14 font-light leading-relaxed max-w-md">
+           <h2 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mb-10 leading-[1] tracking-tighter">Vamos criar o <span className="text-brand-700 dark:text-brand-400 italic">próximo</span> capítulo?</h2>
+           <p className="text-slate-600 dark:text-slate-400 text-xl mb-14 font-light leading-relaxed max-w-md">
              Seja para uma proposta de parceria, inscrição como sócio ou reserva de espaço, a nossa equipa está disponível para o ouvir.
            </p>
 
            <div className="space-y-6">
              <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-900/[0.02] dark:bg-white/[0.02] border border-slate-900/5 dark:border-white/5 hover:bg-slate-900/[0.05] dark:hover:bg-white/[0.05] hover:border-brand-500/30 transition-all group/info">
-               <div className="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-600 dark:text-brand-400 border border-brand-500/20 transition-all group-hover/info:bg-brand-500 group-hover/info:text-white">
+               <div className="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-700 dark:text-brand-400 border border-brand-500/20 transition-all group-hover/info:bg-brand-500 group-hover/info:text-white">
                  <Mail size={26}/>
                </div>
                <div>
-                  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Email Institucional</div>
+                  <div className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1 font-bold">Email Institucional</div>
                   <div className="text-slate-900 dark:text-white text-lg font-medium">{settings.contactEmail}</div>
                </div>
              </div>
              {settings.phone && (
              <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-900/[0.02] dark:bg-white/[0.02] border border-slate-900/5 dark:border-white/5 hover:bg-slate-900/[0.05] dark:hover:bg-white/[0.05] hover:border-brand-500/30 transition-all group/info">
-               <div className="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-600 dark:text-brand-400 border border-brand-500/20 transition-all group-hover/info:bg-brand-500 group-hover/info:text-white">
+               <div className="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-700 dark:text-brand-400 border border-brand-500/20 transition-all group-hover/info:bg-brand-500 group-hover/info:text-white">
                  <Phone size={26}/>
                </div>
                <div>
-                  <div className="text-[10px] text-slate-500 uppercase tracking-widest mb-1 font-bold">Linha Direta</div>
+                  <div className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1 font-bold">Linha Direta</div>
                   <div className="text-slate-900 dark:text-white text-lg font-medium">{settings.phone}</div>
                </div>
              </div>
@@ -331,21 +331,21 @@ const ContactForm: React.FC = () => {
                 <CheckCircle2 size={48}/>
               </div>
               <h3 className="text-4xl font-serif text-slate-900 dark:text-white mb-4 tracking-tight">Comunicação Efetuada</h3>
-              <p className="text-slate-500 dark:text-slate-400 text-xl font-light">A sua mensagem foi encriptada e enviada.</p>
+              <p className="text-slate-600 dark:text-slate-400 text-xl font-light">A sua mensagem foi encriptada e enviada.</p>
               <Button variant="outline" className="mt-10 rounded-2xl px-12 h-14" onClick={() => setSuccess(false)}>Nova Mensagem</Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-8 bg-slate-900/5 dark:bg-black/40 p-10 md:p-12 rounded-[3rem] border border-slate-900/10 dark:border-white/10 backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.6)]">
               <div className="space-y-2.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-2">Sua Identidade</label>
+                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Sua Identidade</label>
                 <input required aria-label="Sua Identidade" value={formState.name} onChange={e=>setFormState({...formState, name: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white outline-none focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-700 shadow-inner" placeholder="Como devemos tratá-lo?"/>
               </div>
               <div className="space-y-2.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-2">Email de Contacto</label>
+                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Email de Contacto</label>
                 <input required type="email" aria-label="Email de Contacto" value={formState.email} onChange={e=>setFormState({...formState, email: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white outline-none focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-700 shadow-inner" placeholder="exemplo@servidor.com"/>
               </div>
               <div className="space-y-2.5">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-2">Mensagem</label>
+                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Mensagem</label>
                 <textarea required rows={4} aria-label="Mensagem" value={formState.message} onChange={e=>setFormState({...formState, message: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white outline-none focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-slate-700 shadow-inner" placeholder="O que tem em mente?"/>
               </div>
               {error && (
@@ -353,7 +353,7 @@ const ContactForm: React.FC = () => {
                   {error}
                 </div>
               )}
-              <Button type="submit" className="w-full py-8 text-xl rounded-2xl h-16 shadow-[0_20px_40px_rgba(223,61,50,0.3)] bg-brand-600 hover:bg-brand-500" disabled={isSubmitting}>
+              <Button type="submit" className="w-full py-8 text-xl rounded-2xl h-16 shadow-[0_20px_40px_rgba(223,61,50,0.3)] bg-brand-700 hover:bg-brand-800" disabled={isSubmitting}>
                 {isSubmitting ? <RotateCw className="animate-spin" /> : <><Send size={22} className="mr-3" /> Enviar Mensagem</>}
               </Button>
             </form>
@@ -379,7 +379,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
             A apoiar a <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-300 via-brand-500 dark:via-brand-300 to-accent-gold dark:to-amber-300 font-bold">Comunidade</span>
           </h1>
-          <p className="text-2xl md:text-3xl text-slate-500 dark:text-slate-400 font-light leading-relaxed mb-16 max-w-4xl mx-auto">
+          <p className="text-2xl md:text-3xl text-slate-600 dark:text-slate-400 font-light leading-relaxed mb-16 max-w-4xl mx-auto">
             {settings.aboutMission}
           </p>
           <div className="flex flex-wrap justify-center gap-6">
@@ -395,11 +395,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
         {/* Location Command Section */}
         <div className="space-y-16">
            <div className="max-w-3xl">
-              <div className="text-brand-600 dark:text-brand-400 font-bold uppercase tracking-[0.4em] text-[10px] mb-4 flex items-center gap-3">
+              <div className="text-brand-700 dark:text-brand-400 font-bold uppercase tracking-[0.4em] text-[10px] mb-4 flex items-center gap-3">
                  <div className="w-12 h-px bg-brand-500"></div> Onde Estamos
               </div>
               <h2 className="text-4xl md:text-6xl font-serif text-slate-900 dark:text-white mb-8 tracking-tight leading-none">A Nossa Sede</h2>
-              <p className="text-slate-500 dark:text-slate-400 text-xl font-light leading-relaxed">{settings.venueDescription}</p>
+              <p className="text-slate-600 dark:text-slate-400 text-xl font-light leading-relaxed">{settings.venueDescription}</p>
            </div>
            <LocationCommand />
         </div>
@@ -412,11 +412,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
               return (
                 <div key={i} className="bg-white dark:bg-dark-surface border border-slate-900/5 dark:border-white/5 p-14 rounded-[3.5rem] hover:border-brand-500/30 transition-all duration-700 group text-center relative overflow-hidden flex flex-col items-center">
                   <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-brand-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="w-20 h-20 bg-brand-500/5 rounded-2xl flex items-center justify-center text-brand-600 dark:text-brand-400 mb-10 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white transition-all shadow-xl border border-slate-900/5 dark:border-white/5">
+                  <div className="w-20 h-20 bg-brand-500/5 rounded-2xl flex items-center justify-center text-brand-700 dark:text-brand-400 mb-10 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white transition-all shadow-xl border border-slate-900/5 dark:border-white/5">
                     <Icon size={36} />
                   </div>
                   <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-6 tracking-tight leading-none">{item.title}</h3>
-                  <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-lg font-light">{item.description}</p>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-lg font-light">{item.description}</p>
                 </div>
               );
             })}

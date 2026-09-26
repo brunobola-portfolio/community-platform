@@ -13,7 +13,7 @@ interface AlbumPhotoGridProps {
     onRemoveMany: (ids: string[]) => void;
 }
 
-const ICON_BUTTON = 'p-1.5 rounded-lg bg-black/60 text-white hover:bg-brand-600 disabled:opacity-30 disabled:hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const ICON_BUTTON = 'p-1.5 rounded-lg bg-black/60 text-white hover:bg-brand-800 disabled:opacity-30 disabled:hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
 
 /**
  * Photo grid of one album: inline captions, arrow reordering, cover pick,
@@ -30,7 +30,7 @@ export const AlbumPhotoGrid: React.FC<AlbumPhotoGridProps> = ({ images, coverIma
 
     if (images.length === 0) {
         return (
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-10 text-center text-slate-500">
+            <div className="rounded-2xl border border-white/10 bg-black/20 p-10 text-center text-slate-400">
                 <ImageOff className="mx-auto mb-3" size={28} />
                 Este álbum ainda não tem fotos. Carrega as primeiras acima.
             </div>

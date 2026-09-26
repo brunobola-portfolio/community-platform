@@ -33,15 +33,15 @@ import { ToastProvider } from '../context/ToastContext';
 const ServiceScreen: React.FC<{ icon: React.ReactNode; title: string; text: string; onRetry?: () => void }> = ({ icon, title, text, onRetry }) => (
   <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex items-center justify-center p-6">
     <div className="flex flex-col items-center gap-5 text-center max-w-md">
-      <div className="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-600 dark:text-brand-400">
+      <div className="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-700 dark:text-brand-400">
         {icon}
       </div>
       <h1 className="text-3xl font-serif text-slate-900 dark:text-white">{title}</h1>
-      <p className="text-slate-500 dark:text-slate-400">{text}</p>
+      <p className="text-slate-600 dark:text-slate-400">{text}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="px-6 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"
+          className="px-6 py-3 bg-brand-700 hover:bg-brand-800 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"
         >
           Tentar novamente
         </button>
@@ -124,7 +124,7 @@ export const MainLayout: React.FC = () => {
       <div className="font-sans text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-dark-bg min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-brand-600 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-brand-700 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none"
         >
           Saltar para o conteúdo
         </a>

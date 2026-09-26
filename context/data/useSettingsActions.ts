@@ -26,6 +26,7 @@ export function useSettingsActions({ logActivity }: ActionDeps) {
           foundedYear: s.foundedYear,
           heroTagline: s.heroTagline,
           heroSubtitle: s.heroSubtitle,
+          heroImageUrl: s.heroImageUrl,
           historyIntro: s.historyIntro,
           historyQuote: s.historyQuote,
           venueName: s.venueName,

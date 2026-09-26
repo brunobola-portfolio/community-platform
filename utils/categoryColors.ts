@@ -32,9 +32,19 @@ export const CATEGORY_COLORS: CategoryColor[] = [
 
 export const CATEGORY_COLOR_CLASSES = CATEGORY_COLORS.map((c) => c.value);
 
+/** White text on a -500 swatch fails WCAG AA for most hues; labels use the -700 shade. */
+const toLabelShade = (value: string) => value.replace(/-500$/, '-700');
+
+export const CATEGORY_LABEL_CLASSES = CATEGORY_COLOR_CLASSES.map(toLabelShade);
+
 const DEFAULT_CATEGORY_COLOR = 'bg-brand-500';
 
 /** Keeps legacy or hand-edited values from rendering as an invisible dot. */
 export function categoryColorClass(value?: string | null): string {
   return value && CATEGORY_COLOR_CLASSES.includes(value) ? value : DEFAULT_CATEGORY_COLOR;
+}
+
+/** Background for a category label with white text, same hue as its dot. */
+export function categoryLabelClass(value?: string | null): string {
+  return toLabelShade(categoryColorClass(value));
 }

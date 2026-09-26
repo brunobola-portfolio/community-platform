@@ -23,7 +23,7 @@ const ACTION_TONES = {
   brand:
     'bg-brand-600/10 border-brand-600/20 text-brand-700 hover:text-brand-800 hover:bg-brand-600/20 dark:bg-brand-500/10 dark:border-brand-500/20 dark:text-brand-400 dark:hover:text-brand-200 dark:hover:bg-brand-500/20',
   admin:
-    'bg-amber-500/10 border-amber-500/30 text-amber-600 hover:text-amber-700 hover:bg-amber-500/20 dark:text-amber-500 dark:hover:text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.1)]',
+    'bg-amber-500/10 border-amber-500/30 text-amber-800 hover:text-amber-900 hover:bg-amber-500/20 dark:text-amber-400 dark:hover:text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.1)]',
 } as const;
 
 interface NavActionProps {
@@ -157,7 +157,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           >
             <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
               {useBuiltinLogo || imgError ? (
-                <LogoMark className="w-full h-full relative z-10 transition-colors text-brand-600 dark:text-brand-500" />
+                <LogoMark className="w-full h-full relative z-10 transition-colors text-brand-700 dark:text-brand-500" />
               ) : (
                 <img
                   src={settings.logoUrl}
@@ -232,7 +232,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
                 key={link.id}
                 onClick={() => { onNavigate(link.id); setMobileOpen(false); }}
                 aria-current={currentPage === link.id ? "page" : undefined}
-                className="text-4xl font-serif font-medium text-slate-900/90 dark:text-white/90 hover:text-brand-600 dark:hover:text-brand-400 transition-all rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="text-4xl font-serif font-medium text-slate-900/90 dark:text-white/90 hover:text-brand-700 dark:hover:text-brand-400 transition-all rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 {link.name}
               </button>
@@ -240,7 +240,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           </div>
           <div className="flex flex-col gap-4 mt-12 w-full max-w-xs mx-auto">
             <button onClick={() => { onOpenAgenda(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-slate-900/5 border border-slate-900/10 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><CalendarDays size={20} /> Agenda Cultural</button>
-            <button onClick={() => { onMemberLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-brand-600 text-white font-medium flex items-center justify-center gap-3 hover:bg-brand-500 active:scale-[0.97] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgba(223,61,50,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"><UserCircle size={20} /> Área de Sócio</button>
+            <button onClick={() => { onMemberLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-brand-700 text-white font-medium flex items-center justify-center gap-3 hover:bg-brand-800 active:scale-[0.97] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgba(223,61,50,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"><UserCircle size={20} /> Área de Sócio</button>
             {onAdminLogin && <button onClick={() => { onAdminLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl border border-amber-500/30 text-amber-500 font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={20} /> Acesso Reservado</button>}
           </div>
         </div>

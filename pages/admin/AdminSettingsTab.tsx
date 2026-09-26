@@ -98,7 +98,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                 <h3 className="text-xl font-serif text-white mb-2 flex items-center gap-2">
                     <CreditCard className="text-emerald-400" /> Quotas & Pagamentos
                 </h3>
-                <p className="text-slate-500 text-sm mb-6">Dados mostrados aos sócios na Área de Sócio. Campos vazios ficam ocultos; sem nenhum configurado, o sócio vê a indicação para contactar a direção.</p>
+                <p className="text-slate-400 text-sm mb-6">Dados mostrados aos sócios na Área de Sócio. Campos vazios ficam ocultos; sem nenhum configurado, o sócio vê a indicação para contactar a direção.</p>
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Field label="Valor da Quota"><input value={settingsForm.quotaAmount ?? ''} onChange={e => update('quotaAmount', e.target.value)} className={STD_INPUT_CLASS} placeholder="12€ / ano" /></Field>
@@ -156,7 +156,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                                                 type="button"
                                                 aria-label="Remover pilar"
                                                 onClick={() => update('aboutPillars', (settingsForm.aboutPillars ?? []).filter((_, idx) => idx !== i))}
-                                                className="p-2.5 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-brand-500"
+                                                className="p-2.5 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-brand-500"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -199,7 +199,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
 
             {/* Save Button */}
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-white/10 bg-dark-bg/95 p-4 backdrop-blur">
-                <span className="text-xs text-slate-500">As alterações só ficam no portal depois de guardar.</span>
+                <span className="text-xs text-slate-400">As alterações só ficam no portal depois de guardar.</span>
                 <Button onClick={onSave} disabled={isSaving} className="min-w-[170px]">
                     {isSaving ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> Guardar alterações</>}
                 </Button>

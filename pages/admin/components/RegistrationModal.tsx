@@ -99,7 +99,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ registrati
                 <div>
                     <h4 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-brand-400">Dados preenchidos</h4>
                     {entries.length === 0 ? (
-                        <p className="rounded-xl bg-black/20 p-3 text-sm text-slate-500">
+                        <p className="rounded-xl bg-black/20 p-3 text-sm text-slate-400">
                             Este evento não pedia dados adicionais.
                         </p>
                     ) : (

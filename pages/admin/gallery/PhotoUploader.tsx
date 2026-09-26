@@ -99,7 +99,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ albumId, onDone })
             >
                 <UploadCloud className="mx-auto mb-3 text-brand-400" size={32} />
                 <p className="text-white font-medium">Arrasta fotos para aqui ou clica para escolher</p>
-                <p className="text-slate-500 text-xs mt-1">JPG, PNG ou WebP · até 10 MB cada · várias de uma vez</p>
+                <p className="text-slate-400 text-xs mt-1">JPG, PNG ou WebP · até 10 MB cada · várias de uma vez</p>
                 <input
                     ref={inputRef}
                     type="file"
@@ -127,7 +127,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ albumId, onDone })
 
             <div className="flex gap-2">
                 <div className="relative flex-1">
-                    <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                         value={url}
                         onChange={e => setUrl(e.target.value)}

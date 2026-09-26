@@ -39,7 +39,7 @@ export const MilestonesTab: React.FC<EntityHandlers & { milestones: Milestone[] 
                 className: 'max-w-md',
                 cell: m => <span className="line-clamp-2 text-slate-400">{m.description}</span>,
             },
-            { header: 'Ordem', cell: m => <span className="font-mono text-xs text-slate-500">{m.order ?? '—'}</span> },
+            { header: 'Ordem', cell: m => <span className="font-mono text-xs text-slate-400">{m.order ?? '—'}</span> },
         ]}
         onEdit={m => h.openEditModal('milestone', m as unknown as AdminRecord)}
         onDelete={m => h.handleDeleteRequest('milestone', m.id, m.title)}

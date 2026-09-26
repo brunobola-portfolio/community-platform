@@ -231,7 +231,7 @@ export const SetupPage: React.FC = () => {
                                         <button
                                             type="button"
                                             onClick={() => setShowPw((s) => !s)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-500 hover:bg-white/5 hover:text-slate-300"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 hover:bg-white/5 hover:text-slate-300"
                                             aria-label={showPw ? 'Ocultar password' : 'Mostrar password'}
                                             tabIndex={-1}
                                         >
@@ -336,7 +336,7 @@ const Field: React.FC<{
             {label}
         </label>
         {children}
-        {hint && <p className="pl-0.5 text-[11px] text-slate-500">{hint}</p>}
+        {hint && <p className="pl-0.5 text-[11px] text-slate-400">{hint}</p>}
     </div>
 );
 
@@ -354,7 +354,7 @@ const SuccessState: React.FC<{ email: string }> = ({ email }) => (
                 A conta <span className="font-mono text-brand-300">{email}</span> tem agora permissões totais.
             </p>
         </div>
-        <div className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-widest text-slate-500">
+        <div className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-widest text-slate-400">
             <Loader2 className="h-3 w-3 animate-spin" />
             A redirecionar para o painel…
         </div>

@@ -35,13 +35,13 @@ export class PageErrorBoundary extends Component<Props, State> {
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
             {this.props.fallbackMessage || 'Algo correu mal'}
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 max-w-md mb-6">
+          <p className="text-slate-600 dark:text-slate-400 max-w-md mb-6">
             Ocorreu um erro inesperado. Tenta recarregar a página.
           </p>
           <div className="flex gap-3">
             <button
               onClick={() => this.setState({ hasError: false, error: null })}
-              className="px-6 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="px-6 py-2.5 bg-brand-700 hover:bg-brand-800 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               Tentar Novamente
             </button>

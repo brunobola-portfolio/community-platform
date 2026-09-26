@@ -28,8 +28,8 @@ export const Button: React.FC<ButtonProps> = ({
   const variants = {
     default: "bg-brand-700 text-white hover:bg-brand-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgba(223,61,50,0.3)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_8px_30px_rgba(223,61,50,0.4)] border border-brand-500/50",
     outline: "border border-slate-300 dark:border-slate-700 bg-transparent hover:bg-slate-900/5 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:border-brand-500/50",
-    ghost: "hover:bg-slate-900/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white text-slate-500 dark:text-slate-400",
-    link: "text-brand-600 dark:text-brand-400 underline-offset-4 hover:underline",
+    ghost: "hover:bg-slate-900/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white text-slate-600 dark:text-slate-400",
+    link: "text-brand-700 dark:text-brand-400 underline-offset-4 hover:underline",
     glass: "bg-slate-900/[0.03] dark:bg-white/[0.03] backdrop-blur-xl border border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white hover:bg-slate-900/[0.08] dark:hover:bg-white/[0.08] hover:border-slate-900/20 dark:hover:border-white/20 shadow-2xl",
   };
   const sizes = {
@@ -88,10 +88,13 @@ interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'outline';
   color?: string;
 }
+const OWN_TEXT_COLOUR = /(?:^|\s)text-(?:white|black|slate-\d+|brand-\d+|amber-\d+|green-\d+)(?:\s|$)/;
+
 export const Badge: React.FC<BadgeProps> = ({ className, variant = 'default', color, ...props }) => {
+  const ownsText = OWN_TEXT_COLOUR.test(className ?? '');
   const variants = {
-    default: "border-brand-500/20 bg-brand-500/10 text-brand-700 dark:text-brand-400",
-    outline: "border-slate-900/20 dark:border-white/20 bg-transparent text-slate-600 dark:text-slate-300 hover:border-brand-500/30 hover:text-brand-600 dark:hover:text-brand-400",
+    default: cn("border-brand-500/20 bg-brand-500/10", !ownsText && "text-brand-700 dark:text-brand-400"),
+    outline: "border-slate-900/20 dark:border-white/20 bg-transparent text-slate-600 dark:text-slate-300 hover:border-brand-500/30 hover:text-brand-700 dark:hover:text-brand-400",
   };
   return (
     <div

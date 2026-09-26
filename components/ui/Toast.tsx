@@ -18,7 +18,7 @@ const icons: Record<ToastType, React.ReactNode> = {
   success: <CheckCircle2 size={20} className="text-green-600 dark:text-green-400" />,
   error: <AlertCircle size={20} className="text-red-600 dark:text-red-400" />,
   warning: <AlertTriangle size={20} className="text-amber-600 dark:text-amber-400" />,
-  info: <Info size={20} className="text-brand-600 dark:text-brand-400" />,
+  info: <Info size={20} className="text-brand-700 dark:text-brand-400" />,
 };
 
 const borders: Record<ToastType, string> = {
@@ -43,7 +43,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
       <span className="text-sm text-slate-900 dark:text-white flex-1">{toast.message}</span>
       <button
         onClick={() => onClose(toast.id)}
-        className="p-1 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+        className="p-1 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
         aria-label="Fechar"
       >
         <X size={14} />

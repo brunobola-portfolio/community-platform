@@ -21,7 +21,7 @@ interface SponsorsTabProps extends EntityHandlers {
 const Logo: React.FC<{ sponsor: Sponsor }> = ({ sponsor }) =>
     sponsor.logoUrl
         ? <img src={sponsor.logoUrl} alt="" className="h-9 w-9 shrink-0 rounded-md bg-white object-contain p-0.5" />
-        : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white/5 text-slate-500"><Building2 size={16} /></span>;
+        : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white/5 text-slate-400"><Building2 size={16} /></span>;
 
 const Status: React.FC<{ active?: boolean }> = ({ active }) =>
     active !== false

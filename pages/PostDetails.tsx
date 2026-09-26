@@ -81,7 +81,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
       return (
          <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-slate-50 px-6 text-center dark:bg-dark-bg">
             <h1 className="font-serif text-3xl text-slate-900 dark:text-white">Notícia não encontrada</h1>
-            <p className="max-w-md text-slate-500 dark:text-slate-400">A notícia pode ter sido removida ou o endereço está incorreto.</p>
+            <p className="max-w-md text-slate-600 dark:text-slate-400">A notícia pode ter sido removida ou o endereço está incorreto.</p>
             <Button onClick={() => navigate('/blog')}><ArrowLeft size={16} /> Voltar às notícias</Button>
          </div>
       );
@@ -107,7 +107,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
             <div className="absolute inset-0 flex flex-col justify-end z-30 px-6 pb-20 md:pb-32">
                <div className="max-w-4xl mx-auto w-full">
                   <div className="flex flex-wrap items-center gap-4 mb-8">
-                     <Badge className="bg-brand-600 text-white border-none shadow-md px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
+                     <Badge className="bg-brand-700 text-white border-none shadow-md px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider">
                         {post.category}
                      </Badge>
                      <div className="flex items-center gap-2 text-slate-300 text-sm font-medium bg-white/5 border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md">
@@ -162,14 +162,14 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
 
                   <article className="prose prose-xl dark:prose-invert prose-headings:font-serif prose-headings:font-bold prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-loose prose-strong:text-slate-900 dark:prose-strong:text-white prose-a:text-brand-600 dark:prose-a:text-brand-400 hover:prose-a:text-brand-700 dark:hover:prose-a:text-brand-300 transition-all prose-img:rounded-3xl prose-blockquote:border-brand-500 prose-blockquote:bg-brand-500/5 prose-blockquote:py-4 prose-blockquote:px-8 prose-blockquote:rounded-2xl prose-blockquote:font-light">
                      {isContentLoading
-                        ? <div className="flex items-center gap-3 text-slate-500 py-12"><Loader2 size={18} className="animate-spin" /> A carregar artigo…</div>
+                        ? <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 py-12"><Loader2 size={18} className="animate-spin" /> A carregar artigo…</div>
                         : <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }} />}
                   </article>
 
                   <div className="mt-20 pt-12 border-t border-slate-900/5 dark:border-white/5">
                      <div className="flex flex-wrap items-center justify-between gap-8">
                         <div className="flex flex-wrap gap-2">
-                           <Badge variant="outline" className="text-slate-500 dark:text-slate-400 border-slate-900/10 dark:border-white/10 px-4 py-1 rounded-full flex items-center gap-2">
+                           <Badge variant="outline" className="text-slate-600 dark:text-slate-400 border-slate-900/10 dark:border-white/10 px-4 py-1 rounded-full flex items-center gap-2">
                               <Tag size={12} className="text-brand-500" /> Tags:
                            </Badge>
                            {(post.tags || [settings.siteName, 'Comunidade']).map((tag: string) => (
@@ -192,7 +192,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                      />
                      <div>
                         <h3 className="text-slate-900 dark:text-white font-serif font-bold text-xl mb-1">Escrito por {post.author || `Equipa ${settings.siteName}`}</h3>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                            Membro ativo da associação dedicado a partilhar as novidades e desenvolvimentos da nossa comunidade.
                         </p>
                      </div>
@@ -231,9 +231,9 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                            />
                         </div>
                         <div className="p-6">
-                           <Badge className="bg-brand-500 text-white border-none shadow-md mb-3 text-[10px]">{p.category}</Badge>
+                           <Badge className="bg-brand-700 text-white border-none shadow-md mb-3 text-[10px]">{p.category}</Badge>
                            <h3 className="text-slate-900 dark:text-white font-bold line-clamp-2 mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{p.title}</h3>
-                           <p className="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">{p.excerpt}</p>
+                           <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{p.excerpt}</p>
                         </div>
                      </div>
                   ))}
@@ -243,7 +243,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
 
          {/* Navigation Bottom */}
          <div className="max-w-4xl mx-auto px-6 mt-12 flex justify-center pb-24">
-            <Button variant="outline" className="rounded-full px-12 py-6 border-slate-900/10 dark:border-white/10 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white" onClick={onBack}>
+            <Button variant="outline" className="rounded-full px-12 py-6 border-slate-900/10 dark:border-white/10 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white" onClick={onBack}>
                <ArrowLeft size={18} className="mr-2" /> Voltar para o Blog
             </Button>
          </div>

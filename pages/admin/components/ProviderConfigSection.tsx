@@ -240,7 +240,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ name, description, icon: Ic
             <Icon size={18} className={selected ? 'text-brand-400' : 'text-slate-400'} />
             <span className={cn('text-sm font-bold', selected ? 'text-white' : 'text-slate-300')}>{name}</span>
         </div>
-        <p className="text-slate-500 text-xs leading-snug">{description}</p>
+        <p className="text-slate-400 text-xs leading-snug">{description}</p>
     </div>
 );
 

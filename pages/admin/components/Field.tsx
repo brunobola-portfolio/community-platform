@@ -26,7 +26,7 @@ export const Field: React.FC<FieldProps> = ({ label, hint, className, children }
                 {required && <span aria-hidden="true" className="ml-1 text-brand-400">*</span>}
             </label>
             {React.cloneElement(children, { id, 'aria-describedby': hintId, 'aria-required': required || undefined })}
-            {hint && <p id={hintId} className="mt-1 text-xs text-slate-500">{hint}</p>}
+            {hint && <p id={hintId} className="mt-1 text-xs text-slate-400">{hint}</p>}
         </div>
     );
 };

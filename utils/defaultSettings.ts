@@ -64,6 +64,7 @@ export const INITIAL_SETTINGS: Settings = {
   foundersNote: getEnvVar("VITE_FOUNDERS_NOTE", "Registados na ata da assembleia geral constituinte"),
   contactEmail: getEnvVar("VITE_CONTACT_EMAIL", "geral@exemplo.pt"),
   logoUrl: '',
+  heroImageUrl: '',
   maintenanceMode: getEnvBool("VITE_MAINTENANCE_MODE", false),
 
   // AI Chatbot Configuration (uses latest Gemini 3.0 with 2.5 fallback)

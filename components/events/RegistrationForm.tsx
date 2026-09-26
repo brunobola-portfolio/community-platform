@@ -60,7 +60,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                     {errors.email && <p id={`${formId}-email-error`} className={ERROR}>{errors.email}</p>}
                 </div>
                 <div>
-                    <label htmlFor={`${formId}-phone`} className={LABEL}>Telemóvel <span className="font-normal normal-case tracking-normal text-slate-500 dark:text-slate-400">(opcional)</span></label>
+                    <label htmlFor={`${formId}-phone`} className={LABEL}>Telemóvel <span className="font-normal normal-case tracking-normal text-slate-600 dark:text-slate-400">(opcional)</span></label>
                     <Input id={`${formId}-phone`} type="tel" inputMode="tel" autoComplete="tel" value={values.phone} onChange={(e) => onChange('phone', e.target.value)} placeholder="9xx xxx xxx" />
                 </div>
             </div>

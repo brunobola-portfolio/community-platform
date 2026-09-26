@@ -49,7 +49,7 @@ export const PartnerDetailsModal: React.FC<PartnerDetailsModalProps> = ({ sponso
           )}
         </div>
 
-        <p className="max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+        <p className="max-w-sm text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           O apoio de {sponsor.name} ajuda a manter as atividades culturais, desportivas e sociais abertas a toda a
           comunidade. A sua empresa também pode fazer a diferença.
         </p>

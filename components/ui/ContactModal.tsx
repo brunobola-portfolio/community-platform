@@ -88,7 +88,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, ini
             </span>
           </div>
           <h3 className="mb-2 font-serif text-2xl text-slate-900 dark:text-white">Mensagem enviada</h3>
-          <p className="max-w-xs text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+          <p className="max-w-xs text-sm leading-relaxed text-slate-600 dark:text-slate-400">
             A direção recebeu o seu pedido e entrará em contacto brevemente.
           </p>
         </div>
@@ -98,7 +98,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, ini
             <X size={40} />
           </div>
           <h3 className="mb-2 font-serif text-2xl text-slate-900 dark:text-white">Não foi possível enviar</h3>
-          <p className="mb-6 max-w-xs text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+          <p className="mb-6 max-w-xs text-sm leading-relaxed text-slate-600 dark:text-slate-400">
             Ocorreu um erro ao enviar a mensagem. Tente novamente dentro de momentos.
           </p>
           <Button onClick={() => setStatus('idle')} variant="outline">Tentar novamente</Button>

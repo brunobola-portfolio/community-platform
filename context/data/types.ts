@@ -341,6 +341,7 @@ export interface SettingsUpdateArgs {
   foundedYear?: string;
   heroTagline?: string;
   heroSubtitle?: string;
+  heroImageUrl?: string;
   historyIntro?: string;
   historyQuote?: string;
   venueName?: string;

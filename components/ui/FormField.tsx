@@ -1,7 +1,7 @@
 import React, { useId } from 'react';
 import { ChevronDown, LucideIcon } from 'lucide-react';
 
-const LABEL_CLASS = 'block text-[11px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5';
+const LABEL_CLASS = 'block text-[11px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 mb-1.5';
 const SHELL_CLASS = 'w-full rounded-2xl border bg-white dark:bg-slate-950/50 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 disabled:opacity-60 disabled:cursor-not-allowed';
 
 interface FormInputProps {
@@ -24,7 +24,7 @@ export const FormInput: React.FC<FormInputProps> = ({
     <div>
       <label htmlFor={id} className={LABEL_CLASS}>
         {label}
-        {required && <span className="text-brand-600 dark:text-brand-400 ml-0.5">*</span>}
+        {required && <span className="text-brand-700 dark:text-brand-400 ml-0.5">*</span>}
       </label>
       <div className="relative">
         {Icon && (
@@ -67,7 +67,7 @@ export const FormTextarea: React.FC<FormTextareaProps> = ({
     <div>
       <label htmlFor={id} className={LABEL_CLASS}>
         {label}
-        {required && <span className="text-brand-600 dark:text-brand-400 ml-0.5">*</span>}
+        {required && <span className="text-brand-700 dark:text-brand-400 ml-0.5">*</span>}
       </label>
       <textarea
         id={id}

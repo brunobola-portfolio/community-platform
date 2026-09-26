@@ -68,8 +68,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                         </button>
                     )}
                     <div className="flex bg-slate-900 rounded-lg p-0.5 border border-white/10">
-                        <button type="button" aria-pressed={viewMode === 'visual'} onClick={() => setViewMode('visual')} className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", viewMode === 'visual' ? "bg-brand-600 text-white shadow-sm" : "text-slate-400 hover:text-white")}>Texto</button>
-                        <button type="button" aria-pressed={viewMode === 'html'} onClick={() => setViewMode('html')} className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", viewMode === 'html' ? "bg-brand-600 text-white shadow-sm" : "text-slate-400 hover:text-white")}>HTML</button>
+                        <button type="button" aria-pressed={viewMode === 'visual'} onClick={() => setViewMode('visual')} className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", viewMode === 'visual' ? "bg-brand-700 text-white shadow-sm" : "text-slate-400 hover:text-white")}>Texto</button>
+                        <button type="button" aria-pressed={viewMode === 'html'} onClick={() => setViewMode('html')} className={cn("px-3 py-1.5 rounded-md text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", viewMode === 'html' ? "bg-brand-700 text-white shadow-sm" : "text-slate-400 hover:text-white")}>HTML</button>
                     </div>
                 </div>
             </div>

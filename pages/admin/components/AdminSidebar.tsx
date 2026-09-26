@@ -25,7 +25,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ id, icon: Icon, label, active
         className={cn(
             "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 mb-1 border",
             activeTab === id
-                ? "bg-brand-600 text-white border-brand-500 shadow-md"
+                ? "bg-brand-700 text-white border-brand-500 shadow-md"
                 : "border-transparent text-slate-400 hover:text-white hover:bg-white/5"
         )}
     >
@@ -33,7 +33,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ id, icon: Icon, label, active
             size={18}
             className={cn(
                 "transition-colors shrink-0",
-                activeTab === id ? "text-white" : "text-slate-500 group-hover:text-brand-400"
+                activeTab === id ? "text-white" : "text-slate-400 group-hover:text-brand-400"
             )}
         />
         <span className="font-medium text-sm flex-1">{label}</span>
@@ -58,7 +58,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
     )}>
         <div className="flex items-center justify-between p-6 pb-4 md:pb-6">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-[0_0_15px_rgba(223,61,50,0.3)]">
+                <div className="w-10 h-10 bg-brand-700 rounded-xl flex items-center justify-center text-white shadow-[0_0_15px_rgba(223,61,50,0.3)]">
                     <Shield size={24} />
                 </div>
                 <div>
@@ -77,14 +77,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
 
         <nav aria-label="Menu de administração" className="flex-1 px-4 space-y-6 overflow-y-auto py-4 custom-scrollbar">
             <div>
-                <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Geral</h3>
+                <h3 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Geral</h3>
                 <div className="space-y-1">
                     <SidebarItem id="dashboard" icon={LayoutDashboard} label="Início" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="homepage" icon={PenTool} label="Página inicial" activeTab={activeTab} onSelect={onTabSelect} />
                 </div>
             </div>
             <div>
-                <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Conteúdos</h3>
+                <h3 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Conteúdos</h3>
                 <div className="space-y-1">
                     <SidebarItem id="events" icon={Calendar} label="Eventos" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="registrations" icon={ClipboardCheck} label="Inscrições" activeTab={activeTab} onSelect={onTabSelect} badge={pendingRegistrations} />
@@ -98,7 +98,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
                 </div>
             </div>
             <div>
-                <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Sistema</h3>
+                <h3 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Sistema</h3>
                 <div className="space-y-1">
                     <SidebarItem id="documents" icon={FileBox} label="Documentos" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="notifications" icon={Bell} label="Avisos aos sócios" activeTab={activeTab} onSelect={onTabSelect} />

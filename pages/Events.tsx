@@ -174,9 +174,9 @@ export const EventsPage: React.FC = () => {
 
                 {/* Header */}
                 <div className="text-center mb-12 animate-fade-in-up">
-                    <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Agenda Cultural</span>
+                    <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Agenda Cultural</span>
                     <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Eventos & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-accent-gold dark:to-amber-300">Atividades</span></h1>
-                    <p className="text-xl text-slate-500 dark:text-slate-400 font-light max-w-2xl mx-auto">
+                    <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto">
                         {settings.locality ? `O ponto de encontro da comunidade de ${settings.locality}.` : "O ponto de encontro da comunidade."}
                     </p>
                 </div>
@@ -188,7 +188,7 @@ export const EventsPage: React.FC = () => {
                     <div className="relative w-full max-w-3xl group">
                         <div className="absolute inset-x-0 -bottom-2 h-6 bg-brand-500/20 blur-2xl opacity-0 group-focus-within:opacity-60 transition-opacity duration-500 pointer-events-none"></div>
                         <div className="relative flex items-center bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden focus-within:border-brand-500/40 focus-within:ring-4 focus-within:ring-brand-500/10 transition-all duration-300">
-                            <div className="pl-5 text-slate-500">
+                            <div className="pl-5 text-slate-600 dark:text-slate-400">
                                 <Search size={18} className="group-focus-within:text-brand-600 dark:group-focus-within:text-brand-400 transition-colors duration-300" />
                             </div>
                             <input
@@ -203,7 +203,7 @@ export const EventsPage: React.FC = () => {
                                 <button
                                     onClick={() => { setInputValue(''); setSearchTerm(''); }}
                                     aria-label="Limpar pesquisa"
-                                    className="pr-5 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                                    className="pr-5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                                 >
                                     <X size={15} />
                                 </button>
@@ -230,14 +230,14 @@ export const EventsPage: React.FC = () => {
                                     className={cn(
                                         "flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                                         activeTab === tab.id
-                                            ? "bg-brand-600 text-white shadow-md shadow-brand-600/30"
-                                            : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                                            ? "bg-brand-700 text-white shadow-md shadow-brand-600/30"
+                                            : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                                     )}
                                 >
                                     {tab.label}
                                     <span className={cn(
                                         "tabular-nums text-[10px] px-1.5 py-0.5 rounded-full leading-none",
-                                        activeTab === tab.id ? "bg-white/25 text-white" : "bg-slate-900/5 dark:bg-white/5 text-slate-500"
+                                        activeTab === tab.id ? "bg-white/25 text-white" : "bg-slate-900/5 dark:bg-white/5 text-slate-600 dark:text-slate-400"
                                     )}>
                                         {tab.count}
                                     </span>
@@ -258,8 +258,8 @@ export const EventsPage: React.FC = () => {
                                 className={cn(
                                     "flex-none px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                                     categoryFilter === 'all'
-                                        ? "bg-brand-500/15 text-brand-600 dark:text-brand-400 border-brand-500/30"
-                                        : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5"
+                                        ? "bg-brand-500/15 text-brand-700 dark:text-brand-400 border-brand-500/30"
+                                        : "text-slate-600 dark:text-slate-400 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5"
                                 )}
                             >
                                 Todas
@@ -274,7 +274,7 @@ export const EventsPage: React.FC = () => {
                                         "flex-none flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                                         categoryFilter === cat.name
                                             ? "bg-slate-50 dark:bg-dark-bg text-slate-900 dark:text-white border-brand-500/50 shadow-sm shadow-brand-500/10"
-                                            : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5"
+                                            : "text-slate-600 dark:text-slate-400 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5"
                                     )}
                                 >
                                     <span className={`w-2 h-2 rounded-full ${categoryColorClass(cat.color)} shrink-0`}></span>
@@ -286,7 +286,7 @@ export const EventsPage: React.FC = () => {
 
                     {/* Active filter result count */}
                     {(searchTerm || categoryFilter !== 'all') && (
-                        <p className="text-xs text-slate-500 self-start ml-1 animate-fade-in-up">
+                        <p className="text-xs text-slate-600 dark:text-slate-400 self-start ml-1 animate-fade-in-up">
                             <span className="text-slate-600 dark:text-slate-300 font-medium">{filteredEvents.length}</span> evento{filteredEvents.length !== 1 ? 's' : ''} encontrado{filteredEvents.length !== 1 ? 's' : ''}
                             {searchTerm && <> para &ldquo;<span className="text-slate-600 dark:text-slate-300">{searchTerm}</span>&rdquo;</>}
                         </p>
@@ -309,7 +309,7 @@ export const EventsPage: React.FC = () => {
                                 <CalendarOff size={32} />
                             </div>
                             <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2">Sem eventos encontrados</h3>
-                            <p className="text-slate-500 text-center max-w-md mb-6">
+                            <p className="text-slate-600 dark:text-slate-400 text-center max-w-md mb-6">
                                 {activeTab === 'upcoming'
                                     ? "Não existem eventos agendados para os próximos tempos com estes filtros."
                                     : "Não encontrámos eventos correspondentes à sua pesquisa."}
@@ -356,7 +356,7 @@ export const EventsPage: React.FC = () => {
                                     {/* Content */}
                                     <div className="flex-1 flex flex-col justify-center">
                                         <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-brand-600 dark:text-brand-400 text-xs font-mono uppercase tracking-wider">{new Date(event.date).toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                            <span className="text-brand-700 dark:text-brand-400 text-xs font-mono uppercase tracking-wider">{new Date(event.date).toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                                             <Badge className="text-[10px] px-2 h-5">{event.category}</Badge>
                                         </div>
 
@@ -367,24 +367,24 @@ export const EventsPage: React.FC = () => {
                                             {event.title}
                                         </h3>
 
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base line-clamp-2 mb-4 max-w-3xl">
+                                        <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base line-clamp-2 mb-4 max-w-3xl">
                                             {sanitizeText(eventSummaryText(event))}
                                         </p>
 
-                                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-                                            <div className="flex items-center gap-2"><Clock size={16} className="text-brand-600" /><span>{new Date(event.date).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}</span></div>
-                                            <div className="flex items-center gap-2"><MapPin size={16} className="text-brand-600" /><span>{event.location}</span></div>
-                                            {event.isTournament && <div className="flex items-center gap-2 text-amber-500"><Trophy size={16} /><span>Torneio</span></div>}
+                                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                                            <div className="flex items-center gap-2"><Clock size={16} className="text-brand-700 dark:text-brand-400" /><span>{new Date(event.date).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}</span></div>
+                                            <div className="flex items-center gap-2"><MapPin size={16} className="text-brand-700 dark:text-brand-400" /><span>{event.location}</span></div>
+                                            {event.isTournament && <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400"><Trophy size={16} aria-hidden="true" /><span>Torneio</span></div>}
                                         </div>
 
                                         {/* Places left, for any event with a limit */}
                                         {Boolean(event.maxParticipants) && !isPast && (
                                             <div className="mt-4 max-w-xs">
-                                                <div className="flex justify-between text-xs mb-1 text-slate-500 dark:text-slate-400">
+                                                <div className="flex justify-between text-xs mb-1 text-slate-600 dark:text-slate-400">
                                                     <span>Inscritos: {event.currentParticipants ?? 0} de {event.maxParticipants}</span>
                                                     <span>{Math.round(capacityPercent)}%</span>
                                                 </div>
-                                                <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={event.maxParticipants || 0} aria-valuenow={event.currentParticipants || 0}>
+                                                <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden" role="progressbar" aria-label={`Lugares ocupados em ${event.title}`} aria-valuemin={0} aria-valuemax={event.maxParticipants || 0} aria-valuenow={event.currentParticipants || 0}>
                                                     <div className={cn("h-full rounded-full transition-all duration-500", capacityPercent > 90 ? "bg-red-500" : "bg-brand-500", progressWidthClass(capacityPercent))}></div>
                                                 </div>
                                             </div>
@@ -431,7 +431,7 @@ export const EventsPage: React.FC = () => {
 
                         {registrationOpen && (soldOut ? (
                             <div className="flex items-center gap-3 rounded-2xl bg-slate-900/5 p-4 ring-1 ring-slate-900/10 dark:bg-white/5 dark:ring-white/10">
-                                <X size={18} className="shrink-0 text-slate-500 dark:text-slate-400" />
+                                <X size={18} className="shrink-0 text-slate-600 dark:text-slate-400" />
                                 <div>
                                     <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Esgotado</div>
                                     <div className="text-sm text-slate-700 dark:text-slate-200">Já não há lugares. Fale com a organização para ficar em lista de espera.</div>

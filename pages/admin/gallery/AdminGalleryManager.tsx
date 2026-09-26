@@ -76,7 +76,7 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
                     <Button size="sm" variant="glass" onClick={onNewAlbum}><Plus size={14} className="mr-1" /> Novo</Button>
                 </div>
                 {albums.length === 0 ? (
-                    <p className="p-6 text-sm text-slate-500">Cria o primeiro álbum para começar a carregar fotos.</p>
+                    <p className="p-6 text-sm text-slate-400">Cria o primeiro álbum para começar a carregar fotos.</p>
                 ) : (
                     <ul className="max-h-[70vh] overflow-y-auto divide-y divide-white/5" role="listbox" aria-label="Álbuns">
                         {albums.map(a => (
@@ -96,7 +96,7 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
                                     </div>
                                     <div className="min-w-0">
                                         <div className={cn('font-semibold truncate', a.id === selectedId ? 'text-white' : 'text-slate-200')}>{a.title}</div>
-                                        <div className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+                                        <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
                                             <Calendar size={11} /> {formatDate(a.date)} · {a.photoCount ?? a.photos.length} fotos
                                         </div>
                                     </div>
@@ -129,7 +129,7 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
                             </div>
                             <div className="min-w-0 flex-1">
                                 <h3 className="text-2xl font-serif text-white truncate">{selected.title}</h3>
-                                <p className="text-xs text-slate-500 mt-1">{formatDate(selected.date)} · {images.length} fotos{detail?.coverImageId ? ' · capa escolhida entre as fotos' : ''}</p>
+                                <p className="text-xs text-slate-400 mt-1">{formatDate(selected.date)} · {images.length} fotos{detail?.coverImageId ? ' · capa escolhida entre as fotos' : ''}</p>
                                 {selected.description && <p className="text-sm text-slate-400 mt-2 line-clamp-2">{selected.description}</p>}
                             </div>
                             <div className="flex gap-2 shrink-0">

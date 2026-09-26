@@ -27,7 +27,7 @@ export const SetupGate: React.FC = () => {
             <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
-                    <p className="text-slate-500 dark:text-slate-400 text-sm">A iniciar o portal…</p>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm">A iniciar o portal…</p>
                 </div>
             </div>
         );

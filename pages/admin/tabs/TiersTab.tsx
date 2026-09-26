@@ -35,7 +35,7 @@ export const TiersTab: React.FC<EntityHandlers & { sponsorTiers: SponsorTier[] }
                     </span>
                 ),
             },
-            { header: 'Ordem', cell: t => <span className="font-mono text-xs text-slate-500">{t.order ?? '—'}</span> },
+            { header: 'Ordem', cell: t => <span className="font-mono text-xs text-slate-400">{t.order ?? '—'}</span> },
         ]}
         onEdit={t => h.openEditModal('tier', t as unknown as AdminRecord)}
         onDelete={t => h.handleDeleteRequest('tier', t.id, t.name)}

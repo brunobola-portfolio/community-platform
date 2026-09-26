@@ -171,7 +171,7 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
                     <Stat label="Canceladas" value={counts.cancelled} tone="text-slate-400" />
                     {capacity ? (
                         <div className="min-w-[220px] flex-1">
-                            <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                            <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
                                 <span>Lotação</span><span className="tabular-nums">{active} / {capacity}</span>
                             </div>
                             <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-700" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Lotação">
@@ -180,7 +180,7 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
                             <p className="mt-1.5 text-xs text-slate-400">{capacity - active > 0 ? `${capacity - active} lugares livres` : 'Esgotado — novas inscrições são recusadas'}</p>
                         </div>
                     ) : event ? (
-                        <p className="text-xs text-slate-500">Sem limite de lugares neste evento.</p>
+                        <p className="text-xs text-slate-400">Sem limite de lugares neste evento.</p>
                     ) : null}
                 </div>
                 {event && !event.registrationOpen && (

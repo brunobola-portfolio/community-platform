@@ -89,7 +89,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
           {!isAdmin && <button
             type="button"
             onClick={() => setFlow(flow === 'signIn' ? 'signUp' : 'signIn')}
-            className="w-full rounded-lg py-1 text-[11px] font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
+            className="w-full rounded-lg py-1 text-[11px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 transition-colors hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
           >
             {flow === 'signIn' ? 'Não tem conta? Registar' : 'Já tem conta? Entrar'}
           </button>}
@@ -105,7 +105,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
 
         {flow === 'signUp' && (
           <div className="space-y-1.5">
-            <label htmlFor="login-name" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Nome</label>
+            <label htmlFor="login-name" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">Nome</label>
             <Input
               id="login-name"
               placeholder="O seu nome"
@@ -119,7 +119,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
           </div>
         )}
         <div className="space-y-1.5">
-          <label htmlFor="login-email" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Email</label>
+          <label htmlFor="login-email" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">Email</label>
           <Input
             id="login-email"
             placeholder={isAdmin ? 'admin@exemplo.pt' : 'socio@email.com'}
@@ -132,7 +132,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
           />
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="login-password" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-500">Palavra-passe</label>
+          <label htmlFor="login-password" className="ml-1 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">Palavra-passe</label>
           <Input
             id="login-password"
             placeholder="••••••••"

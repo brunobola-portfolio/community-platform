@@ -39,7 +39,7 @@ const MemberCard: React.FC<{ member: Member, isFeatured?: boolean, onOpenPhoto: 
         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-dark-surface via-dark-surface/80 to-transparent opacity-95"></div>
 
         <div className="absolute bottom-6 left-6 z-20">
-          {isFeatured && <Badge className="mb-2 bg-brand-600 text-white border-none shadow-lg ring-1 ring-white/30 text-[10px] tracking-widest">LIDERANÇA</Badge>}
+          {isFeatured && <Badge className="mb-2 bg-brand-700 text-white border-none shadow-lg ring-1 ring-white/30 text-[10px] tracking-widest">LIDERANÇA</Badge>}
           <div className="w-10 h-1 bg-brand-500 mb-2 w-0 group-hover:w-10 transition-all duration-500"></div>
           <h3 className={`font-serif font-medium text-white mb-1 leading-tight ${isFeatured ? 'text-3xl' : 'text-xl'}`}>{member.name}</h3>
           <p className="text-xs text-brand-300 font-mono uppercase tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{member.role}</p>
@@ -86,9 +86,9 @@ export const TeamPage: React.FC = () => {
       <title>{`Corpos Sociais — ${settings.siteName}`}</title>
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in-up">
-          <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Estrutura Orgânica</span>
+          <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Estrutura Orgânica</span>
           <h1 className="text-6xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Corpos Sociais</h1>
-          <p className="text-xl text-slate-500 dark:text-slate-400 font-light max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto">
             Conheça a equipa dedicada que lidera os destinos da associação. Mandato {settings.currentMandate || "Ativo"}.
           </p>
         </div>
@@ -102,8 +102,8 @@ export const TeamPage: React.FC = () => {
                 onClick={() => selectTab(tab)}
                 className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500
                     ${activeTab === tab
-                    ? 'bg-brand-600 text-white shadow-lg scale-105'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5'
+                    ? 'bg-brand-700 text-white shadow-lg scale-105'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5'
                   }
                   `}
               >
@@ -129,7 +129,7 @@ export const TeamPage: React.FC = () => {
           )}
 
           {filteredMembers.length === 0 && (
-            <div className="text-center py-20 text-slate-500">
+            <div className="text-center py-20 text-slate-600 dark:text-slate-400">
               Nenhum membro registado neste órgão.
             </div>
           )}

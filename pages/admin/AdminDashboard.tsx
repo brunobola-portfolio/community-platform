@@ -37,7 +37,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     value={membersCount}
                     icon={<Check className="text-brand-500/50" size={20} />}
                     gradient="from-dark-surface to-brand-900/10"
-                    footer={<span className="text-xs text-slate-500">Total registados</span>}
+                    footer={<span className="text-xs text-slate-400">Total registados</span>}
                 />
                 <StatCard
                     label="Inscrições Confirmadas"
@@ -58,7 +58,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     value={null}
                     icon={<Server className="text-blue-400/50" size={20} />}
                     gradient="from-dark-surface to-blue-900/10"
-                    footer={<span className="text-xs text-slate-500">{latencyDisplay}</span>}
+                    footer={<span className="text-xs text-slate-400">{latencyDisplay}</span>}
                     customValue={
                         <h3 className="text-xl font-bold text-white mt-3 flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -131,7 +131,7 @@ const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
             {pendingRegistrations.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-white/10 rounded-xl bg-white/[0.02] mb-4">
                     <CheckCircle2 size={32} className="mx-auto text-green-500 mb-2 opacity-50" />
-                    <p className="text-slate-500 text-sm">Tudo em dia! Sem pendentes.</p>
+                    <p className="text-slate-400 text-sm">Tudo em dia! Sem pendentes.</p>
                 </div>
             ) : (
                 <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 mb-4 flex-1">
@@ -161,7 +161,7 @@ const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
                 <Button variant="outline" className="gap-2 justify-center" onClick={onNewPost}>
                     <Plus size={14} /> Nova Notícia
                 </Button>
-                <Button className="gap-2 bg-brand-600 hover:bg-brand-500 text-white justify-center" onClick={onNewEvent}>
+                <Button className="gap-2 bg-brand-700 hover:bg-brand-800 text-white justify-center" onClick={onNewEvent}>
                     <Plus size={14} /> Novo Evento
                 </Button>
             </div>
@@ -180,7 +180,7 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ activityLogs }) => 
         </h3>
         <div className="space-y-4 overflow-y-auto custom-scrollbar pr-2">
             {activityLogs.length === 0 && (
-                <p className="rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-slate-500">
+                <p className="rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-slate-400">
                     Ainda não há atividade registada. As alterações feitas no backoffice aparecem aqui.
                 </p>
             )}
@@ -193,7 +193,7 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ activityLogs }) => 
                     <div className="pb-2">
                         <p className="text-slate-300 leading-snug text-xs md:text-sm">{log.description}</p>
                         <div className="flex gap-2 mt-1">
-                            <span className="text-[10px] text-slate-500">
+                            <span className="text-[10px] text-slate-400">
                                 {new Date(log.timestamp).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </span>
                             <span className="text-[10px] text-brand-400 bg-brand-900/10 px-1.5 rounded uppercase tracking-wider">

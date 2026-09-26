@@ -34,7 +34,7 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
             <TestChatSection />
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-white/10 bg-dark-bg/95 p-4 backdrop-blur">
-                <span className="text-xs text-slate-500">As alterações só ficam no portal depois de guardar.</span>
+                <span className="text-xs text-slate-400">As alterações só ficam no portal depois de guardar.</span>
                 <Button onClick={onSave} disabled={isSaving} className="min-w-[170px]">
                     {isSaving ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> Guardar alterações</>}
                 </Button>
@@ -74,7 +74,7 @@ const AnalyticsOverview: React.FC<{ aiStats: AdminAITabProps['aiStats'] }> = ({ 
                 )}
             </div>
         ) : (
-            <div className="text-center py-8 text-slate-500">
+            <div className="text-center py-8 text-slate-400">
                 <p className="text-sm">Sem dados de utilização ainda.</p>
             </div>
         )}
@@ -91,7 +91,7 @@ interface MetricCardProps {
 
 const MetricCard: React.FC<MetricCardProps> = ({ label, value, color }) => (
     <div className="bg-black/40 rounded-xl p-4 border border-white/5">
-        <p className="text-slate-500 text-xs uppercase tracking-wider">{label}</p>
+        <p className="text-slate-400 text-xs uppercase tracking-wider">{label}</p>
         <p className={`text-2xl font-bold ${color} mt-1`}>{value}</p>
     </div>
 );
@@ -242,7 +242,7 @@ const TestChatSection: React.FC = () => (
                     const bubble = document.querySelector('[data-chatbot-trigger]') as HTMLButtonElement | null;
                     if (bubble) bubble.click();
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-600 rounded-lg text-white text-sm hover:bg-brand-500 transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-brand-700 rounded-lg text-white text-sm hover:bg-brand-800 transition-all"
             >
                 <Bot size={16} /> Abrir Chat de Teste
             </button>
@@ -263,7 +263,7 @@ const ToggleRow: React.FC<ToggleRowProps> = ({ label, description, checked, onCh
     <div className="flex items-center justify-between">
         <div>
             <span className="text-white text-sm">{label}</span>
-            <p className="text-slate-500 text-xs mt-0.5">{description}</p>
+            <p className="text-slate-400 text-xs mt-0.5">{description}</p>
         </div>
         <input type="checkbox" className="accent-brand-500 w-5 h-5" checked={checked} onChange={e => onChange(e.target.checked)} />
     </div>

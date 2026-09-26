@@ -35,9 +35,9 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
 
                 {/* Header */}
                 <div className="text-center mb-16 animate-fade-in-up">
-                    <span className="text-brand-600 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Multimédia</span>
+                    <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Multimédia</span>
                     <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Galeria <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-accent-gold dark:to-amber-300">Visual</span></h1>
-                    <p className="text-xl text-slate-500 dark:text-slate-400 font-light max-w-2xl mx-auto">
+                    <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto">
                         Recorde os melhores momentos da vida comunitária.
                     </p>
                 </div>
@@ -55,11 +55,11 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                     // Albums Grid
                     albums.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 border border-dashed border-slate-900/10 dark:border-white/10 rounded-3xl animate-fade-in-up">
-                            <div className="w-20 h-20 bg-slate-900/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 text-slate-500 dark:text-slate-600">
+                            <div className="w-20 h-20 bg-slate-900/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 text-slate-600 dark:text-slate-600">
                                 <Image size={32} />
                             </div>
                             <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2">Sem álbuns disponíveis</h3>
-                            <p className="text-slate-500 text-center max-w-md">A galeria será atualizada em breve com os melhores momentos da comunidade.</p>
+                            <p className="text-slate-600 dark:text-slate-400 text-center max-w-md">A galeria será atualizada em breve com os melhores momentos da comunidade.</p>
                         </div>
                     ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in-up">
@@ -89,7 +89,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                 ) : (
                     // Single Album View
                     <div className="animate-fade-in-up">
-                        <Button onClick={() => setSelectedAlbum(null)} variant="ghost" className="mb-8 pl-0 hover:bg-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        <Button onClick={() => setSelectedAlbum(null)} variant="ghost" className="mb-8 pl-0 hover:bg-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
                             <ArrowLeft className="mr-2" size={20} /> Voltar aos Álbuns
                         </Button>
 

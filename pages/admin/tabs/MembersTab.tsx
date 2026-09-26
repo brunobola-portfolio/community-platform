@@ -16,7 +16,7 @@ const groupLabel = (group: string) => (group === 'founder' ? 'Sócios Fundadores
 const Avatar: React.FC<{ member: Member }> = ({ member }) =>
     member.photoUrl
         ? <img src={member.photoUrl} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
-        : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-slate-500"><User size={16} /></span>;
+        : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/5 text-slate-400"><User size={16} /></span>;
 
 export const MembersTab: React.FC<EntityHandlers & { members: Member[] }> = ({ members, ...h }) => {
     // Group chips follow the data, so new governing bodies appear without code changes
@@ -51,7 +51,7 @@ export const MembersTab: React.FC<EntityHandlers & { members: Member[] }> = ({ m
                 },
                 { header: 'Cargo', cell: m => <span className="text-slate-400">{m.role}</span> },
                 { header: 'Órgão', cell: m => <Badge>{groupLabel(m.group)}</Badge> },
-                { header: 'Ordem', cell: m => <span className="font-mono text-xs text-slate-500">{m.order ?? '—'}</span> },
+                { header: 'Ordem', cell: m => <span className="font-mono text-xs text-slate-400">{m.order ?? '—'}</span> },
             ]}
             onEdit={m => h.openEditModal('member', m as unknown as AdminRecord)}
             onDelete={m => h.handleDeleteRequest('member', m.id, m.name)}

@@ -303,12 +303,12 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
               onClick={() => handleSend()}
               disabled={isThinking || isListening || !inputText.trim()}
               aria-label="Enviar mensagem"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white shadow-[0_6px_16px_-8px_rgba(223,61,50,0.9)] transition-all hover:bg-brand-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-surface"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-700 text-white shadow-[0_6px_16px_-8px_rgba(223,61,50,0.9)] transition-all hover:bg-brand-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-surface"
             >
               <Send size={16} />
             </button>
           </div>
-          <p className="mt-2 text-center text-[10px] leading-relaxed text-slate-400 dark:text-slate-500">
+          <p className="mt-2 text-center text-[10px] leading-relaxed text-slate-400 dark:text-slate-400">
             Respostas geradas por IA — confirma datas e detalhes importantes.
           </p>
         </div>
