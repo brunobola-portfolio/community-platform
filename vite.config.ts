@@ -127,14 +127,20 @@ export const PREVIEW_CRAWLERS =
 
 /** Where the deployment's HTTP actions answer: *.convex.cloud serves functions, *.convex.site serves routes. */
 export function convexSiteOrigin(env: Record<string, string | undefined>): string | null {
-  const explicit = env.VITE_CONVEX_SITE_URL;
-  if (explicit) return new URL(explicit).origin;
+  // Derived from the deployment the bundle talks to, first. `npx convex dev` writes a
+  // VITE_CONVEX_SITE_URL for the DEV deployment into .env.local, which Vite also loads in
+  // production builds; trusting it first sent crawlers of a live site to the dev database.
   const cloud = env.VITE_CONVEX_URL;
-  if (!cloud) return null;
-  const url = new URL(cloud);
-  if (!url.hostname.endsWith('.convex.cloud')) return null;
-  url.hostname = url.hostname.replace(/\.convex\.cloud$/, '.convex.site');
-  return url.origin;
+  if (cloud) {
+    const url = new URL(cloud);
+    if (url.hostname.endsWith('.convex.cloud')) {
+      url.hostname = url.hostname.replace(/\.convex\.cloud$/, '.convex.site');
+      return url.origin;
+    }
+  }
+  // Self-hosted backends have no derivable HTTP-actions origin
+  const explicit = env.VITE_CONVEX_SITE_URL;
+  return explicit ? new URL(explicit).origin : null;
 }
 
 export type SharePreviewMode = 'proxy' | 'redirect';

@@ -93,6 +93,16 @@ describe('crawler proxy rule', () => {
     expect(convexSiteOrigin({ VITE_CONVEX_SITE_URL: 'https://api.example.org/' })).toBe('https://api.example.org');
   });
 
+  it('follows the deployment the site uses, never a stale site URL from dev', () => {
+    // .env.local from `npx convex dev` carries the dev deployment's site URL into production builds
+    expect(convexSiteOrigin({
+      VITE_CONVEX_URL: 'https://happy-animal-123.convex.cloud',
+      VITE_CONVEX_SITE_URL: 'https://dev-deployment-456.convex.site',
+    })).toBe('https://happy-animal-123.convex.site');
+    expect(convexSiteOrigin({ VITE_CONVEX_URL: 'https://self-hosted.example.org', VITE_CONVEX_SITE_URL: 'https://api.example.org' }))
+      .toBe('https://api.example.org');
+  });
+
   it('routes preview crawlers only, never a search engine', () => {
     const rule = sharePreviewRule('https://x.convex.site');
     expect(rule).toContain('WhatsApp');

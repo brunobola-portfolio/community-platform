@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.12.1] - 2026-09-26
+
+### Fixed
+
+- Link previews in a production build could point crawlers at the development deployment.
+  `npx convex dev` writes the dev deployment's `VITE_CONVEX_SITE_URL` into `.env.local`,
+  which Vite loads in every mode, and the preview rule trusted it before the production
+  `VITE_CONVEX_URL`. The origin is now derived from the deployment the bundle talks to, and
+  `npm run dist` refuses a package whose preview rule names another deployment. Found by
+  checking the reference instance in production right after the 2.12.0 deploy; people were
+  never affected, only crawler previews
+
 ## [2.12.0] - 2026-09-26
 
 Registrations people actually complete, and a board that stays in control of them. Reviewed
