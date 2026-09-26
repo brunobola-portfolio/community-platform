@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useQuery } from 'convex/react';
 import { Package, RefreshCw, ShieldCheck, ShieldOff } from 'lucide-react';
 import { isMonitoringEnabled } from '../../../utils/monitoring';
+import { api } from '../../../convex/_generated/api';
 
 /**
  * Two versions that are easy to confuse and expensive to mix up: the one this
@@ -37,8 +39,11 @@ export const PlatformVersionCard: React.FC = () => {
         return () => { active = false; };
     }, []);
 
+    const backend = useQuery(api.platform.version);
     const running = __PLATFORM_VERSION__;
     const isStale = Boolean(served && served.version !== running);
+    // The web server and Convex deploy separately; a mismatch means one of them missed the release
+    const backendBehind = Boolean(backend && served && backend.version !== served.version);
 
     return (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
@@ -57,6 +62,12 @@ export const PlatformVersionCard: React.FC = () => {
                         {served ? served.version : checked ? '—' : '…'}
                     </dd>
                 </div>
+                <div className="flex items-baseline justify-between gap-4">
+                    <dt className="text-slate-400">Servidor Convex</dt>
+                    <dd className={backendBehind ? 'font-mono tabular-nums text-amber-300' : 'font-mono tabular-nums text-white'}>
+                        {backend ? backend.version : '…'}
+                    </dd>
+                </div>
                 {served && (
                     <div className="flex items-baseline justify-between gap-4">
                         <dt className="text-slate-400">Build</dt>
@@ -73,6 +84,11 @@ export const PlatformVersionCard: React.FC = () => {
                 </div>
             </dl>
 
+            {backendBehind && (
+                <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+                    O servidor Convex não está na mesma versão do site. Falta publicar o backend: peça à equipa técnica.
+                </p>
+            )}
             {isStale && (
                 <button
                     type="button"

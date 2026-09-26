@@ -6,6 +6,20 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.13.2] - 2026-09-26
+
+### Added
+
+- **The version in plain sight**: the footer credit reads "Community Platform v2.13.2 by
+  BolaLabs", and says "(servidor v…)" when the Convex backend runs another release
+- A public `platform:version` query reports the version the Convex backend was deployed from;
+  the backoffice Plataforma card shows it next to the site's, and warns when they differ
+- The instance template's daily health check fails when Convex and `platform.lock` disagree
+
+### Fixed
+
+- The footer's copyright line was slate-600 on the dark background
+
 ## [2.13.1] - 2026-09-26
 
 ### Fixed
@@ -634,7 +648,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.1...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.2...HEAD
+[2.13.2]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.1...v2.13.2
 [2.13.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.0...v2.13.1
 [2.13.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.12.1...v2.13.0
 [2.12.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.12.0...v2.12.1

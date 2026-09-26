@@ -46,6 +46,7 @@ import type * as members from "../members.js";
 import type * as milestones from "../milestones.js";
 import type * as mockData from "../mockData.js";
 import type * as notifications from "../notifications.js";
+import type * as platform from "../platform.js";
 import type * as posts from "../posts.js";
 import type * as registrations from "../registrations.js";
 import type * as seed from "../seed.js";
@@ -104,6 +105,7 @@ declare const fullApi: ApiFromModules<{
   milestones: typeof milestones;
   mockData: typeof mockData;
   notifications: typeof notifications;
+  platform: typeof platform;
   posts: typeof posts;
   registrations: typeof registrations;
   seed: typeof seed;

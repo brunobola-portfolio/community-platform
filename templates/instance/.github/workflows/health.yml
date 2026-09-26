@@ -62,6 +62,18 @@ jobs:
           echo "platform.lock: $expected — served: $served"
           [ "$served" = "$expected" ] || { echo "::error::site serves $served, platform.lock says $expected"; exit 1; }
 
+      - name: The Convex backend runs the same version
+        if: env.CONVEX_SITE_URL != ''
+        run: |
+          # The web server and Convex deploy in separate steps; one can miss a release
+          expected=$(tr -d 'v\r\n ' < platform.lock)
+          cloud="${CONVEX_SITE_URL%.convex.site}.convex.cloud"
+          backend=$(curl -sS --max-time 20 -X POST "$cloud/api/query" -H 'Content-Type: application/json' \
+            -d '{"path":"platform:version","args":{},"format":"json"}' \
+            | python3 -c "import sys, json; r = json.load(sys.stdin); print(r['value']['version'] if r.get('status') == 'success' else 'no-answer')")
+          echo "platform.lock: $expected — Convex: $backend"
+          [ "$backend" = "$expected" ] || { echo "::error::Convex runs $backend, platform.lock says $expected"; exit 1; }
+
       - name: Link previews are deployed and know the site
         if: env.CONVEX_SITE_URL != ''
         run: |

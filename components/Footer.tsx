@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { MapPin, Mail, Phone, Facebook, Instagram, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { PlatformCredit } from './PlatformCredit';
 import { useData } from '../context/DataContext';
 import { sanitizeUrl } from '../utils/security';
 
@@ -108,19 +109,11 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-900/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600 dark:text-slate-600 font-mono">
+        <div className="pt-8 border-t border-slate-900/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600 dark:text-slate-400 font-mono">
           <div>
             &copy; {new Date().getFullYear()} {settings.siteName}. Todos os direitos reservados.
             <span className="hidden sm:inline"> · </span>
-            <a
-              href="https://bolalabs.pt"
-              target="_blank"
-              rel="noopener noreferrer"
-              title={`Community Platform ${__PLATFORM_VERSION__}`}
-              className="block sm:inline text-slate-400 dark:text-slate-600 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-            >
-              Community Platform by BolaLabs
-            </a>
+            <PlatformCredit />
             <span className="hidden sm:inline"> · </span>
             <a href="/privacidade" className="block sm:inline text-slate-600 dark:text-slate-400 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Privacidade</a>
           </div>
