@@ -101,6 +101,15 @@ const packagedVersion = JSON.parse(readFileSync('dist/version.json', 'utf8')).ve
 if (!html.includes(`content="Community Platform ${packagedVersion}"`)) {
   fail('index.html nao tem a meta generator da versao empacotada.');
 }
+const webConfig = readFileSync('dist/web.config', 'utf8');
+const previewTarget = webConfig.match(/url="https:\/\/([a-z0-9-]+)\.convex\.site\/share\//);
+const deployment = convexHost.replace(/\.convex\.cloud$/, '');
+if (previewTarget && previewTarget[1] !== deployment) {
+  fail(
+    `A regra de pre-visualizacoes aponta para ${previewTarget[1]}, mas o site usa ${deployment}.`,
+    'Um VITE_CONVEX_SITE_URL de desenvolvimento (.env.local) entrou no build de producao.'
+  );
+}
 console.log(`        index.html + web.config presentes; versao ${packagedVersion}; bundle aponta para ${convexHost}.`);
 
 // 5. Package dist/ contents at the zip root. Tools attempted in order:
