@@ -237,7 +237,7 @@ export const EventsPage: React.FC = () => {
                                     {tab.label}
                                     <span className={cn(
                                         "tabular-nums text-[10px] px-1.5 py-0.5 rounded-full leading-none",
-                                        activeTab === tab.id ? "bg-white/25 text-white" : "bg-slate-900/5 dark:bg-white/5 text-slate-600 dark:text-slate-400"
+                                        activeTab === tab.id ? "bg-black/25 text-white" : "bg-slate-900/5 dark:bg-white/5 text-slate-600 dark:text-slate-400"
                                     )}>
                                         {tab.count}
                                     </span>
@@ -332,7 +332,7 @@ export const EventsPage: React.FC = () => {
                                 <div key={event.id} className={cn(
                                     "group relative bg-white dark:bg-dark-surface border rounded-2xl p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-300",
                                     isPast
-                                        ? "border-slate-900/5 dark:border-white/5 opacity-80 hover:opacity-100 hover:border-slate-900/10 dark:hover:border-white/10"
+                                        ? "border-slate-900/5 dark:border-white/5 hover:border-slate-900/10 dark:hover:border-white/10"
                                         : "border-slate-900/10 dark:border-white/10 hover:border-brand-500/30 hover:bg-slate-900/[0.02] dark:hover:bg-white/[0.02]"
                                 )}>
                                     {/* Image */}
