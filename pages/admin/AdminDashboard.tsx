@@ -127,21 +127,20 @@ const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
         <h3 className="font-bold text-white mb-4 flex items-center gap-2">
             <Zap size={18} className="text-amber-400" /> Por tratar
         </h3>
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 min-h-0 flex flex-col">
             {pendingRegistrations.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-white/10 rounded-xl bg-white/[0.02] mb-4">
                     <CheckCircle2 size={32} className="mx-auto text-green-500 mb-2 opacity-50" />
                     <p className="text-slate-400 text-sm">Tudo em dia! Sem pendentes.</p>
                 </div>
             ) : (
-                <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 mb-4 flex-1">
+                <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 mb-4 flex-1 min-h-0">
                     {pendingRegistrations.map(reg => (
                         <button
                             key={reg.id}
                             type="button"
                             className="w-full flex items-center justify-between bg-black/20 p-4 rounded-xl border border-white/5 cursor-pointer hover:bg-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                             onClick={() => onViewRegistration(reg)}
-                            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onViewRegistration(reg); }}
                         >
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-brand-900/30 flex items-center justify-center text-brand-400 font-bold">
