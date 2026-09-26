@@ -29,8 +29,9 @@ rotina) em [docs/INSTANCE-REPO.md](INSTANCE-REPO.md).
 Depois do deploy ([DEPLOY.md](../DEPLOY.md) ou [DEPLOY-VPS.md](../DEPLOY-VPS.md)) e da conta
 criada em `/setup`:
 
-- **Admin > Definições > Identidade & Textos** — nome completo, localidade, concelho, ano de
-  fundação, tagline e subtítulo do hero, nome e descrição da sede, introdução e citação da
+- **Admin > Definições > Identidade & Textos** — **fotografia de fundo da página inicial**
+  (carregada ali mesmo; sem ela, o fundo é só a cor da marca), nome completo, localidade,
+  concelho, ano de fundação, tagline e subtítulo do hero, nome e descrição da sede, introdução e citação da
   página História, nota dos sócios fundadores. Campos vazios escondem a secção respetiva.
 - **Admin > Definições > Geral / Contacto** — nome curto, email, **URL do logótipo**
   (ex: `/logo.svg`, servido pelo overlay), telefone, horário, morada, Maps, coordenadas,

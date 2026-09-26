@@ -6,6 +6,47 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.13.0] - 2026-09-26
+
+A portal every visitor can read and a repository fit to be shown. An automated sweep of every
+public route (phone and desktop, light and dark: console errors, broken images, horizontal
+overflow and axe WCAG 2 AA) ends with no findings, and the registration and publishing flows
+pass end to end on the demo association.
+
+### Added
+
+- **Home page photo from the settings** (Definições › Identidade & Textos), uploaded and
+  optimised in the browser like any poster. Without one, the hero is the brand colour alone
+- README screenshots of registration without an account and of the Inscrições tab
+
+### Changed
+
+- **WCAG AA contrast across the portal and the backoffice.** White text on the brand red uses
+  the 700 shade (the 600 base gave 4.3:1), and so does red text on light surfaces; secondary
+  grey is one step stronger in each theme; amber labels (Reservado, Torneio, Sócio Fundador)
+  read in the light theme; partner captions keep their contrast on the white logo chip
+- Category labels with white text use the 700 shade of their hue; the dots keep the 500
+- Capacity bars have an accessible name; the decorative years on the History timeline are
+  drawn by CSS, so screen readers skip them
+- The demo seed's registration forms no longer repeat name, email and phone, which every
+  form already asks, and the Sueca tournament shows a card game
+- LICENSE: the code belongs to BolaLabs; ARCVA is a partner and reference client, not a
+  copyright holder. The public contact is bruno@bolalabs.pt
+
+### Fixed
+
+- The home hero loaded a hard-coded Unsplash photo that had been withdrawn, and the gallery
+  tile a third-party texture; the portal ships no external image in code
+- A badge painted light red text on a red fill in the dark theme when its caller chose the fill
+- The Início card "Por tratar" spilled out of its box with several pending registrations; it
+  scrolls now. Enter on a pending registration opened it twice
+
+### Security
+
+- The public history was rewritten to start at the first generic commit: a client's real
+  photographs, partner logos and names from the pre-release commits are gone from the branch
+  and every tag. Release assets were already clean
+
 ## [2.12.1] - 2026-09-26
 
 ### Fixed
@@ -585,7 +626,16 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.4...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.12.1...v2.13.0
+[2.12.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.12.0...v2.12.1
+[2.12.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.11.1...v2.12.0
+[2.11.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.11.0...v2.11.1
+[2.11.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.10.0...v2.11.0
+[2.10.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.9.1...v2.10.0
+[2.9.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.9.0...v2.9.1
+[2.9.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.8.0...v2.9.0
+[2.8.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.4...v2.8.0
 [2.7.4]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.3...v2.7.4
 [2.7.3]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.2...v2.7.3
 [2.7.2]: https://github.com/brunobola-portfolio/community-platform/compare/v2.7.1...v2.7.2

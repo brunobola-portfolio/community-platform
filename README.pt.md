@@ -63,6 +63,10 @@ run seed:seed`), sem marca de nenhum cliente. A visita guiada de um minuto está
 |:---:|:---:|
 | ![Home, tema escuro](docs/assets/home-dark.png) | ![Página de eventos](docs/assets/events.png) |
 
+| Inscrição sem conta | Inscrições: confirmar, lista para a porta, Excel |
+|:---:|:---:|
+| ![Formulário de inscrição](docs/assets/event-registration.png) | ![Separador Inscrições](docs/assets/admin-registrations.png) |
+
 | Assistente IA com base no conteúdo do portal | Área de sócio: cartão digital e quotas |
 |:---:|:---:|
 | ![Assistente IA](docs/assets/ai-assistant.png) | ![Área de sócio](docs/assets/member-area.png) |
@@ -107,7 +111,7 @@ real.
 | **História** | Timeline vertical editável (milestones geridos no admin), galeria de fotos históricas, sócios fundadores |
 | **Sobre** | Geo-assistente IA, mapa interativo, pilares de valores, formulário de contacto |
 | **Equipa** | Corpos sociais por tabs, fotos, hierarquia |
-| **Eventos** | Pesquisa + filtros, export de calendário (Google + ICS), inscrições com formulários dinâmicos por evento |
+| **Eventos** | Página própria por evento com o cartaz inteiro; inscrição **sem conta** (lugares, preço, perguntas do evento, esgotado); partilha no WhatsApp/Facebook com o cartaz na pré-visualização; export de calendário (Google + ICS) |
 | **Blog** | Artigo destaque, filtros por categoria com contagem, pesquisa |
 | **Post** | Leitura imersiva, TTS "Ouvir Artigo", tags, bio do autor, recomendados |
 | **Galeria** | Álbuns com lightbox, navegação por setas/teclado |
@@ -122,15 +126,22 @@ real.
 - TTS em português (Gemini TTS); guardrails, persona e modelos configuráveis pelo admin
 - **Identidade dinâmica**: o assistente apresenta-se com o nome do site vindo das settings
 
-### Painel de administração — 16 tabs de gestão
+### Painel de administração — 17 separadores, com os nomes que uma direção usa
 
 Todas as listas têm pesquisa (`/`), filtros com contagens ao vivo, ordenação e contador de resultados.
 
-Dashboard · Homepage · Eventos (rich text + formulários de inscrição dinâmicos + torneios) ·
-Notícias · Membros · Parceiros · Gestor de galeria (upload múltiplo por arrastar para o storage, legendas, ordenação, capa, apagar em lote) · Leads & Contactos (workflow de estado) ·
-Sócios & Quotas · Timeline da História · Documentos · Notificações · Categorias ·
-Níveis de Parceria · IA & Chatbot (fornecedor, modelos, guardrails, analytics) ·
-Definições (configuração completa do site)
+Início (o que está por tratar) · Página inicial · Eventos (editor visual, cartaz otimizado no
+browser, inscrições, torneios) · **Inscrições** (confirmar todas as pendentes de uma vez, lista
+para a porta pronta a imprimir, Excel com as perguntas do evento, copiar emails) · Notícias ·
+Membros · Parceiros · Galeria (upload múltiplo por arrastar, legendas, ordenação, capa, apagar
+em lote) · História · Mensagens recebidas · Sócios & Quotas · Documentos · Avisos aos sócios ·
+Categorias · Níveis de Parceria · Assistente virtual (fornecedor, modelos, guardrails,
+analytics) · Definições (identidade, fotografia da página inicial, contactos, quotas, Sobre,
+redes sociais)
+
+Feito para voluntários: aviso de privacidade em `/privacidade` escrito a partir das
+definições, dados de convidados apagados 90 dias depois do evento, e contraste WCAG AA nos dois
+temas, verificado com axe.
 
 ### Media Studio
 

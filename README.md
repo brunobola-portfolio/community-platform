@@ -63,6 +63,10 @@ seed:seed`), captured with no client branding. The one-minute tour lives on the
 |:---:|:---:|
 | ![Home, dark theme](docs/assets/home-dark.png) | ![Events page](docs/assets/events.png) |
 
+| Registration without an account | Registrations: confirm, door list, Excel |
+|:---:|:---:|
+| ![Registration form](docs/assets/event-registration.png) | ![Registrations tab](docs/assets/admin-registrations.png) |
+
 | AI assistant grounded in the portal's content | Member area: digital card and dues |
 |:---:|:---:|
 | ![AI assistant](docs/assets/ai-assistant.png) | ![Member area](docs/assets/member-area.png) |
@@ -106,7 +110,7 @@ in production for a real community first.
 | **History** | Editable vertical timeline (admin-managed milestones), historical photo gallery, founding members |
 | **About** | AI geo-assistant, interactive map, values pillars, contact form |
 | **Team** | Governing bodies by tabs, photos, hierarchy |
-| **Events** | Search + filters, calendar export (Google + ICS), registrations with per-event dynamic forms |
+| **Events** | A page per event with its full poster; registration **without an account** (capacity, price, the event's own questions, sold-out state); WhatsApp/Facebook sharing with the poster in the preview; calendar export (Google + ICS) |
 | **Blog** | Featured article, category filters with counts, search |
 | **Post** | Immersive reading, "Listen to article" TTS, tags, author bio, recommendations |
 | **Gallery** | Albums with lightbox, arrow/keyboard navigation |
@@ -121,14 +125,20 @@ in production for a real community first.
 - Portuguese TTS (Gemini TTS); guardrails, persona and models configurable by the admin
 - **Identity is dynamic**: the assistant introduces itself with the site name from settings
 
-### Admin panel — 16 management tabs
+### Admin panel — 17 management tabs, named the way a board speaks
 
 Every list has search (`/`), filter chips with live counts, sort and a result counter.
 
-Dashboard · Homepage · Events (rich text + dynamic registration forms + tournaments) · News ·
-Members · Partners · Gallery manager (drag-and-drop multi-upload to Convex storage, captions, ordering, cover pick, bulk delete) · Leads & Contacts (state workflow) · Dues & Members ·
-History timeline · Documents · Notifications · Categories · Partnership tiers ·
-AI & Chatbot (provider, models, guardrails, analytics) · Settings (full site configuration)
+Início (what needs attention) · Página inicial · Eventos (visual editor, poster optimised in the
+browser, registrations, tournaments) · **Inscrições** (confirm all pending at once, a list for
+the door to print, Excel export with the event's own questions, copy every email) · Notícias ·
+Membros · Parceiros · Galeria (drag-and-drop multi-upload, captions, ordering, cover pick, bulk
+delete) · História · Mensagens recebidas · Sócios & Quotas · Documentos · Avisos aos sócios ·
+Categorias · Níveis de Parceria · Assistente virtual (provider, models, guardrails, analytics) ·
+Definições (identity, home photo, contacts, dues, About page, social links)
+
+Built for volunteers: a privacy notice at `/privacidade` written from the settings, guest data
+deleted 90 days after the event, and WCAG AA contrast in both themes, checked with axe.
 
 ### Media Studio
 
