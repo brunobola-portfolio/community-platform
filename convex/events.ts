@@ -115,6 +115,7 @@ export const create = mutation({
         maxParticipants: v.optional(v.number()),
         currentParticipants: v.optional(v.number()),
         registrationOpen: v.optional(v.boolean()),
+        allowGuestRegistration: v.optional(v.boolean()),
         registrationFields: v.optional(v.array(v.object({
             id: v.string(),
             label: v.string(),
@@ -165,6 +166,7 @@ export const update = mutation({
         maxParticipants: v.optional(v.number()),
         currentParticipants: v.optional(v.number()),
         registrationOpen: v.optional(v.boolean()),
+        allowGuestRegistration: v.optional(v.boolean()),
         registrationFields: v.optional(v.array(v.object({
             id: v.string(),
             label: v.string(),

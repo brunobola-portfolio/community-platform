@@ -1,0 +1,69 @@
+name: Health
+
+# Daily check from outside, on a GitHub-hosted runner, so it still runs when the
+# server or its runner is down. A failure is a failed run, and GitHub emails it.
+# Catches: a certificate expiring or missing one of the site's names, the site
+# down, a build other than platform.lock being served, link previews broken.
+#
+# Repository variables:
+#   SITE_HOSTS        space-separated host names, e.g. "example.org www.example.org"
+#   SITE_URL          public URL the Convex SITE_URL points at, e.g. https://example.org
+#   CONVEX_SITE_URL   the deployment's HTTP actions origin, e.g. https://happy-animal-123.convex.site
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      HOSTS: ${{ vars.SITE_HOSTS }}
+      SITE_URL: ${{ vars.SITE_URL }}
+      CONVEX_SITE_URL: ${{ vars.CONVEX_SITE_URL }}
+      MIN_DAYS: "21"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Certificate covers every name and is not about to expire
+        run: |
+          fail=0
+          for host in $HOSTS; do
+            cert=$(echo | openssl s_client -connect "$host:443" -servername "$host" 2>/dev/null | openssl x509)
+            end=$(echo "$cert" | openssl x509 -noout -enddate | cut -d= -f2)
+            days=$(( ( $(date -d "$end" +%s) - $(date +%s) ) / 86400 ))
+            sans=$(echo "$cert" | openssl x509 -noout -ext subjectAltName | tail -1)
+            echo "$host: expires $end ($days days) — $sans"
+            if [ "$days" -lt "$MIN_DAYS" ]; then echo "::error::$host certificate expires in $days days"; fail=1; fi
+            for name in $HOSTS; do
+              echo "$sans" | grep -q "DNS:$name" || { echo "::error::certificate on $host does not cover $name"; fail=1; }
+            done
+          done
+          exit $fail
+
+      - name: Site answers on every name
+        run: |
+          for host in $HOSTS; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 20 "https://$host/")
+            echo "$host -> $code"
+            [ "$code" = "200" ] || { echo "::error::https://$host/ answered $code"; exit 1; }
+          done
+
+      - name: Serving the version platform.lock names
+        run: |
+          expected=$(tr -d 'v\r\n ' < platform.lock)
+          served=$(curl -sS --max-time 20 "$SITE_URL/version.json?cb=$(date +%s)" | python3 -c "import sys, json; print(json.load(sys.stdin)['version'])")
+          echo "platform.lock: $expected — served: $served"
+          [ "$served" = "$expected" ] || { echo "::error::site serves $served, platform.lock says $expected"; exit 1; }
+
+      - name: Link previews are deployed and know the site
+        if: env.CONVEX_SITE_URL != ''
+        run: |
+          target=$(curl -sS -o /dev/null -w "%{http_code} %{redirect_url}" --max-time 20 "$CONVEX_SITE_URL/share/events/health-check")
+          echo "$target"
+          [ "$target" = "302 $SITE_URL/events" ] || { echo "::error::link preview route answered: $target"; exit 1; }

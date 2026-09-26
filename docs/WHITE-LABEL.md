@@ -77,7 +77,7 @@ Espelha a estrutura de `public/`. Ficheiros com o mesmo nome substituem os gené
 ```
 
 A cor da marca é o único ponto de branding que vive no código: a escala `brand` em
-[tailwind.config.ts](../tailwind.config.ts) (instância de referência: vermelho `#df3d32`).
+[tailwind.config.ts](../tailwind.config.ts) (por omissão, vermelho `#df3d32`).
 
 ## Regra para contribuidores
 

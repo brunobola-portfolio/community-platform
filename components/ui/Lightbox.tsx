@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface LightboxImage {
@@ -13,13 +14,15 @@ interface LightboxProps {
   index: number | null;
   onClose: () => void;
   onNavigate: (index: number) => void;
+  /** Accessible name; defaults to a photo viewer. */
+  label?: string;
 }
 
 /**
  * Full-bleed image viewer shared across Gallery, Team and History.
  * Controlled component: the parent owns the open index and navigation.
  */
-export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNavigate }) => {
+export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNavigate, label = 'Visualização de fotografia em ecrã inteiro' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const isOpen = index !== null && index >= 0 && index < images.length;
@@ -41,18 +44,34 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNa
     containerRef.current?.focus();
     document.body.style.overflow = 'hidden';
 
+    // Captured on the document, ahead of a dialog underneath: Escape closes the
+    // viewer only, and Tab stays on the viewer's own controls
     const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case 'Escape': onClose(); break;
-        case 'ArrowLeft': goPrev(); break;
-        case 'ArrowRight': goNext(); break;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      } else if (e.key === 'ArrowLeft') {
+        goPrev();
+      } else if (e.key === 'ArrowRight') {
+        goNext();
+      } else if (e.key === 'Tab') {
+        const controls = containerRef.current?.querySelectorAll<HTMLElement>('button');
+        if (!controls || controls.length === 0) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || active === containerRef.current)) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+        e.stopPropagation();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown, true);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+      document.removeEventListener('keydown', handleKeyDown, true);
+      // Inside a dialog the page stays locked; only release it when nothing else holds it
+      if (!document.querySelector('[role="dialog"][aria-modal="true"]:not([data-lightbox])')) document.body.style.overflow = 'unset';
       previousFocus?.focus();
     };
   }, [isOpen, onClose, goPrev, goNext]);
@@ -61,12 +80,15 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNa
 
   const controlClasses = "text-white/60 hover:text-white p-2 rounded-2xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70";
 
-  return (
+  // Portalled to <body>: inside a dialog, its transform would make this "fixed" overlay
+  // cover only the dialog's box instead of the screen
+  return createPortal(
     <div
       ref={containerRef}
       role="dialog"
       aria-modal="true"
-      aria-label="Visualização de fotografia em ecrã inteiro"
+      aria-label={label}
+      data-lightbox=""
       tabIndex={-1}
       className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl animate-fade-in-up"
       onClick={onClose}
@@ -117,6 +139,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNa
           <ChevronRight size={40} />
         </button>
       )}
-    </div>
+    </div>,
+    document.body,
   );
 };

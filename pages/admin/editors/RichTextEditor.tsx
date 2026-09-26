@@ -73,7 +73,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                     </div>
                 </div>
             </div>
-            <div className="border border-slate-700 rounded-xl overflow-hidden bg-slate-950/50 relative group focus-within:border-brand-500/50 transition-colors">
+            <div className="border border-slate-700 rounded-xl overflow-hidden bg-slate-950/50 relative group focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/60 transition-colors">
                 {viewMode === 'html' && (
                     <div className="flex gap-1 p-2 border-b border-slate-800 bg-slate-900/50 overflow-x-auto no-scrollbar touch-pan-x">
                         <button type="button" onClick={() => insertTag('bold')}   className="p-2 hover:bg-white/10 rounded text-slate-400 hover:text-white whitespace-nowrap active:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" title="Negrito" aria-label="Negrito"><Bold size={16} /></button>

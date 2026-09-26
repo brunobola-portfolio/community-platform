@@ -53,4 +53,11 @@ copy, a cached response — rolls back instead of reporting success.
   environment, never here.
 - Personal data (phone numbers, IBAN) lives in the production database, configured in the
   admin panel.
-- Back up the database monthly: `npx convex export --prod --path backups/backup-YYYY-MM.zip`.
+- Backups run by themselves: `.github/workflows/backup.yml` exports the database **with file
+  storage** (posters, photos, documents) every Sunday to the server disk and keeps 8 weeks.
+  Never commit an export: it contains account data. Restore on a test deployment first:
+  `npx convex import --replace --path <zip>`.
+- `.github/workflows/health.yml` checks the site every morning from outside (certificate for
+  every host name, the served version against `platform.lock`, link previews) and a failed
+  run is emailed by GitHub. Set the repository variables `SITE_HOSTS`, `SITE_URL` and
+  `CONVEX_SITE_URL`.

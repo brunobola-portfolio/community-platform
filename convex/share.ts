@@ -96,6 +96,9 @@ function htmlResponse(body: string, status = 200): Response {
             // corrected poster from lingering for days
             "Cache-Control": "public, max-age=300",
             "X-Robots-Tag": "noindex",
+            // Served on the site's own URL in proxy mode: a shared cache must not
+            // hand this crawler page to a person opening the same address
+            "Vary": "User-Agent",
         },
     });
 }
@@ -104,7 +107,12 @@ function htmlResponse(body: string, status = 200): Response {
 export const sharePage = httpAction(async (ctx, request) => {
     const url = new URL(request.url);
     const [, , kind, rawSlug] = url.pathname.split("/");
-    const slug = decodeURIComponent(rawSlug ?? "");
+    let slug = "";
+    try {
+        slug = decodeURIComponent(rawSlug ?? "");
+    } catch {
+        slug = ""; // A malformed escape is just an unknown address
+    }
     const origin = siteOrigin();
     if (!origin) {
         // Without a trusted origin there is no safe canonical URL to describe or redirect to

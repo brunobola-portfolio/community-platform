@@ -21,7 +21,7 @@ interface FieldSpec {
 const FIELDS: FieldSpec[] = [
     { key: 'siteFullName', label: 'Nome completo', placeholder: 'Associação Cultural e Recreativa de ...', hint: 'Usado pelo assistente IA e em textos institucionais' },
     { key: 'locality', label: 'Localidade', placeholder: 'Ex: Vila Nova', hint: 'Primeira linha do hero da homepage e referências "em <localidade>"' },
-    { key: 'region', label: 'Concelho / região', placeholder: 'Ex: Santarém' },
+    { key: 'region', label: 'Concelho / região', placeholder: 'Ex: Concelho de Vila Nova' },
     { key: 'foundedYear', label: 'Ano de fundação', placeholder: 'Ex: 1985' },
     { key: 'heroTagline', label: 'Tagline do hero', placeholder: 'Cultura. Desporto. Comunidade.' },
     { key: 'heroSubtitle', label: 'Subtítulo do hero', placeholder: 'Desde 1985 a construir o futuro da comunidade.' },

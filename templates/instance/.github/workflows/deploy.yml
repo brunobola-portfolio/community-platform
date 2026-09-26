@@ -19,6 +19,8 @@ on:
       - platform.lock
       - env/**
       - brand/**
+      # A media kit kept next to the brand is documentation, not part of the site
+      - '!brand/kit/**'
       - deploy/**
       - apply.ps1
       - .github/workflows/deploy.yml

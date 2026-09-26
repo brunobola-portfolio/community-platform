@@ -88,7 +88,15 @@ Order rule: **backend before frontend** whenever the release touched `convex/`.
 
 ## 3. Operate
 
-- **Backups**: `npx convex export --prod --path backups/backup-YYYY-MM.zip`, monthly, committed
+- **Backups**: automatic, weekly, with file storage (`backup.yml` in the template): the
+  export lands on the server disk and the last 8 weeks are kept. Exports contain account data
+  and never go into git. Rehearse a restore on a test deployment once a quarter.
+- **Monitoring**: `health.yml` runs daily from GitHub's own runners — certificate for every
+  host, served version against `platform.lock`, link previews — and GitHub emails a failure.
+- **Retention**: registrations made without an account are deleted 90 days after the event
+  and cancelled ones after 30 days (daily cron). The `/privacidade` page states this from the
+  instance's own settings.
+- (Previous practice, retired:) monthly `npx convex export` committed
   to the instance repo. The site folder is backed up automatically before each deploy
   (`C:\inetpub\backups`, last 5 kept).
 - **Rollback**: frontend — restore the previous backup folder (seconds); backend — deploy

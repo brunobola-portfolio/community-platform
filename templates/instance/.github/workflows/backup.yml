@@ -1,0 +1,59 @@
+name: Backup
+
+# Weekly export of the production database WITH file storage (posters, photos,
+# documents) to the server disk, outside git: exports contain account data and
+# must not live in a repository forever. Keeps the last 8 weeks.
+#
+# Repository secret CONVEX_DEPLOY_KEY (the production deploy key).
+# Restore, on a test deployment first:  npx convex import --replace --path <zip>
+
+on:
+  schedule:
+    - cron: "23 2 * * 0"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-instance
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: [self-hosted, windows, instance]
+    timeout-minutes: 30
+    env:
+      HAS_KEY: ${{ secrets.CONVEX_DEPLOY_KEY != '' }}
+      BACKUP_DIR: ${{ vars.BACKUP_DIR || 'C:\inetpub\backups\convex' }}
+      BACKUP_NAME: ${{ vars.BACKUP_NAME || 'instance' }}
+    steps:
+      - name: Export database and files
+        if: env.HAS_KEY == 'true'
+        shell: powershell
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force $env:BACKUP_DIR | Out-Null
+          $file = Join-Path $env:BACKUP_DIR ("$env:BACKUP_NAME-" + (Get-Date -Format 'yyyy-MM-dd') + ".zip")
+          $work = Join-Path $env:RUNNER_TEMP 'convex-export'
+          New-Item -ItemType Directory -Force $work | Out-Null
+          Set-Location $work
+          # The CLI wants a project to run in; a throwaway one pinned to a known version
+          Set-Content -Path (Join-Path $work 'package.json') -Value '{"private":true,"dependencies":{"convex":"1.45.0"}}' -Encoding ascii
+          npm install --no-audit --no-fund --loglevel=error
+          if ($LASTEXITCODE -ne 0) { throw "npm install failed ($LASTEXITCODE)" }
+          npx convex export --include-file-storage --path $file
+          if ($LASTEXITCODE -ne 0) { throw "convex export failed ($LASTEXITCODE)" }
+          $size = (Get-Item $file).Length
+          if ($size -lt 10KB) { throw "Export suspiciously small: $size bytes" }
+          Write-Host ("Backup: {0} ({1:N1} MB)" -f $file, ($size / 1MB))
+          Get-ChildItem $env:BACKUP_DIR -Filter "$env:BACKUP_NAME-*.zip" | Sort-Object Name -Descending | Select-Object -Skip 8 | ForEach-Object { Remove-Item $_.FullName -Force }
+          $global:LASTEXITCODE = 0
+
+      - name: No deploy key configured
+        if: env.HAS_KEY != 'true'
+        run: |
+          echo "::error::CONVEX_DEPLOY_KEY is not set in this repository; the backup did not run."
+          exit 1

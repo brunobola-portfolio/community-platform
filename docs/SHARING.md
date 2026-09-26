@@ -13,9 +13,9 @@ shared link looks, and the one server change that makes each event show its own 
 - The WhatsApp message carries what, when and where, with the link on its own line:
 
   ```
-  *Arraial de Vale Alto*
+  *Arraial de Vila Nova*
   Sábado, 18 de julho às 21:00 · Pavilhão
-  https://example.org/events/arraial-de-vale-alto
+  https://example.org/events/arraial-de-vila-nova
   ```
 
 ## Previews that show the event's own poster
@@ -38,7 +38,20 @@ which crawlers never run, so none of them loops back.
 What is left is routing crawler requests for `/events/<slug>` and `/blog/<slug>` on the
 site's own domain to that page, so the preview stays attributed to the site.
 
-### IIS (Windows)
+### IIS (Windows) without ARR — redirect
+
+Needs only URL Rewrite, which every IIS deployment of this platform already has. Build the
+instance with `VITE_SHARE_PREVIEWS=redirect`: crawler requests get a 302 to the preview page.
+WhatsApp, Telegram and LinkedIn follow it the way they follow a shortened link and build the
+card from the preview page, whose `og:url` names the site's own address. Facebook also follows
+it; its Sharing Debugger may note that the canonical URL redirects, which does not stop the
+card. People never see the redirect: only the crawler user agents listed below match.
+
+This is what the reference instance runs. The ARR 3.0 installer stalls unattended on Windows
+Server 2025 (quiet mode confirmed in its log), so the proxy route below is for servers where
+ARR installs cleanly.
+
+### IIS (Windows) with ARR — proxy
 
 Needs **Application Request Routing** (free, from Microsoft) with the proxy enabled and the
 host header **not** preserved — Convex routes by host name:
@@ -49,7 +62,8 @@ Set-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Filter 'system.w
 Set-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Filter 'system.webServer/proxy' -Name preserveHostHeader -Value False
 ```
 
-Then build the instance with `VITE_SHARE_PREVIEWS=proxy`. The build adds the rule to
+Then build the instance with `VITE_SHARE_PREVIEWS=proxy`, which answers on the site's own URL
+with no redirect at all. The build adds the rule to
 `web.config` itself, pointing at the deployment in `VITE_CONVEX_URL` (or
 `VITE_CONVEX_SITE_URL` for a self-hosted backend). Without ARR the rule would turn every
 crawler request into an error, which is why it is opt-in.

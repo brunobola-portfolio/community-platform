@@ -121,6 +121,8 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
             >
               Community Platform by BolaLabs
             </a>
+            <span className="hidden sm:inline"> · </span>
+            <a href="/privacidade" className="block sm:inline text-slate-500 dark:text-slate-500 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Privacidade</a>
           </div>
           <div className="flex items-center space-x-6">
             <button onClick={onAdminLogin} disabled={!onAdminLogin} className="group flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 hover:bg-amber-900/10 hover:border-amber-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">

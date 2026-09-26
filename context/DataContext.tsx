@@ -263,7 +263,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { addMember, updateMember, deleteMember } = useMemberActions(actionDeps);
   const { addSponsor, updateSponsor, deleteSponsor } = useSponsorActions(actionDeps);
   const { addCategory, updateCategory, deleteCategory } = useCategoryActions(actionDeps);
-  const { addRegistration, updateRegistrationStatus } = useRegistrationActions();
+  const { addRegistration, updateRegistrationStatus, bulkUpdateRegistrationStatus, removeRegistration } = useRegistrationActions();
   const { addDocument, updateDocument, deleteDocument } = useDocumentActions(actionDeps);
   const { sendNotification, updateNotification, deleteNotification } = useNotificationActions(actionDeps);
   const { createAlbum, updateAlbum, deleteAlbum } = useAlbumActions(actionDeps);
@@ -314,6 +314,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updateSettings,
       addRegistration,
       updateRegistrationStatus,
+      bulkUpdateRegistrationStatus,
+      removeRegistration,
       addSponsor,
       updateSponsor,
       deleteSponsor,
@@ -374,6 +376,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updateSettings,
       addRegistration,
       updateRegistrationStatus,
+      bulkUpdateRegistrationStatus,
+      removeRegistration,
       addSponsor,
       updateSponsor,
       deleteSponsor,

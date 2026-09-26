@@ -6,6 +6,76 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.12.0] - 2026-09-26
+
+Registrations people actually complete, and a board that stays in control of them. Reviewed
+by a panel (UX for volunteer boards, security and GDPR, accessibility, white-label and
+operations) and validated end to end in the browser.
+
+### Added
+
+- **Registration without an account**, the default for every event, including events created
+  before this release: name, email, optional phone and the event's own questions. The board
+  can restrict an event to members with an account. Guests are limited per email (hashed),
+  per session and globally, a honeypot catches form bots, an event holds at most 40
+  unconfirmed guest registrations, and every one waits as "pending" for the board
+- **An Inscrições tab**: a count of pending registrations in the menu; per event, totals by
+  state and a capacity bar; confirm all pending at once; confirm, cancel or reactivate per row
+  with words, not icons; a list for the door to print (name, phone, answers, a box to tick);
+  an Excel export with the event's own questions as columns; copy every email for a Bcc
+- The registration detail offers email and WhatsApp to the person, and says plainly that
+  confirming does not notify anyone
+- A privacy notice at `/privacidade`, written from each instance's settings: controller,
+  purposes and legal basis, retention, processors, rights and the supervisory authority. The
+  registration form links to it; guest registrations record when the notice was shown
+- Registrations without an account are deleted 90 days after their event, cancelled ones
+  after 30 days (daily cron)
+- The instance template ships `health.yml` (daily outside check: certificate for every host,
+  served version, link previews) and `backup.yml` (weekly export **with file storage** to the
+  server disk, 8 weeks kept, never in git)
+- Link previews without Application Request Routing: `VITE_SHARE_PREVIEWS=redirect` sends
+  preview crawlers to the Convex page with a 302, which needs only URL Rewrite
+
+### Changed
+
+- The event form groups registrations in one block and names things the way a board says
+  them: "Aceitar inscrições pelo site", "Lugares disponíveis" (empty means no limit), "Preço
+  por pessoa (€)", "Mostrar em destaque na página inicial", "É um torneio" with a free-text
+  "Modalidade" and suggestions instead of one region's fixed list of games
+- The registration questions builder says the form already asks name, email and phone, and
+  its types read "Texto curto", "Texto longo", "Número"
+- The news form puts the article under its title; author, reading time and keywords fold
+  under "Mais opções"; the author avatar URL field is gone
+- The backoffice menu and pages use plain names: Início, Página inicial, Mensagens recebidas,
+  Avisos aos sócios, Assistente virtual; the activity list shows dates and Criado/Alterado/
+  Apagado; pending registrations on the dashboard name their event
+- The event dialog shows the time, "Restam N lugares" for every event with a limit, and a
+  clear "Esgotado" state; the agenda card offers "Ver e inscrever-me" and one "Adicionar ao
+  calendário"
+- The registration screen after sending repeats what, when, where and the price, and tells
+  people how to back out; the calendar file now carries the UID and DTSTAMP Outlook requires
+- Primary buttons and the WhatsApp button use darker shades so white text meets WCAG AA
+
+### Fixed
+
+- "Esgotado" was only shown for tournaments; any event with a limit now shows it before the
+  server refuses
+- The screen after registering said "A sua presença foi confirmada" while the registration
+  was pending
+- An event with its own questions stopped asking for name and email, then refused the
+  registration for lacking an email nobody could type
+- The participant counter was nudged up and down and could drift; it is recomputed
+- A cancelled registration let the same email register again and again
+- Answers to questions an event never asked were stored; required answers are now enforced
+  on the server as well
+- The full-screen poster opened inside the event dialog's box, and Escape closed both
+- Focus: forms open on their first field, errors take focus to the first problem, the result
+  screen takes focus from the vanished send button, and dialogs keep Tab inside
+- Site backups in the instance template pruned every folder in `C:\inetpub\backups`,
+  including another instance's; they are now scoped to the site folder
+- Editing a media kit kept under `brand/kit` no longer triggers a deploy
+- Client-specific names left in tests and docs replaced with the fictional demo
+
 ## [2.11.1] - 2026-09-26
 
 ### Security

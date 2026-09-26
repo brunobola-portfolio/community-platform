@@ -34,7 +34,7 @@ const SIZE_CLASSES = {
   xl: 'max-w-4xl',
 };
 
-const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]):not([tabindex="-1"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 const FORM_FIELD = 'input:not([type="hidden"]):not([disabled]):not([readonly]), select:not([disabled]), textarea:not([disabled])';
 
 export const Modal: React.FC<ModalProps> = ({
@@ -79,6 +79,8 @@ export const Modal: React.FC<ModalProps> = ({
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // A viewer opened on top (the poster) handles its own keys first
+      if (e.defaultPrevented) return;
       if (e.key === 'Escape') { onCloseRef.current(); return; }
       if (e.key !== 'Tab') return;
 
@@ -89,9 +91,11 @@ export const Modal: React.FC<ModalProps> = ({
 
       // Multi-step dialogs unmount the focused control between steps, which
       // drops focus on <body>; the next Tab pulls it back into the dialog
-      if (!modal.contains(active)) {
+      if (!modal.contains(active) || active === modal) {
+        // Focus on the dialog itself (content-only dialogs open that way): Tab
+        // goes to the first control and Shift+Tab to the last, never behind it
         e.preventDefault();
-        first?.focus();
+        (e.shiftKey ? last : first)?.focus();
       } else if (e.shiftKey && active === first) {
         e.preventDefault();
         last?.focus();
@@ -168,7 +172,7 @@ export const Modal: React.FC<ModalProps> = ({
               onClick={onClose}
               aria-label="Fechar"
               title="Fechar"
-              className="-mr-1 -mt-1 shrink-0 rounded-xl p-2.5 text-slate-400 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/5 dark:hover:text-white"
+              className="-mr-1 -mt-1 shrink-0 rounded-xl p-2.5 text-slate-500 dark:text-slate-400 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/5 dark:hover:text-white"
             >
               <X size={18} />
             </button>

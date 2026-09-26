@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import { Button } from '../../components/ui/UIComponents';
 import type { AdminDashboardProps } from './types';
+
+const ACTION_LABELS: Record<string, string> = { create: 'Criado', update: 'Alterado', delete: 'Apagado' };
 import { PlatformVersionCard } from './components/PlatformVersionCard';
 
 /**
@@ -20,6 +22,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     onViewRegistration,
     onNewPost,
     onNewEvent,
+    eventTitles,
 }) => {
     const latencyDisplay = aiStats?.avgLatency != null
         ? `Assistente IA: ${(aiStats.avgLatency / 1000).toFixed(1)}s de resposta média`
@@ -30,7 +33,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             {/* Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
-                    label="Sócios Totais"
+                    label="Sócios"
                     value={membersCount}
                     icon={<Check className="text-brand-500/50" size={20} />}
                     gradient="from-dark-surface to-brand-900/10"
@@ -44,11 +47,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     footer={<span className="text-xs text-green-400 flex items-center gap-1"><TrendingUp size={12} /> Total confirmadas</span>}
                 />
                 <StatCard
-                    label="Pendentes"
+                    label="Inscrições por confirmar"
                     value={dashboardStats.pendingRegistrations.length}
                     icon={<Activity className="text-amber-500/50" size={20} />}
                     gradient="from-dark-surface to-amber-900/10"
-                    footer={<span className="text-xs text-slate-500">A aguardar validação</span>}
+                    footer={<span className="text-xs text-slate-400">Abra Inscrições para as confirmar</span>}
                 />
                 <StatCard
                     label="Sistema"
@@ -69,6 +72,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <ApprovalsPanel
                     pendingRegistrations={dashboardStats.pendingRegistrations}
+                    eventTitles={eventTitles}
                     onViewRegistration={onViewRegistration}
                     onNewPost={onNewPost}
                     onNewEvent={onNewEvent}
@@ -109,6 +113,7 @@ interface ApprovalsPanelProps {
     onViewRegistration: AdminDashboardProps['onViewRegistration'];
     onNewPost: () => void;
     onNewEvent: () => void;
+    eventTitles?: Map<string, string>;
 }
 
 const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
@@ -116,10 +121,11 @@ const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
     onViewRegistration,
     onNewPost,
     onNewEvent,
+    eventTitles,
 }) => (
     <div className="bg-dark-surface border border-white/10 rounded-2xl p-6 shadow-lg h-96 flex flex-col">
         <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-            <Zap size={18} className="text-amber-400" /> Ações Rápidas & Aprovações
+            <Zap size={18} className="text-amber-400" /> Por tratar
         </h3>
         <div className="flex-1 flex flex-col">
             {pendingRegistrations.length === 0 ? (
@@ -143,7 +149,7 @@ const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
                                 </div>
                                 <div className="text-left">
                                     <div className="text-white font-medium text-sm">{reg.name ?? 'Participante'}</div>
-                                    <div className="text-xs text-slate-500">Inscrição Pendente</div>
+                                    <div className="text-xs text-slate-400">{eventTitles?.get(reg.eventId) ?? "Inscrição por confirmar"}</div>
                                 </div>
                             </div>
                             <div className="text-xs text-brand-400 flex items-center gap-1">Ver <Eye size={12} /></div>
@@ -170,7 +176,7 @@ interface ActivityLogPanelProps {
 const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ activityLogs }) => (
     <div className="bg-dark-surface border border-white/10 rounded-2xl p-6 shadow-lg h-96 flex flex-col">
         <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-            <History size={18} className="text-slate-400" /> Logs do Sistema
+            <History size={18} className="text-slate-400" /> Últimas alterações
         </h3>
         <div className="space-y-4 overflow-y-auto custom-scrollbar pr-2">
             {activityLogs.length === 0 && (
@@ -188,10 +194,10 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ activityLogs }) => 
                         <p className="text-slate-300 leading-snug text-xs md:text-sm">{log.description}</p>
                         <div className="flex gap-2 mt-1">
                             <span className="text-[10px] text-slate-500">
-                                {new Date(log.timestamp).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                                {new Date(log.timestamp).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </span>
                             <span className="text-[10px] text-brand-400 bg-brand-900/10 px-1.5 rounded uppercase tracking-wider">
-                                {log.action}
+                                {ACTION_LABELS[log.action] ?? log.action}
                             </span>
                         </div>
                     </div>

@@ -44,6 +44,17 @@ provider keys. When deploying an instance:
 
 ## Known limitations
 
+- **Registration without an account is open by design and rate-limited, not verified.**
+  Events accept guests unless set to "members only". Each guest registration is limited per
+  email (hashed), per browser session and globally, carries a honeypot field, and waits as
+  "pending" for the board. An event holds at most 40 unconfirmed guest registrations, so a
+  script cannot fill it; a determined abuser who rotates emails and sessions can still create
+  that many pending rows, which the board cancels in bulk. The email address is not verified:
+  someone could register another person's address. A duplicate is answered, not thrown, so
+  probing whether an address is registered spends rate-limit tokens.
+- **Guest registration data is kept 90 days after the event** (30 days if cancelled), then
+  deleted by a daily cron; the privacy notice at `/privacidade` says so.
+
 Documented so deployers can decide whether they matter for their association:
 
 - **Sign-up is open and emails are not verified.** The Password provider has no email

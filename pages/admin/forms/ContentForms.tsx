@@ -29,6 +29,9 @@ interface EventFormProps extends FieldHelpers, NumHelper {
     onFormDataChange: (data: AdminFormData) => void;
 }
 
+/** Suggestions only: each association writes the games it actually plays. */
+const TOURNAMENT_SUGGESTIONS = ['Sueca', 'Futsal', 'Snooker', 'Xadrez', 'Petanca', 'Chinquilho', 'Padel', 'Dardos', 'Atletismo'];
+
 export const EventForm: React.FC<EventFormProps> = ({
     formData, setField, str, num, bool, categories, settings,
     isGeneratingImage, isEnhancingText, onGenerateImage, onEnhanceText, onFormDataChange,
@@ -48,39 +51,57 @@ export const EventForm: React.FC<EventFormProps> = ({
             <MediaStudio label="Cartaz ou imagem" imageUrl={str('imageUrl')} onChange={(url: string) => setField('imageUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
         </div>
         <div className="md:col-span-2 space-y-6">
-            <RichTextEditor label="Conteúdo Principal" required value={str('description')} onChange={(v: string) => setField('description', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-64" />
-            <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><SettingsIcon size={16} /> Configurações de Evento</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <Field label="Local"><input required value={str('location')} onChange={e => setField('location', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                    <Field label="Preço (EUR)"><input type="number" value={numStr('entryPrice')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                    <Field label="Máx Participantes"><input type="number" value={numStr('maxParticipants')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                    <label className="flex items-center gap-2 pt-6 cursor-pointer">
+            <RichTextEditor label="Descrição do evento" required value={str('description')} onChange={(v: string) => setField('description', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-64" />
+            <div className="bg-white/5 p-4 rounded-xl border border-white/5 space-y-5">
+                <h4 className="text-sm font-bold text-white flex items-center gap-2"><SettingsIcon size={16} /> Local, destaque e tipo</h4>
+                <Field label="Local"><input required value={str('location')} onChange={e => setField('location', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Pavilhão da associação" /></Field>
+                <div className="flex flex-wrap gap-x-6 gap-y-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" className="accent-brand-500 w-4 h-4" checked={bool('isHighlight')} onChange={e => setField('isHighlight', e.target.checked)} />
-                        <span className="text-sm text-slate-300">Destaque (Homepage)</span>
+                        <span className="text-sm text-slate-300">Mostrar em destaque na página inicial</span>
                     </label>
-                </div>
-                <div className="flex flex-wrap gap-6 mb-4 pt-4 border-t border-white/5">
                     <label className="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" className="accent-brand-500 w-4 h-4" checked={bool('isTournament')} onChange={e => setField('isTournament', e.target.checked)} />
-                        <span className="text-sm text-slate-300">Modo Torneio</span>
-                    </label>
-                    {bool('isTournament') && (
-                        <div className="flex items-center gap-2">
-                            <AdminSelect className="text-xs w-32" value={str('tournamentType', 'Outro')} onChange={e => setField('tournamentType', e.target.value)}>
-                                <option value="Sueca">Sueca</option><option value="Futsal">Futsal</option><option value="Snooker">Snooker</option><option value="Chinquilho">Chinquilho</option><option value="Petanca">Petanca</option><option value="Outro">Outro</option>
-                            </AdminSelect>
-                        </div>
-                    )}
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" className="accent-brand-500 w-4 h-4" checked={bool('registrationOpen')} onChange={e => setField('registrationOpen', e.target.checked)} />
-                        <span className="text-sm text-slate-300">Inscrições Abertas</span>
+                        <span className="text-sm text-slate-300">É um torneio</span>
                     </label>
                 </div>
-                <RegistrationFormBuilder
-                    fields={Array.isArray(formData.registrationFields) ? formData.registrationFields as Array<{ id: string; label: string; type: string; required: boolean; placeholder?: string }> : []}
-                    onChange={fields => onFormDataChange({ ...formData, registrationFields: fields })}
-                />
+                {bool('isTournament') && (
+                    <>
+                        <Field label="Modalidade" hint="Escreva livremente ou escolha uma sugestão."><input list="tournament-kinds" value={str('tournamentType')} onChange={e => setField('tournamentType', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Sueca, Futsal, Xadrez" /></Field>
+                        <datalist id="tournament-kinds">
+                            {TOURNAMENT_SUGGESTIONS.map(kind => <option key={kind} value={kind} />)}
+                        </datalist>
+                    </>
+                )}
+            </div>
+            {/* Everything about registrations in one place, shown only when they are on */}
+            <div className="bg-white/5 p-4 rounded-xl border border-white/5 space-y-5">
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" className="accent-brand-500 w-5 h-5 mt-0.5" checked={bool('registrationOpen')} onChange={e => setField('registrationOpen', e.target.checked)} />
+                    <span>
+                        <span className="block text-sm font-bold text-white">Aceitar inscrições pelo site</span>
+                        <span className="block text-xs text-slate-500">As inscrições chegam ao separador Inscrições, onde as confirma, cancela e exporta.</span>
+                    </span>
+                </label>
+                {bool('registrationOpen') && (
+                    <>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Field label="Lugares disponíveis" hint="Vazio = sem limite. Quando enchem, o site mostra “Esgotado”."><input type="number" min="1" inputMode="numeric" value={numStr('maxParticipants')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                            <Field label="Preço por pessoa (€)" hint="Vazio ou 0 = grátis. O pagamento combina-se com a organização."><input type="number" min="0" step="0.5" inputMode="decimal" value={numStr('entryPrice')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                        </div>
+                        <label className="flex items-start gap-2 cursor-pointer rounded-lg border border-white/10 bg-black/20 p-3">
+                            <input type="checkbox" className="accent-brand-500 w-4 h-4 mt-0.5" checked={formData.allowGuestRegistration === false} onChange={e => setField('allowGuestRegistration', !e.target.checked)} />
+                            <span className="text-sm text-slate-300">
+                                Só sócios com conta se podem inscrever
+                                <span className="block text-xs text-slate-500">Desligado (recomendado): quem abre o evento num link do WhatsApp inscreve-se só com nome e email.</span>
+                            </span>
+                        </label>
+                        <RegistrationFormBuilder
+                            fields={Array.isArray(formData.registrationFields) ? formData.registrationFields as Array<{ id: string; label: string; type: string; required: boolean; placeholder?: string }> : []}
+                            onChange={fields => onFormDataChange({ ...formData, registrationFields: fields })}
+                        />
+                    </>
+                )}
             </div>
         </div>
     </div>
@@ -118,19 +139,22 @@ export const PostForm: React.FC<PostFormProps> = ({
                 <Field label="Data"><input type="datetime-local" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} required /></Field>
                 <div className="flex items-center gap-2">
                     <input type="checkbox" id="post-published" className="accent-brand-500 w-4 h-4" checked={bool('published')} onChange={e => setField('published', e.target.checked)} />
-                    <label htmlFor="post-published" className="text-sm text-slate-300">Publicado (visível no portal)</label>
+                    <label htmlFor="post-published" className="text-sm text-slate-300">Publicada (visível no site)</label>
                 </div>
                 <MediaStudio label="Imagem de capa" imageUrl={str('coverUrl')} onChange={(url: string) => setField('coverUrl', url)} onGenerateAI={onGenerateImage} isGenerating={isGeneratingImage} defaultStyle={settings.defaultImageStyle} />
             </div>
             <div className="md:col-span-2 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Field label="Autor (Nome)"><input value={str('author')} onChange={e => setField('author', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></Field>
-                    <Field label="Cargo do Autor"><input value={str('authorRole')} onChange={e => setField('authorRole', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></Field>
-                    <Field label="Avatar do Autor (URL)"><input value={str('authorAvatar')} onChange={e => setField('authorAvatar', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://..." /></Field>
-                    <Field label="Tempo de Leitura"><input value={str('readTime')} onChange={e => setField('readTime', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: 5 min" /></Field>
-                </div>
-                <Field label="Tags (Separadas por vírgula)"><input value={tagsValue} onChange={e => setField('tags', e.target.value)} className={STD_INPUT_CLASS} placeholder="Associação, Comunidade, Evento" /></Field>
                 <RichTextEditor label="Notícia" value={str('content')} onChange={(v: string) => setField('content', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-96" />
+                {/* Optional details most news never needs, folded so the article comes first */}
+                <details className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <summary className="cursor-pointer text-sm font-semibold text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded">Mais opções: autor e palavras-chave</summary>
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Field label="Autor" hint="Vazio mostra “Direção”."><input value={str('author')} onChange={e => setField('author', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></Field>
+                        <Field label="Cargo do autor"><input value={str('authorRole')} onChange={e => setField('authorRole', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Presidente" /></Field>
+                        <Field label="Tempo de leitura"><input value={str('readTime')} onChange={e => setField('readTime', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: 3 min" /></Field>
+                        <Field label="Palavras-chave (opcional)" hint="Separadas por vírgulas."><input value={tagsValue} onChange={e => setField('tags', e.target.value)} className={STD_INPUT_CLASS} placeholder="Festa, Torneio, Juventude" /></Field>
+                    </div>
+                </details>
             </div>
         </div>
     );

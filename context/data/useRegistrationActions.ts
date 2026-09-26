@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useMutation } from 'convex/react';
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
-import type { ActionResult } from '../../types';
+import type { ActionResult, RegistrationStatus } from '../../types';
 import type { RegistrationCreateArgs } from './types';
 import { toActionResult } from './helpers';
 
@@ -10,6 +10,8 @@ import { toActionResult } from './helpers';
 export function useRegistrationActions() {
   const createRegMut = useMutation(api.registrations.create);
   const updateRegStatusMut = useMutation(api.registrations.updateStatus);
+  const bulkStatusMut = useMutation(api.registrations.bulkUpdateStatus);
+  const removeRegMut = useMutation(api.registrations.remove);
 
   const addRegistration = useCallback(
     async (data: RegistrationCreateArgs): Promise<ActionResult> => {
@@ -41,5 +43,29 @@ export function useRegistrationActions() {
     [updateRegStatusMut]
   );
 
-  return { addRegistration, updateRegistrationStatus };
+  const bulkUpdateRegistrationStatus = useCallback(
+    async (ids: string[], status: RegistrationStatus): Promise<ActionResult> => {
+      try {
+        await bulkStatusMut({ ids: ids as Id<"registrations">[], status });
+        return { success: true };
+      } catch (e) {
+        return toActionResult(e);
+      }
+    },
+    [bulkStatusMut]
+  );
+
+  const removeRegistration = useCallback(
+    async (id: string): Promise<ActionResult> => {
+      try {
+        await removeRegMut({ id: id as Id<"registrations"> });
+        return { success: true };
+      } catch (e) {
+        return toActionResult(e);
+      }
+    },
+    [removeRegMut]
+  );
+
+  return { addRegistration, updateRegistrationStatus, bulkUpdateRegistrationStatus, removeRegistration };
 }

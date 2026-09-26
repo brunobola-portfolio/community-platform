@@ -21,6 +21,7 @@ const AboutPageWrapper = React.lazy(() => import('./pages/About').then(m => ({ d
 const HistoryPage = React.lazy(() => import('./pages/History').then(m => ({ default: m.HistoryPage })));
 const TeamPage = React.lazy(() => import('./pages/Team').then(m => ({ default: m.TeamPage })));
 const EventsPage = React.lazy(() => import('./pages/Events').then(m => ({ default: m.EventsPage })));
+const PrivacyPage = React.lazy(() => import('./pages/Privacy').then(m => ({ default: m.PrivacyPage })));
 const BlogPageWrapper = React.lazy(() => import('./pages/Blog').then(m => ({ default: m.BlogPageWrapper })));
 const PostDetailsPageWrapper = React.lazy(() => import('./pages/PostDetails').then(m => ({ default: m.PostDetailsPageWrapper })));
 const GalleryPageWrapper = React.lazy(() => import('./pages/Gallery').then(m => ({ default: m.GalleryPageWrapper })));
@@ -64,6 +65,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <PageErrorBoundary>{suspended(<HomePageWrapper />)}</PageErrorBoundary> },
           { path: 'about', element: <PageErrorBoundary>{suspended(<AboutPageWrapper />)}</PageErrorBoundary> },
+          { path: 'privacidade', element: <PageErrorBoundary>{suspended(<PrivacyPage />)}</PageErrorBoundary> },
           { path: 'history', element: <PageErrorBoundary>{suspended(<HistoryPage />)}</PageErrorBoundary> },
           { path: 'team', element: <PageErrorBoundary>{suspended(<TeamPage />)}</PageErrorBoundary> },
           { path: 'events', element: <PageErrorBoundary>{suspended(<EventsPage />)}</PageErrorBoundary> },

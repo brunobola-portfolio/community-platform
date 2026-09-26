@@ -43,11 +43,10 @@ export const geoQuery = action({
         settings?.chatModelFallback ?? process.env.GEMINI_CHAT_MODEL_FALLBACK ?? DEFAULT_CHAT_MODEL_FALLBACK;
       geoModel = model;
 
-      // Venue coordinates from DB settings, then env vars (SITE_* preferred,
-      // ARCVA_* kept for the reference instance), then a neutral default
+      // Venue coordinates from DB settings, then SITE_* env vars, then a neutral default
       const LOCATION = {
-        lat: parseFloat(settings?.latitude ?? process.env.SITE_LATITUDE ?? process.env.ARCVA_LATITUDE ?? "38.7223"),
-        lng: parseFloat(settings?.longitude ?? process.env.SITE_LONGITUDE ?? process.env.ARCVA_LONGITUDE ?? "-9.1393"),
+        lat: parseFloat(settings?.latitude ?? process.env.SITE_LATITUDE ?? "38.7223"),
+        lng: parseFloat(settings?.longitude ?? process.env.SITE_LONGITUDE ?? "-9.1393"),
       };
 
       const response = await ai.models.generateContent({

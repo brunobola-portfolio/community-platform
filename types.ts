@@ -166,11 +166,14 @@ export interface Event {
 
   // Tournament Specific Logic
   isTournament?: boolean;
-  tournamentType?: 'Sueca' | 'Futsal' | 'Snooker' | 'Chinquilho' | 'Outro' | string;
+  /** Free text chosen by the association (the form offers suggestions). */
+  tournamentType?: string;
   entryPrice?: number;
   maxParticipants?: number;
   currentParticipants?: number;
   registrationOpen?: boolean;
+  /** false = members only; unset or true = anyone may register, pending until the board confirms. */
+  allowGuestRegistration?: boolean;
 
   // Dynamic Form Configuration
   registrationFields?: RegistrationFieldDefinition[];

@@ -24,6 +24,7 @@ import { AdminPageHeader } from './admin/components/AdminPageHeader';
 import { DeleteConfirmDialog } from './admin/components/DeleteConfirmDialog';
 import type { DeleteConfirmState } from './admin/components/DeleteConfirmDialog';
 import { RegistrationModal } from './admin/components/RegistrationModal';
+import { RegistrationsTab } from './admin/tabs/RegistrationsTab';
 import { AdminDashboard } from './admin/AdminDashboard';
 import { AdminSettingsTab } from './admin/AdminSettingsTab';
 import { AdminAITab } from './admin/AdminAITab';
@@ -75,7 +76,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         addMember, updateMember, deleteMember,
         addCategory, updateCategory, deleteCategory,
         addSponsor, updateSponsor, deleteSponsor,
-        updateSettings, updateRegistrationStatus,
+        updateSettings, updateRegistrationStatus, bulkUpdateRegistrationStatus, removeRegistration,
         addDocument, deleteDocument, updateDocument,
         sendNotification, deleteNotification, updateNotification,
         createAlbum, deleteAlbum, updateAlbum,
@@ -309,7 +310,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const openModalFor = (type: string) => {
         setEditingId(null); setTempPhotoUrl('');
         if (type === 'actionArea') setFormData({ iconName: 'Users', order: 0, features: [] });
-        else if (type === 'event') setFormData({ categoryId: categories[0]?.id ?? '', status: 'published', registrationOpen: false, currentParticipants: 0, isTournament: false });
+        else if (type === 'event') setFormData({ categoryId: categories[0]?.id ?? '', status: 'published', registrationOpen: false, allowGuestRegistration: true, currentParticipants: 0, isTournament: false });
         // A news item is written about now; an empty required date only surfaced on save
         else if (type === 'post') setFormData({ categoryId: categories[0]?.id ?? '', published: true, date: formatDateForInput(new Date().toISOString()) });
         else setFormData({});
@@ -337,7 +338,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     return (
         <div className="dark flex h-screen overflow-hidden bg-dark-bg font-sans text-slate-200">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-            <AdminSidebar activeTab={activeTab} mobileMenuOpen={mobileMenuOpen} onTabSelect={handleTabSelect} onClose={() => setMobileMenuOpen(false)} onLogout={onLogout} />
+            <AdminSidebar activeTab={activeTab} mobileMenuOpen={mobileMenuOpen} onTabSelect={handleTabSelect} onClose={() => setMobileMenuOpen(false)} onLogout={onLogout} pendingRegistrations={dashboardStats.pendingRegistrations.length} />
             {mobileMenuOpen && <div className="fixed inset-0 z-[55] bg-black/60 md:hidden" onClick={() => setMobileMenuOpen(false)} />}
 
             <main className="relative flex-1 overflow-y-auto bg-dark-bg pt-16 md:pt-0">
@@ -370,13 +371,14 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                         ))}
                     </div>
 
-                    {activeTab === 'dashboard' && <AdminDashboard membersCount={members.length} dashboardStats={dashboardStats} activityLogs={activityLogs} aiStats={aiStats} onViewRegistration={setViewRegistration} onNewPost={() => openModalFor('post')} onNewEvent={() => openModalFor('event')} />}
+                    {activeTab === 'dashboard' && <AdminDashboard membersCount={members.length} dashboardStats={dashboardStats} activityLogs={activityLogs} aiStats={aiStats} onViewRegistration={setViewRegistration} onNewPost={() => openModalFor('post')} onNewEvent={() => openModalFor('event')} eventTitles={new Map(events.map(e => [e.id, e.title]))} />}
                     {activeTab === 'settings' && <AdminSettingsTab settingsForm={settingsForm} onSettingsChange={setSettingsForm} onSave={() => void handleSaveSettings('Definições')} isSaving={isSavingSettings} />}
                     {activeTab === 'ai' && <AdminAITab aiStats={aiStats} settingsForm={settingsForm} onSettingsChange={setSettingsForm} onSave={() => void handleSaveSettings('Definições de IA')} isSaving={isSavingSettings} />}
                     {activeTab === 'leads' && <AdminLeadsTab />}
                     {activeTab === 'member-quotas' && <AdminMemberQuotasTab />}
                     {activeTab === 'homepage' && <HomepageTab actionAreas={actionAreas} stats={stats} {...handlers} onNewStat={() => openModalFor('stat')} />}
                     {activeTab === 'events' && <EventsTab events={events} {...handlers} />}
+                    {activeTab === 'registrations' && <RegistrationsTab events={events} registrations={registrations} onView={setViewRegistration} onSetStatus={(id, status) => updateRegistrationStatus(id, status)} onBulkStatus={bulkUpdateRegistrationStatus} onRemove={removeRegistration} notify={notify} />}
                     {activeTab === 'news' && <NewsTab posts={posts} {...handlers} />}
                     {activeTab === 'members' && <MembersTab members={members} {...handlers} />}
                     {activeTab === 'sponsors' && <SponsorsTab sponsors={sponsors} sponsorTiers={sponsorTiers} {...handlers} />}
@@ -401,6 +403,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             {viewRegistration && (
                 <RegistrationModal
                     registration={viewRegistration}
+                    fields={events.find(e => e.id === viewRegistration.eventId)?.registrationFields}
+                    eventTitle={events.find(e => e.id === viewRegistration.eventId)?.title}
                     onClose={() => setViewRegistration(null)}
                     onConfirm={(id) => { void updateRegistrationStatus(id, 'confirmed'); setViewRegistration(null); notify('Inscrição confirmada.'); }}
                     onCancel={(id) => { void updateRegistrationStatus(id, 'cancelled'); setViewRegistration(null); notify('Inscrição cancelada.', 'info'); }}
