@@ -22,7 +22,7 @@ const config: Config = {
         serif: ['Playfair Display', 'serif'],
       },
       colors: {
-        // Brand scale: the single per-instance colour (reference instance red #df3d32)
+        // Brand scale: the single per-instance colour (platform default red #df3d32)
         brand: {
           50: '#fef3f2',
           100: '#fde5e3',
@@ -30,7 +30,7 @@ const config: Config = {
           300: '#f7aaa4',
           400: '#ef7a70',
           500: '#e65649',
-          600: '#df3d32', // Original logo red
+          600: '#df3d32', // Platform default
           700: '#bb2d24',
           800: '#9a2820',
           900: '#802621',

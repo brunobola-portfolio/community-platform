@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { Copy, Edit2, Trash2 } from 'lucide-react';
+import { Eye, Copy, Edit2, Trash2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '../../../components/ui/UIComponents';
 import { EmptyState } from '../../../components/ui/EmptyState';
@@ -42,6 +42,10 @@ export interface EntityListProps<T> {
   onEdit: (item: T) => void;
   onDelete: (item: T) => void;
   onDuplicate?: (item: T) => void;
+  /** Quick actions a list needs besides edit and delete (confirm, cancel...). */
+  extraActions?: (item: T) => React.ReactNode;
+  /** What the edit action does on this list ("Ver" where records are read-only). */
+  editLabel?: string;
   /** Empty collection state (no records at all). */
   emptyIcon: LucideIcon;
   emptyTitle: string;
@@ -56,20 +60,24 @@ const RowActions = <T,>({
   onEdit,
   onDelete,
   onDuplicate,
-}: Pick<EntityListProps<T>, 'onEdit' | 'onDelete' | 'onDuplicate'> & { item: T }) => (
+  extraActions,
+  editLabel = 'Editar',
+  title,
+}: Pick<EntityListProps<T>, 'onEdit' | 'onDelete' | 'onDuplicate' | 'extraActions' | 'editLabel'> & { item: T; title: string }) => (
   <div className="flex items-center justify-end gap-1">
+    {extraActions?.(item)}
     {onDuplicate && (
       <Button size="sm" variant="ghost" aria-label="Duplicar" title="Duplicar" onClick={() => onDuplicate(item)}>
         <Copy size={16} />
       </Button>
     )}
-    <Button size="sm" variant="ghost" aria-label="Editar" title="Editar" onClick={() => onEdit(item)}>
-      <Edit2 size={16} />
+    <Button size="sm" variant="ghost" aria-label={`${editLabel}: ${title}`} title={editLabel} onClick={() => onEdit(item)}>
+      {editLabel === 'Editar' ? <Edit2 size={16} /> : <Eye size={16} />}
     </Button>
     <Button
       size="sm"
       variant="ghost"
-      aria-label="Apagar"
+      aria-label={`Apagar: ${title}`}
       title="Apagar"
       className="text-red-400 hover:text-red-300"
       onClick={() => onDelete(item)}
@@ -109,6 +117,8 @@ export function EntityList<T>({
   onEdit,
   onDelete,
   onDuplicate,
+  extraActions,
+  editLabel,
   emptyIcon,
   emptyTitle,
   emptyDescription,
@@ -166,7 +176,7 @@ export function EntityList<T>({
                           </td>
                         ))}
                         <td className="p-4 align-middle">
-                          <RowActions item={item} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />
+                          <RowActions item={item} title={getTitle(item)} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} extraActions={extraActions} editLabel={editLabel} />
                         </td>
                       </tr>
                     ))
@@ -205,7 +215,7 @@ export function EntityList<T>({
                       </div>
                     </div>
                     <div className="mt-2 border-t border-white/5 pt-2">
-                      <RowActions item={item} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />
+                      <RowActions item={item} title={getTitle(item)} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} extraActions={extraActions} editLabel={editLabel} />
                     </div>
                   </div>
                 );

@@ -122,6 +122,11 @@ export const VisualEditor: React.FC<VisualEditorProps> = ({ value, onChange, lab
                 contentEditable
                 suppressContentEditableWarning
                 data-placeholder="Escreva aqui. Enter cria um novo parágrafo."
+                aria-placeholder="Escreva aqui. Enter cria um novo parágrafo."
+                onKeyDown={(e) => {
+                    // Ctrl+B and Ctrl+I are native; Ctrl+K for a link is the convention people know
+                    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); run({ kind: 'link' }); }
+                }}
                 onFocus={startParagraph}
                 onInput={emit}
                 onBlur={() => {

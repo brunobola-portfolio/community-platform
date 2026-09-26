@@ -35,15 +35,15 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
     return (
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 space-y-4">
             <div className="flex justify-between items-center mb-2">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2"><FormInput size={16} /> Campos do Formulário</h4>
+                <h4 className="text-sm font-bold text-white flex items-center gap-2"><FormInput size={16} /> Perguntas extra</h4>
                 <Button type="button" size="sm" variant="ghost" className="h-8 border-dashed border-slate-600" onClick={addField}>
-                    <Plus size={14} className="mr-1" /> Adicionar Campo
+                    <Plus size={14} className="mr-1" /> Acrescentar pergunta
                 </Button>
             </div>
 
             {fields.length === 0 ? (
                 <div className="text-center py-6 text-slate-500 text-xs italic border border-dashed border-slate-800 rounded-lg">
-                    Sem campos definidos. O formulário pedirá apenas Email.
+                    O formulário já pede nome, email e telemóvel. Acrescente só o que faltar: nome do parceiro de jogo, tamanho da t-shirt, restrições alimentares.
                 </div>
             ) : (
                 <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
@@ -52,48 +52,50 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                             <div className="grid grid-cols-2 gap-2 flex-1 sm:grid-cols-12">
                                 <div className="col-span-2 sm:col-span-4">
                                     <input
-                                        aria-label="Nome do campo"
+                                        aria-label="Pergunta"
                                         value={field.label}
                                         onChange={e => updateField(idx, { label: e.target.value })}
                                         className="w-full bg-transparent text-xs text-white border-b border-slate-700 focus:border-brand-500 outline-none"
-                                        placeholder="Label"
+                                        placeholder="Pergunta"
                                     />
                                 </div>
                                 <div className="col-span-1 sm:col-span-3">
                                     <AdminSelect
                                         value={field.type}
                                         onChange={e => updateField(idx, { type: e.target.value as RegistrationFieldDefinition['type'] })}
-                                        aria-label="Tipo de campo"
+                                        aria-label="Tipo de resposta"
                                         className="bg-slate-800 text-xs text-slate-300 border-none rounded py-1 pl-2 pr-6"
                                     >
-                                        <option value="text">Texto</option>
-                                        <option value="email">Email</option>
-                                        <option value="phone">Tel</option>
-                                        <option value="number">Núm</option>
+                                        <option value="text">Texto curto</option>
+                                        <option value="textarea">Texto longo</option>
+                                        <option value="number">Número</option>
                                         <option value="date">Data</option>
-                                        <option value="textarea">Área</option>
+                                        <option value="phone">Telemóvel</option>
+                                        <option value="email">Email</option>
                                     </AdminSelect>
                                 </div>
                                 <div className="col-span-1 sm:col-span-3">
                                     <input
-                                        aria-label="Texto de ajuda do campo"
+                                        aria-label="Exemplo de resposta"
                                         value={field.placeholder || ''}
                                         onChange={e => updateField(idx, { placeholder: e.target.value })}
                                         className="w-full bg-transparent text-xs text-slate-400 border-b border-slate-700 focus:border-brand-500 outline-none"
-                                        placeholder="Placeholder"
+                                        placeholder="Exemplo de resposta"
                                     />
                                 </div>
                                 <div className="col-span-2 flex items-center justify-center gap-1.5 sm:col-span-2">
-                                    <input
-                                        aria-label="Campo obrigatório"
-                                        type="checkbox"
-                                        checked={field.required}
-                                        onChange={e => updateField(idx, { required: e.target.checked })}
-                                        className="accent-brand-500 w-4 h-4"
-                                    />
+                                    <label className="flex cursor-pointer items-center gap-1.5 text-xs text-slate-300">
+                                        <input
+                                            type="checkbox"
+                                            checked={field.required}
+                                            onChange={e => updateField(idx, { required: e.target.checked })}
+                                            className="accent-brand-500 w-4 h-4"
+                                        />
+                                        Obrigatória
+                                    </label>
                                 </div>
                             </div>
-                            <button type="button" onClick={() => removeField(idx)} aria-label="Remover campo" title="Remover campo" className="rounded p-1 text-slate-600 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <button type="button" onClick={() => removeField(idx)} aria-label={`Remover a pergunta ${field.label || idx + 1}`} title="Remover pergunta" className="rounded p-1 text-slate-600 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                                 <Trash2 size={14} />
                             </button>
                         </div>

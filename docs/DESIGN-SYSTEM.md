@@ -18,7 +18,7 @@ glassmorphism sobre neutros slate, com uma cor brand quente por instância.
 
 | Token | Valor | Uso |
 |-------|-------|-----|
-| `brand-600` | `#df3d32` | Cor principal em light (vermelho do logo ARCVA — trocar por instância) |
+| `brand-600` | `#df3d32` | Cor principal em light (cor de marca por omissão da plataforma — trocar por instância) |
 | `brand-400` / `brand-500` | `#ef7a70` / `#e65649` | Cor principal em dark (contraste sobre fundo escuro) |
 | `brand-50…950` | escala completa | Fundos suaves, borders, hovers |
 | `dark-bg` | `#020617` | Fundo dark (slate-950); também `theme-color`/manifest |

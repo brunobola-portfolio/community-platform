@@ -571,7 +571,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             {eventCanRegister && !eventIsFull ? (
               <Button onClick={() => { const id = selectedEvent.id; setSelectedEvent(null); onOpenEvent(id); }}>
                 <CheckCircle2 size={16} />
-                {selectedEvent.entryPrice && selectedEvent.entryPrice > 0 ? `Inscrever (${selectedEvent.entryPrice}€)` : 'Inscrever-me'}
+                {selectedEvent.entryPrice && selectedEvent.entryPrice > 0 ? `Inscrever-me · ${selectedEvent.entryPrice} €` : 'Inscrever-me (grátis)'}
               </Button>
             ) : eventIsFull ? (
               <Button variant="outline" disabled>Vagas esgotadas</Button>
@@ -586,7 +586,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
           return (
             <div className="space-y-5">
-              <EventPoster key={selectedEvent.id} src={selectedEvent.imageUrl} alt={`Cartaz: ${selectedEvent.title}`} />
+              <EventPoster key={selectedEvent.id} src={selectedEvent.imageUrl} title={selectedEvent.title} />
               <div>
                 <div className="mb-3 flex flex-wrap gap-2">
                   <Badge className="border-none bg-brand-600 text-white shadow-md">{selectedEvent.category || 'Geral'}</Badge>

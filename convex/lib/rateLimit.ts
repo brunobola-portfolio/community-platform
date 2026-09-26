@@ -18,6 +18,10 @@ const RATE_LIMITS: Record<string, BucketConfig> = {
   "content:create": { maxTokens: 20, refillPerMinute: 10 },
   "content:update": { maxTokens: 30, refillPerMinute: 15 },
   "registration:create": { maxTokens: 5, refillPerMinute: 5 },
+  // Guests: per email (a person), per browser session, and a ceiling for all
+  "registration:guest": { maxTokens: 3, refillPerMinute: 1 },
+  "registration:guest:session": { maxTokens: 5, refillPerMinute: 2 },
+  "registration:guest:global": { maxTokens: 60, refillPerMinute: 30 },
   // Public forms: tighter buckets keyed per submitted email
   "contact:create": { maxTokens: 3, refillPerMinute: 1 },
   "sponsorship:create": { maxTokens: 3, refillPerMinute: 1 },

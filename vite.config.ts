@@ -137,21 +137,29 @@ export function convexSiteOrigin(env: Record<string, string | undefined>): strin
   return url.origin;
 }
 
+export type SharePreviewMode = 'proxy' | 'redirect';
+
 /**
- * IIS rule that hands a crawler's request for /events/<slug> or /blog/<slug> to
- * the preview page in Convex. It needs Application Request Routing with proxy
- * enabled, so it is opt-in per instance (VITE_SHARE_PREVIEWS=proxy): without
- * ARR the rewrite fails and the crawler would get an error instead of the
- * generic site card it gets today.
+ * IIS rule that sends a crawler's request for /events/<slug> or /blog/<slug> to
+ * the preview page in Convex. Opt-in per instance (VITE_SHARE_PREVIEWS):
+ *  - proxy: IIS fetches the page and answers on the site's own URL. Needs
+ *    Application Request Routing; without it the rewrite fails outright.
+ *  - redirect: a 302 to the preview page. Needs only URL Rewrite. Crawlers
+ *    follow it the way they follow a shortened link, and the page names the
+ *    site's own URL as canonical.
  */
-export function sharePreviewRule(siteOrigin: string): string {
+export function sharePreviewRule(siteOrigin: string, mode: SharePreviewMode = 'proxy'): string {
+  const target = `${siteOrigin}/share/{R:1}/{R:2}`;
+  const action = mode === 'redirect'
+    ? `          <action type="Redirect" url="${target}" redirectType="Found" />`
+    : `          <action type="Rewrite" url="${target}" />`;
   return [
     '        <rule name="Link previews for crawlers" stopProcessing="true">',
     '          <match url="^(events|blog)/([^/]+)/?$" />',
     '          <conditions>',
     `            <add input="{HTTP_USER_AGENT}" pattern="${PREVIEW_CRAWLERS}" />`,
     '          </conditions>',
-    `          <action type="Rewrite" url="${siteOrigin}/share/{R:1}/{R:2}" />`,
+    action,
     '        </rule>',
     '',
     '',
@@ -175,12 +183,13 @@ function webConfigCsp(env: Record<string, string>, outDir: string): Plugin {
       }
       let generated = config.replace(header, `$1${csp}$2`);
 
-      if ((env.VITE_SHARE_PREVIEWS ?? process.env.VITE_SHARE_PREVIEWS) === 'proxy') {
+      const previews = env.VITE_SHARE_PREVIEWS ?? process.env.VITE_SHARE_PREVIEWS;
+      if (previews === 'proxy' || previews === 'redirect') {
         const origin = convexSiteOrigin({ ...process.env, ...env });
-        if (!origin) throw new Error('VITE_SHARE_PREVIEWS=proxy needs VITE_CONVEX_URL on *.convex.cloud or VITE_CONVEX_SITE_URL.');
+        if (!origin) throw new Error(`VITE_SHARE_PREVIEWS=${previews} needs VITE_CONVEX_URL on *.convex.cloud or VITE_CONVEX_SITE_URL.`);
         const anchor = '        <rule name="Block dotfiles"';
         if (!generated.includes(anchor)) throw new Error('web.config has no "Block dotfiles" rule to place the preview rule before.');
-        generated = generated.replace(anchor, `${sharePreviewRule(origin)}${anchor}`);
+        generated = generated.replace(anchor, `${sharePreviewRule(origin, previews)}${anchor}`);
       }
       writeFileSync(configPath, generated);
     },

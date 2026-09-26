@@ -7,19 +7,19 @@ describe('share links', () => {
   it('builds addresses a slug cannot break out of', () => {
     expect(eventPath('festa de verão')).toBe('/events/festa%20de%20ver%C3%A3o');
     expect(postPath('a/b')).toBe('/blog/a%2Fb');
-    expect(absoluteUrl('/events/x', 'https://arcva.pt')).toBe('https://arcva.pt/events/x');
+    expect(absoluteUrl('/events/x', 'https://example.org')).toBe('https://example.org/events/x');
   });
 
   it('puts the link on its own last line for WhatsApp, where the preview is built from it', () => {
-    const url = whatsappShareUrl('*Arraial*\nSábado', 'https://arcva.pt/events/arraial');
+    const url = whatsappShareUrl('*Arraial*\nSábado', 'https://example.org/events/arraial');
     const text = decodeURIComponent(url.split('text=')[1]);
-    expect(text.split('\n').at(-1)).toBe('https://arcva.pt/events/arraial');
+    expect(text.split('\n').at(-1)).toBe('https://example.org/events/arraial');
     expect(url.startsWith('https://wa.me/?text=')).toBe(true);
   });
 
   it('sends only the URL to Facebook, which ignores any text', () => {
-    expect(facebookShareUrl('https://arcva.pt/blog/x?a=1'))
-      .toBe('https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Farcva.pt%2Fblog%2Fx%3Fa%3D1');
+    expect(facebookShareUrl('https://example.org/blog/x?a=1'))
+      .toBe('https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fexample.org%2Fblog%2Fx%3Fa%3D1');
   });
 
   it('writes what, when and where for an event', () => {
@@ -87,8 +87,8 @@ describe('preview page', () => {
 
 describe('crawler proxy rule', () => {
   it('derives the HTTP-actions origin from the functions URL', () => {
-    expect(convexSiteOrigin({ VITE_CONVEX_URL: 'https://savory-bird-627.convex.cloud' }))
-      .toBe('https://savory-bird-627.convex.site');
+    expect(convexSiteOrigin({ VITE_CONVEX_URL: 'https://happy-animal-123.convex.cloud' }))
+      .toBe('https://happy-animal-123.convex.site');
     expect(convexSiteOrigin({ VITE_CONVEX_URL: 'https://self-hosted.example.org' })).toBeNull();
     expect(convexSiteOrigin({ VITE_CONVEX_SITE_URL: 'https://api.example.org/' })).toBe('https://api.example.org');
   });
@@ -99,5 +99,12 @@ describe('crawler proxy rule', () => {
     expect(rule).toContain('facebookexternalhit');
     expect(rule).not.toMatch(/Googlebot|bingbot/i);
     expect(rule).toContain('url="https://x.convex.site/share/{R:1}/{R:2}"');
+  });
+
+  it('proxies with ARR and redirects without it', () => {
+    expect(sharePreviewRule('https://x.convex.site')).toContain('<action type="Rewrite"');
+    const redirect = sharePreviewRule('https://x.convex.site', 'redirect');
+    expect(redirect).toContain('<action type="Redirect"');
+    expect(redirect).toContain('redirectType="Found"');
   });
 });

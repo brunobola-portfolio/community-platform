@@ -59,7 +59,7 @@ export const ShareBar: React.FC<ShareBarProps> = ({ url, title, text = '', class
                 href={whatsappShareUrl(text, url)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(PILL, 'border-emerald-600/20 bg-emerald-600 text-white hover:bg-emerald-700')}
+                className={cn(PILL, 'border-emerald-700/20 bg-emerald-700 text-white hover:bg-emerald-800')}
             >
                 <MessageCircle size={16} aria-hidden="true" /> WhatsApp
             </a>
@@ -71,11 +71,12 @@ export const ShareBar: React.FC<ShareBarProps> = ({ url, title, text = '', class
             >
                 <Facebook size={16} aria-hidden="true" /> Facebook
             </a>
-            <button type="button" onClick={copyLink} className={cn(PILL, NEUTRAL)} aria-live="polite">
+            <button type="button" onClick={copyLink} className={cn(PILL, NEUTRAL)}>
                 {copied
                     ? <><Check size={16} className="text-emerald-600 dark:text-emerald-400" aria-hidden="true" /> Link copiado</>
                     : <><Link2 size={16} aria-hidden="true" /> Copiar link</>}
             </button>
+            <span className="sr-only" role="status">{copied ? 'Link copiado' : ''}</span>
             {canNativeShare && (
                 <button type="button" onClick={nativeShare} className={cn(PILL, NEUTRAL)}>
                     <Share2 size={16} aria-hidden="true" /> Mais

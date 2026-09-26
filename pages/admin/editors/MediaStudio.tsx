@@ -90,11 +90,6 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                             {/* Whole image over a blurred copy: a portrait poster is not cropped here either */}
                             <img src={imageUrl} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-xl" />
                             <img src={imageUrl} alt="Pré-visualização" className="relative w-full h-full object-contain" />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-                                <button type="button" onClick={() => onChange('')} className="p-3 bg-red-600 rounded-full text-white hover:bg-red-500 shadow-lg transform hover:scale-110 transition-all" aria-label="Remover imagem">
-                                    <Trash2 size={20} />
-                                </button>
-                            </div>
                         </>
                     ) : (
                         <div className="flex flex-col items-center justify-center text-slate-600">
@@ -103,13 +98,21 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                         </div>
                     )}
                 </div>
+                {imageUrl && (
+                    <div className="flex justify-end border-t border-white/5 px-4 pt-3">
+                        <button type="button" onClick={() => onChange('')} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <Trash2 size={14} aria-hidden="true" /> Remover imagem
+                        </button>
+                    </div>
+                )}
                 <div className="p-4 border-t border-white/5">
                     <div className="flex flex-wrap gap-2 mb-4 bg-white/5 p-1 rounded-lg w-full sm:w-fit">
-                        {([{ id: 'upload', label: 'Carregar', icon: Upload }, { id: 'url', label: 'Endereço', icon: LinkIcon }, { id: 'ai', label: 'Gerar com IA', icon: Wand2 }] as const).map(m => (
+                        {([{ id: 'upload', label: 'Carregar', icon: Upload }, { id: 'url', label: 'Colar link', icon: LinkIcon }, { id: 'ai', label: 'Gerar com IA', icon: Wand2 }] as const).map(m => (
                             <button
                                 key={m.id}
                                 type="button"
                                 onClick={() => { setMode(m.id); setUploadError(''); setSavedNote(''); }}
+                                aria-pressed={mode === m.id}
                                 className={cn("flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all", mode === m.id ? "bg-brand-600 text-white shadow-sm" : "text-slate-400 hover:text-white")}
                             >
                                 <m.icon size={14} /> {m.label}
@@ -136,6 +139,7 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                                 <div className="flex-1 min-w-0 relative">
                                     <Sparkles size={16} className="absolute left-3 top-3 text-brand-400" />
                                     <input
+                                        aria-label="Descrição da imagem a gerar"
                                         placeholder={defaultStyle ? `Ex: "Futsal..." (${defaultStyle})` : "Descreva..."}
                                         className={cn(STD_INPUT_CLASS, "pl-10")}
                                         value={aiPrompt}
@@ -143,14 +147,14 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onGenerateAI(aiPrompt, { model: aiModel, resolution: aiResolution }); } }}
                                     />
                                 </div>
-                                <Button type="button" size="icon" onClick={() => onGenerateAI(aiPrompt, { model: aiModel, resolution: aiResolution })} disabled={isGenerating || !aiPrompt} className="bg-brand-600 hover:bg-brand-500 shrink-0">
+                                <Button type="button" size="icon" aria-label="Gerar imagem" onClick={() => onGenerateAI(aiPrompt, { model: aiModel, resolution: aiResolution })} disabled={isGenerating || !aiPrompt} className="bg-brand-600 hover:bg-brand-500 shrink-0">
                                     {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Wand2 size={20} />}
                                 </Button>
                             </div>
                         </div>
                     )}
                     {mode === 'url' && (
-                        <input placeholder="https://..." value={imageUrl} onChange={e => onChange(e.target.value)} className={STD_INPUT_CLASS} />
+                        <input aria-label="Endereço da imagem" placeholder="https://..." value={imageUrl} onChange={e => onChange(e.target.value)} className={STD_INPUT_CLASS} />
                     )}
                     {mode === 'upload' && (
                         <div className="space-y-2">
@@ -160,7 +164,7 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                                 {isUploading
                                     ? <Loader2 size={24} className="mx-auto text-brand-400 mb-2 animate-spin" />
                                     : <Upload size={24} className="mx-auto text-slate-500 mb-2 group-hover:text-brand-400 transition-colors" />}
-                                <span className="block text-sm text-slate-300">{isUploading ? 'A otimizar e a carregar…' : 'Arraste o ficheiro para aqui ou clique para escolher'}</span>
+                                <span role="status" className="block text-sm text-slate-300">{isUploading ? 'A otimizar e a carregar…' : 'Arraste o ficheiro para aqui ou clique para escolher'}</span>
                                 {!isUploading && <span className="mt-1 block text-xs text-slate-500">JPG, PNG ou WebP · as fotografias grandes são otimizadas automaticamente</span>}
                             </div>
                             {savedNote && <p className="text-emerald-400 text-xs" role="status">{savedNote}</p>}

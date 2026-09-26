@@ -9,6 +9,7 @@ export type Tab =
     | 'dashboard'
     | 'homepage'
     | 'events'
+    | 'registrations'
     | 'news'
     | 'members'
     | 'sponsors'
@@ -93,6 +94,8 @@ export interface AdminDashboardProps {
     onViewRegistration: (reg: Registration) => void;
     onNewPost: () => void;
     onNewEvent: () => void;
+    /** Event titles by id, so a pending registration says which event it is for. */
+    eventTitles?: Map<string, string>;
 }
 
 /** Props for the form modal */

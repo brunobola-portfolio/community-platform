@@ -40,11 +40,13 @@ export default defineSchema({
     status: v.union(v.literal("published"), v.literal("draft")),
     isHighlight: v.optional(v.boolean()), // Featured status for Homepage
     isTournament: v.optional(v.boolean()),
-    tournamentType: v.optional(v.string()), // 'Sueca', 'Futsal', 'Snooker', 'Chinquilho', 'Outro'
+    tournamentType: v.optional(v.string()), // free text; the admin form offers suggestions
     entryPrice: v.optional(v.number()),
     maxParticipants: v.optional(v.number()),
     currentParticipants: v.optional(v.number()),
     registrationOpen: v.optional(v.boolean()),
+    // false = members with an account only; unset or true = anyone (rate-limited, pending until confirmed)
+    allowGuestRegistration: v.optional(v.boolean()),
     registrationFields: v.optional(v.array(v.object({
       id: v.string(),
       label: v.string(),
@@ -124,6 +126,8 @@ export default defineSchema({
     customData: v.optional(v.record(v.string(), v.union(v.string(), v.number(), v.boolean()))), // Dynamic form fields for tournament registrations
     status: v.union(v.literal("pending"), v.literal("confirmed"), v.literal("cancelled")),
     timestamp: v.number(),
+    // When the privacy notice was shown with the form (guest registrations)
+    noticeAcceptedAt: v.optional(v.number()),
   })
     .index("by_event", ["eventId"])
     .index("by_event_email", ["eventId", "email"])

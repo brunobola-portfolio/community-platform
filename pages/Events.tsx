@@ -6,8 +6,8 @@ import { api } from '../convex/_generated/api';
 import { useOutletContext, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { LayoutOutletContext } from '../layouts/types';
 import { EventsJsonLd } from '../components/StructuredData';
-import { MapPin, Clock, Search, CalendarPlus, Trophy, CheckCircle2, Download, X, History, CalendarOff, Smartphone, CreditCard, LogIn } from 'lucide-react';
-import { Button, Badge, Input, Modal, cn } from '../components/ui/UIComponents';
+import { MapPin, Clock, Search, CalendarPlus, Trophy, CheckCircle2, X, History, CalendarOff, LogIn } from 'lucide-react';
+import { Button, Badge, Modal, cn } from '../components/ui/UIComponents';
 import { sanitizeHtml, sanitizeText } from '../utils/security';
 import { categoryColorClass } from '../utils/categoryColors';
 import { eventSummaryText, normalize, progressWidthClass } from '../utils/text';
@@ -15,11 +15,15 @@ import { EventCardSkeleton } from '../components/ui/Skeleton';
 import { ShareBar } from '../components/ui/ShareBar';
 import { EventPoster } from '../components/events/EventPoster';
 import { useEventDescription } from '../hooks/useEventDescription';
-import { absoluteUrl, eventPath, eventShareText } from '../utils/share';
+import { absoluteUrl, eventPath, eventShareText, formatEventDate } from '../utils/share';
+import { downloadIcs } from '../utils/calendar';
+import { useEventRegistration } from '../hooks/useEventRegistration';
+import { RegistrationForm } from '../components/events/RegistrationForm';
+import { RegistrationDone } from '../components/events/RegistrationDone';
 import type { Event } from '../types';
 
 export const EventsPage: React.FC = () => {
-    const { events, categories, addRegistration, isLoading, settings } = useData();
+    const { events, categories, isLoading, settings } = useData();
     const { isAuthenticated } = useConvexAuth();
     // The server only accepts the signed-in member's own email; prefill it so nobody types another
     const me = useQuery(api.users.me, isAuthenticated ? {} : 'skip');
@@ -33,12 +37,8 @@ export const EventsPage: React.FC = () => {
     // The list subscription carries excerpts; the open event pulls its own body
     const { html: selectedEventBody, isLoading: isBodyLoading } = useEventDescription(selectedEvent);
     const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-    const [regStep, setRegStep] = useState(1);
-    const [submitting, setSubmitting] = useState(false);
+    const registration = useEventRegistration(selectedEvent, isAuthenticated, me);
 
-    // Dynamic Form State
-    const [dynamicForm, setDynamicForm] = useState<Record<string, string>>({});
-    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
     // Every event has its own address, so a link on WhatsApp opens that event
     // and the back button closes it instead of leaving the agenda
@@ -76,29 +76,8 @@ export const EventsPage: React.FC = () => {
         return () => clearTimeout(timer);
     }, [inputValue]);
 
-    // Calendar Export Utilities
-    const downloadICS = (event: Event) => {
-        const startDate = new Date(event.date);
-        const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
-        const formatDate = (date: Date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-        const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nURL:${window.location.href}\nDTSTART:${formatDate(startDate)}\nDTEND:${formatDate(endDate)}\nSUMMARY:${event.title}\nDESCRIPTION:${sanitizeText(eventSummaryText(event))}\nLOCATION:${event.location}\nEND:VEVENT\nEND:VCALENDAR`;
-        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.setAttribute('download', `${event.slug}.ics`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(link.href);
-    };
-
-    const openGoogleCalendar = (event: Event) => {
-        const startDate = new Date(event.date);
-        const endDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
-        const formatDate = (date: Date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
-        const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${formatDate(startDate)}/${formatDate(endDate)}&details=${encodeURIComponent(sanitizeText(eventSummaryText(event)))}&location=${encodeURIComponent(event.location)}`;
-        window.open(url, '_blank');
-    };
+    // Calendar export lives in utils/calendar (RFC 5545 file, Google link)
+    const calendarFor = (event: Event) => ({ title: event.title, date: event.date, location: event.location, slug: event.slug, description: sanitizeText(eventSummaryText(event)), url: absoluteUrl(eventPath(event.slug)) });
 
     // Logic & Filtering
     const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
@@ -147,98 +126,37 @@ export const EventsPage: React.FC = () => {
 
     const handleOpenRegistration = () => {
         if (!selectedEvent) return;
-        setRegStep(1);
-        setDynamicForm({ ...(me?.name ? { name: me.name } : {}), ...(me?.email ? { email: me.email } : {}) });
-        setFormErrors({}); // Reset errors
+        registration.reset();
         setShowRegistrationModal(true);
-    };
-
-    const handleRegistrationSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        // Guard against double-submit while the mutation is in flight
-        if (!selectedEvent || submitting) return;
-
-        const errors: Record<string, string> = {};
-
-        // Determine main contact info from dynamic fields if possible, or fallback
-        const contactName = String(dynamicForm['name'] || dynamicForm['team_name'] || dynamicForm['captain_name'] || "");
-        const contactEmail = String(dynamicForm['email'] || dynamicForm['captain_email'] || "");
-
-        // Validate contactName
-        if (!contactName.trim()) {
-            errors.contactName = 'O nome é obrigatório.';
-        }
-
-        // Validate contactEmail
-        if (!contactEmail.trim()) {
-            errors.contactEmail = 'O email é obrigatório.';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
-            errors.contactEmail = 'Formato de email inválido.';
-        }
-
-        // Validate required registration fields
-        if (selectedEvent.registrationFields && selectedEvent.registrationFields.length > 0) {
-            for (const field of selectedEvent.registrationFields) {
-                if (field.required && !(dynamicForm[field.id] || '').trim()) {
-                    errors[field.id] = `${field.label} é obrigatório.`;
-                }
-            }
-        }
-
-        if (Object.keys(errors).length > 0) {
-            setFormErrors(errors);
-            return;
-        }
-
-        setFormErrors({});
-        setSubmitting(true);
-
-        try {
-            const result = await addRegistration({
-                eventId: selectedEvent.id,
-                name: contactName || "Participante",
-                email: contactEmail,
-                customData: dynamicForm
-            });
-            if (result.success) {
-                setRegStep(2);
-            } else {
-                const errorMsg = 'error' in result ? result.error : 'Erro ao processar inscrição. Tente novamente.';
-                setFormErrors({ submit: errorMsg });
-            }
-        } finally {
-            setSubmitting(false);
-        }
     };
 
     const registrationOpen = Boolean(
         selectedEvent?.registrationOpen && selectedEvent && new Date(selectedEvent.date) >= new Date(),
     );
+    // The server enforces the limit on every event, so the button must too
     const soldOut = Boolean(
-        selectedEvent?.isTournament && selectedEvent?.maxParticipants
-            ? (selectedEvent.currentParticipants || 0) >= selectedEvent.maxParticipants
-            : false,
+        selectedEvent?.maxParticipants && (selectedEvent.currentParticipants || 0) >= selectedEvent.maxParticipants,
     );
 
     // One action bar for every state of the event dialog, so the primary action
     // always sits in the same place
     const eventModalFooter = !selectedEvent ? undefined
-        : showRegistrationModal && regStep === 1 ? (
-            <div className="flex gap-3">
+        : showRegistrationModal && !registration.done ? (
+            <div key="form" className="flex gap-3">
                 <Button type="button" variant="ghost" onClick={() => setShowRegistrationModal(false)}>Voltar</Button>
-                <Button type="submit" form="event-registration-form" className="flex-1" disabled={submitting}>
-                    {submitting ? 'A enviar…' : 'Confirmar inscrição'}
+                <Button type="submit" form="event-registration-form" className="flex-1" disabled={registration.submitting}>
+                    {registration.submitting ? 'A enviar…' : 'Enviar inscrição'}
                 </Button>
             </div>
         ) : showRegistrationModal ? (
-            <div className="flex justify-center">
+            <div key="done" className="flex justify-center">
                 <Button variant="outline" onClick={closeEvent}>Voltar à agenda</Button>
             </div>
         ) : registrationOpen ? (
-            <div className="flex justify-end">
-                {isAuthenticated ? (
+            <div key="details" className="flex justify-end">
+                {registration.canRegister ? (
                     <Button onClick={handleOpenRegistration} disabled={soldOut} className="w-full sm:w-auto">
-                        {soldOut ? 'Esgotado' : `Inscrever ${selectedEvent.entryPrice ? `(${selectedEvent.entryPrice}€)` : '· grátis'}`}
+                        {soldOut ? 'Esgotado' : selectedEvent.entryPrice ? `Inscrever-me · ${selectedEvent.entryPrice} €` : 'Inscrever-me (grátis)'}
                     </Button>
                 ) : (
                     <Button variant="outline" onClick={openMemberLogin} className="w-full sm:w-auto">
@@ -459,11 +377,11 @@ export const EventsPage: React.FC = () => {
                                             {event.isTournament && <div className="flex items-center gap-2 text-amber-500"><Trophy size={16} /><span>Torneio</span></div>}
                                         </div>
 
-                                        {/* Capacity Bar for Tournaments */}
-                                        {event.isTournament && !isPast && (
+                                        {/* Places left, for any event with a limit */}
+                                        {Boolean(event.maxParticipants) && !isPast && (
                                             <div className="mt-4 max-w-xs">
                                                 <div className="flex justify-between text-xs mb-1 text-slate-500 dark:text-slate-400">
-                                                    <span>Inscritos: {event.currentParticipants ?? 0}/{event.maxParticipants}</span>
+                                                    <span>Inscritos: {event.currentParticipants ?? 0} de {event.maxParticipants}</span>
                                                     <span>{Math.round(capacityPercent)}%</span>
                                                 </div>
                                                 <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={event.maxParticipants || 0} aria-valuenow={event.currentParticipants || 0}>
@@ -476,17 +394,12 @@ export const EventsPage: React.FC = () => {
                                     {/* Actions */}
                                     <div className="flex flex-row md:flex-col justify-center gap-3 md:border-l border-slate-900/5 dark:border-white/5 md:pl-6 md:min-w-[140px]">
                                         <Button variant="default" className={cn("flex-1 md:flex-none", isPast ? "bg-slate-700 hover:bg-slate-600 border-slate-600" : "")} onClick={() => openEvent(event)}>
-                                            {isPast ? 'Ver Resumo' : 'Detalhes'}
+                                            {isPast ? 'Ver resumo' : event.registrationOpen ? 'Ver e inscrever-me' : 'Ver detalhes'}
                                         </Button>
                                         {!isPast && (
-                                            <div className="flex-1 md:flex-none flex flex-col gap-2">
-                                                <Button variant="outline" size="sm" className="w-full text-xs border-slate-900/10 hover:bg-slate-900/5 dark:border-white/10 dark:hover:bg-white/5" onClick={() => openGoogleCalendar(event)}>
-                                                    <CalendarPlus size={14} className="mr-1" /> Google
-                                                </Button>
-                                                <Button variant="outline" size="sm" className="w-full text-xs border-slate-900/10 hover:bg-slate-900/5 dark:border-white/10 dark:hover:bg-white/5" onClick={() => downloadICS(event)}>
-                                                    <Download size={14} className="mr-1" /> .ICS
-                                                </Button>
-                                            </div>
+                                            <Button variant="outline" size="sm" className="flex-1 md:flex-none text-xs border-slate-900/10 hover:bg-slate-900/5 dark:border-white/10 dark:hover:bg-white/5" onClick={() => downloadIcs(calendarFor(event))}>
+                                                <CalendarPlus size={14} className="mr-1" /> Adicionar ao calendário
+                                            </Button>
                                         )}
                                     </div>
                                 </div>
@@ -501,34 +414,42 @@ export const EventsPage: React.FC = () => {
                 isOpen={!!selectedEvent}
                 onClose={closeEvent}
                 title={showRegistrationModal ? 'Inscrição' : (selectedEvent?.title ?? '')}
-                eyebrow={selectedEvent ? (showRegistrationModal ? selectedEvent.title : `${new Date(selectedEvent.date).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })} · ${selectedEvent.location}`) : undefined}
-                description={showRegistrationModal ? 'Confirme os dados para garantir o seu lugar.' : undefined}
+                eyebrow={selectedEvent ? (showRegistrationModal ? selectedEvent.title : `${formatEventDate(selectedEvent.date)} · ${selectedEvent.location}`) : undefined}
+                description={showRegistrationModal && !registration.done ? 'Preencha os seus dados. A organização confirma a inscrição depois.' : undefined}
                 icon={selectedEvent?.isTournament ? <Trophy size={20} /> : <CalendarPlus size={20} />}
                 size="lg"
                 footer={eventModalFooter}
             >
                 {selectedEvent && !showRegistrationModal && (
                     <div className="space-y-6">
-                        <EventPoster key={selectedEvent.id} src={selectedEvent.imageUrl} alt={`Cartaz: ${selectedEvent.title}`} />
+                        <EventPoster key={selectedEvent.id} src={selectedEvent.imageUrl} title={selectedEvent.title} />
 
                         <div className="prose dark:prose-invert max-w-none">
                             {/* Descriptions come from the rich-text editor as HTML */}
                             <div className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg" aria-busy={isBodyLoading} dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEventBody) }} />
                         </div>
 
-                        {registrationOpen && (
-                            <div className="flex items-center gap-3 rounded-2xl bg-brand-500/10 p-4 ring-1 ring-brand-500/20">
-                                <CheckCircle2 size={18} className="shrink-0 text-brand-600 dark:text-brand-400" />
+                        {registrationOpen && (soldOut ? (
+                            <div className="flex items-center gap-3 rounded-2xl bg-slate-900/5 p-4 ring-1 ring-slate-900/10 dark:bg-white/5 dark:ring-white/10">
+                                <X size={18} className="shrink-0 text-slate-500 dark:text-slate-400" />
                                 <div>
-                                    <div className="text-xs font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">Inscrições abertas</div>
+                                    <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Esgotado</div>
+                                    <div className="text-sm text-slate-700 dark:text-slate-200">Já não há lugares. Fale com a organização para ficar em lista de espera.</div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-3 rounded-2xl bg-brand-500/10 p-4 ring-1 ring-brand-500/20">
+                                <CheckCircle2 size={18} className="shrink-0 text-brand-700 dark:text-brand-400" />
+                                <div>
+                                    <div className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-400">Inscrições abertas</div>
                                     <div className="text-sm text-slate-700 dark:text-slate-200">
-                                        {selectedEvent.isTournament && selectedEvent.maxParticipants
-                                            ? `${selectedEvent.maxParticipants - (selectedEvent.currentParticipants || 0)} vagas restantes`
+                                        {selectedEvent.maxParticipants
+                                            ? `Restam ${Math.max(0, selectedEvent.maxParticipants - (selectedEvent.currentParticipants || 0))} lugares.`
                                             : 'Garanta o seu lugar neste evento.'}
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        ))}
 
                         <ShareBar
                             url={absoluteUrl(eventPath(selectedEvent.slug))}
@@ -538,111 +459,22 @@ export const EventsPage: React.FC = () => {
                     </div>
                 )}
 
-                {/* Dynamic Registration Form */}
-                {selectedEvent && showRegistrationModal && (
-                    <div className="h-full flex flex-col">
-                        {regStep === 1 && (
-                            <form id="event-registration-form" onSubmit={handleRegistrationSubmit} className="space-y-6 animate-fade-in-up">
-                                <div className="space-y-4">
-                                    {!selectedEvent.registrationFields || selectedEvent.registrationFields.length === 0 ? (
-                                        <div className="py-2 space-y-4">
-                                            <p className="text-center text-slate-500 text-sm">Este evento não requer dados específicos. Confirme apenas a sua intenção de participar.</p>
-                                            <div>
-                                                <label htmlFor="reg-name" className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1 block">
-                                                    Nome <span className="text-red-600 dark:text-red-400">*</span>
-                                                </label>
-                                                <Input id="reg-name" placeholder="O seu nome completo" type="text" autoComplete="name" required value={String(dynamicForm['name'] ?? '')} onChange={e => setDynamicForm({ ...dynamicForm, name: e.target.value })} />
-                                                {formErrors.contactName && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{formErrors.contactName}</p>}
-                                            </div>
-                                            <div>
-                                                <label htmlFor="reg-email" className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1 block">
-                                                    Email <span className="text-red-600 dark:text-red-400">*</span>
-                                                </label>
-                                                <Input id="reg-email" placeholder="email@exemplo.pt" type="email" autoComplete="email" required readOnly={Boolean(me?.email)} value={String(dynamicForm['email'] ?? '')} onChange={e => setDynamicForm({ ...dynamicForm, email: e.target.value })} />
-                                                {formErrors.contactEmail && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{formErrors.contactEmail}</p>}
-                                                <p className="text-slate-500 dark:text-slate-600 text-xs mt-1">{me?.email ? 'A inscrição fica associada à conta com que entrou.' : 'Usado apenas para confirmar a inscrição.'}</p>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        selectedEvent.registrationFields.map(field => (
-                                            <div key={field.id}>
-                                                <label className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-1 block">
-                                                    {field.label} {field.required && <span className="text-red-600 dark:text-red-400">*</span>}
-                                                </label>
-                                                {field.type === 'textarea' ? (
-                                                    <textarea
-                                                        required={field.required}
-                                                        placeholder={field.placeholder}
-                                                        className="w-full bg-slate-100 dark:bg-slate-950/50 border border-slate-300 dark:border-slate-800 rounded-lg p-3 text-slate-900 dark:text-white outline-none focus:border-brand-500 min-h-[80px]"
-                                                        onChange={e => setDynamicForm({ ...dynamicForm, [field.id]: e.target.value })}
-                                                    />
-                                                ) : (
-                                                    <Input
-                                                        type={field.type}
-                                                        required={field.required}
-                                                        placeholder={field.placeholder}
-                                                        onChange={e => setDynamicForm({ ...dynamicForm, [field.id]: e.target.value })}
-                                                    />
-                                                )}
-                                                {formErrors[field.id] && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{formErrors[field.id]}</p>}
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-
-                                {formErrors.submit && (
-                                    <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm p-3 rounded-lg">
-                                        {formErrors.submit}
-                                    </div>
-                                )}
-
-                            </form>
-                        )}
-
-                        {regStep === 2 && (
-                            <div className="text-center py-8 space-y-6 animate-fade-in-up">
-                                <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto text-green-500"><CheckCircle2 size={40} /></div>
-
-                                {selectedEvent.entryPrice ? (
-                                    <div className="bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 rounded-xl p-6 max-w-sm mx-auto">
-                                        <h3 className="text-lg font-serif text-slate-900 dark:text-white mb-4">Pagamento Pendente</h3>
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">Utilize os dados abaixo para concluir a inscrição.</p>
-
-                                        <div className="space-y-4">
-                                            <div className="text-slate-500 dark:text-slate-400 text-sm text-center">
-                                                Contacte a associação para informações de pagamento.
-                                            </div>
-                                            {settings.phone && (
-                                                <div className="flex items-center gap-3 p-3 bg-slate-900/5 dark:bg-black/40 rounded-lg border border-slate-900/5 dark:border-white/5">
-                                                    <Smartphone className="text-brand-600 dark:text-brand-400" />
-                                                    <div className="text-left">
-                                                        <div className="text-xs text-slate-500 uppercase">Telefone</div>
-                                                        <div className="text-slate-900 dark:text-white font-mono font-bold">{settings.phone}</div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {settings.contactEmail && (
-                                                <div className="flex items-center gap-3 p-3 bg-slate-900/5 dark:bg-black/40 rounded-lg border border-slate-900/5 dark:border-white/5">
-                                                    <CreditCard className="text-brand-600 dark:text-brand-400" />
-                                                    <div className="text-left">
-                                                        <div className="text-xs text-slate-500 uppercase">Email</div>
-                                                        <div className="text-slate-900 dark:text-white font-mono text-xs">{settings.contactEmail}</div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="mt-4 text-xs text-amber-700 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-900/20 p-2 rounded">
-                                            Valor a pagar: <strong>{selectedEvent.entryPrice}€</strong>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div><h3 className="text-2xl font-serif text-slate-900 dark:text-white mb-2">Inscrição Recebida!</h3><p className="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto">A sua presença foi confirmada.</p></div>
-                                )}
-
-                            </div>
-                        )}
-                    </div>
-                )}
+                {selectedEvent && showRegistrationModal && (registration.done ? (
+                    <RegistrationDone event={selectedEvent} email={registration.values.email} contactEmail={settings.contactEmail} phone={settings.phone} />
+                ) : (
+                    <RegistrationForm
+                        formId="event-registration-form"
+                        event={selectedEvent}
+                        values={registration.values}
+                        errors={registration.errors}
+                        isGuest={registration.isGuest}
+                        lockedEmail={Boolean(me?.email)}
+                        siteName={settings.siteName}
+                        onChange={registration.update}
+                        onExtraChange={registration.updateExtra}
+                        onSubmit={registration.submit}
+                    />
+                ))}
             </Modal>
         </div>
     );

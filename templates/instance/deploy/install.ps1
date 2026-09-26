@@ -31,7 +31,10 @@ if (-not (Test-Path $SitePath)) { throw "Site folder does not exist: $SitePath" 
 $stamp = Get-Date -Format 'yyyy-MM-dd-HHmm'
 $staging = Join-Path $env:TEMP "cp-deploy-$stamp"
 $backupRoot = 'C:\inetpub\backups'
-$backup = Join-Path $backupRoot "site-$stamp"
+# Named after the site folder, so several instances on one server (and anything
+# else kept in this folder) never prune each other's backups
+$prefix = Split-Path $SitePath -Leaf
+$backup = Join-Path $backupRoot "$prefix-$stamp"
 
 Write-Host "`n  Zip:   $Zip" -ForegroundColor Cyan
 Write-Host "  Site:  $SitePath"
@@ -92,7 +95,7 @@ if (-not $ok) {
 
 # 5. Rotate old backups
 Write-Host "  [5/5] Pruning backups (keeping $KeepBackups)"
-Get-ChildItem $backupRoot -Directory | Sort-Object Name -Descending | Select-Object -Skip $KeepBackups |
+Get-ChildItem $backupRoot -Directory -Filter "$prefix-*" | Sort-Object Name -Descending | Select-Object -Skip $KeepBackups |
   ForEach-Object { Remove-Item $_.FullName -Recurse -Force }
 
 Write-Host "`n  Deploy OK: $SiteUrl  (backup: $backup)`n" -ForegroundColor Green

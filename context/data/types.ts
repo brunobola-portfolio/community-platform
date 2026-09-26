@@ -3,7 +3,7 @@
  */
 
 import type {
-  NotificationType, NotificationTarget, ActionResult, Settings, Category, Event, Registration, Post, Member, Milestone, Sponsor, SponsorTier, ActionArea, Stat, Document, Notification, Album, ActivityLog
+  NotificationType, NotificationTarget, RegistrationStatus, ActionResult, Settings, Category, Event, Registration, Post, Member, Milestone, Sponsor, SponsorTier, ActionArea, Stat, Document, Notification, Album, ActivityLog
 } from '../../types';
 
 // ── Convex Document Types ──────────────────────────────────────────────────────
@@ -35,6 +35,7 @@ export interface ConvexEvent extends ConvexDoc {
   maxParticipants?: number;
   currentParticipants?: number;
   registrationOpen?: boolean;
+  allowGuestRegistration?: boolean;
   registrationFields?: Array<{
     id: string;
     label: string;
@@ -198,6 +199,7 @@ export interface EventCreateArgs {
   maxParticipants?: number;
   currentParticipants?: number;
   registrationOpen?: boolean;
+  allowGuestRegistration?: boolean;
   registrationFields?: Array<{
     id: string;
     label: string;
@@ -433,6 +435,8 @@ export interface DataContextType {
   // Registration actions
   addRegistration: (data: RegistrationCreateArgs) => Promise<ActionResult>;
   updateRegistrationStatus: (id: string, status: string, paymentStatus?: string) => Promise<ActionResult>;
+  bulkUpdateRegistrationStatus: (ids: string[], status: RegistrationStatus) => Promise<ActionResult>;
+  removeRegistration: (id: string) => Promise<ActionResult>;
 
   // Sponsor actions
   addSponsor: (data: SponsorCreateArgs) => Promise<ActionResult>;

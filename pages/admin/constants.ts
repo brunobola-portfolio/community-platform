@@ -31,6 +31,7 @@ export const NEW_LABELS: Partial<Record<Tab, string>> = {
 export const TAB_DESCRIPTIONS: Partial<Record<Tab, string>> = {
     homepage: 'Áreas de atuação e números em destaque da página inicial.',
     events: 'Agenda pública, inscrições e torneios. Rascunhos ficam invisíveis no portal.',
+    registrations: 'Quem se inscreveu em cada evento: confirmar, cancelar, exportar a lista.',
     news: 'Notícias do blog. Só as publicadas aparecem no portal.',
     members: 'Corpos sociais mostrados na página Equipa, pela ordem definida.',
     sponsors: 'Apoios e parceiros mostrados na faixa da página inicial.',
@@ -47,8 +48,9 @@ export const TAB_DESCRIPTIONS: Partial<Record<Tab, string>> = {
 };
 
 export const TAB_NAMES: Record<Tab, string> = {
-    dashboard: "Painel de Controlo",
+    dashboard: "Início",
     events: "Eventos",
+    registrations: "Inscrições",
     news: "Notícias",
     members: "Membros",
     sponsors: "Parceiros",
@@ -56,13 +58,13 @@ export const TAB_NAMES: Record<Tab, string> = {
     tiers: "Níveis de Parceria",
     settings: "Definições",
     documents: "Documentos",
-    notifications: "Notificações",
+    notifications: "Avisos aos sócios",
     gallery: "Galeria",
     historia: "História",
-    leads: "Leads & Contactos",
+    leads: "Mensagens recebidas",
     "member-quotas": "Sócios & Quotas",
-    homepage: "Personalização Homepage",
-    ai: "IA & Chatbot"
+    homepage: "Página inicial",
+    ai: "Assistente virtual"
 };
 
 /** Helper to format ISO dates for HTML datetime-local inputs */

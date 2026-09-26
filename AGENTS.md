@@ -41,6 +41,8 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   camadas gitignored: BD, `.env.production` (meta tags via `%VITE_*%` no `index.html`,
   plugin `siteMeta` do `vite.config.ts`) e `.brand/public/` (overlay de logos/fotos/OG,
   servido em dev pelo plugin `brandOverlay` e copiado para `dist/` pelo `npm run dist`).
+  Única exceção, deliberada: a ARCVA é nomeada como cliente de referência no README,
+  LICENSE, CHANGELOG, `metadata.json` e aqui — nunca em código, testes, seed ou docs técnicas.
   Ver `docs/WHITE-LABEL.md`. Campo de identidade novo = schema + `settings.*` +
   `seedHelpers.updateSettings` + `types.ts` + defaults + `AdminIdentitySection`.
   Instâncias reais vivem em repositórios privados próprios (padrão e template em
