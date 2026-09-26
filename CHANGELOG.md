@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.13.1] - 2026-09-26
+
+### Fixed
+
+- Past events in the Arquivo were drawn at 80% opacity, which took every line on the card
+  below WCAG AA; the grey photo and the "Realizado" label already mark them as past
+- The count on the active agenda filter was white on a light tint of the brand red
+
 ## [2.13.0] - 2026-09-26
 
 A portal every visitor can read and a repository fit to be shown. An automated sweep of every
@@ -626,7 +634,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.0...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.1...HEAD
+[2.13.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.0...v2.13.1
 [2.13.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.12.1...v2.13.0
 [2.12.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.12.0...v2.12.1
 [2.12.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.11.1...v2.12.0
