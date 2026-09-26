@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.11.1] - 2026-09-26
+
+### Security
+
+- The link-preview page no longer falls back to the request's `Host` or `X-Forwarded-Host`
+  header when `SITE_URL` is unset. Both are chosen by the caller, so the canonical URL and the
+  redirect of a publicly cached page could be pointed at another domain. Without `SITE_URL`
+  the page now answers 503 and describes nothing. Deployments with `SITE_URL` set, as every
+  documented one is, were not affected
+
 ## [2.11.0] - 2026-09-26
 
 Publishing and sharing, validated end to end as an association would use it: create an

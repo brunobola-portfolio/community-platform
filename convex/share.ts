@@ -72,14 +72,19 @@ export const postCard = internalQuery({
 });
 
 /**
- * The public site origin. SITE_URL is set per deployment; the Host header is a
- * fallback for a proxy that forwards it, never trusted when SITE_URL exists.
+ * The public site origin, from SITE_URL only. Request headers are never used:
+ * Host and X-Forwarded-Host are chosen by the caller, and a page cached for
+ * crawlers would otherwise carry, and redirect people to, whatever domain an
+ * attacker put in them.
  */
-function siteOrigin(request: Request): string {
+function siteOrigin(): string | null {
     const configured = process.env.SITE_URL;
-    if (configured) return new URL(configured).origin;
-    const forwarded = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-    return `https://${forwarded ?? "localhost"}`;
+    if (!configured) return null;
+    try {
+        return new URL(configured).origin;
+    } catch {
+        return null;
+    }
 }
 
 function htmlResponse(body: string, status = 200): Response {
@@ -100,7 +105,14 @@ export const sharePage = httpAction(async (ctx, request) => {
     const url = new URL(request.url);
     const [, , kind, rawSlug] = url.pathname.split("/");
     const slug = decodeURIComponent(rawSlug ?? "");
-    const origin = siteOrigin(request);
+    const origin = siteOrigin();
+    if (!origin) {
+        // Without a trusted origin there is no safe canonical URL to describe or redirect to
+        return new Response("Link previews need SITE_URL on this deployment.", {
+            status: 503,
+            headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+        });
+    }
 
     if (!slug || (kind !== "events" && kind !== "blog")) {
         return Response.redirect(origin, 302);
