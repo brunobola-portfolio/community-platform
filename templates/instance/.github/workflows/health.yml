@@ -9,6 +9,7 @@ name: Health
 #   SITE_HOSTS        space-separated host names, e.g. "example.org www.example.org"
 #   SITE_URL          public URL the Convex SITE_URL points at, e.g. https://example.org
 #   CONVEX_SITE_URL   the deployment's HTTP actions origin, e.g. https://happy-animal-123.convex.site
+#   SHARE_PREVIEWS    "redirect" when the instance builds with VITE_SHARE_PREVIEWS=redirect
 
 on:
   schedule:
@@ -67,3 +68,14 @@ jobs:
           target=$(curl -sS -o /dev/null -w "%{http_code} %{redirect_url}" --max-time 20 "$CONVEX_SITE_URL/share/events/health-check")
           echo "$target"
           [ "$target" = "302 $SITE_URL/events" ] || { echo "::error::link preview route answered: $target"; exit 1; }
+
+      - name: Crawlers reach this deployment's preview page
+        if: env.CONVEX_SITE_URL != '' && vars.SHARE_PREVIEWS == 'redirect'
+        run: |
+          # A dev VITE_CONVEX_SITE_URL once leaked into a production build; people never saw it
+          location=$(curl -sS -o /dev/null -w "%{redirect_url}" -A "WhatsApp/2.24" --max-time 20 "$SITE_URL/events/health-check")
+          echo "crawler redirect: $location"
+          case "$location" in
+            "$CONVEX_SITE_URL"/share/events/*) ;;
+            *) echo "::error::crawler redirect goes to: $location"; exit 1 ;;
+          esac
