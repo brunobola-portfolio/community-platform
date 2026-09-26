@@ -18,8 +18,8 @@ local institutions: realtime serverless backend, an AI assistant that answers fr
 organisation's own published content (RAG), and a complete backoffice so the board runs
 everything — events, news, members, dues, galleries — without a developer.
 
-**Reference client:** [arcva.pt](https://arcva.pt), the portal of ARCVA, a Portuguese
-cultural and recreational association, runs its own instance of this platform.
+**Reference client and partner:** [arcva.pt](https://arcva.pt), the portal of ARCVA, a
+Portuguese cultural and recreational association, runs its own instance of this platform.
 **Product page:** [bolalabs.pt/en/community-platform](https://bolalabs.pt/en/community-platform).
 
 [Features](#features) · [Getting Started](#getting-started) · [Architecture](#architecture) · [AI Assistant](#ai-assistant) · [White-Label](#launching-your-own-portal) · [Deploy](#deploying-to-production)
@@ -405,8 +405,9 @@ Code is MIT — see [LICENSE](LICENSE).
 
 **Brand assets are not covered by the MIT license.** The repository ships no real
 organisation's name, logo or photographs; a client's instance keeps them in a private
-overlay (see [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)). The ARCVA name and logo belong to
-the association. Third-party material used by the platform:
+overlay (see [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)). The code belongs to BolaLabs; ARCVA
+is a partner, not a copyright holder, and its name and logo belong to the association.
+Third-party material used by the platform:
 
 - Demo seed images are hosted on [Unsplash](https://unsplash.com/license) (Unsplash License)
 - Typefaces Geist and Playfair Display are served from Google Fonts (SIL Open Font License)
@@ -418,8 +419,8 @@ Contributor guidelines: [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.m
 
 ## Contact
 
-- **Platform / technical**: [bruno@bolalabs.pt](mailto:bruno@bolalabs.pt) · [bolalabs.pt](https://bolalabs.pt)
-- **ARCVA (reference client, runs its own instance)**: [geral@arcva.pt](mailto:geral@arcva.pt) · [arcva.pt](https://arcva.pt)
+- **Platform, new instances and partnerships**: [bruno@bolalabs.pt](mailto:bruno@bolalabs.pt) · [bolalabs.pt](https://bolalabs.pt)
+- Each association answers for its own instance through the contacts on its own site.
 
 ---
 

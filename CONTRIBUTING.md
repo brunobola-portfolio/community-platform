@@ -86,7 +86,8 @@ human and AI contributors. The essentials:
 ### White-label rule
 
 Never hardcode an association's identity in components or prompts — runtime identity comes
-from `settings` (database-first). ARCVA content in the repository is seed/demo data. See
+from `settings` (database-first). The repository ships a fictional demo association and never a
+client's content. See
 [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md).
 
 ### Comments

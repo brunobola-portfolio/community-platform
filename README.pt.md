@@ -18,8 +18,8 @@ outras instituições locais: backend serverless em tempo real, assistente IA qu
 com o conteúdo publicado da própria organização (RAG) e um backoffice completo para a
 direção gerir tudo — eventos, notícias, sócios, quotas, galerias — sem programador.
 
-**Cliente de referência:** [arcva.pt](https://arcva.pt), o portal da ARCVA, associação
-cultural e recreativa portuguesa, corre a sua própria instância desta plataforma.
+**Cliente de referência e parceira:** [arcva.pt](https://arcva.pt), o portal da ARCVA,
+associação cultural e recreativa portuguesa, corre a sua própria instância desta plataforma.
 **Página do produto:** [bolalabs.pt/pt/community-platform](https://bolalabs.pt/pt/community-platform).
 
 [Funcionalidades](#funcionalidades) · [Instalação](#instalação) · [Arquitetura](#arquitetura) · [Assistente IA](#assistente-ia) · [White-Label](#lançar-o-teu-portal) · [Deploy](#deploy-para-produção)
@@ -366,8 +366,8 @@ O código é MIT — ver [LICENSE](LICENSE).
 
 **Os ativos de marca não estão cobertos pela licença MIT.** O repositório não inclui o
 nome, logo ou fotografias de nenhuma organização real; a instância de um cliente guarda-os
-num overlay privado (ver [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)). O nome e logo ARCVA
-pertencem à associação. Material de terceiros usado pela plataforma:
+num overlay privado (ver [docs/WHITE-LABEL.md](docs/WHITE-LABEL.md)). O código é da BolaLabs; a
+ARCVA é parceira, não titular, e o seu nome e logo pertencem à associação. Material de terceiros usado pela plataforma:
 
 - Imagens do seed demo alojadas no [Unsplash](https://unsplash.com/license) (Unsplash License)
 - Fontes Geist e Playfair Display servidas pelo Google Fonts (SIL Open Font License)
@@ -379,7 +379,7 @@ Guia de contribuição: [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.m
 ## Contacto
 
 - **Plataforma / técnico**: [bruno@bolalabs.pt](mailto:bruno@bolalabs.pt) · [bolalabs.pt](https://bolalabs.pt)
-- **ARCVA (cliente de referência, corre a sua própria instância)**: [geral@arcva.pt](mailto:geral@arcva.pt) · [arcva.pt](https://arcva.pt)
+- Cada associação responde pela sua instância, através dos contactos do seu próprio site.
 
 ---
 

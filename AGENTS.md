@@ -2,10 +2,10 @@
 
 Plataforma white-label para associações, comunidades e instituições (associações culturais
 e recreativas, clubes desportivos, juntas de freguesia, IPSS), construída pela
-[BolaLabs](https://bolalabs.pt). O cliente de referência é a **ARCVA**
-([arcva.pt](https://arcva.pt)), que corre a sua própria instância — todo o conteúdo ARCVA no
-repositório é seed/demo, a identidade em runtime vem das settings da BD (ver
-`docs/WHITE-LABEL.md`).
+[BolaLabs](https://bolalabs.pt), titular do código. A **ARCVA** ([arcva.pt](https://arcva.pt)) é
+cliente de referência e parceira (não titular) e corre a sua própria instância; o repositório não
+tem conteúdo dela — o seed é uma associação fictícia e a identidade em runtime vem das settings
+da BD (ver `docs/WHITE-LABEL.md`).
 
 UI em Português (pt-PT), código e comentários em inglês.
 
@@ -42,7 +42,8 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   plugin `siteMeta` do `vite.config.ts`) e `.brand/public/` (overlay de logos/fotos/OG,
   servido em dev pelo plugin `brandOverlay` e copiado para `dist/` pelo `npm run dist`).
   Única exceção, deliberada: a ARCVA é nomeada como cliente de referência no README,
-  LICENSE, CHANGELOG, `metadata.json` e aqui — nunca em código, testes, seed ou docs técnicas.
+  CHANGELOG, `metadata.json` e aqui — nunca em código, testes, seed, docs técnicas nem na
+  LICENSE. O contacto público do projeto é sempre `bruno@bolalabs.pt`.
   Ver `docs/WHITE-LABEL.md`. Campo de identidade novo = schema + `settings.*` +
   `seedHelpers.updateSettings` + `types.ts` + defaults + `AdminIdentitySection`.
   Instâncias reais vivem em repositórios privados próprios (padrão e template em
