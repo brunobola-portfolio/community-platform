@@ -28,3 +28,39 @@ export function progressWidthClass(percent: number): string {
   const step = clamped > 0 ? Math.max(1, Math.round(clamped / 10)) : 0;
   return WIDTH_CLASSES[Math.min(10, step)];
 }
+
+const escapeText = (value: string) =>
+    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/**
+ * Plain text as the paragraphs it was written in: a blank line starts a new
+ * paragraph, a single newline stays a line break. Used for pasted text, which
+ * would otherwise run together into one block on the site.
+ */
+export function plainTextToHtml(text: string): string {
+    return text
+        .replace(/\r\n?/g, '\n')
+        .split(/\n{2,}/)
+        .map(block => block.trim())
+        .filter(Boolean)
+        .map(block => `<p>${escapeText(block).replace(/\n/g, '<br>')}</p>`)
+        .join('');
+}
+
+/**
+ * Whether an article's lead would only repeat its own opening. The excerpt is
+ * generated from the body when nobody writes one, so on a short article the
+ * highlighted lead and the first paragraph say the same thing twice.
+ */
+export function isLeadRedundant(excerpt: string, bodyHtml: string): boolean {
+    const flatten = (value: string) => value
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ')
+        // An inline tag closing before punctuation leaves a space the author never typed
+        .replace(/ ([.,;:!?…])/g, '$1')
+        .trim()
+        .toLowerCase();
+    const lead = flatten(excerpt).replace(/(…|\.\.\.)$/, '').trim();
+    return lead.length > 0 && flatten(bodyHtml).startsWith(lead);
+}

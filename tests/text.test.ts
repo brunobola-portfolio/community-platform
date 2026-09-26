@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { EXCERPT_LENGTH, toExcerpt } from '../convex/lib/text';
-import { eventSummaryText, normalize, progressWidthClass, slugify } from '../utils/text';
+import { eventSummaryText, isLeadRedundant, normalize, plainTextToHtml, progressWidthClass, slugify } from '../utils/text';
+import { fitWithin, MAX_EDGE, renamed } from '../utils/imageOptimize';
 
 describe('toExcerpt', () => {
   it('returns a short body unchanged once tags are gone', () => {
@@ -75,5 +76,53 @@ describe('progressWidthClass', () => {
     // 1 of 32 places is 3%: rounding to the nearest tenth would render an empty bar
     expect(progressWidthClass(3)).toBe('w-[10%]');
     expect(progressWidthClass(0)).toBe('w-0');
+  });
+});
+
+
+describe('image optimisation sizing', () => {
+  it('shrinks a phone photo to the long edge, keeping its shape', () => {
+    expect(fitWithin(3024, 4032)).toEqual({ width: 1500, height: MAX_EDGE });
+    expect(fitWithin(4000, 3000)).toEqual({ width: MAX_EDGE, height: 1500 });
+  });
+
+  it('never enlarges an image that is already small', () => {
+    expect(fitWithin(800, 1131)).toEqual({ width: 800, height: 1131 });
+  });
+
+  it('names the file after the format it was re-encoded to', () => {
+    expect(renamed('Cartaz Arraial.HEIC', 'image/jpeg')).toBe('Cartaz Arraial.jpg');
+    expect(renamed('logo.webp', 'image/png')).toBe('logo.png');
+    expect(renamed('.png', 'image/jpeg')).toBe('imagem.jpg');
+  });
+});
+
+describe('plainTextToHtml', () => {
+  it('keeps the paragraphs text was written in', () => {
+    expect(plainTextToHtml('Primeiro.\n\nSegundo.')).toBe('<p>Primeiro.</p><p>Segundo.</p>');
+  });
+
+  it('keeps a single line break as a break, as a WhatsApp message has it', () => {
+    expect(plainTextToHtml('Sábado\n21h00')).toBe('<p>Sábado<br>21h00</p>');
+  });
+
+  it('never lets pasted text become markup', () => {
+    expect(plainTextToHtml('<img src=x onerror=alert(1)> & co')).toBe('<p>&lt;img src=x onerror=alert(1)&gt; &amp; co</p>');
+  });
+
+  it('treats Windows line endings like any other', () => {
+    expect(plainTextToHtml('a\r\n\r\nb')).toBe('<p>a</p><p>b</p>');
+  });
+});
+
+describe('isLeadRedundant', () => {
+  it('hides a lead that is only the opening of the body', () => {
+    expect(isLeadRedundant('Já pode reservar lugar.', '<p>Já pode reservar <b>lugar</b>.</p><p>Mais.</p>')).toBe(true);
+    expect(isLeadRedundant('Já pode reservar lugar na sardinhada…', '<p>Já pode reservar lugar na sardinhada do arraial.</p>')).toBe(true);
+  });
+
+  it('keeps a lead someone wrote on purpose', () => {
+    expect(isLeadRedundant('Um verão para lembrar.', '<p>Já pode reservar lugar.</p>')).toBe(false);
+    expect(isLeadRedundant('', '<p>Texto</p>')).toBe(false);
   });
 });

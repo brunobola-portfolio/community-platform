@@ -6,6 +6,46 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.11.0] - 2026-09-26
+
+Publishing and sharing, validated end to end as an association would use it: create an
+event with a poster, highlight it, open registrations, publish, and send it to WhatsApp.
+
+### Added
+
+- Every event has its own address (`/events/<slug>`). A shared link opens that event; the
+  browser's Back button closes it instead of leaving the agenda
+- A share bar on events and articles: WhatsApp first, Facebook, copy link, and the phone's
+  share sheet where one exists. Plain links — no SDK, no tracking, no CSP exception. The
+  WhatsApp message carries what, when and where, with the link on its own line
+- Link previews per event and article: Convex serves a page with the item's own title, date,
+  place, excerpt and poster at `/share/events/<slug>` and `/share/blog/<slug>`. Instances
+  whose web server can proxy crawler requests there (IIS with ARR, or nginx) get the poster in
+  the WhatsApp and Facebook card; `VITE_SHARE_PREVIEWS=proxy` makes the build add the IIS
+  rule. See `docs/SHARING.md`
+- A visual text editor is now the default in the backoffice: type, Enter for a new paragraph,
+  bold, headings, lists, links. Pasted text from WhatsApp or Word arrives clean. The HTML
+  field it replaces as default showed tags, and text typed into it lost its line breaks on
+  the site because a newline is not a paragraph in HTML; it stays one click away
+
+### Changed
+
+- Posters are shown whole in the event dialog, over a blurred copy of themselves, and open
+  full screen. A cover crop cut off the date and details printed at the top and bottom
+- Images are optimised in the browser before upload: long edge capped at 2000 px, phone
+  rotation applied, photos re-encoded as JPEG, logos with transparency kept as PNG. A 4.2 MB
+  poster lands at 156 KB, and the backoffice says so after the upload
+- The image field opens on upload rather than AI generation, is named for what it holds
+  ("Cartaz ou imagem", "Imagem de capa"), accepts drag and drop, and previews a portrait
+  poster whole. It no longer loads a background texture from a third-party site
+- A new article starts dated now; the date was required but empty, so saving failed until
+  someone noticed the field
+- An article whose lead is only the opening of its body no longer shows the same sentence
+  twice
+- A dialog that only shows content focuses itself when it opens instead of its first link or
+  image, which drew a focus ring around content nobody chose; forms still land on their
+  first field
+
 ## [2.10.0] - 2026-09-09
 
 ### Added

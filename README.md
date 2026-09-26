@@ -192,6 +192,12 @@ curl -s https://example.org/ | grep generator
 meta tag is there for anyone who just opens the page. In the portal footer, the
 "Community Platform by BolaLabs" line carries the same version as its tooltip.
 
+### Sharing
+
+Every event has its own address and a share bar (WhatsApp, Facebook, copy link). Link
+previews can carry each event's own poster; that needs one web-server rule, covered in
+[docs/SHARING.md](docs/SHARING.md).
+
 ### Error monitoring
 
 Optional and per instance. Set `VITE_SENTRY_DSN` in the build environment and the portal

@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useData } from '../context/DataContext';
 import { useConvexAuth, useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
-import { useOutletContext, useLocation } from 'react-router-dom';
+import { useOutletContext, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { LayoutOutletContext } from '../layouts/types';
 import { EventsJsonLd } from '../components/StructuredData';
 import { MapPin, Clock, Search, CalendarPlus, Trophy, CheckCircle2, Download, X, History, CalendarOff, Smartphone, CreditCard, LogIn } from 'lucide-react';
@@ -12,7 +12,10 @@ import { sanitizeHtml, sanitizeText } from '../utils/security';
 import { categoryColorClass } from '../utils/categoryColors';
 import { eventSummaryText, normalize, progressWidthClass } from '../utils/text';
 import { EventCardSkeleton } from '../components/ui/Skeleton';
+import { ShareBar } from '../components/ui/ShareBar';
+import { EventPoster } from '../components/events/EventPoster';
 import { useEventDescription } from '../hooks/useEventDescription';
+import { absoluteUrl, eventPath, eventShareText } from '../utils/share';
 import type { Event } from '../types';
 
 export const EventsPage: React.FC = () => {
@@ -37,14 +40,35 @@ export const EventsPage: React.FC = () => {
     const [dynamicForm, setDynamicForm] = useState<Record<string, string>>({});
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
+    // Every event has its own address, so a link on WhatsApp opens that event
+    // and the back button closes it instead of leaving the agenda
+    const { slug: routeSlug } = useParams<{ slug?: string }>();
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (!routeSlug) { setSelectedEvent(null); return; }
+        if (events.length === 0) return;
+        const match = events.find(e => e.slug === routeSlug);
+        if (match) setSelectedEvent(match);
+        else navigate('/events', { replace: true });
+    }, [routeSlug, events, navigate]);
     // The home page hands over an event to open (registration CTA)
     const location = useLocation();
+    // Opened from the list, closing is a step back, so the browser's Back button
+    // does not reopen what was just closed; opened from a shared link, closing
+    // replaces the entry and lands on the agenda
+    const openedFromList = Boolean((location.state as { fromList?: boolean } | null)?.fromList);
+    const openEvent = (event: Event) => navigate(eventPath(event.slug), { state: { fromList: true } });
+    const closeEvent = () => {
+        setShowRegistrationModal(false);
+        if (openedFromList) navigate(-1);
+        else navigate('/events', { replace: true });
+    };
     useEffect(() => {
         const wanted = (location.state as { eventId?: string } | null)?.eventId;
         if (!wanted || selectedEvent) return;
         const match = events.find(e => e.id === wanted);
-        if (match) { setSelectedEvent(match); window.history.replaceState({}, ''); }
-    }, [location.state, events, selectedEvent]);
+        if (match) navigate(eventPath(match.slug), { replace: true });
+    }, [location.state, events, selectedEvent, navigate]);
 
     // Debounce search input (500ms)
     useEffect(() => {
@@ -208,7 +232,7 @@ export const EventsPage: React.FC = () => {
             </div>
         ) : showRegistrationModal ? (
             <div className="flex justify-center">
-                <Button variant="outline" onClick={() => { setShowRegistrationModal(false); setSelectedEvent(null); }}>Voltar à agenda</Button>
+                <Button variant="outline" onClick={closeEvent}>Voltar à agenda</Button>
             </div>
         ) : registrationOpen ? (
             <div className="flex justify-end">
@@ -420,7 +444,7 @@ export const EventsPage: React.FC = () => {
 
                                         <h3
                                             className="text-2xl md:text-3xl font-serif text-slate-900 dark:text-white mb-3 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer"
-                                            onClick={() => setSelectedEvent(event)}
+                                            onClick={() => openEvent(event)}
                                         >
                                             {event.title}
                                         </h3>
@@ -451,7 +475,7 @@ export const EventsPage: React.FC = () => {
 
                                     {/* Actions */}
                                     <div className="flex flex-row md:flex-col justify-center gap-3 md:border-l border-slate-900/5 dark:border-white/5 md:pl-6 md:min-w-[140px]">
-                                        <Button variant="default" className={cn("flex-1 md:flex-none", isPast ? "bg-slate-700 hover:bg-slate-600 border-slate-600" : "")} onClick={() => setSelectedEvent(event)}>
+                                        <Button variant="default" className={cn("flex-1 md:flex-none", isPast ? "bg-slate-700 hover:bg-slate-600 border-slate-600" : "")} onClick={() => openEvent(event)}>
                                             {isPast ? 'Ver Resumo' : 'Detalhes'}
                                         </Button>
                                         {!isPast && (
@@ -475,7 +499,7 @@ export const EventsPage: React.FC = () => {
             {/* Details & Registration Modal */}
             <Modal
                 isOpen={!!selectedEvent}
-                onClose={() => { setSelectedEvent(null); setShowRegistrationModal(false); }}
+                onClose={closeEvent}
                 title={showRegistrationModal ? 'Inscrição' : (selectedEvent?.title ?? '')}
                 eyebrow={selectedEvent ? (showRegistrationModal ? selectedEvent.title : `${new Date(selectedEvent.date).toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long' })} · ${selectedEvent.location}`) : undefined}
                 description={showRegistrationModal ? 'Confirme os dados para garantir o seu lugar.' : undefined}
@@ -485,14 +509,7 @@ export const EventsPage: React.FC = () => {
             >
                 {selectedEvent && !showRegistrationModal && (
                     <div className="space-y-6">
-                        <div className="h-56 w-full overflow-hidden rounded-2xl md:h-64">
-                            <img
-                                src={selectedEvent.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop'}
-                                alt={selectedEvent.title}
-                                className="h-full w-full object-cover"
-                                onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop'; }}
-                            />
-                        </div>
+                        <EventPoster key={selectedEvent.id} src={selectedEvent.imageUrl} alt={`Cartaz: ${selectedEvent.title}`} />
 
                         <div className="prose dark:prose-invert max-w-none">
                             {/* Descriptions come from the rich-text editor as HTML */}
@@ -512,6 +529,12 @@ export const EventsPage: React.FC = () => {
                                 </div>
                             </div>
                         )}
+
+                        <ShareBar
+                            url={absoluteUrl(eventPath(selectedEvent.slug))}
+                            title={selectedEvent.title}
+                            text={eventShareText(selectedEvent)}
+                        />
                     </div>
                 )}
 

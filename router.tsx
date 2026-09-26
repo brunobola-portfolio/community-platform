@@ -67,6 +67,7 @@ export const router = createBrowserRouter([
           { path: 'history', element: <PageErrorBoundary>{suspended(<HistoryPage />)}</PageErrorBoundary> },
           { path: 'team', element: <PageErrorBoundary>{suspended(<TeamPage />)}</PageErrorBoundary> },
           { path: 'events', element: <PageErrorBoundary>{suspended(<EventsPage />)}</PageErrorBoundary> },
+          { path: 'events/:slug', element: <PageErrorBoundary>{suspended(<EventsPage />)}</PageErrorBoundary> },
           { path: 'blog', element: <PageErrorBoundary>{suspended(<BlogPageWrapper />)}</PageErrorBoundary> },
           { path: 'blog/:slug', element: <PageErrorBoundary>{suspended(<PostDetailsPageWrapper />)}</PageErrorBoundary> },
           { path: 'gallery', element: <PageErrorBoundary>{suspended(<GalleryPageWrapper />)}</PageErrorBoundary> },

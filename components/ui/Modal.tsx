@@ -35,6 +35,7 @@ const SIZE_CLASSES = {
 };
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+const FORM_FIELD = 'input:not([type="hidden"]):not([disabled]):not([readonly]), select:not([disabled]), textarea:not([disabled])';
 
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -69,10 +70,11 @@ export const Modal: React.FC<ModalProps> = ({
     const previousFocus = document.activeElement as HTMLElement;
     const getFocusable = () => modal.querySelectorAll<HTMLElement>(FOCUSABLE);
 
-    // Prefer the first control of the body (usually a form field) over the
-    // close button, so opening a dialog lands where the user has to act
-    const firstInBody = bodyRef.current?.querySelector<HTMLElement>(FOCUSABLE);
-    (firstInBody ?? getFocusable()[0] ?? modal).focus();
+    // A form lands on its first field, where the user has to act. A dialog that
+    // only shows content lands on itself: focusing its first link or image
+    // button would draw a focus ring around content nobody chose
+    const firstField = bodyRef.current?.querySelector<HTMLElement>(FORM_FIELD);
+    (firstField ?? modal).focus();
 
     document.body.style.overflow = 'hidden';
 

@@ -8,6 +8,7 @@ import { STD_INPUT_CLASS, LABEL_CLASS } from '../constants';
 import { api } from '../../../convex/_generated/api';
 import { DEFAULT_IMAGE_MODEL } from '../../../convex/lib/aiDefaults';
 import { GEMINI_IMAGE_MODELS } from '../../../convex/lib/aiDefaults';
+import { optimizeImage } from '../../../utils/imageOptimize';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -19,10 +20,17 @@ export interface MediaStudioProps {
     defaultStyle?: string;
     defaultModel?: string;
     defaultResolution?: string;
+    /** Section title; events call it a poster, articles a cover. */
+    label?: string;
 }
 
-export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, onGenerateAI, isGenerating, defaultStyle, defaultModel, defaultResolution }) => {
-    const [mode, setMode] = useState<'url' | 'ai' | 'upload'>('ai');
+const formatSize = (bytes: number) =>
+    bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1).replace('.', ',')} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+
+export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, onGenerateAI, isGenerating, defaultStyle, defaultModel, defaultResolution, label = 'Imagem' }) => {
+    // Uploading a poster or a photo is the everyday action; generation is the exception
+    const [mode, setMode] = useState<'url' | 'ai' | 'upload'>('upload');
+    const [savedNote, setSavedNote] = useState('');
     const [aiPrompt, setAiPrompt] = useState('');
     const [aiModel, setAiModel] = useState(defaultModel || DEFAULT_IMAGE_MODEL);
     const [aiResolution, setAiResolution] = useState(defaultResolution || '1k');
@@ -32,16 +40,22 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
     const getFileUrl = useMutation(api.files.getUrl);
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || isUploading) return;
+        const picked = e.target.files?.[0];
+        // Clearing lets the same file be picked again after an error
+        e.target.value = '';
+        if (!picked || isUploading) return;
+        setUploadError('');
+        setSavedNote('');
+        setIsUploading(true);
 
-        // File size validation
+        // Optimised first: a phone photo of a poster shrinks from megabytes to a
+        // few hundred KB, so the 10 MB ceiling only applies to what is uploaded
+        const file = await optimizeImage(picked);
         if (file.size > MAX_FILE_SIZE) {
             setUploadError('Ficheiro demasiado grande. Tamanho máximo: 10 MB.');
+            setIsUploading(false);
             return;
         }
-        setUploadError('');
-        setIsUploading(true);
 
         // Upload to Convex storage: base64 data URIs would blow past the 1MB
         // document limit and bloat every query that returns the entity
@@ -57,6 +71,7 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
             const url = await getFileUrl({ storageId });
             if (!url) throw new Error('Não foi possível obter o URL do ficheiro.');
             onChange(url);
+            if (file !== picked) setSavedNote(`Otimizada: ${formatSize(picked.size)} → ${formatSize(file.size)}`);
         } catch (err) {
             console.error('MediaStudio upload error:', err);
             setUploadError('Erro ao carregar a imagem. Tente novamente.');
@@ -67,12 +82,14 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
 
     return (
         <div className="space-y-4">
-            <span className={LABEL_CLASS}>Media Studio</span>
+            <span className={LABEL_CLASS}>{label}</span>
             <div className="bg-slate-950/50 border border-slate-800 rounded-xl overflow-hidden">
-                <div className="relative h-48 w-full bg-black/40 flex items-center justify-center group bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]">
+                <div className="relative h-56 w-full overflow-hidden bg-black/40 flex items-center justify-center group">
                     {imageUrl ? (
                         <>
-                            <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                            {/* Whole image over a blurred copy: a portrait poster is not cropped here either */}
+                            <img src={imageUrl} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-xl" />
+                            <img src={imageUrl} alt="Pré-visualização" className="relative w-full h-full object-contain" />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
                                 <button type="button" onClick={() => onChange('')} className="p-3 bg-red-600 rounded-full text-white hover:bg-red-500 shadow-lg transform hover:scale-110 transition-all" aria-label="Remover imagem">
                                     <Trash2 size={20} />
@@ -88,11 +105,11 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                 </div>
                 <div className="p-4 border-t border-white/5">
                     <div className="flex flex-wrap gap-2 mb-4 bg-white/5 p-1 rounded-lg w-full sm:w-fit">
-                        {([{ id: 'ai', label: 'AI Magic', icon: Wand2 }, { id: 'upload', label: 'Upload', icon: Upload }, { id: 'url', label: 'Link', icon: LinkIcon }] as const).map(m => (
+                        {([{ id: 'upload', label: 'Carregar', icon: Upload }, { id: 'url', label: 'Endereço', icon: LinkIcon }, { id: 'ai', label: 'Gerar com IA', icon: Wand2 }] as const).map(m => (
                             <button
                                 key={m.id}
                                 type="button"
-                                onClick={() => { setMode(m.id); setUploadError(''); }}
+                                onClick={() => { setMode(m.id); setUploadError(''); setSavedNote(''); }}
                                 className={cn("flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all", mode === m.id ? "bg-brand-600 text-white shadow-sm" : "text-slate-400 hover:text-white")}
                             >
                                 <m.icon size={14} /> {m.label}
@@ -137,15 +154,18 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                     )}
                     {mode === 'upload' && (
                         <div className="space-y-2">
-                            <div className="relative border-2 border-dashed border-slate-700 rounded-lg p-6 text-center hover:border-brand-500/50 transition-colors cursor-pointer bg-black/20 group">
-                                <input type="file" className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait" onChange={handleFileUpload} accept="image/*" disabled={isUploading} />
+                            {/* The input covers the zone, so dropping a file on it works natively */}
+                            <div className="relative border-2 border-dashed border-slate-700 rounded-lg p-6 text-center hover:border-brand-500/50 focus-within:border-brand-500 transition-colors cursor-pointer bg-black/20 group">
+                                <input type="file" aria-label={`Escolher ficheiro: ${label}`} className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait" onChange={handleFileUpload} accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml" disabled={isUploading} />
                                 {isUploading
                                     ? <Loader2 size={24} className="mx-auto text-brand-400 mb-2 animate-spin" />
                                     : <Upload size={24} className="mx-auto text-slate-500 mb-2 group-hover:text-brand-400 transition-colors" />}
-                                <span className="text-xs text-slate-400">{isUploading ? 'A carregar…' : 'Clique para carregar (máx. 10 MB)'}</span>
+                                <span className="block text-sm text-slate-300">{isUploading ? 'A otimizar e a carregar…' : 'Arraste o ficheiro para aqui ou clique para escolher'}</span>
+                                {!isUploading && <span className="mt-1 block text-xs text-slate-500">JPG, PNG ou WebP · as fotografias grandes são otimizadas automaticamente</span>}
                             </div>
+                            {savedNote && <p className="text-emerald-400 text-xs" role="status">{savedNote}</p>}
                             {uploadError && (
-                                <p className="text-red-400 text-xs">{uploadError}</p>
+                                <p className="text-red-400 text-xs" role="alert">{uploadError}</p>
                             )}
                         </div>
                     )}

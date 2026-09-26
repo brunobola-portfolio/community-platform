@@ -310,7 +310,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         setEditingId(null); setTempPhotoUrl('');
         if (type === 'actionArea') setFormData({ iconName: 'Users', order: 0, features: [] });
         else if (type === 'event') setFormData({ categoryId: categories[0]?.id ?? '', status: 'published', registrationOpen: false, currentParticipants: 0, isTournament: false });
-        else if (type === 'post') setFormData({ categoryId: categories[0]?.id ?? '', published: true });
+        // A news item is written about now; an empty required date only surfaced on save
+        else if (type === 'post') setFormData({ categoryId: categories[0]?.id ?? '', published: true, date: formatDateForInput(new Date().toISOString()) });
         else setFormData({});
         setShowModal(type);
     };

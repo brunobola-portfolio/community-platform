@@ -25,6 +25,9 @@ import { sanitizeHtml, sanitizeText } from '../utils/security';
 import type { Event, Sponsor, ActionArea } from '../types';
 import type { LayoutOutletContext } from '../layouts/types';
 import { OrganizationJsonLd } from '../components/StructuredData';
+import { ShareBar } from '../components/ui/ShareBar';
+import { EventPoster } from '../components/events/EventPoster';
+import { absoluteUrl, eventPath, eventShareText } from '../utils/share';
 
 // Helper to map string names from DB to Lucide components
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -583,11 +586,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
           return (
             <div className="space-y-5">
-              <img
-                src={selectedEvent.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop'}
-                className="h-56 w-full rounded-2xl object-cover"
-                alt={selectedEvent.title}
-              />
+              <EventPoster key={selectedEvent.id} src={selectedEvent.imageUrl} alt={`Cartaz: ${selectedEvent.title}`} />
               <div>
                 <div className="mb-3 flex flex-wrap gap-2">
                   <Badge className="border-none bg-brand-600 text-white shadow-md">{selectedEvent.category || 'Geral'}</Badge>
@@ -624,6 +623,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 </div>
               )}
 
+              <ShareBar
+                url={absoluteUrl(eventPath(selectedEvent.slug))}
+                title={selectedEvent.title}
+                text={eventShareText(selectedEvent)}
+              />
             </div>
           );
         })()}
