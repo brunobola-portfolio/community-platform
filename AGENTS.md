@@ -7,9 +7,6 @@ e recreativas, clubes desportivos, juntas de freguesia, IPSS), construída pela
 repositório é seed/demo, a identidade em runtime vem das settings da BD (ver
 `docs/WHITE-LABEL.md`).
 
-SPA em **React 19 + TypeScript 5 + Vite 8 (Rolldown)** com **Tailwind CSS 3** e backend
-realtime **Convex** (queries, mutations, actions IA, storage, crons — nada corre em servidor
-próprio). IA via **Google Gemini** server-side, com camada multi-provedor OpenAI-compatível.
 UI em Português (pt-PT), código e comentários em inglês.
 
 ## Comandos
@@ -18,12 +15,8 @@ UI em Português (pt-PT), código e comentários em inglês.
 npm run dev          # Frontend em http://localhost:3000 (deteta porta ocupada e pergunta)
 npm run dev:kill     # Igual, mas mata logo o processo que estiver na porta
 npx convex dev       # Backend Convex (terminal separado) — regenera convex/_generated
-npm run build        # tsc && vite build
 npm run dist         # build + validação + community-platform-dist.zip pronto para o servidor
-npm run type-check   # tsc --noEmit
-npm run lint         # ESLint, zero warnings
 npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
-npm run preview      # Servir o build local
 ```
 
 - **Testes: só lógica pura e subtil** (`npm test`, Vitest, em `tests/`). Cobrem o token
@@ -88,17 +81,6 @@ npm run preview      # Servir o build local
   enhance), helpers em `lib/aiShared.ts`.
 - **Listas públicas vs backoffice**: `DataContext` expõe `events`/`posts` (só publicados) e
   `adminEvents`/`adminPosts` (incluem rascunhos via `listAll`). Não misturar.
-- **Backoffice é dark-only e declara-o**: a raiz do `/admin` e do `/setup` tem a classe
-  `dark`, por isso os componentes partilhados (diálogos, inputs, estados vazios) seguem o
-  tema escuro mesmo quando o visitante tem o portal em claro — sem isso, as variantes
-  `dark:` não se aplicavam e o backoffice ficava com texto escuro sobre fundo escuro.
-- **Listas do backoffice têm um único componente**: `pages/admin/components/EntityList.tsx`
-  (toolbar de pesquisa/filtros/ordenação, tabela desktop, cartões mobile, estado vazio da
-  coleção e estado sem resultados, com as MESMAS ações nas duas vistas). Uma tab nova é uma
-  configuração de colunas — nunca uma tabela nova.
-- **Campos do backoffice usam `pages/admin/components/Field.tsx`**: gera o `id`, liga o
-  `label` e marca os obrigatórios. Nunca escrever `<label className={LABEL_CLASS}>` solto
-  ao lado de um input; um `<span>` com essa classe só serve para títulos de grupo.
 - **Catálogo de modelos Gemini** (`GEMINI_*_MODELS` em `convex/lib/aiDefaults.ts`) alimenta
   os selects do admin, o Media Studio e `aiProviderTools.listModels` — uma lista, três ecrãs.
 - **O seed é a demonstração do produto**: `convex/mockData.ts` gera datas de eventos relativas
@@ -146,8 +128,6 @@ npm run preview      # Servir o build local
   `bg-white dark:bg-dark-surface`, `text-slate-900 dark:text-white`.
 - Exceções dark-only nos dois temas: texto sobre fotos com overlay, cartão de sócio,
   backoffice `/admin` e `/setup`.
-- Brand: vermelho ARCVA `brand-600` #df3d32 (light) / `brand-400`-`brand-500` (dark);
-  accent gold #fbbf24; neutrals slate (dark bg #020617, surface #0f172a).
 - Radius: `rounded-xl`/`rounded-2xl`/`rounded-3xl`. Foco visível:
   `focus-visible:ring-2 focus-visible:ring-brand-500` em todos os interativos.
 - Lightbox partilhado: `components/ui/Lightbox.tsx` (controlado por index).
@@ -157,7 +137,6 @@ npm run preview      # Servir o build local
 
 ## Acessibilidade e performance
 
-- HTML semântico; `aria-label` em botões só-ícone; navegação por teclado (Enter/Space).
 - Debounce 500ms em pesquisa; lazy load de modais/páginas pesadas; paginação em datasets
   grandes; `React.memo`/`useMemo` com moderação.
 
