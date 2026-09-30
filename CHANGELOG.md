@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.13.3] - 2026-09-30
+
+### Fixed
+
+- The home agenda showed the eight upcoming events furthest away instead of the next eight:
+  events arrive newest first and the carousel did not re-sort them
+- With nothing scheduled, the home agenda showed past events under "Próximos eventos"; it now
+  says "Os últimos eventos"
+- The home news block no longer shows "Sem notícias de momento" to visitors; it appears with
+  the first published article
+
 ## [2.13.2] - 2026-09-26
 
 ### Added
@@ -648,7 +659,8 @@ First production release, live at [arcva.pt](https://arcva.pt).
   dev launcher with busy-port detection
 - Deploy guides for IIS/Windows and Linux VPS with nginx
 
-[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.2...HEAD
+[Unreleased]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.3...HEAD
+[2.13.3]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.2...v2.13.3
 [2.13.2]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.1...v2.13.2
 [2.13.1]: https://github.com/brunobola-portfolio/community-platform/compare/v2.13.0...v2.13.1
 [2.13.0]: https://github.com/brunobola-portfolio/community-platform/compare/v2.12.1...v2.13.0

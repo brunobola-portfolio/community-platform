@@ -45,11 +45,17 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onAskAI, onViewPost, onContact }) => {
   const { posts, events, sponsors, actionAreas, stats, isLoading, settings } = useData();
-  // The carousel is a teaser: the next eight, not the whole archive as image cards
-  const carouselEvents = useMemo(() => {
+  // The carousel is a teaser: the next eight, soonest first. Events arrive newest first, so
+  // without this sort it showed the eight furthest away. With nothing ahead, the most recent
+  // past ones stand in and the subtitle says so
+  const { carouselEvents, hasUpcoming } = useMemo(() => {
     const today = new Date(); today.setHours(0, 0, 0, 0);
-    const upcoming = events.filter(e => new Date(e.date) >= today);
-    return (upcoming.length > 0 ? upcoming : events).slice(0, 8);
+    const upcoming = events
+      .filter(e => new Date(e.date) >= today)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    return upcoming.length > 0
+      ? { carouselEvents: upcoming.slice(0, 8), hasUpcoming: true }
+      : { carouselEvents: events.slice(0, 8), hasUpcoming: false };
   }, [events]);
   const [searchValue, setSearchValue] = useState('');
 
@@ -314,7 +320,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
         </div>
       </section>
 
-      {/* Bento Grid News Section */}
+      {/* Bento Grid News Section: hidden until there is something to read */}
+      {(isLoading || posts.length > 0) && (
       <section className="py-32 relative">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
@@ -410,6 +417,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           )}
         </div>
       </section>
+      )}
 
       {/* Events Stream */}
       <section id="events" className="py-32 bg-white dark:bg-black relative overflow-hidden">
@@ -419,7 +427,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <div className="flex justify-between items-end mb-12">
             <div>
               <h2 className="font-serif text-5xl text-slate-900 dark:text-white mb-4">Agenda Cultural</h2>
-              <p className="text-slate-600 dark:text-slate-400 text-lg">{settings.locality ? `Próximos eventos em ${settings.locality}.` : "Próximos eventos."}</p>
+              <p className="text-slate-600 dark:text-slate-400 text-lg">{hasUpcoming
+                ? (settings.locality ? `Próximos eventos em ${settings.locality}.` : "Próximos eventos.")
+                : (settings.locality ? `Os últimos eventos em ${settings.locality}.` : "Os últimos eventos.")}</p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="icon" className="rounded-full border-slate-900/10 dark:border-white/10 hover:bg-slate-900/10 dark:hover:bg-white/10" aria-label="Eventos anteriores" onClick={() => scrollEvents('left')}>
