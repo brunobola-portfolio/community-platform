@@ -8,6 +8,7 @@ import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequ
 // subscribes to the whole list, so the public query ships a plain-text excerpt
 // and the detail view loads the body on demand through getById.
 import { toExcerpt } from "./lib/text";
+import { retainUrl } from "./lib/uploads";
 
 export const list = query({
     args: {},
@@ -142,6 +143,7 @@ export const create = mutation({
         // Sanitize HTML description (defense-in-depth)
         const sanitizedDescription = sanitizeContentServer(args.description);
 
+        await retainUrl(ctx, args.externalImage);
         const eventId = await ctx.db.insert("events", { ...args, description: sanitizedDescription });
         return eventId;
     },

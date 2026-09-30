@@ -12,4 +12,7 @@ crons.daily("cleanup:activityLogs", { hourUTC: 3, minuteUTC: 0 }, internal.maint
 // Retention of registrations without an account (registrations.purgeExpiredGuests)
 crons.daily("cleanup:guestRegistrations", { hourUTC: 3, minuteUTC: 30 }, internal.registrations.purgeExpiredGuests);
 
+// Files uploaded from the MediaStudio but never saved into a record
+crons.daily("cleanup:abandonedUploads", { hourUTC: 4, minuteUTC: 0 }, internal.maintenance.sweepAbandonedUploads);
+
 export default crons;

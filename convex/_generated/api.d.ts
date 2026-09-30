@@ -39,6 +39,7 @@ import type * as lib_registrationRules from "../lib/registrationRules.js";
 import type * as lib_shareHtml from "../lib/shareHtml.js";
 import type * as lib_text from "../lib/text.js";
 import type * as lib_tokenBucket from "../lib/tokenBucket.js";
+import type * as lib_uploads from "../lib/uploads.js";
 import type * as lib_validation from "../lib/validation.js";
 import type * as maintenance from "../maintenance.js";
 import type * as memberProfiles from "../memberProfiles.js";
@@ -98,6 +99,7 @@ declare const fullApi: ApiFromModules<{
   "lib/shareHtml": typeof lib_shareHtml;
   "lib/text": typeof lib_text;
   "lib/tokenBucket": typeof lib_tokenBucket;
+  "lib/uploads": typeof lib_uploads;
   "lib/validation": typeof lib_validation;
   maintenance: typeof maintenance;
   memberProfiles: typeof memberProfiles;

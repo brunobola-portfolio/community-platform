@@ -4,7 +4,9 @@ import { reconcileImageUpdate } from '../convex/lib/cascade';
 
 function fakeCtx() {
   const deleted: string[] = [];
+  // An empty uploads ledger: these records hold legacy files or typed links
   const ctx = {
+    db: { query: () => ({ withIndex: () => ({ first: async () => null }) }) },
     storage: { delete: vi.fn(async (id: string) => { deleted.push(id); }) },
   } as unknown as MutationCtx;
   return { ctx, deleted };

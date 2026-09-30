@@ -359,4 +359,15 @@ export default defineSchema({
     errorMessage: v.optional(v.string()),
     timestamp: v.number(),
   }).index("by_timestamp", ["timestamp"]).index("by_action", ["action"]).index("by_user", ["userId"]),
+
+  // Files uploaded from the admin MediaStudio, counted by the records that use their URL
+  // (convex/lib/uploads.ts)
+  uploads: defineTable({
+    storageId: v.id("_storage"),
+    url: v.string(),
+    refs: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_url", ["url"])
+    .index("by_refs_created", ["refs", "createdAt"]),
 });

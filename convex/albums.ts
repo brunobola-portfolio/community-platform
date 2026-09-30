@@ -4,6 +4,7 @@ import type { Doc, Id } from "./_generated/dataModel";
 import { requireAdmin } from "./lib/auth";
 import { cascadeDeleteAlbum, reconcileImageUpdate } from "./lib/cascade";
 import { validateRequired, validateMaxLength } from "./lib/validation";
+import { retainUrl } from "./lib/uploads";
 
 type Ctx = QueryCtx | MutationCtx;
 
@@ -123,6 +124,7 @@ export const create = mutation({
         validateRequired(args, ["title", "date"]);
         validateMaxLength(args.title, "title", 200);
         if (args.description) validateMaxLength(args.description, "description", 2000);
+        await retainUrl(ctx, args.externalCover);
         return await ctx.db.insert("albums", args);
     },
 });

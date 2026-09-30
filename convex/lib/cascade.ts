@@ -1,5 +1,6 @@
 import { MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
+import { releaseUrl, swapUrl } from "./uploads";
 
 /**
  * Delete an event and all related registrations + storage.
@@ -18,6 +19,7 @@ export async function cascadeDeleteEvent(ctx: MutationCtx, eventId: Id<"events">
   }
 
   // Clean up storage
+  await releaseUrl(ctx, event.externalImage);
   if (event.image) {
     try { await ctx.storage.delete(event.image as Id<"_storage">); } catch (e) { console.error("Failed to delete storage:", e); }
   }
@@ -45,6 +47,7 @@ export async function cascadeDeleteAlbum(ctx: MutationCtx, albumId: Id<"albums">
   }
 
   // Clean up cover storage
+  await releaseUrl(ctx, album.externalCover);
   if (album.coverId) {
     try { await ctx.storage.delete(album.coverId as Id<"_storage">); } catch (e) { console.error("Failed to delete storage:", e); }
   }
@@ -59,13 +62,15 @@ export async function cascadeDeleteAlbum(ctx: MutationCtx, albumId: Id<"albums">
 export async function cleanupStorageOnDelete(
   ctx: MutationCtx,
   doc: Record<string, unknown>,
-  storageFields: string[]
+  storageFields: string[],
+  externalFields: string[] = []
 ) {
   for (const field of storageFields) {
     if (doc[field] !== undefined && doc[field] !== null) {
       try { await ctx.storage.delete(doc[field] as Id<"_storage">); } catch (e) { console.error("Failed to delete storage:", e); }
     }
   }
+  for (const field of externalFields) await releaseUrl(ctx, doc[field]);
 }
 
 /**
@@ -86,7 +91,8 @@ export async function cleanupStorageOnUpdate(
  * Keep an entity's image pair coherent on update. Reads prefer the storage id over the
  * external URL, so a new URL (or '' to remove the image) has to release the stored file,
  * otherwise the save succeeds and the old picture keeps showing. A new storage id releases
- * the previous one. The admin form echoes the raw fields it loaded, so values equal to the
+ * the previous one, and an uploaded URL that is replaced is released from the ledger
+ * (convex/lib/uploads.ts). The admin form echoes the raw fields it loaded, so values equal to the
  * stored ones count as untouched. Mutates `updates` so the caller patches once.
  */
 export async function reconcileImageUpdate(
@@ -104,7 +110,9 @@ export async function reconcileImageUpdate(
     return;
   }
   const nextExternal = updates[externalField];
-  if (nextExternal === undefined || nextExternal === existingDoc[externalField] || !stored) return;
+  if (nextExternal === undefined || nextExternal === existingDoc[externalField]) return;
+  await swapUrl(ctx, existingDoc[externalField], nextExternal);
+  if (!stored) return;
   try { await ctx.storage.delete(stored as Id<"_storage">); } catch (e) { console.error("Failed to delete storage:", e); }
   // undefined in a patch removes the field
   updates[storageField] = undefined;

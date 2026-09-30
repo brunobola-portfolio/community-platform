@@ -1,5 +1,6 @@
 import { mutation, internalMutation } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
+import { sweepAbandonedUploads as sweepUploads } from "./lib/uploads";
 
 /**
  * Maintenance mutations for database cleanup and integrity.
@@ -169,5 +170,14 @@ export const cleanupOldLogs = internalMutation({
         if (cleaned > 0) {
             console.log(`Cleaned up ${cleaned} old activity log entries.`);
         }
+    },
+});
+
+// Uploads nobody saved into a record within the grace period (convex/lib/uploads.ts)
+export const sweepAbandonedUploads = internalMutation({
+    args: {},
+    handler: async (ctx) => {
+        const removed = await sweepUploads(ctx, Date.now());
+        if (removed > 0) console.log(`Removed ${removed} abandoned uploads.`);
     },
 });

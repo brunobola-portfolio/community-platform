@@ -4,6 +4,7 @@ import { requireAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateRequired, validateMaxLength, sanitizeContentServer } from "./lib/validation";
+import { retainUrl } from "./lib/uploads";
 
 export const list = query({
     args: {},
@@ -60,6 +61,7 @@ export const create = mutation({
         if (!VALID_GROUPS.includes(args.group)) {
             throw new Error(`Grupo inválido: "${args.group}". Grupos permitidos: ${VALID_GROUPS.join(", ")}`);
         }
+        await retainUrl(ctx, args.externalPhoto);
         return await ctx.db.insert("members", args);
     },
 });
@@ -105,19 +107,8 @@ export const remove = mutation({
         await requireAdmin(ctx);
         const doc = await ctx.db.get(args.id);
         if (doc) {
-            await cleanupStorageOnDelete(ctx, doc, ["photo"]);
+            await cleanupStorageOnDelete(ctx, doc, ["photo"], ["externalPhoto"]);
             await ctx.db.delete(args.id);
-        }
-    },
-});
-
-export const clearAll = mutation({
-    args: {},
-    handler: async (ctx) => {
-        await requireAdmin(ctx);
-        const members = await ctx.db.query("members").collect();
-        for (const member of members) {
-            await ctx.db.delete(member._id);
         }
     },
 });

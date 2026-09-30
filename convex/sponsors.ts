@@ -4,6 +4,7 @@ import { requireAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateRequired, validateMaxLength } from "./lib/validation";
+import { retainUrl } from "./lib/uploads";
 
 export const list = query({
     args: {},
@@ -37,6 +38,7 @@ export const create = mutation({
             key: "content:create",
             userId,
         });
+        await retainUrl(ctx, args.externalLogo);
         return await ctx.db.insert("sponsors", args);
     },
 });
@@ -71,7 +73,7 @@ export const remove = mutation({
         await requireAdmin(ctx);
         const doc = await ctx.db.get(args.id);
         if (doc) {
-            await cleanupStorageOnDelete(ctx, doc, ["logo"]);
+            await cleanupStorageOnDelete(ctx, doc, ["logo"], ["externalLogo"]);
             await ctx.db.delete(args.id);
         }
     },

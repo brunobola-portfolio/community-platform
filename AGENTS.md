@@ -102,8 +102,14 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   quando existe. Por isso todo o `update` com imagem passa por `reconcileImageUpdate`
   (`convex/lib/cascade.ts`): um URL novo, ou `''` para remover, liberta o ficheiro guardado.
   Sem isso, a gravação passa e a imagem antiga continua a aparecer. O formulário reenvia os
-  campos em bruto que carregou, e valores iguais aos guardados contam como intocados. Entidade
-  nova com imagem = o mesmo helper no `update`.
+  campos em bruto que carregou, e valores iguais aos guardados contam como intocados.
+- **Registo de uploads** (`uploads`, `convex/lib/uploads.ts`): `files.getUrl` e a imagem da IA
+  registam cada ficheiro com o seu URL. Os `create` chamam `retainUrl`, o `update` troca via
+  `reconcileImageUpdate` e os deletes libertam (`cleanupStorageOnDelete(..., [external*])`).
+  O ficheiro só é apagado quando nenhum registo o usa, por isso um duplicado conta como segunda
+  referência. Uploads nunca gravados saem no cron diário ao fim de 48 h. Entidade nova com
+  imagem = os três pontos (create, update, delete); sem eles, um ficheiro substituído fica no
+  storage para sempre.
 - **Admin sem comandos**: BD sem admin redireciona qualquer acesso para o wizard `/setup`.
   Fallback CLI raro: `npx convex run lib/bootstrapAdmin:setUserRole`.
 

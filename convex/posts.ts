@@ -4,6 +4,7 @@ import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
+import { retainUrl } from "./lib/uploads";
 
 export const list = query({
     args: {
@@ -177,6 +178,7 @@ export const create = mutation({
         // Ensure slug uniqueness
         await assertUniqueSlug(ctx, "posts", args.slug);
 
+        await retainUrl(ctx, args.externalImage);
         return await ctx.db.insert("posts", { ...args, content: sanitizedContent });
     },
 });
@@ -224,7 +226,7 @@ export const remove = mutation({
         await requireAdmin(ctx);
         const doc = await ctx.db.get(args.id);
         if (doc) {
-            await cleanupStorageOnDelete(ctx, doc, ["coverImage"]);
+            await cleanupStorageOnDelete(ctx, doc, ["coverImage"], ["externalImage"]);
             await ctx.db.delete(args.id);
         }
     },

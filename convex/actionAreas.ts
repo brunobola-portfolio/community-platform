@@ -3,6 +3,7 @@ import { query, mutation } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateMaxLength } from "./lib/validation";
+import { retainUrl } from "./lib/uploads";
 
 export const list = query({
     handler: async (ctx) => {
@@ -42,6 +43,7 @@ export const create = mutation({
             .first();
         if (existing) return existing._id;
 
+        await retainUrl(ctx, args.externalImage);
         return await ctx.db.insert("actionAreas", args);
     },
 });
@@ -77,7 +79,7 @@ export const remove = mutation({
         await requireAdmin(ctx);
         const doc = await ctx.db.get(args.id);
         if (doc) {
-            await cleanupStorageOnDelete(ctx, doc, ["image"]);
+            await cleanupStorageOnDelete(ctx, doc, ["image"], ["externalImage"]);
             await ctx.db.delete(args.id);
         }
     },

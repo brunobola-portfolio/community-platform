@@ -67,7 +67,7 @@ const RowActions = <T,>({
   <div className="flex items-center justify-end gap-1">
     {extraActions?.(item)}
     {onDuplicate && (
-      <Button size="sm" variant="ghost" aria-label="Duplicar" title="Duplicar" onClick={() => onDuplicate(item)}>
+      <Button size="sm" variant="ghost" aria-label={`Duplicar: ${title}`} title="Duplicar" onClick={() => onDuplicate(item)}>
         <Copy size={16} />
       </Button>
     )}

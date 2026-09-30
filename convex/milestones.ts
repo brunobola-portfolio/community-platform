@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateMaxLength, validateRequired } from "./lib/validation";
+import { retainUrl } from "./lib/uploads";
 
 export const list = query({
     args: {},
@@ -36,6 +37,7 @@ export const create = mutation({
         validateRequired(args, ["title", "description"]);
         validateMaxLength(args.title, "título", 200);
         validateMaxLength(args.description, "descrição", 2000);
+        await retainUrl(ctx, args.externalImage);
         return await ctx.db.insert("milestones", args);
     },
 });
@@ -66,7 +68,7 @@ export const remove = mutation({
         await requireAdmin(ctx);
         const milestone = await ctx.db.get(args.id);
         if (milestone) {
-            await cleanupStorageOnDelete(ctx, milestone, ["image"]);
+            await cleanupStorageOnDelete(ctx, milestone, ["image"], ["externalImage"]);
         }
         await ctx.db.delete(args.id);
     },

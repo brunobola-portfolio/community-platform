@@ -6,6 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.13.5] - 2026-09-30
+
+### Fixed
+
+- **Replaced images no longer pile up in storage.** Photos uploaded or generated in the
+  backoffice reach the records as links, so nothing knew which stored file a link was and every
+  replaced or deleted image stayed in Convex storage for good. A ledger of uploads now counts
+  the records that use each file: replacing, removing or deleting releases it, and the file goes
+  with its last user, so a duplicated record keeps its picture. The home page photo in the
+  settings is counted the same way
+- The duplicate button in the backoffice lists said only "Duplicar" to screen readers; it now
+  names the record, like Editar and Apagar
+
+### Added
+
+- A daily job removes uploads nobody saved within 48 hours (a form closed without saving, a
+  second pick before saving)
+
+### Removed
+
+- `members.clearAll`, an unused admin mutation that deleted the whole team and left its photos
+  behind
+
 ## [2.13.4] - 2026-09-30
 
 ### Fixed

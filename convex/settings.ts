@@ -2,6 +2,7 @@ import { query, mutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAuth, requireAdmin, isAdmin } from "./lib/auth";
 import { validateMaxLength } from "./lib/validation";
+import { swapUrl } from "./lib/uploads";
 
 export const getPublic = query({
     args: {},
@@ -243,6 +244,9 @@ export const update = mutation({
         }
         if (args.ttsModel !== undefined) validateMaxLength(args.ttsModel, "ttsModel", 50);
         const existing = await ctx.db.query("settings").first();
+        // Site photos uploaded from the MediaStudio are counted like any record's image
+        if (args.heroImageUrl !== undefined) await swapUrl(ctx, existing?.heroImageUrl, args.heroImageUrl);
+        if (args.logoUrl !== undefined) await swapUrl(ctx, existing?.logoUrl, args.logoUrl);
         if (existing) {
             await ctx.db.patch(existing._id, args);
         } else {

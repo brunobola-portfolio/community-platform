@@ -190,6 +190,7 @@ export const generateImage = action({
           const imageUrl = await ctx.storage.getUrl(storageId);
 
           if (imageUrl) {
+            await ctx.runMutation(internal.files.registerGenerated, { storageId, url: imageUrl });
             // Log success
             try {
               await ctx.runMutation(internal.aiLogs.log, {
