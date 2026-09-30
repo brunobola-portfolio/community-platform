@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.14.1] - 2026-09-30
+
+### Fixed
+
+- The "Realizado" label on past events was light grey on a translucent black over the grey
+  photo (3.9:1); it is now white on a darker backing. Found by the axe sweep of the live
+  site, where the agenda lists past events because nothing is scheduled
+
 ## [2.14.0] - 2026-09-30
 
 A full audit of the backend, the backoffice and the public portal, with every finding fixed

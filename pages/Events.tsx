@@ -358,7 +358,7 @@ export const EventsPage: React.FC = () => {
                                         />
                                         {/* Floating Badges */}
                                         <div className="absolute top-2 left-2 flex gap-2">
-                                            {isPast && <Badge className="bg-black/60 text-slate-300 border-white/10 backdrop-blur-md">Realizado</Badge>}
+                                            {isPast && <Badge className="bg-black/80 text-white border-white/10 backdrop-blur-md">Realizado</Badge>}
                                             {event.isHighlight && !isPast && <Badge className="bg-accent-gold text-black font-bold border-none shadow-lg">Destaque</Badge>}
                                         </div>
                                     </div>
