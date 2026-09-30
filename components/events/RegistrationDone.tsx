@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { CalendarPlus, CheckCircle2, Mail, Phone } from 'lucide-react';
 import { Button } from '../ui/UIComponents';
 import { ShareBar } from '../ui/ShareBar';
-import { downloadIcs, googleCalendarUrl, type CalendarEvent } from '../../utils/calendar';
+import { canAddToCalendar, downloadIcs, googleCalendarUrl, type CalendarEvent } from '../../utils/calendar';
 import { absoluteUrl, eventPath, eventShareText, formatEventDate } from '../../utils/share';
 import type { Event } from '../../types';
 
@@ -50,6 +50,7 @@ export const RegistrationDone: React.FC<RegistrationDoneProps> = ({ event, email
                 </div>
             )}
 
+            {canAddToCalendar(calendar) && (
             <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
                 <Button type="button" variant="outline" onClick={() => downloadIcs(calendar)}>
                     <CalendarPlus size={16} aria-hidden="true" /> Guardar no calendário
@@ -58,6 +59,7 @@ export const RegistrationDone: React.FC<RegistrationDoneProps> = ({ event, email
                     Google Calendar
                 </a>
             </div>
+            )}
 
             {(phone || contactEmail) && (
                 <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400">

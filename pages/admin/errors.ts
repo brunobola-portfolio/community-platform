@@ -17,7 +17,8 @@ const PATTERNS: Array<{ match: RegExp; message: string }> = [
 const MAX_LENGTH = 160;
 
 export function describeActionError(error?: string, fallback = 'Não foi possível concluir a operação.'): string {
-  if (!error) return fallback;
+  // Production redacts plain Error messages to "Server Error": nothing in it helps the reader
+  if (!error || /\bServer Error\b/i.test(error)) return fallback;
   const known = PATTERNS.find(p => p.match.test(error));
   if (known) return known.message;
   const clean = error.replace(/\s+/g, ' ').trim();

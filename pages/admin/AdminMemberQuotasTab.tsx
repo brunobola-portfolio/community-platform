@@ -106,6 +106,8 @@ export const AdminMemberQuotasTab: React.FC = () => {
         setIsRemoving(true);
         try {
             await removeProfile({ id: pendingRemove.id });
+        } catch (err) {
+            setFormError(err instanceof ConvexError ? String(err.data) : 'Não foi possível remover o registo.');
         } finally {
             setIsRemoving(false);
             setPendingRemove(null);

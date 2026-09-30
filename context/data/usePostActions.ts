@@ -50,6 +50,8 @@ export function usePostActions({ logActivity, describeAction }: ActionDeps) {
           data as Partial<PostCreateArgs> & { category?: string; coverImageUrl?: string };
         if (coverUrl !== undefined) rest.externalImage = coverUrl;
         if (rest.categoryId) rest.categoryId = String(rest.categoryId);
+        // The form promises that an empty author reads "Direção", as on create
+        if (rest.author !== undefined) rest.author = rest.author.trim() || 'Direção';
         await updatePostMut({ id: id as Id<"posts">, ...rest });
         logActivity('update', 'Notícia', describeAction('Notícia atualizada', id));
         return { success: true };

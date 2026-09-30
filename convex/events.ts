@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cascadeDeleteEvent, reconcileImageUpdate } from "./lib/cascade";
-import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
+import { assertCategoryExists, assertUniqueSlug, uniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
 // Rich-text descriptions are the largest field on the table and every visitor
 // subscribes to the whole list, so the public query ships a plain-text excerpt
 // and the detail view loads the body on demand through getById.
@@ -132,7 +132,7 @@ export const create = mutation({
             key: "content:create",
             userId,
         });
-        await assertUniqueSlug(ctx, "events", args.slug);
+        const slug = await uniqueSlug(ctx, "events", args.slug);
         validateMaxLength(args.title, "título", 200);
         validateMaxLength(args.description, "descrição", 10000);
 
@@ -144,7 +144,7 @@ export const create = mutation({
         const sanitizedDescription = sanitizeContentServer(args.description);
 
         await retainUrl(ctx, args.externalImage);
-        const eventId = await ctx.db.insert("events", { ...args, description: sanitizedDescription });
+        const eventId = await ctx.db.insert("events", { ...args, slug, description: sanitizedDescription });
         return eventId;
     },
 });
@@ -186,12 +186,24 @@ export const update = mutation({
         if (args.slug) {
             await assertUniqueSlug(ctx, "events", args.slug, args.id);
         }
+        if (args.title !== undefined) validateMaxLength(args.title, "título", 200);
+        if (args.description !== undefined) validateMaxLength(args.description, "descrição", 10000);
         const { id, ...updates } = args;
+        const current = await ctx.db.get(id);
+        // Only a changed category is checked: legacy rows may reference a slug or name
+        // that no longer exists, and they must stay editable
+        if (args.categoryId && args.categoryId !== current?.categoryId) {
+            await assertCategoryExists(ctx, args.categoryId);
+        }
+        // The edit form sends 0 for "no limit"; unset is how the schema says that
+        if (updates.maxParticipants !== undefined && updates.maxParticipants <= 0) {
+            updates.maxParticipants = undefined;
+        }
         // Sanitize HTML description if provided (defense-in-depth)
         if (updates.description !== undefined) {
             updates.description = sanitizeContentServer(updates.description);
         }
-        await reconcileImageUpdate(ctx, await ctx.db.get(id), updates, "image", "externalImage");
+        await reconcileImageUpdate(ctx, current, updates, "image", "externalImage");
         await ctx.db.patch(id, updates);
     },
 });

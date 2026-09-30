@@ -82,8 +82,13 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   em `context/data/use<Entidade>Actions.ts` (um hook por domínio, devolve `ActionResult`).
   Actions IA: `convex/ai.ts` (chat), `aiMedia.ts` (TTS, imagem), `aiText.ts` (geo,
   enhance), helpers em `lib/aiShared.ts`.
-- **Listas públicas vs backoffice**: `DataContext` expõe `events`/`posts` (só publicados) e
-  `adminEvents`/`adminPosts` (incluem rascunhos via `listAll`). Não misturar.
+- **Listas públicas vs backoffice**: `DataContext` expõe `events`/`posts`/`sponsors` (só
+  publicados/ativos) e `adminEvents`/`adminPosts`/`adminSponsors` (tudo, via `listAll`). Não misturar.
+- **Datas de eventos** guardam-se sem fuso (hora da sede). No servidor lêem-se com
+  `parseEventDate` (`convex/lib/time.ts`, `Europe/Lisbon`); no cliente, "próximo/realizado"
+  vem só de `utils/eventTime.ts`. Nunca `new Date(event.date)` para decidir prazos no servidor.
+- **Metadados por página**: cada página pública usa `components/PageMeta.tsx` (título,
+  canonical, og). O `index.html` não declara canonical nem `og:url`.
 - **Catálogo de modelos Gemini** (`GEMINI_*_MODELS` em `convex/lib/aiDefaults.ts`) alimenta
   os selects do admin, o Media Studio e `aiProviderTools.listModels` — uma lista, três ecrãs.
 - **O seed é a demonstração do produto**: `convex/mockData.ts` gera datas de eventos relativas

@@ -23,7 +23,7 @@ export const DocumentForm: React.FC<FieldHelpers> = ({ str, setField }) => (
                 <option value="Outros">Outros</option>
             </AdminSelect></Field>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="URL do Ficheiro"><input value={str('url')} onChange={e => setField('url', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://..." /></Field>
+            <Field label="Link do ficheiro"><input required type="url" value={str('url')} onChange={e => setField('url', e.target.value)} className={STD_INPUT_CLASS} placeholder="https://..." /></Field>
             <Field label="Tamanho (Ex: 2 MB)"><input value={str('size')} onChange={e => setField('size', e.target.value)} className={STD_INPUT_CLASS} placeholder="1.5 MB" /></Field>
         </div>
     </div>

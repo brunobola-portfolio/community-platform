@@ -30,6 +30,9 @@ export async function playBase64Audio(
   sampleRate: number = 24000
 ): Promise<void> {
   const ctx = getAudioContext(sampleRate);
+  // Browsers start the context suspended until a user gesture; without this the
+  // narration "plays" in silence
+  if (ctx.state === "suspended") await ctx.resume();
 
   // Decode base64 to binary
   const binaryString = atob(base64);

@@ -55,13 +55,15 @@ export const AdminIdentitySection: React.FC<AdminIdentitySectionProps> = ({ sett
             {FIELDS.map(({ key, label, placeholder, rows, hint }) => {
                 const value = (settingsForm[key] as string | undefined) ?? '';
                 const wide = Boolean(rows);
+                // Same ceilings as settings.update: past them the whole save would be refused
+                const maxLength = key === 'historyIntro' ? 4000 : 600;
                 return (
                     <div key={key} className={wide ? 'md:col-span-2' : undefined}>
                         <label htmlFor={`identity-${key}`} className={LABEL_CLASS}>{label}</label>
                         {rows ? (
-                            <textarea id={`identity-${key}`} rows={rows} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
+                            <textarea id={`identity-${key}`} rows={rows} maxLength={maxLength} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
                         ) : (
-                            <input id={`identity-${key}`} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
+                            <input id={`identity-${key}`} maxLength={maxLength} value={value} onChange={e => onChange(key, e.target.value)} className={STD_INPUT_CLASS} placeholder={placeholder} />
                         )}
                         {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
                     </div>

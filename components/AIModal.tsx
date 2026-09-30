@@ -6,7 +6,7 @@
  * Turn rendering lives in components/ai/ChatMessage.tsx.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useAction } from "convex/react";
 import { useNavigate } from 'react-router-dom';
 import { api } from "../convex/_generated/api";
@@ -14,6 +14,8 @@ import { X, Send, Sparkles, Trash2, Mic } from 'lucide-react';
 import { playBase64Audio } from '../utils/audio';
 import { sanitizeText } from '../utils/security';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useToast } from '../context/ToastContext';
 import { useData } from '../context/DataContext';
 import { cn } from '../utils/cn';
 import { ChatMessage, AssistantAvatar, type ChatMessageData, type GroundingChunk } from './ai/ChatMessage';
@@ -64,8 +66,14 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
   const ttsAction = useAction(api.aiMedia.tts);
   const navigate = useNavigate();
   const { settings } = useData();
-  const welcomeMessage = buildWelcomeMessage(settings.siteName);
-  const [messages, setMessages] = useState<ChatMessageData[]>([welcomeMessage]);
+  const { showToast } = useToast();
+  // The greeting is derived on every render, so a siteName that arrives after the
+  // first paint is used; only the conversation itself is state
+  const welcomeMessage = useMemo(() => buildWelcomeMessage(settings.siteName), [settings.siteName]);
+  const [conversation, setConversation] = useState<ChatMessageData[]>([]);
+  const messages = useMemo(() => [welcomeMessage, ...conversation], [welcomeMessage, conversation]);
+  const dialogRef = useRef<HTMLElement>(null);
+  useFocusTrap(dialogRef, isOpen);
   const [inputText, setInputText] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState<number | null>(null);
@@ -84,7 +92,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
   }, [isOpen]);
 
   const handleClearConversation = () => {
-    setMessages([welcomeMessage]);
+    setConversation([]);
     setInputText('');
   };
 
@@ -99,7 +107,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
     const userMsg = sanitizeText(rawMsg).slice(0, 2000);
     if (!userMsg) return;
 
-    setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+    setConversation(prev => [...prev, { role: 'user', text: userMsg }]);
     setInputText('');
     setIsThinking(true);
 
@@ -108,8 +116,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
       const useMaps = lowerMsg.includes('onde') || lowerMsg.includes('chegar') || lowerMsg.includes('local') || lowerMsg.includes('direções');
 
       // Filter out the welcome message from history sent to API
-      const historyForApi = messages
-        .filter((_, idx) => idx > 0)
+      const historyForApi = conversation
         .slice(-6)
         .map(m => ({ role: m.role, text: m.text }));
       const result = await chatAction({ message: userMsg, useMapsTool: useMaps, history: historyForApi, sessionId: getSessionId() });
@@ -118,7 +125,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
       const links = result.groundingChunks as GroundingChunk[] | undefined;
       const suggestedActions = result.suggestedActions;
 
-      setMessages(prev => [...prev, { role: 'model', text: reply, links, suggestedActions }]);
+      setConversation(prev => [...prev, { role: 'model', text: reply, links, suggestedActions }]);
 
     } catch (error) {
       // ConvexError carries the ERR_* token in `data`; plain Error messages
@@ -126,7 +133,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
       // a friendly bubble instead of a broken chat.
       console.warn("AI Chat error:", error instanceof ConvexError ? error.data : error);
 
-      setMessages(prev => [...prev, {
+      setConversation(prev => [...prev, {
         role: 'model',
         text: getAiErrorMessage(error),
         isError: true,
@@ -182,6 +189,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
       await playBase64Audio(result.audioBase64);
     } catch (e) {
       console.error("TTS Error:", e);
+      showToast('Não foi possível ler a resposta em voz alta. Tente novamente dentro de momentos.', 'error');
     } finally {
       setIsSpeaking(null);
     }
@@ -196,10 +204,12 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
         onClick={onClose}
       />
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-label={`Assistente ${settings.siteName}`}
-        className="relative pointer-events-auto flex w-full flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-[0_32px_80px_-24px_rgba(2,6,23,0.65)] ring-1 ring-slate-900/10 animate-fade-in-up sm:w-[420px] sm:rounded-[1.75rem] dark:bg-dark-surface dark:ring-white/10 h-[86dvh] sm:h-[min(640px,calc(100dvh-6rem))]"
+        className="relative pointer-events-auto focus:outline-none flex w-full flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-[0_32px_80px_-24px_rgba(2,6,23,0.65)] ring-1 ring-slate-900/10 animate-fade-in-up sm:w-[420px] sm:rounded-[1.75rem] dark:bg-dark-surface dark:ring-white/10 h-[86dvh] sm:h-[min(640px,calc(100dvh-6rem))]"
       >
         <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 px-5 py-4">
           <span className="pointer-events-none absolute -right-8 -top-16 h-40 w-40 rounded-full bg-brand-500/30 blur-3xl" aria-hidden="true" />
@@ -274,7 +284,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
             <input
               ref={inputRef}
               aria-label="Mensagem para a IA"
-              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-500"
+              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-500 dark:text-white dark:placeholder:text-slate-400"
               placeholder={isListening ? 'A ouvir... fala agora' : 'Onde fica a sede? Próximos eventos?'}
               value={isListening ? interimTranscript || inputText : inputText}
               onChange={e => setInputText(e.target.value)}
@@ -293,7 +303,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
                   'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
                   isListening
                     ? 'bg-red-500/15 text-red-500'
-                    : 'text-slate-400 hover:bg-slate-900/5 hover:text-slate-700 dark:hover:bg-white/10 dark:hover:text-white',
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-900/5 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
                 )}
               >
                 <Mic size={17} className={isListening ? 'animate-pulse' : ''} />
@@ -308,7 +318,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
               <Send size={16} />
             </button>
           </div>
-          <p className="mt-2 text-center text-[10px] leading-relaxed text-slate-400 dark:text-slate-400">
+          <p className="mt-2 text-center text-[10px] leading-relaxed text-slate-600 dark:text-slate-400">
             Respostas geradas por IA — confirma datas e detalhes importantes.
           </p>
         </div>

@@ -10,6 +10,7 @@ import type { AdminRecord, EntityHandlers } from '../types';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
 import type { Album, GalleryImage } from '../../../types';
+import { describeActionError } from '../errors';
 
 interface AdminGalleryManagerProps extends EntityHandlers {
     albums: Album[];
@@ -54,7 +55,7 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
             await work();
             if (okMessage) notify(okMessage, 'success');
         } catch (e) {
-            notify(e instanceof Error ? e.message : 'A operação falhou.', 'error');
+            notify(describeActionError(e instanceof Error ? e.message : undefined, 'A operação falhou.'), 'error');
         }
     };
 

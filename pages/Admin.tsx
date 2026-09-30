@@ -63,6 +63,24 @@ const pickMedia = (item: AdminRecord): Record<string, unknown> =>
 /** Raw storage references: a copy must not share them, or replacing one image deletes the other's file. */
 const STORAGE_KEYS = ['image', 'coverImage', 'photo', 'logo', 'coverId', 'coverImageId', 'fileId'] as const;
 
+/** The image field each entity form edits; AI output must not leak into another entity's alias. */
+const IMAGE_KEY_BY_ENTITY: Record<string, string> = {
+    event: 'imageUrl', post: 'coverUrl', member: 'photoUrl', sponsor: 'logoUrl',
+    milestone: 'imageUrl', actionArea: 'imageUrl', album: 'coverUrl',
+};
+
+/** The long text each entity form edits, which "Melhorar com IA" reads and rewrites. */
+const TEXT_KEY_BY_ENTITY: Record<string, string> = {
+    event: 'description', post: 'content', notification: 'message', actionArea: 'longDescription',
+    milestone: 'description', album: 'description', member: 'bio',
+};
+
+/** A numeric order the admin may leave empty or set to 0; parseInt of '' is NaN. */
+const toOrder = (value: unknown, fallback: number): number => {
+    const n = Number(value);
+    return value === '' || value === undefined || value === null || !Number.isFinite(n) ? fallback : n;
+};
+
 /** Entity type created by the primary action of each list tab. */
 const NEW_ENTITY_BY_TAB: Partial<Record<Tab, string>> = {
     news: 'post', events: 'event', members: 'member', gallery: 'album', notifications: 'notification',
@@ -72,7 +90,7 @@ const NEW_ENTITY_BY_TAB: Partial<Record<Tab, string>> = {
 
 export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const {
-        adminEvents: events, adminPosts: posts, members, categories, settings, activityLogs, registrations, sponsors, sponsorTiers,
+        adminEvents: events, adminPosts: posts, members, categories, settings, activityLogs, registrations, adminSponsors: sponsors, sponsorTiers,
         documents, notifications, albums, actionAreas, stats, isLoading,
         addEvent, updateEvent, deleteEvent,
         addPost, updatePost, deletePost,
@@ -129,8 +147,13 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         const prompt = customPrompt || String(formData.title ?? '') || "Community event";
         try {
             const result = await generateImageAction({ prompt, style: settings.defaultImageStyle, model: options?.model, resolution: options?.resolution });
-            const url = result.imageUrl;
-            setFormData(prev => ({ ...prev, imageUrl: url, coverUrl: url, photoUrl: url, logoUrl: url }));
+            // A failed generation answers with a stock photo; saving it as "generated" would mislead
+            if (!result.isGenerated) {
+                notify('Não foi possível gerar a imagem. Tente outro pedido ou carregue uma imagem sua.', 'error');
+                return;
+            }
+            const key = IMAGE_KEY_BY_ENTITY[showModal ?? ''] ?? 'imageUrl';
+            setFormData(prev => ({ ...prev, [key]: result.imageUrl }));
         } catch (e: unknown) {
             console.error("Image generation error:", e);
             notify('Não foi possível gerar a imagem. Tente outro pedido ou carregue uma imagem sua.', 'error');
@@ -138,7 +161,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     };
 
     const handleEnhanceText = async () => {
-        const currentText = String(formData.description ?? formData.content ?? formData.excerpt ?? formData.message ?? '');
+        const textKey = TEXT_KEY_BY_ENTITY[showModal ?? ''] ?? 'description';
+        const currentText = String(formData[textKey] ?? '');
         if (!currentText) {
             notify('Escreva algum texto antes de pedir ajuda à IA.', 'info');
             return;
@@ -146,14 +170,21 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         setIsEnhancingText(true);
         try {
             const result = await enhanceTextAction({ text: currentText, tone: settings.contentTone });
-            if (result.enhancedText) {
-                const key = showModal === 'event' ? 'description' : showModal === 'notification' ? 'message' : 'content';
-                setFormData(prev => ({ ...prev, [key]: result.enhancedText }));
-            }
+            if (result.enhancedText) setFormData(prev => ({ ...prev, [textKey]: result.enhancedText }));
         } catch (e: unknown) {
             console.error("AI Enhancement error:", e);
             notify('O assistente de texto está indisponível de momento.', 'error');
         } finally { setIsEnhancingText(false); }
+    };
+
+    const setRegistrationStatus = async (id: string, status: 'confirmed' | 'cancelled') => {
+        const result = await updateRegistrationStatus(id, status);
+        if (!result.success) {
+            notify(describeActionError(failureText(result), 'Não foi possível atualizar a inscrição.'), 'error');
+            return;
+        }
+        setViewRegistration(null);
+        notify(status === 'confirmed' ? 'Inscrição confirmada.' : 'Inscrição cancelada.', status === 'confirmed' ? 'success' : 'info');
     };
 
     // ── Modal Helpers ────────────────────────────────────────────────────────
@@ -224,7 +255,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 // taken when the modal opened would roll back sign-ups made meanwhile
                 const { currentParticipants: _count, ...event } = rest;
                 const limit = Number(event.maxParticipants);
-                return { ...event, categoryId: event.categoryId || categories[0]?.id || '', entryPrice: Number(event.entryPrice) || 0, maxParticipants: limit > 0 ? limit : undefined, registrationFields: event.registrationFields || [] };
+                // 0 clears the limit: undefined would be dropped by the client and keep the old one
+                return { ...event, categoryId: event.categoryId || categories[0]?.id || '', entryPrice: Number(event.entryPrice) || 0, maxParticipants: limit > 0 ? limit : (editingId ? 0 : undefined), registrationFields: event.registrationFields || [] };
             }
             case 'post':
                 return {
@@ -234,9 +266,18 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 };
             case 'member':
                 // Order and group render visual fallbacks without writing to formData
-                return { ...rest, order: Number(rest.order) || 1, group: rest.group || 'Direção' };
+                return { ...rest, order: toOrder(rest.order, 1), group: rest.group || 'Direção' };
             case 'tier':
-                return { ...rest, benefits: typeof rest.benefits === 'string' ? rest.benefits.split('\n').filter(x => x.trim()) : (rest.benefits ?? []), order: Number(rest.order) || sponsorTiers.length + 1 };
+                return { ...rest, benefits: typeof rest.benefits === 'string' ? rest.benefits.split('\n').filter(x => x.trim()) : (rest.benefits ?? []), order: toOrder(rest.order, sponsorTiers.length + 1) };
+            case 'stat':
+                return { ...rest, order: toOrder(rest.order, stats.length + 1) };
+            case 'actionArea':
+                return {
+                    ...rest,
+                    order: toOrder(rest.order, 0),
+                    // A trailing line break in the textarea is not a feature
+                    features: Array.isArray(rest.features) ? (rest.features as string[]).map(f => f.trim()).filter(Boolean) : [],
+                };
             case 'document':
                 // Whitelist mutation args: edits carry read-only fields the validator rejects. The form
                 // edits the resolved `url`, which only survives the media filter above when it changed
@@ -244,7 +285,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             case 'notification':
                 return { title: rest.title, message: rest.message, type: rest.type || 'info', target: rest.target || 'all' };
             case 'milestone':
-                return { ...rest, year: Number(rest.year) || new Date().getFullYear(), order: Number(rest.order) || (milestones.length + 1) };
+                return { ...rest, year: Number(rest.year) || new Date().getFullYear(), order: toOrder(rest.order, milestones.length + 1) };
             case 'album':
                 return { ...rest, date: rest.date || new Date().toISOString().split('T')[0] };
             case 'sponsor':
@@ -276,8 +317,9 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 post: () => (editingId ? updatePost(editingId, p) : addPost(p)),
                 member: () => (editingId ? updateMember(editingId, p) : addMember(p)),
                 category: () => (editingId ? updateCategory(editingId, p) : addCategory(p)),
-                tier: () => upsertSponsorTier(p),
-                stat: () => upsertStat(p),
+                // Upserts key on the id when editing; without it a renamed record is created anew
+                tier: () => upsertSponsorTier({ ...(payload as object), id: editingId ?? undefined } as never),
+                stat: () => upsertStat({ ...(payload as object), id: editingId ?? undefined } as never),
                 actionArea: () => (editingId ? updateActionArea(editingId, p) : addActionArea(p)),
                 document: () => (editingId ? updateDocument(editingId, p) : addDocument(p)),
                 notification: () => (editingId ? updateNotification(editingId, p) : sendNotification(p)),
@@ -303,6 +345,12 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
     const handleSaveSettings = async (label: string) => {
         if (isSavingSettings) return;
+        // The settings tabs are not one form, so the browser never checks these two
+        if (!settingsForm.siteName?.trim()) { notify('O nome do site não pode ficar vazio.', 'error'); return; }
+        if (settingsForm.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(settingsForm.contactEmail.trim())) {
+            notify('O email de contacto não parece válido.', 'error');
+            return;
+        }
         setIsSavingSettings(true);
         try {
             const result = await updateSettings(settingsForm);
@@ -411,8 +459,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     fields={events.find(e => e.id === viewRegistration.eventId)?.registrationFields}
                     eventTitle={events.find(e => e.id === viewRegistration.eventId)?.title}
                     onClose={() => setViewRegistration(null)}
-                    onConfirm={(id) => { void updateRegistrationStatus(id, 'confirmed'); setViewRegistration(null); notify('Inscrição confirmada.'); }}
-                    onCancel={(id) => { void updateRegistrationStatus(id, 'cancelled'); setViewRegistration(null); notify('Inscrição cancelada.', 'info'); }}
+                    onConfirm={(id) => { void setRegistrationStatus(id, 'confirmed'); }}
+                    onCancel={(id) => { void setRegistrationStatus(id, 'cancelled'); }}
                 />
             )}
             {showModal && <AdminFormModal showModal={showModal} editingId={editingId} editingTierId={editingTierId} formData={formData} isSubmitting={isSubmitting} isGeneratingImage={isGeneratingImage} isEnhancingText={isEnhancingText} categories={categories} sponsorTiers={sponsorTiers} tempPhotoUrl={tempPhotoUrl} settings={settings} onFormDataChange={setFormData} onTempPhotoUrlChange={setTempPhotoUrl} onSubmit={handleSubmit} onClose={() => { setShowModal(null); setEditingTierId(null); }} onGenerateImage={handleGenerateImage} onEnhanceText={handleEnhanceText} />}

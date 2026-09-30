@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import { Award, Scroll } from 'lucide-react';
 import { Lightbox } from '../components/ui/Lightbox';
 import { useData } from '../context/DataContext';
+import { PageMeta } from '../components/PageMeta';
 
 // Paragraphs come from settings.historyIntro; both real blank lines (admin
 // textarea) and a literal \n\n (env files) separate them
@@ -30,7 +31,7 @@ export const HistoryPage: React.FC = () => {
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg overflow-x-hidden">
-      <title>{`História & Tradição — ${settings.siteName}`}</title>
+      <PageMeta title="História & Tradição" description={`A história e as tradições de ${settings.siteName}.`} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Intro Narrative */}
@@ -104,6 +105,8 @@ export const HistoryPage: React.FC = () => {
                       <img 
                         src={item.image} 
                         alt={item.title} 
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-110 transition-all duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-60"></div>

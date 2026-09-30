@@ -16,7 +16,10 @@ import { ShareBar } from '../components/ui/ShareBar';
 import { EventPoster } from '../components/events/EventPoster';
 import { useEventDescription } from '../hooks/useEventDescription';
 import { absoluteUrl, eventPath, eventShareText, formatEventDate } from '../utils/share';
-import { downloadIcs } from '../utils/calendar';
+import { canAddToCalendar, downloadIcs } from '../utils/calendar';
+import { isEventPast, isEventUpcoming } from '../utils/eventTime';
+import { FALLBACK_IMAGES } from '../utils/constants';
+import { PageMeta } from '../components/PageMeta';
 import { useEventRegistration } from '../hooks/useEventRegistration';
 import { RegistrationForm } from '../components/events/RegistrationForm';
 import { RegistrationDone } from '../components/events/RegistrationDone';
@@ -45,7 +48,7 @@ export const EventsPage: React.FC = () => {
     const { slug: routeSlug } = useParams<{ slug?: string }>();
     const navigate = useNavigate();
     useEffect(() => {
-        if (!routeSlug) { setSelectedEvent(null); return; }
+        if (!routeSlug) { setSelectedEvent(null); setShowRegistrationModal(false); return; }
         if (events.length === 0) return;
         const match = events.find(e => e.slug === routeSlug);
         if (match) setSelectedEvent(match);
@@ -56,6 +59,14 @@ export const EventsPage: React.FC = () => {
     // Opened from the list, closing is a step back, so the browser's Back button
     // does not reopen what was just closed; opened from a shared link, closing
     // replaces the entry and lands on the agenda
+    // Registration state belongs to one event: Back, a shared link or another
+    // card must never show the previous event's form or "received" screen
+    const selectedEventId = selectedEvent?.id;
+    const resetRegistration = registration.reset;
+    useEffect(() => {
+        setShowRegistrationModal(false);
+        resetRegistration();
+    }, [selectedEventId, resetRegistration]);
     const openedFromList = Boolean((location.state as { fromList?: boolean } | null)?.fromList);
     const openEvent = (event: Event) => navigate(eventPath(event.slug), { state: { fromList: true } });
     const closeEvent = () => {
@@ -80,11 +91,12 @@ export const EventsPage: React.FC = () => {
     const calendarFor = (event: Event) => ({ title: event.title, date: event.date, location: event.location, slug: event.slug, description: sanitizeText(eventSummaryText(event)), url: absoluteUrl(eventPath(event.slug)) });
 
     // Logic & Filtering
-    const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+    // Fixed at mount so the lists do not reshuffle mid-visit; same rule as the home page
+    const now = useMemo(() => new Date(), []);
 
     // Split events for counts (memoized)
-    const upcomingCount = useMemo(() => events.filter(e => new Date(e.date) >= new Date(todayStr)).length, [events, todayStr]);
-    const pastCount = useMemo(() => events.filter(e => new Date(e.date) < new Date(todayStr)).length, [events, todayStr]);
+    const upcomingCount = useMemo(() => events.filter(e => isEventUpcoming(e.date, now)).length, [events, now]);
+    const pastCount = useMemo(() => events.filter(e => isEventPast(e.date, now)).length, [events, now]);
 
     // Nothing scheduled yet: open on the full list instead of an empty "upcoming" tab,
     // unless the visitor already picked a tab
@@ -95,7 +107,6 @@ export const EventsPage: React.FC = () => {
 
     const filteredEvents = useMemo(() => {
         return events.filter(event => {
-            const eventDate = new Date(event.date);
             const search = normalize(searchTerm);
 
             // Search Filter
@@ -106,8 +117,8 @@ export const EventsPage: React.FC = () => {
 
             // Tab Filter
             let matchesTime = true;
-            if (activeTab === 'upcoming') matchesTime = eventDate >= new Date(todayStr);
-            if (activeTab === 'past') matchesTime = eventDate < new Date(todayStr);
+            if (activeTab === 'upcoming') matchesTime = isEventUpcoming(event.date, now);
+            if (activeTab === 'past') matchesTime = isEventPast(event.date, now);
 
             // Category Filter
             const matchesCategory = categoryFilter === 'all' || event.category === categoryFilter;
@@ -117,12 +128,11 @@ export const EventsPage: React.FC = () => {
             // Upcoming soonest first, past most recent first; "all" shows what is next
             // before the archive instead of starting at the oldest event
             const ta = new Date(a.date).getTime(), tb = new Date(b.date).getTime();
-            const today = new Date(todayStr).getTime();
-            const aPast = ta < today, bPast = tb < today;
+            const aPast = isEventPast(a.date, now), bPast = isEventPast(b.date, now);
             if (aPast !== bPast) return aPast ? 1 : -1;
             return aPast ? tb - ta : ta - tb;
         });
-    }, [events, activeTab, categoryFilter, searchTerm, todayStr]);
+    }, [events, activeTab, categoryFilter, searchTerm, now]);
 
     const handleOpenRegistration = () => {
         if (!selectedEvent) return;
@@ -131,7 +141,7 @@ export const EventsPage: React.FC = () => {
     };
 
     const registrationOpen = Boolean(
-        selectedEvent?.registrationOpen && selectedEvent && new Date(selectedEvent.date) >= new Date(),
+        selectedEvent?.registrationOpen && selectedEvent && isEventUpcoming(selectedEvent.date),
     );
     // The server enforces the limit on every event, so the button must too
     const soldOut = Boolean(
@@ -155,7 +165,7 @@ export const EventsPage: React.FC = () => {
         ) : registrationOpen ? (
             <div key="details" className="flex justify-end">
                 {registration.canRegister ? (
-                    <Button onClick={handleOpenRegistration} disabled={soldOut} className="w-full sm:w-auto">
+                    <Button onClick={handleOpenRegistration} disabled={soldOut || registration.authLoading} className="w-full sm:w-auto">
                         {soldOut ? 'Esgotado' : selectedEvent.entryPrice ? `Inscrever-me · ${selectedEvent.entryPrice} €` : 'Inscrever-me (grátis)'}
                     </Button>
                 ) : (
@@ -168,8 +178,8 @@ export const EventsPage: React.FC = () => {
 
     return (
         <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg">
-            <title>{`Eventos & Atividades — ${settings.siteName}`}</title>
-            <EventsJsonLd events={events.filter(e => new Date(e.date) >= new Date(todayStr))} />
+            <PageMeta title="Eventos & Atividades" description={settings.locality ? `Agenda de eventos e atividades de ${settings.siteName}, em ${settings.locality}.` : `Agenda de eventos e atividades de ${settings.siteName}.`} />
+            <EventsJsonLd events={events.filter(e => isEventUpcoming(e.date, now))} />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
@@ -326,7 +336,7 @@ export const EventsPage: React.FC = () => {
                     ) : (
                         // Grid
                         filteredEvents.map((event) => {
-                            const isPast = new Date(event.date) < new Date();
+                            const isPast = isEventPast(event.date, now);
                             const capacityPercent = event.maxParticipants ? ((event.currentParticipants || 0) / event.maxParticipants) * 100 : 0;
                             return (
                                 <div key={event.id} className={cn(
@@ -338,7 +348,7 @@ export const EventsPage: React.FC = () => {
                                     {/* Image */}
                                     <div className="md:w-64 h-48 md:h-auto shrink-0 rounded-xl overflow-hidden relative">
                                         <img
-                                            src={event.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=300&fit=crop'}
+                                            src={event.imageUrl || FALLBACK_IMAGES.event}
                                             alt={event.title}
                                             loading="lazy"
                                             className={cn(
@@ -396,7 +406,7 @@ export const EventsPage: React.FC = () => {
                                         <Button variant="default" className={cn("flex-1 md:flex-none", isPast ? "bg-slate-700 hover:bg-slate-600 border-slate-600" : "")} onClick={() => openEvent(event)}>
                                             {isPast ? 'Ver resumo' : event.registrationOpen ? 'Ver e inscrever-me' : 'Ver detalhes'}
                                         </Button>
-                                        {!isPast && (
+                                        {!isPast && canAddToCalendar(event) && (
                                             <Button variant="outline" size="sm" className="flex-1 md:flex-none text-xs border-slate-900/10 hover:bg-slate-900/5 dark:border-white/10 dark:hover:bg-white/5" onClick={() => downloadIcs(calendarFor(event))}>
                                                 <CalendarPlus size={14} className="mr-1" /> Adicionar ao calendário
                                             </Button>

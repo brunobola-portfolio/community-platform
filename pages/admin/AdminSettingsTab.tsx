@@ -35,8 +35,8 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                     <Globe className="text-brand-400" /> Geral
                 </h3>
                 <div className="space-y-4">
-                    <Field label="Nome do Site"><input value={settingsForm.siteName} onChange={e => update('siteName', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                    <Field label="Email"><input value={settingsForm.contactEmail} onChange={e => update('contactEmail', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <Field label="Nome do Site"><input required maxLength={200} value={settingsForm.siteName} onChange={e => update('siteName', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    <Field label="Email"><input type="email" maxLength={254} value={settingsForm.contactEmail} onChange={e => update('contactEmail', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                     <div>
                         <label htmlFor="settings-logo-url" className={LABEL_CLASS}>URL do logótipo</label>
                         <div className="flex gap-2">

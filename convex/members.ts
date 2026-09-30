@@ -1,5 +1,5 @@
 import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
@@ -59,7 +59,7 @@ export const create = mutation({
         });
         const VALID_GROUPS = ["Direção", "Assembleia Geral", "Conselho Fiscal", "founder"];
         if (!VALID_GROUPS.includes(args.group)) {
-            throw new Error(`Grupo inválido: "${args.group}". Grupos permitidos: ${VALID_GROUPS.join(", ")}`);
+            throw new ConvexError(`Grupo inválido: "${args.group}". Grupos permitidos: ${VALID_GROUPS.join(", ")}`);
         }
         await retainUrl(ctx, args.externalPhoto);
         return await ctx.db.insert("members", args);
@@ -92,7 +92,7 @@ export const update = mutation({
         if (args.group) {
             const VALID_GROUPS = ["Direção", "Assembleia Geral", "Conselho Fiscal", "founder"];
             if (!VALID_GROUPS.includes(args.group)) {
-                throw new Error(`Grupo inválido: "${args.group}". Grupos permitidos: ${VALID_GROUPS.join(", ")}`);
+                throw new ConvexError(`Grupo inválido: "${args.group}". Grupos permitidos: ${VALID_GROUPS.join(", ")}`);
             }
         }
         const { id, ...updates } = args;

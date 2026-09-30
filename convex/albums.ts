@@ -1,5 +1,5 @@
-import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/server";
-import { v } from "convex/values";
+import { query, mutation, internalMutation, type QueryCtx, type MutationCtx } from "./_generated/server";
+import { v, ConvexError } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { requireAdmin } from "./lib/auth";
 import { cascadeDeleteAlbum, reconcileImageUpdate } from "./lib/cascade";
@@ -36,56 +36,34 @@ async function albumImages(ctx: Ctx, albumId: Id<"albums">): Promise<Doc<"galler
     return sortImages(images);
 }
 
-export const list = query({
-    args: {},
-    handler: async (ctx) => {
-        const albums = await ctx.db.query("albums").order("desc").collect();
+// Keeps the denormalized count in step with the rows; counting from the index
+// instead of incrementing means a failed write or manual edit cannot leave it drifting
+async function syncPhotoCount(ctx: MutationCtx, albumId: Id<"albums">) {
+    const count = (await albumImages(ctx, albumId)).length;
+    await ctx.db.patch(albumId, { photoCount: count });
+}
 
-        // Batch: fetch all gallery images once to avoid N+1 per-album queries
-        const allImages = await ctx.db.query("galleryImages").collect();
-        const imagesByAlbum = new Map<string, Doc<"galleryImages">[]>();
-        for (const img of allImages) {
-            const key = String(img.albumId);
-            const bucket = imagesByAlbum.get(key) ?? [];
-            bucket.push(img);
-            imagesByAlbum.set(key, bucket);
-        }
-
-        return Promise.all(
-            albums.map(async (a) => {
-                const photos = sortImages(imagesByAlbum.get(String(a._id)) ?? []);
-                const photoUrls = await Promise.all(photos.map((p) => imageUrl(ctx, p)));
-                return {
-                    ...a,
-                    coverUrl: await resolveCover(ctx, a),
-                    photos: photoUrls.filter((url): url is string => url !== null),
-                };
-            })
-        );
-    },
-});
+async function countPhotos(ctx: Ctx, album: Doc<"albums">): Promise<number> {
+    if (album.photoCount !== undefined) return album.photoCount;
+    const images = await ctx.db
+        .query("galleryImages")
+        .withIndex("by_album", (q) => q.eq("albumId", album._id))
+        .collect();
+    return images.length;
+}
 
 export const listSummary = query({
     args: {},
     handler: async (ctx) => {
         const albums = await ctx.db.query("albums").order("desc").collect();
 
-        // One indexed lookup per album keeps the public subscription small
-        // instead of shipping every photo row just to count them
-        const countByAlbum = new Map<string, number>();
-        await Promise.all(albums.map(async (album) => {
-            const images = await ctx.db
-                .query("galleryImages")
-                .withIndex("by_album", (q) => q.eq("albumId", album._id))
-                .collect();
-            countByAlbum.set(String(album._id), images.length);
-        }));
-
+        // The stored count keeps the public subscription from reading every photo row;
+        // albums written before it existed fall back to an indexed count
         return Promise.all(
             albums.map(async (a) => ({
                 ...a,
                 coverUrl: await resolveCover(ctx, a),
-                photoCount: countByAlbum.get(String(a._id)) ?? 0,
+                photoCount: await countPhotos(ctx, a),
             }))
         );
     },
@@ -125,7 +103,7 @@ export const create = mutation({
         validateMaxLength(args.title, "title", 200);
         if (args.description) validateMaxLength(args.description, "description", 2000);
         await retainUrl(ctx, args.externalCover);
-        return await ctx.db.insert("albums", args);
+        return await ctx.db.insert("albums", { ...args, photoCount: 0 });
     },
 });
 
@@ -140,11 +118,14 @@ export const addImage = mutation({
         await requireAdmin(ctx);
         if (args.caption) validateMaxLength(args.caption, "caption", 500);
         if (args.externalUrl) validateMaxLength(args.externalUrl, "foto", 2000);
-        if (!args.storageId && !args.externalUrl) throw new Error("Foto sem ficheiro nem URL.");
+        if (!args.storageId && !args.externalUrl) throw new ConvexError("Foto sem ficheiro nem URL.");
+        if (!(await ctx.db.get(args.albumId))) throw new ConvexError("Álbum não encontrado.");
         const existing = await albumImages(ctx, args.albumId);
         const last = existing[existing.length - 1];
         const order = last ? (last.order ?? last.uploadedAt) + 1 : 0;
-        return await ctx.db.insert("galleryImages", { ...args, order, uploadedAt: Date.now() });
+        const id = await ctx.db.insert("galleryImages", { ...args, order, uploadedAt: Date.now() });
+        await syncPhotoCount(ctx, args.albumId);
+        return id;
     },
 });
 
@@ -171,6 +152,7 @@ export const removeImage = mutation({
         const album = await ctx.db.get(img.albumId);
         if (album?.coverImageId === args.id) await ctx.db.patch(album._id, { coverImageId: undefined });
         await ctx.db.delete(args.id);
+        if (album) await syncPhotoCount(ctx, album._id);
     },
 });
 
@@ -196,7 +178,7 @@ export const setCoverImage = mutation({
         await requireAdmin(ctx);
         if (args.imageId) {
             const img = await ctx.db.get(args.imageId);
-            if (!img || img.albumId !== args.albumId) throw new Error("A foto não pertence a este álbum.");
+            if (!img || img.albumId !== args.albumId) throw new ConvexError("A foto não pertence a este álbum.");
         }
         await ctx.db.patch(args.albumId, { coverImageId: args.imageId ?? undefined });
     },
@@ -238,6 +220,7 @@ export const setImages = mutation({
             await ctx.db.insert("galleryImages", { albumId: args.albumId, externalUrl: url, order, uploadedAt: Date.now() });
             order += 1;
         }
+        await syncPhotoCount(ctx, args.albumId);
     },
 });
 
@@ -270,5 +253,16 @@ export const remove = mutation({
     handler: async (ctx, args) => {
         await requireAdmin(ctx);
         await cascadeDeleteAlbum(ctx, args.id);
+    },
+});
+
+// Run once after deploying the photoCount field; listSummary works without it
+// through its fallback, this only removes the per-album count from the read path
+export const backfillPhotoCounts = internalMutation({
+    args: {},
+    handler: async (ctx) => {
+        const albums = await ctx.db.query("albums").collect();
+        for (const album of albums) await syncPhotoCount(ctx, album._id);
+        return albums.length;
     },
 });

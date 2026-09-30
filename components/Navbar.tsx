@@ -6,7 +6,8 @@
  * Logo URL and site name are sourced from environment configuration.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, X, UserCircle, CalendarDays, ShieldCheck, Sun, Moon } from 'lucide-react';
 import { cn } from './ui/UIComponents';
 import { LogoMark } from './ui/LogoMark';
@@ -65,7 +66,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
   const { settings } = useData();
   const { theme, toggleTheme } = useTheme();
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  // A ref: the value only steers the next frame, so it must not re-render on every scroll tick
+  const lastScrollY = useRef(0);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -82,12 +84,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           // Smart hide logic: hide when scrolling down, show when scrolling up
           if (currentScrollY < 20) {
             setIsVisible(true);
-          } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
             setIsVisible(false);
-          } else if (currentScrollY < lastScrollY) {
+          } else if (currentScrollY < lastScrollY.current) {
             setIsVisible(true);
           }
-          setLastScrollY(currentScrollY);
+          lastScrollY.current = currentScrollY;
           ticking = false;
         });
         ticking = true;
@@ -95,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   // Auto-reveal: moving the pointer to the top edge brings the hidden navbar
   // back without needing to scroll up (desktop nicety; harmless on touch)
@@ -116,6 +118,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
     }
   }, [mobileOpen]);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const closeOnEscape = (e: KeyboardEvent) => { if (e.key === 'Escape') setMobileOpen(false); };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [mobileOpen]);
+
   const navLinks = [
     { name: 'Início', id: 'home' },
     { name: 'História', id: 'history' },
@@ -134,7 +143,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
       <nav
         aria-label="Menu principal"
         className={cn(
-          "fixed top-0 left-0 right-0 z-[100] flex justify-center px-2 sm:px-6 lg:px-8 pt-2 sm:pt-4 transition-transform duration-500 ease-in-out",
+          // focus-within: a keyboard user tabbing into a hidden bar must see where focus is
+          "fixed top-0 left-0 right-0 z-[100] flex justify-center px-2 sm:px-6 lg:px-8 pt-2 sm:pt-4 transition-transform duration-500 ease-in-out focus-within:translate-y-0",
           isVisible && !mobileOpen ? "translate-y-0" : mobileOpen ? "translate-y-0" : "-translate-y-[150%]"
         )}
       >
@@ -151,9 +161,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
 
           {/* Logo Section */}
           {/* Logo - sourced from environment config with text fallback */}
-          <div
-            className="cursor-pointer flex shrink-0 items-center gap-2.5 group relative z-[102]"
-            onClick={() => { onNavigate('home'); setMobileOpen(false); }}
+          <Link
+            to="/"
+            className="flex shrink-0 items-center gap-2.5 group relative z-[102] rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            onClick={() => setMobileOpen(false)}
           >
             <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
               {useBuiltinLogo || imgError ? (
@@ -161,14 +172,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
               ) : (
                 <img
                   src={settings.logoUrl}
-                  alt={`${settings.siteName} Logo`}
+                  alt=""
                   className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_10px_rgba(223,61,50,0.4)]"
                   onError={() => setImgError(true)}
                 />
               )}
             </div>
             <span className="font-serif font-bold text-base sm:text-lg tracking-wide group-hover:text-brand-500 transition-colors text-slate-900 dark:text-white">{settings.siteName}</span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1 p-1 rounded-full backdrop-blur-md border bg-slate-900/5 dark:bg-black/20 border-slate-900/5 dark:border-white/5">
@@ -220,10 +231,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
       </nav>
 
       {/* Mobile Menu Overlay */}
-      <div className={cn(
-        "fixed inset-0 z-[90] transition-all duration-500 h-[100dvh] w-screen",
-        mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-      )}>
+      <div
+        aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
+        className={cn(
+          "fixed inset-0 z-[90] transition-all duration-500 h-[100dvh] w-screen",
+          mobileOpen ? "opacity-100 pointer-events-auto" : "invisible opacity-0 pointer-events-none"
+        )}
+      >
         <div className="absolute inset-0 bg-slate-50/95 dark:bg-dark-bg/80 backdrop-blur-3xl"></div>
         <div className="relative z-10 w-full h-full flex flex-col px-6 pt-32 pb-10 overflow-y-auto">
           <div className="flex-1 flex flex-col items-center justify-center gap-8">
@@ -241,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           <div className="flex flex-col gap-4 mt-12 w-full max-w-xs mx-auto">
             <button onClick={() => { onOpenAgenda(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-slate-900/5 border border-slate-900/10 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><CalendarDays size={20} /> Agenda Cultural</button>
             <button onClick={() => { onMemberLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-brand-700 text-white font-medium flex items-center justify-center gap-3 hover:bg-brand-800 active:scale-[0.97] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgba(223,61,50,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"><UserCircle size={20} /> Área de Sócio</button>
-            {onAdminLogin && <button onClick={() => { onAdminLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl border border-amber-500/30 text-amber-500 font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={20} /> Acesso Reservado</button>}
+            {onAdminLogin && <button onClick={() => { onAdminLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl border border-amber-600/40 text-amber-700 dark:border-amber-500/30 dark:text-amber-400 font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={20} /> Acesso Reservado</button>}
           </div>
         </div>
       </div>

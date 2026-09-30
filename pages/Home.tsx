@@ -11,7 +11,7 @@
  */
 
 import React, { useMemo, useState, useRef } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 import { ArrowRight, Calendar, MapPin, ChevronRight, Sparkles, Target, Heart, Users, Search, Mic, Lightbulb, CheckCircle2, ChevronLeft, Handshake, LucideIcon, Activity, Shield, Trophy } from 'lucide-react';
 import { Button, Badge, Modal } from '../components/ui/UIComponents';
 import { SponsorshipModal } from '../components/ui/SponsorshipModal';
@@ -27,7 +27,10 @@ import type { LayoutOutletContext } from '../layouts/types';
 import { OrganizationJsonLd } from '../components/StructuredData';
 import { ShareBar } from '../components/ui/ShareBar';
 import { EventPoster } from '../components/events/EventPoster';
-import { absoluteUrl, eventPath, eventShareText } from '../utils/share';
+import { absoluteUrl, eventPath, eventShareText, postPath } from '../utils/share';
+import { isEventUpcoming } from '../utils/eventTime';
+import { PageMeta } from '../components/PageMeta';
+import { FALLBACK_IMAGES } from '../utils/constants';
 
 // Helper to map string names from DB to Lucide components
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -39,19 +42,18 @@ interface HomePageProps {
   /** Opens the events page with the given event's dialog already open. */
   onOpenEvent: (eventId: string) => void;
   onAskAI: (query?: string) => void;
-  onViewPost: (id: string) => void;
   onContact: (subject: string) => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onAskAI, onViewPost, onContact }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onAskAI, onContact }) => {
   const { posts, events, sponsors, actionAreas, stats, isLoading, settings } = useData();
   // The carousel is a teaser: the next eight, soonest first. Events arrive newest first, so
   // without this sort it showed the eight furthest away. With nothing ahead, the most recent
   // past ones stand in and the subtitle says so
   const { carouselEvents, hasUpcoming } = useMemo(() => {
-    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const now = new Date();
     const upcoming = events
-      .filter(e => new Date(e.date) >= today)
+      .filter(e => isEventUpcoming(e.date, now))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     return upcoming.length > 0
       ? { carouselEvents: upcoming.slice(0, 8), hasUpcoming: true }
@@ -116,12 +118,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
     : undefined;
   const eventIsFull = eventSlotsLeft !== undefined && eventSlotsLeft <= 0;
   const eventCanRegister = Boolean(
-    selectedEvent && new Date(selectedEvent.date) >= new Date() && selectedEvent.registrationOpen === true,
+    selectedEvent && isEventUpcoming(selectedEvent.date) && selectedEvent.registrationOpen === true,
   );
 
   return (
     <div className="w-full overflow-x-hidden">
-      <title>{settings.siteName}</title>
+      <PageMeta title={settings.siteName} />
       <OrganizationJsonLd />
 
       {/* Hero Section */}
@@ -288,7 +290,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 >
                   {/* Background Image on Hover */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-700">
-                    <img src={area.imageUrl} alt={area.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                    <img src={area.imageUrl} alt="" aria-hidden="true" loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 dark:from-dark-surface dark:via-dark-surface/80 to-transparent"></div>
                   </div>
 
@@ -355,8 +357,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 min-h-[600px]">
             {/* Highight Post */}
             {highlightPost && (
-              <div className="md:col-span-2 md:row-span-2 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-dark-surface cursor-pointer h-96 md:h-auto" onClick={() => onViewPost(highlightPost.slug || highlightPost.id)}>
-                <img src={highlightPost.coverUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop'} alt={highlightPost.title} loading="lazy" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop'; }} />
+              <div className="md:col-span-2 md:row-span-2 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-dark-surface h-96 md:h-auto">
+                {/* The text block is positioned, so a stretched title link would only cover it; this mouse-only twin covers the card */}
+                <Link to={postPath(highlightPost.slug || highlightPost.id)} tabIndex={-1} aria-hidden="true" className="absolute inset-0 z-10" />
+                <img src={highlightPost.coverUrl || FALLBACK_IMAGES.post} alt={highlightPost.title} loading="lazy" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post; }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
 
                 <div className="absolute top-6 right-6">
@@ -364,7 +368,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 </div>
 
                 <div className="absolute bottom-0 left-0 p-8 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                  <h3 className="text-3xl md:text-4xl font-serif text-white font-medium mb-4 leading-tight group-hover:text-brand-400 transition-colors">{highlightPost.title}</h3>
+                  <h3 className="text-3xl md:text-4xl font-serif text-white font-medium mb-4 leading-tight group-hover:text-brand-400 transition-colors"><Link to={postPath(highlightPost.slug || highlightPost.id)} className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{highlightPost.title}</Link></h3>
                   <p className="text-slate-300 line-clamp-2 mb-6 text-lg font-light opacity-80 group-hover:opacity-100">{highlightPost.excerpt}</p>
                   <div className="flex items-center text-brand-400 font-medium uppercase text-xs tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
                     Ler Artigo Completo <ChevronRight size={16} className="ml-2" />
@@ -375,15 +379,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
             {/* Secondary Post 1 */}
             {secondaryPosts[0] && (
-              <div className="md:col-span-2 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface cursor-pointer flex items-center" onClick={() => onViewPost(secondaryPosts[0].slug || secondaryPosts[0].id)}>
+              <div className="md:col-span-2 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface flex items-center">
                 <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 to-accent-gold/10 dark:from-brand-900/20 dark:to-amber-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="w-1/3 h-full relative">
-                  <img src={secondaryPosts[0].coverUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'} alt={secondaryPosts[0].title} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'; }} />
+                  <img src={secondaryPosts[0].coverUrl || FALLBACK_IMAGES.post} alt={secondaryPosts[0].title} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post; }} />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white dark:to-dark-surface"></div>
                 </div>
-                <div className="w-2/3 p-6 relative z-10">
+                <div className="w-2/3 p-6 z-10">
                   <span className="text-brand-700 dark:text-brand-400 text-xs font-mono mb-2 block">{new Date(secondaryPosts[0].date).toLocaleDateString('pt-PT')}</span>
-                  <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors">{secondaryPosts[0].title}</h3>
+                  <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors"><Link to={postPath(secondaryPosts[0].slug || secondaryPosts[0].id)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{secondaryPosts[0].title}</Link></h3>
                   <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{secondaryPosts[0].excerpt}</p>
                 </div>
               </div>
@@ -391,10 +395,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
             {/* Secondary Post 2 */}
             {secondaryPosts[1] && (
-              <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface p-6 flex flex-col justify-between hover:border-brand-500/30 transition-colors hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_20px_rgba(0,0,0,0.5)] cursor-pointer" onClick={() => onViewPost(secondaryPosts[1].slug || secondaryPosts[1].id)}>
+              <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface p-6 flex flex-col justify-between hover:border-brand-500/30 transition-colors hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                 <div>
                   <Sparkles className="text-accent-gold mb-4 w-8 h-8" />
-                  <h3 className="text-lg font-serif text-slate-900 dark:text-white leading-snug">{secondaryPosts[1].title}</h3>
+                  <h3 className="text-lg font-serif text-slate-900 dark:text-white leading-snug"><Link to={postPath(secondaryPosts[1].slug || secondaryPosts[1].id)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{secondaryPosts[1].title}</Link></h3>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-900/5 dark:border-white/5 flex justify-between items-center">
                   <span className="text-xs text-slate-600 dark:text-slate-400">Notícia</span>
@@ -404,10 +408,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             )}
 
             {/* Gallery Link */}
-            <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl bg-brand-700 p-6 flex flex-col justify-center items-center text-center hover:bg-brand-800 transition-colors shadow-[0_0_30px_rgba(223,61,50,0.2)] cursor-pointer" onClick={() => onNavigate('gallery')}>
-              <h3 className="text-2xl font-serif text-white mb-2 relative z-10">Multimédia</h3>
-              <p className="text-brand-100 text-sm mb-4 relative z-10">Explore a galeria de fotos e vídeos.</p>
-              <Button variant="glass" size="sm" className="w-full relative z-10 text-white dark:text-white border-white/30 dark:border-white/30 bg-white/10 hover:bg-white/20">Ver Galeria</Button>
+            <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl bg-brand-700 p-6 flex flex-col justify-center items-center text-center hover:bg-brand-800 transition-colors shadow-[0_0_30px_rgba(223,61,50,0.2)]">
+              <h3 className="text-2xl font-serif text-white mb-2 z-10"><Link to="/gallery" className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">Multimédia</Link></h3>
+              <p className="text-brand-100 text-sm mb-4">Explore a galeria de fotos e vídeos.</p>
+              <span className="inline-flex w-full items-center justify-center rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition-colors group-hover:bg-white/20">Ver Galeria</span>
             </div>
           </div>
           ) : (
@@ -468,7 +472,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 {/* Image */}
                 <div className="h-48 overflow-hidden relative">
                   <img
-                    src={event.imageUrl || 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=300&fit=crop'}
+                    src={event.imageUrl || FALLBACK_IMAGES.event}
                     alt={event.title}
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -503,13 +507,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             ))}
 
             {/* View All Card */}
-            <div
-              className="min-w-[200px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-900/10 dark:border-white/10 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all cursor-pointer snap-center"
-              onClick={() => onNavigate('events')}
+            <Link
+              to="/events"
+              className="min-w-[200px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-900/10 dark:border-white/10 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all snap-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <Calendar size={32} className="mb-3" />
               <span className="font-medium">Ver calendário completo</span>
-            </div>
+            </Link>
           </div>
           ) : (
           <div className="text-center py-12">
@@ -519,46 +523,52 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
         </div>
       </section>
 
-      {/* Infinite Partners Marquee */}
-      <section className="py-24 border-t border-slate-900/5 dark:border-white/5 bg-slate-900/[0.01] dark:bg-white/[0.01] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
-          <p className="text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] text-xs font-bold">Rede de Parceiros</p>
-        </div>
+      {/* Infinite Partners Marquee: with no partners only the invitation remains */}
+      <section className={cn('border-t border-slate-900/5 dark:border-white/5 bg-slate-900/[0.01] dark:bg-white/[0.01] overflow-hidden', sponsors.length > 0 ? 'py-24' : 'py-12')}>
+        {sponsors.length > 0 && (
+          <>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
+              <p className="text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] text-xs font-bold">Rede de Parceiros</p>
+            </div>
 
-        <div className="relative w-full flex overflow-hidden group">
-          {/* Gradient Masks */}
-          <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
+            <div className="relative w-full flex overflow-hidden group">
+              {/* Gradient Masks */}
+              <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
 
-          {/* Scrolling Content */}
-          <div className="flex gap-16 animate-marquee whitespace-nowrap hover:[animation-play-state:paused] items-center">
-            {/* Duplicate list for seamless loop */}
-            {[...sponsors, ...sponsors].map((sponsor, i) => (
-              <div
-                key={`${sponsor.id}-${i}`}
-                className="flex-shrink-0 transition-all duration-500 cursor-pointer"
-                title={sponsor.name}
-                role="button"
-                tabIndex={0}
-                onClick={() => setSelectedSponsor(sponsor)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedSponsor(sponsor); } }}
-              >
-                {sponsor.logoUrl ? (
-                  <div className="h-28 px-8 py-4 bg-white rounded-2xl border border-slate-900/10 dark:border-white/15 shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-2">
-                    <img src={sponsor.logoUrl} alt={sponsor.name} loading="lazy" className="h-12 max-w-[180px] w-auto object-contain" />
-                    <span className="text-[10px] uppercase tracking-widest text-slate-700 truncate max-w-[180px]">{sponsor.name}</span>
+              {/* Scrolling Content */}
+              <div className="flex gap-16 animate-marquee whitespace-nowrap hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] items-center">
+                {/* The second copy only exists for the seamless loop: hidden from assistive tech and the tab order */}
+                {[0, 1].flatMap(copy => sponsors.map(sponsor => (
+                  <div
+                    key={`${sponsor.id}-${copy}`}
+                    className="flex-shrink-0 rounded-2xl transition-all duration-500 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    title={sponsor.name}
+                    role="button"
+                    tabIndex={copy === 0 ? 0 : -1}
+                    aria-hidden={copy === 1 ? true : undefined}
+                    inert={copy === 1}
+                    onClick={() => setSelectedSponsor(sponsor)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedSponsor(sponsor); } }}
+                  >
+                    {sponsor.logoUrl ? (
+                      <div className="h-28 px-8 py-4 bg-white rounded-2xl border border-slate-900/10 dark:border-white/15 shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-2">
+                        <img src={sponsor.logoUrl} alt={sponsor.name} loading="lazy" className="h-12 max-w-[180px] w-auto object-contain" />
+                        <span className="text-[10px] uppercase tracking-widest text-slate-700 truncate max-w-[180px]">{sponsor.name}</span>
+                      </div>
+                    ) : (
+                      <div className="h-28 px-8 bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/15 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex items-center justify-center text-slate-900 dark:text-white font-serif font-bold text-xl">
+                        {sponsor.name}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="h-28 px-8 bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/15 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex items-center justify-center text-slate-900 dark:text-white font-serif font-bold text-xl">
-                    {sponsor.name}
-                  </div>
-                )}
+                )))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
 
-        <div className="text-center mt-12">
+        <div className={cn('text-center', sponsors.length > 0 && 'mt-12')}>
           <Button
             variant="outline"
             className="gap-2 rounded-full hover:bg-brand-600/10 dark:hover:bg-brand-900/20 border-slate-900/10 dark:border-white/10 hover:border-brand-500/30"
@@ -586,7 +596,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               </Button>
             ) : eventIsFull ? (
               <Button variant="outline" disabled>Vagas esgotadas</Button>
-            ) : new Date(selectedEvent.date) >= new Date() ? (
+            ) : isEventUpcoming(selectedEvent.date) ? (
               <Button variant="outline" disabled>Inscrições fechadas</Button>
             ) : null}
           </div>
@@ -723,9 +733,6 @@ export const HomePageWrapper: React.FC = () => {
       }}
       onOpenEvent={(eventId: string) => navigate('/events', { state: { eventId } })}
       onAskAI={onAskAI}
-      onViewPost={(id: string) => {
-        navigate(`/blog/${id}`);
-      }}
       onContact={openContact}
     />
   );

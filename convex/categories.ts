@@ -26,7 +26,7 @@ export const create = mutation({
             .withIndex("by_slug", (q) => q.eq("slug", args.slug))
             .first();
 
-        if (existing) return existing._id;
+        if (existing) throw new ConvexError("Já existe uma categoria com este identificador.");
 
         return await ctx.db.insert("categories", args);
     },

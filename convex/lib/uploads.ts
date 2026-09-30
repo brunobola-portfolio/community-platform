@@ -15,12 +15,14 @@ import type { Id } from "../_generated/dataModel";
 /** How long an upload may wait for a save before the sweep treats it as abandoned. */
 export const ABANDONED_UPLOAD_MS = 48 * 3600 * 1000;
 
-export async function registerUpload(ctx: MutationCtx, storageId: Id<"_storage">, url: string) {
-  await ctx.db.insert("uploads", { storageId, url, refs: 0, createdAt: Date.now() });
-}
-
 async function findByUrl(ctx: MutationCtx, url: string) {
   return await ctx.db.query("uploads").withIndex("by_url", (q) => q.eq("url", url)).first();
+}
+
+/** Idempotent: registering a URL twice must not reset the references a record already holds. */
+export async function registerUpload(ctx: MutationCtx, storageId: Id<"_storage">, url: string) {
+  if (await findByUrl(ctx, url)) return;
+  await ctx.db.insert("uploads", { storageId, url, refs: 0, createdAt: Date.now() });
 }
 
 async function dropUpload(ctx: MutationCtx, row: { _id: Id<"uploads">; storageId: Id<"_storage"> }) {

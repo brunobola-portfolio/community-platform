@@ -20,8 +20,9 @@ export function useActionAreaActions({ logActivity, describeAction }: ActionDeps
           title: data.title,
           subtitle: data.subtitle,
           description: data.description,
-          longDescription: data.longDescription,
-          features: data.features,
+          // The rich-text editor is optional in the form; the validator requires strings
+          longDescription: data.longDescription ?? '',
+          features: data.features ?? [],
           // The admin form (MediaStudio) writes imageUrl; alias it to the Convex field
           externalImage: data.imageUrl || data.externalImage,
           iconName: data.iconName,

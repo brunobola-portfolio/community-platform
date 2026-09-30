@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
 import { validateMaxLength } from "./lib/validation";
@@ -26,17 +26,12 @@ export const upsert = mutation({
         if (id) {
             await ctx.db.patch(id, data);
         } else {
-            // Check for existing tier with same name to prevent duplicates
-            // TODO: add index by_name on sponsorTiers for this query
             const existing = await ctx.db
                 .query("sponsorTiers")
-                .filter((q) => q.eq(q.field("name"), args.name))
+                .withIndex("by_name", (q) => q.eq("name", args.name))
                 .first();
-            if (existing) {
-                await ctx.db.patch(existing._id, data);
-            } else {
-                await ctx.db.insert("sponsorTiers", data);
-            }
+            if (existing) throw new ConvexError("Já existe um nível com este nome.");
+            await ctx.db.insert("sponsorTiers", data);
         }
     },
 });
@@ -54,7 +49,7 @@ export const remove = mutation({
             ]);
             const dependents = [...byId, ...byName];
             if (dependents.length > 0) {
-                throw new Error(`Não é possível apagar: ${dependents.length} parceiro(s) usam este nível.`);
+                throw new ConvexError(`Não é possível apagar: ${dependents.length} parceiro(s) usam este nível.`);
             }
         }
         await ctx.db.delete(args.id);

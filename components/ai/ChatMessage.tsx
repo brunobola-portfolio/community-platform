@@ -162,7 +162,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             onClick={onSpeak}
             disabled={speechBusy}
             aria-label="Ouvir resposta"
-            className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-medium uppercase tracking-wider text-slate-400 transition-colors hover:text-brand-700 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
+            className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400 transition-colors hover:text-brand-700 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
           >
             <Volume2 size={13} className={isSpeaking ? 'animate-pulse text-brand-500' : ''} />
             {isSpeaking ? 'A ler...' : 'Ouvir'}

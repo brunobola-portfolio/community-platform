@@ -11,9 +11,8 @@ import { useData } from '../context/DataContext';
 import type { Member } from '../types';
 import { Badge } from '../components/ui/UIComponents';
 import { Lightbox } from '../components/ui/Lightbox';
-
-const memberPhotoUrl = (member: Member) =>
-  member.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&size=400&background=0f172a&color=df3d32&bold=true`;
+import { Avatar } from '../components/ui/Avatar';
+import { PageMeta } from '../components/PageMeta';
 
 // Component for rendering individual member cards
 const MemberCard: React.FC<{ member: Member, isFeatured?: boolean, onOpenPhoto: () => void }> = ({ member, isFeatured, onOpenPhoto }) => (
@@ -22,19 +21,21 @@ const MemberCard: React.FC<{ member: Member, isFeatured?: boolean, onOpenPhoto: 
     <div className={`relative bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl overflow-hidden hover:border-slate-900/20 dark:hover:border-white/20 transition-all duration-300 h-full flex flex-col ${isFeatured ? 'shadow-[0_0_30px_rgba(223,61,50,0.2)]' : ''}`}>
 
       <div
-        className={`relative overflow-hidden cursor-zoom-in ${isFeatured ? 'h-96' : 'h-80'}`}
-        role="button"
-        tabIndex={0}
-        aria-label={`Ampliar fotografia de ${member.name}`}
-        onClick={onOpenPhoto}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenPhoto(); } }}
+        className={`relative overflow-hidden ${member.photoUrl ? 'cursor-zoom-in' : ''} ${isFeatured ? 'h-96' : 'h-80'}`}
+        {...(member.photoUrl ? {
+          role: 'button',
+          tabIndex: 0,
+          'aria-label': `Ampliar fotografia de ${member.name}`,
+          onClick: onOpenPhoto,
+          onKeyDown: (e: React.KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenPhoto(); } },
+        } : {})}
       >
         <div className="absolute inset-0 bg-brand-900/20 z-10 mix-blend-overlay"></div>
-        <img
-          src={memberPhotoUrl(member)}
-          alt={member.name}
-          className="w-full h-full object-cover object-[50%_25%] grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-          onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&size=400&background=0f172a&color=df3d32&bold=true`; }}
+        <Avatar
+          name={member.name}
+          src={member.photoUrl}
+          tone="dark"
+          className="w-full h-full text-7xl object-[50%_25%] grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
         />
         <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-dark-surface via-dark-surface/80 to-transparent opacity-95"></div>
 
@@ -54,7 +55,7 @@ const KNOWN_ORGANS = ['Direção', 'Assembleia Geral', 'Conselho Fiscal'];
 
 export const TeamPage: React.FC = () => {
   const { members, settings } = useData();
-  const [activeTab, setActiveTab] = useState<string>('Direção');
+  const [chosenTab, setChosenTab] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const tabOptions = useMemo(() => {
@@ -65,25 +66,30 @@ export const TeamPage: React.FC = () => {
     return [...known, ...extras];
   }, [members]);
 
+  // Without a "Direção" group the default tab would be empty: open on the first one that exists
+  const activeTab = chosenTab && tabOptions.includes(chosenTab) ? chosenTab : (tabOptions.includes('Direção') ? 'Direção' : tabOptions[0]);
+
   // Sort members by 'order' property to ensure hierarchy (President first)
   const filteredMembers = members
     .filter(m => m.group === activeTab)
     .sort((a, b) => (a.order || 99) - (b.order || 99));
 
-  const lightboxImages = filteredMembers.map((member) => ({
-    src: memberPhotoUrl(member),
+  // Only real photographs open in the lightbox; an initials tile has nothing to enlarge
+  const photoMembers = filteredMembers.filter(member => member.photoUrl);
+  const lightboxImages = photoMembers.map((member) => ({
+    src: member.photoUrl as string,
     alt: member.name,
     caption: `${member.name} — ${member.role} (${activeTab})`,
   }));
 
   const selectTab = (tab: string) => {
-    setActiveTab(tab);
+    setChosenTab(tab);
     setLightboxIndex(null);
   };
 
   return (
     <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg">
-      <title>{`Corpos Sociais — ${settings.siteName}`}</title>
+      <PageMeta title="Corpos Sociais" description={`Os corpos sociais de ${settings.siteName}: direção, assembleia geral e conselho fiscal.`} />
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in-up">
           <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Estrutura Orgânica</span>
@@ -116,12 +122,12 @@ export const TeamPage: React.FC = () => {
         <div className="animate-fade-in-up min-h-[500px] [animation-delay:0.2s]">
           {filteredMembers.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 place-items-center">
-              {filteredMembers.map((member, index) => {
+              {filteredMembers.map((member) => {
                 // Highlight the leader (order 1)
                 const isLeader = member.order === 1;
                 return (
                   <div key={member.id} className={`w-full ${isLeader ? 'md:col-start-2 md:-mt-8 mb-8 md:mb-0 z-10' : ''}`}>
-                    <MemberCard member={member} isFeatured={isLeader} onOpenPhoto={() => setLightboxIndex(index)} />
+                    <MemberCard member={member} isFeatured={isLeader} onOpenPhoto={() => setLightboxIndex(photoMembers.indexOf(member))} />
                   </div>
                 );
               })}

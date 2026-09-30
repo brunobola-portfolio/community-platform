@@ -1,4 +1,5 @@
 import { internalAction } from "./_generated/server";
+import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import {
 
@@ -93,8 +94,13 @@ const buildPlaceholderSvg = (label: string): Blob => {
 };
 
 export const seed = internalAction({
-    args: {},
-    handler: async (ctx) => {
+    args: { force: v.optional(v.boolean()) },
+    handler: async (ctx, args) => {
+        // The seed wipes members and writes demo settings; on a configured
+        // instance that would replace real content, so it needs an explicit go-ahead
+        if (!args.force && (await ctx.runQuery(internal.seedHelpers.isRealInstance, {}))) {
+            throw new Error("Seed cancelado: esta instância já tem identidade própria ou um administrador. Use { force: true } para continuar.");
+        }
         // Fetch with retry + timeout + content-type validation
         const fetchImageBlob = async (url: string): Promise<Blob> => {
             let lastErr: unknown;
@@ -187,7 +193,8 @@ export const seed = internalAction({
         const eventIdMap: Record<number, string> = {};
         for (const eventItem of INITIAL_EVENTS) {
             const event = eventItem as SeedEvent;
-            const storageId = await uploadImage(event.imageUrl, event.title);
+            // Re-running the seed must not upload images for rows that already exist
+            const storageId = (await ctx.runQuery(internal.seedHelpers.rowExists, { table: "events", key: event.slug })) ? undefined : await uploadImage(event.imageUrl, event.title);
 
             const { id, imageUrl, categoryId, category, createdAt, updatedAt, ...eventData } = event;
 
@@ -205,7 +212,7 @@ export const seed = internalAction({
         console.log("Seeding Posts...");
         for (const postItem of INITIAL_POSTS) {
             const post = postItem as SeedPost;
-            const storageId = await uploadImage(post.coverUrl, post.title);
+            const storageId = (await ctx.runQuery(internal.seedHelpers.rowExists, { table: "posts", key: post.slug })) ? undefined : await uploadImage(post.coverUrl, post.title);
 
             const { id, coverUrl, categoryId, category, updatedAt, ...postData } = post;
 
@@ -237,7 +244,8 @@ export const seed = internalAction({
         // 5. Sponsors
         console.log("Seeding Sponsors...");
         for (const sponsor of INITIAL_SPONSORS) {
-            const storageId = await uploadImage(sponsor.logoUrl, sponsor.name);
+            const tierKey = sponsor.tier.toLowerCase();
+            const storageId = (await ctx.runQuery(internal.seedHelpers.rowExists, { table: "sponsors", key: sponsor.name, tier: tierKey })) ? undefined : await uploadImage(sponsor.logoUrl, sponsor.name);
 
             const { id, logoUrl, tier, ...sponsorData } = sponsor;
 
@@ -263,7 +271,7 @@ export const seed = internalAction({
         // 7. Action Areas
         console.log("Seeding Action Areas...");
         for (const aa of INITIAL_ACTION_AREAS) {
-            const storageId = await uploadImage(aa.externalImage, aa.title);
+            const storageId = (await ctx.runQuery(internal.seedHelpers.rowExists, { table: "actionAreas", key: aa.title })) ? undefined : await uploadImage(aa.externalImage, aa.title);
             try {
                 await ctx.runMutation(internal.seedHelpers.createActionArea, {
                     title: aa.title,

@@ -1,9 +1,14 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
+import { reportError } from '../../utils/monitoring';
+import { claimChunkReload, isChunkLoadError } from '../../utils/chunkError';
 
-interface Props {
+interface BoundaryProps {
   children: ReactNode;
   fallbackMessage?: string;
+  /** Changing it clears a caught error, so leaving a broken page recovers the next one. */
+  resetKey?: string;
 }
 
 interface State {
@@ -11,8 +16,8 @@ interface State {
   error: Error | null;
 }
 
-export class PageErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+class Boundary extends Component<BoundaryProps, State> {
+  constructor(props: BoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
   }
@@ -23,6 +28,22 @@ export class PageErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error('PageErrorBoundary caught:', error, info);
+    if (isChunkLoadError(error)) {
+      // A page opened before a deploy asks for chunks that no longer exist
+      let storage: Storage | null = null;
+      try { storage = window.sessionStorage; } catch { storage = null; }
+      if (claimChunkReload(storage)) {
+        window.location.reload();
+        return;
+      }
+    }
+    reportError(error, { componentStack: info.componentStack, boundary: 'page' });
+  }
+
+  componentDidUpdate(previous: BoundaryProps) {
+    if (this.state.hasError && previous.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false, error: null });
+    }
   }
 
   render() {
@@ -36,7 +57,7 @@ export class PageErrorBoundary extends Component<Props, State> {
             {this.props.fallbackMessage || 'Algo correu mal'}
           </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-md mb-6">
-            Ocorreu um erro inesperado. Tenta recarregar a página.
+            Ocorreu um erro inesperado. Tente recarregar a página.
           </p>
           <div className="flex gap-3">
             <button
@@ -46,7 +67,7 @@ export class PageErrorBoundary extends Component<Props, State> {
               Tentar Novamente
             </button>
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => { window.location.href = '/'; }}
               className="px-6 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white rounded-2xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               Ir para Home
@@ -58,3 +79,9 @@ export class PageErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+
+/** Keyed by pathname so navigating away from a crashed page does not leave the error on screen. */
+export const PageErrorBoundary: React.FC<{ children: ReactNode; fallbackMessage?: string }> = ({ children, fallbackMessage }) => {
+  const { pathname } = useLocation();
+  return <Boundary resetKey={pathname} fallbackMessage={fallbackMessage}>{children}</Boundary>;
+};

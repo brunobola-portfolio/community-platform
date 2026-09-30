@@ -48,6 +48,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // are excluded from getPublic but must round-trip in the admin settings form
   const settingsAdminRaw = useQuery(api.settings.getAdmin, isAuthenticated ? {} : "skip");
   const sponsorsRaw = useQuery(api.sponsors.list);
+  // Backoffice view: includes inactive partners, which the public list hides
+  const sponsorsAllRaw = useQuery(api.sponsors.listAll, isAuthenticated ? {} : "skip");
   // Members-only archive: not subscribed for anonymous visitors
   const documentsRaw = useQuery(api.documents.list, isAuthenticated ? {} : "skip");
   const documentsLoaded = !isAuthenticated || documentsRaw !== undefined;
@@ -171,6 +173,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     [sponsorsRaw]
   );
 
+  const adminSponsors = useMemo<Sponsor[]>(
+    () => (sponsorsAllRaw ?? []).map((s: ConvexSponsor) => ({ ...s, id: s._id })),
+    [sponsorsAllRaw]
+  );
+
   const documents = useMemo<Document[]>(
     () => (documentsRaw ?? []).map((d: ConvexDocument) => ({ ...d, id: d._id, url: d.url || '' })),
     [documentsRaw]
@@ -247,10 +254,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const namedRecordsRef = useRef<Array<{ id: string; title?: string; name?: string; label?: string }>>([]);
   useEffect(() => {
     namedRecordsRef.current = [
-      ...adminEvents, ...adminPosts, ...members, ...categories, ...sponsors, ...documents,
+      ...adminEvents, ...adminPosts, ...members, ...categories, ...adminSponsors, ...documents,
       ...notifications, ...albums, ...milestones, ...actionAreas, ...stats, ...sponsorTiers,
     ];
-  }, [adminEvents, adminPosts, members, categories, sponsors, documents, notifications, albums, milestones, actionAreas, stats, sponsorTiers]);
+  }, [adminEvents, adminPosts, members, categories, adminSponsors, documents, notifications, albums, milestones, actionAreas, stats, sponsorTiers]);
   const describeAction = useCallback((prefix: string, id: string) => {
     const record = namedRecordsRef.current.find(item => item.id === id);
     const name = record?.title ?? record?.name ?? record?.label;
@@ -287,6 +294,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       activityLogs,
       registrations,
       sponsors,
+      adminSponsors,
       sponsorTiers,
       documents,
       notifications,
@@ -349,6 +357,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       activityLogs,
       registrations,
       sponsors,
+      adminSponsors,
       sponsorTiers,
       documents,
       notifications,

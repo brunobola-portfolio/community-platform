@@ -1,13 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { useData } from '../context/DataContext';
+import { PageMeta } from '../components/PageMeta';
 
 export function NotFoundPage() {
     const navigate = useNavigate();
-    const { settings } = useData();
 
     return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
-            <title>{`Página não encontrada — ${settings.siteName}`}</title>
+            <PageMeta title="Página não encontrada" />
             <p className="text-7xl font-bold text-brand-500 mb-4">404</p>
             <h1 className="text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">
                 Página não encontrada

@@ -2,6 +2,42 @@
 import { internalMutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 import { sanitizeContentServer } from "./lib/validation";
+import { cleanupStorageOnDelete } from "./lib/cascade";
+
+// Identity the seed writes; anything else in settings means a configured instance
+const DEMO_SITE_NAME = "ACR Vila Nova";
+
+export const isRealInstance = internalQuery({
+    args: {},
+    handler: async (ctx) => {
+        const settings = await ctx.db.query("settings").first();
+        if (settings) return settings.siteName !== DEMO_SITE_NAME;
+        const admin = await ctx.db.query("users").withIndex("by_role", (q) => q.eq("role", "admin")).first();
+        return admin !== null;
+    },
+});
+
+export const rowExists = internalQuery({
+    args: {
+        table: v.union(v.literal("events"), v.literal("posts"), v.literal("sponsors"), v.literal("actionAreas")),
+        key: v.string(),
+        tier: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        switch (args.table) {
+            case "events":
+                return (await ctx.db.query("events").withIndex("by_slug", (q) => q.eq("slug", args.key)).first()) !== null;
+            case "posts":
+                return (await ctx.db.query("posts").withIndex("by_slug", (q) => q.eq("slug", args.key)).first()) !== null;
+            case "actionAreas":
+                return (await ctx.db.query("actionAreas").withIndex("by_title", (q) => q.eq("title", args.key)).first()) !== null;
+            case "sponsors": {
+                const sameTier = await ctx.db.query("sponsors").withIndex("by_tier", (q) => q.eq("tier", args.tier ?? "")).collect();
+                return sameTier.some((s) => s.name === args.key);
+            }
+        }
+    },
+});
 
 export const listCategories = internalQuery({
     args: {},
@@ -97,6 +133,7 @@ export const clearMembers = internalMutation({
     handler: async (ctx) => {
         const all = await ctx.db.query("members").collect();
         for (const m of all) {
+            await cleanupStorageOnDelete(ctx, m, ["photo"], ["externalPhoto"]);
             await ctx.db.delete(m._id);
         }
     },
@@ -127,14 +164,8 @@ export const createSponsor = internalMutation({
         active: v.boolean(),
     },
     handler: async (ctx, args) => {
-        // TODO: add index by_name_tier on sponsors for this query
-        const existing = await ctx.db
-            .query("sponsors")
-            .filter((q) => q.and(
-                q.eq(q.field("name"), args.name),
-                q.eq(q.field("tier"), args.tier)
-            ))
-            .first();
+        const sameTier = await ctx.db.query("sponsors").withIndex("by_tier", (q) => q.eq("tier", args.tier)).collect();
+        const existing = sameTier.find((s) => s.name === args.name);
         if (existing) return existing._id;
         return await ctx.db.insert("sponsors", args);
     },
@@ -175,10 +206,9 @@ export const createActionArea = internalMutation({
         order: v.number(),
     },
     handler: async (ctx, args) => {
-        // TODO: add index by_title on actionAreas for this query
         const existing = await ctx.db
             .query("actionAreas")
-            .filter((q) => q.eq(q.field("title"), args.title))
+            .withIndex("by_title", (q) => q.eq("title", args.title))
             .first();
         if (existing) return existing._id;
         return await ctx.db.insert("actionAreas", args);
@@ -192,10 +222,9 @@ export const upsertStat = internalMutation({
         order: v.number(),
     },
     handler: async (ctx, args) => {
-        // TODO: use by_label index once added to schema
         const existing = await ctx.db
             .query("stats")
-            .filter((q) => q.eq(q.field("label"), args.label))
+            .withIndex("by_label", (q) => q.eq("label", args.label))
             .first();
         if (existing) return existing._id;
         return await ctx.db.insert("stats", args);
@@ -212,10 +241,9 @@ export const upsertSponsorTier = internalMutation({
         textColor: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        // TODO: add index by_name on sponsorTiers for this query
         const existing = await ctx.db
             .query("sponsorTiers")
-            .filter((q) => q.eq(q.field("name"), args.name))
+            .withIndex("by_name", (q) => q.eq("name", args.name))
             .first();
         if (existing) {
             await ctx.db.patch(existing._id, args);
@@ -238,7 +266,7 @@ export const createAlbum = internalMutation({
         photos: v.array(v.string()),
     },
     handler: async (ctx, args) => {
-        const albumId = await ctx.db.insert("albums", { title: args.title, date: args.date, externalCover: args.externalCover });
+        const albumId = await ctx.db.insert("albums", { title: args.title, date: args.date, externalCover: args.externalCover, photoCount: args.photos.length });
         let order = 0;
         for (const url of args.photos) {
             await ctx.db.insert("galleryImages", { albumId, externalUrl: url, order: order++, uploadedAt: Date.now() });
@@ -522,8 +550,11 @@ export const dedup = internalMutation({
             const seen = new Set<string>();
             for (const row of all) {
                 const key = `${row.name}::${row.tier}`;
-                if (seen.has(key)) { await ctx.db.delete(row._id); totalRemoved++; }
-                else { seen.add(key); }
+                if (seen.has(key)) {
+                    await cleanupStorageOnDelete(ctx, row, ["logo"], ["externalLogo"]);
+                    await ctx.db.delete(row._id);
+                    totalRemoved++;
+                } else { seen.add(key); }
             }
         }
 

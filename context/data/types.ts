@@ -399,6 +399,7 @@ export interface DataContextType {
   activityLogs: ActivityLog[];
   registrations: Registration[];
   sponsors: Sponsor[];
+  adminSponsors: Sponsor[];
   sponsorTiers: SponsorTier[];
   documents: Document[];
   notifications: Notification[];

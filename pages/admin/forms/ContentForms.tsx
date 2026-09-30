@@ -15,6 +15,14 @@ import type { AdminFormData, AdminFormModalProps } from '../types';
 import type { FieldHelpers, NumHelper } from './types';
 import { Field } from '../components/Field';
 
+/** A record may still hold a category that no longer exists; list it so the select does not lie. */
+const CategoryOptions: React.FC<{ categories: AdminFormModalProps['categories']; current: string }> = ({ categories, current }) => (
+    <>
+        {current && !categories.some(c => c.id === current) && <option value={current}>Categoria atual (já não existe)</option>}
+        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+    </>
+);
+
 // ── Event Form ──────────────────────────────────────────────────────────────
 
 interface EventFormProps extends FieldHelpers, NumHelper {
@@ -42,7 +50,7 @@ export const EventForm: React.FC<EventFormProps> = ({
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-6">
             <Field label="Título"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-            <Field label="Categoria"><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</AdminSelect></Field>
+            <Field label="Categoria"><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}><CategoryOptions categories={categories} current={str('categoryId')} /></AdminSelect></Field>
             <Field label="Data"><input type="datetime-local" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} required /></Field>
             <Field label="Estado"><AdminSelect value={str('status', 'published')} onChange={e => setField('status', e.target.value)}>
                     <option value="published">Publicado</option>
@@ -135,7 +143,7 @@ export const PostForm: React.FC<PostFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1 space-y-6">
                 <Field label="Título"><input required value={str('title')} onChange={e => setField('title', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                <Field label="Categoria"><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</AdminSelect></Field>
+                <Field label="Categoria"><AdminSelect value={str('categoryId')} onChange={e => setField('categoryId', e.target.value)}><CategoryOptions categories={categories} current={str('categoryId')} /></AdminSelect></Field>
                 <Field label="Data"><input type="datetime-local" value={str('date')} onChange={e => setField('date', e.target.value)} className={STD_INPUT_CLASS} required /></Field>
                 <div className="flex items-center gap-2">
                     <input type="checkbox" id="post-published" className="accent-brand-500 w-4 h-4" checked={bool('published')} onChange={e => setField('published', e.target.checked)} />

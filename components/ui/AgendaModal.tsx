@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal, Button, Badge } from './UIComponents';
 import { EmptyState } from './EmptyState';
 import type { Event } from '../../types';
+import { isEventUpcoming } from '../../utils/eventTime';
 import { CalendarDays, CalendarOff, MapPin, ChevronRight, Clock, ArrowRight } from 'lucide-react';
 
 interface AgendaModalProps {
@@ -17,7 +18,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
 
   // Filter upcoming and sort by date
   const upcomingEvents = events
-    .filter(e => new Date(e.date) >= new Date())
+    .filter(e => isEventUpcoming(e.date))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // Group by Month
@@ -65,7 +66,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
               <div className="mb-3 flex items-center gap-3">
                 <h3 className="font-serif text-lg text-slate-900 dark:text-white">{month}</h3>
                 <span className="h-px flex-1 bg-gradient-to-r from-slate-900/10 to-transparent dark:from-white/10" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">
                   {groupedEvents[month].length}
                 </span>
               </div>
@@ -81,7 +82,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
                     >
                       <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-white ring-1 ring-slate-900/10 transition-colors group-hover:ring-brand-500/30 dark:bg-black/40 dark:ring-white/10">
                         <span className="text-lg font-bold leading-none text-slate-900 tabular-nums dark:text-white">{date.getDate()}</span>
-                        <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-400">
+                        <span className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-600 dark:text-slate-400">
                           {date.toLocaleString('pt-PT', { weekday: 'short' }).replace('.', '')}
                         </span>
                       </span>
@@ -92,7 +93,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
                             {event.category}
                           </Badge>
                           {event.isTournament && (
-                            <Badge className="h-5 border-amber-500/20 bg-amber-500/15 px-1.5 py-0 text-[9px] text-amber-600 dark:text-amber-400">
+                            <Badge className="h-5 border-amber-500/20 bg-amber-500/15 px-1.5 py-0 text-[9px] text-amber-700 dark:text-amber-400">
                               Torneio
                             </Badge>
                           )}

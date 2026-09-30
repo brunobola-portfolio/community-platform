@@ -23,14 +23,15 @@ import { ScrollToTop } from '../components/ScrollToTop';
 import { ContactModal } from '../components/ui/ContactModal';
 import { AgendaModal } from '../components/ui/AgendaModal';
 import { useData } from '../context/DataContext';
-import { MessageCircle, WifiOff, Wrench } from 'lucide-react';
+import { Loader2, MessageCircle, ShieldCheck, WifiOff, Wrench } from 'lucide-react';
 import { LoginModal } from '../components/LoginModal';
 import { AIModal } from '../components/AIModal';
 import { PAGES } from '../utils/constants';
+import { eventPath } from '../utils/share';
 import { ToastProvider } from '../context/ToastContext';
 
 /** Full-screen service notice used for maintenance and offline states. */
-const ServiceScreen: React.FC<{ icon: React.ReactNode; title: string; text: string; onRetry?: () => void }> = ({ icon, title, text, onRetry }) => (
+const ServiceScreen: React.FC<{ icon: React.ReactNode; title: string; text: string; onRetry?: () => void; footer?: React.ReactNode }> = ({ icon, title, text, onRetry, footer }) => (
   <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex items-center justify-center p-6">
     <div className="flex flex-col items-center gap-5 text-center max-w-md">
       <div className="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-700 dark:text-brand-400">
@@ -46,6 +47,7 @@ const ServiceScreen: React.FC<{ icon: React.ReactNode; title: string; text: stri
           Tentar novamente
         </button>
       )}
+      {footer}
     </div>
   </div>
 );
@@ -53,7 +55,7 @@ const ServiceScreen: React.FC<{ icon: React.ReactNode; title: string; text: stri
 export const MainLayout: React.FC = () => {
   const { events, settings, isBackendDown } = useData();
   const { signOut } = useAuthActions();
-  const { isAuthenticated } = useConvexAuth();
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth();
   // Role check so administrators can still browse the site during maintenance
   const me = useQuery(api.users.me, isAuthenticated ? {} : 'skip');
   const location = useLocation();
@@ -109,14 +111,43 @@ export const MainLayout: React.FC = () => {
     );
   }
 
-  if (settings.maintenanceMode && me?.role !== 'admin') {
-    return (
-      <ServiceScreen
-        icon={<Wrench size={28} />}
-        title="Portal em manutenção"
-        text="Estamos a fazer melhorias no portal. Voltamos dentro de momentos — obrigado pela paciência."
-      />
-    );
+  if (settings.maintenanceMode) {
+    // Undecided until the session and the role resolve: an administrator must
+    // not see the maintenance notice flash before the site appears
+    const roleUnknown = authLoading || (isAuthenticated && me === undefined);
+    if (roleUnknown) {
+      return (
+        <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex items-center justify-center" role="status" aria-label="A verificar acesso">
+          <Loader2 className="w-8 h-8 animate-spin text-brand-500" aria-hidden="true" />
+        </div>
+      );
+    }
+    if (me?.role !== 'admin') {
+      return (
+        <>
+          <ServiceScreen
+            icon={<Wrench size={28} />}
+            title="Portal em manutenção"
+            text="Estamos a fazer melhorias no portal. Voltamos dentro de momentos — obrigado pela paciência."
+            footer={
+              <button
+                type="button"
+                onClick={() => handleOpenLogin('ADMIN')}
+                className="mt-2 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-400 dark:hover:text-white"
+              >
+                <ShieldCheck size={12} aria-hidden="true" /> Acesso reservado
+              </button>
+            }
+          />
+          <LoginModal
+            isOpen={showLogin}
+            onClose={() => setShowLogin(false)}
+            mode={loginMode}
+            onLogin={handleLoginSuccess}
+          />
+        </>
+      );
+    }
   }
 
   return (
@@ -168,9 +199,9 @@ export const MainLayout: React.FC = () => {
           isOpen={showAgenda}
           onClose={() => setShowAgenda(false)}
           events={events}
-          onEventClick={() => {
+          onEventClick={(event) => {
             setShowAgenda(false);
-            navigate('/events');
+            navigate(eventPath(event.slug));
           }}
         />
         <ContactModal

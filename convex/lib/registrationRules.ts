@@ -2,6 +2,7 @@ import { ConvexError } from "convex/values";
 import type { MutationCtx } from "../_generated/server";
 import type { Doc, Id } from "../_generated/dataModel";
 import { validateEmail, validateMaxLength } from "./validation";
+import { parseEventDate } from "./time";
 
 /**
  * One path into the registrations table, shared by members and guests, so the
@@ -62,11 +63,27 @@ export async function syncParticipantCount(ctx: MutationCtx, eventId: Id<"events
     return count;
 }
 
+/**
+ * Bringing a cancelled registration back takes a place again, so it is refused
+ * when the event has none left; otherwise the counter would exceed the capacity.
+ */
+export async function assertPlaceForReactivation(
+    ctx: MutationCtx,
+    row: Pick<Doc<"registrations">, "status" | "eventId">,
+    nextStatus: Doc<"registrations">["status"],
+) {
+    if (row.status !== "cancelled" || nextStatus === "cancelled") return;
+    const event = await ctx.db.get(row.eventId);
+    if (event?.maxParticipants && (await activeCount(ctx, row.eventId)) >= event.maxParticipants) {
+        throw new ConvexError("Vagas esgotadas: não é possível reativar esta inscrição.");
+    }
+}
+
 /** Why an event is not taking registrations right now, or null when it is. */
 export function closedReason(event: Doc<"events">, now: number): string | null {
     if (event.status !== "published") return "Evento não encontrado.";
     if (event.registrationOpen !== true) return "Inscrições encerradas para este evento.";
-    const starts = new Date(event.date).getTime();
+    const starts = parseEventDate(event.date);
     if (!Number.isNaN(starts) && starts < now) return "Este evento já decorreu.";
     return null;
 }

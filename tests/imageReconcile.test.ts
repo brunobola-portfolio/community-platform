@@ -59,4 +59,12 @@ describe('reconcileImageUpdate', () => {
     expect(deleted).toEqual([]);
     expect('logo' in updates).toBe(false);
   });
+
+  it('a new storage id and a new URL in one patch both move the ledger', async () => {
+    const { ctx, deleted } = fakeCtx();
+    const updates: Record<string, unknown> = { logo: 'st_new', externalLogo: 'https://new' };
+    await reconcileImageUpdate(ctx, { logo: 'st_old', externalLogo: 'https://old' }, updates, 'logo', 'externalLogo');
+    expect(deleted).toEqual(['st_old']);
+    expect(updates.logo).toBe('st_new');
+  });
 });

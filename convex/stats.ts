@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
 import { validateMaxLength } from "./lib/validation";
@@ -28,7 +28,7 @@ export const upsert = mutation({
                 .query("stats")
                 .withIndex("by_label", (q) => q.eq("label", args.label))
                 .first();
-            if (existing) return existing._id;
+            if (existing) throw new ConvexError("Já existe um número com este rótulo.");
 
             await ctx.db.insert("stats", data);
         }

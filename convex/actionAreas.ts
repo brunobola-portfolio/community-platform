@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
@@ -35,13 +35,11 @@ export const create = mutation({
         validateMaxLength(args.subtitle, "subtitle", 200);
         validateMaxLength(args.description, "description", 2000);
         validateMaxLength(args.longDescription, "longDescription", 5000);
-        // Check for existing area with same title
-        // TODO: add index by_title on actionAreas for this query
         const existing = await ctx.db
             .query("actionAreas")
-            .filter((q) => q.eq(q.field("title"), args.title))
+            .withIndex("by_title", (q) => q.eq("title", args.title))
             .first();
-        if (existing) return existing._id;
+        if (existing) throw new ConvexError("Já existe uma área de atuação com este título.");
 
         await retainUrl(ctx, args.externalImage);
         return await ctx.db.insert("actionAreas", args);

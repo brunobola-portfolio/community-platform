@@ -41,6 +41,7 @@ export const create = mutation({
         }
 
         validateMaxLength(args.name, "nome", 200);
+        validateMaxLength(args.tier, "nível", 100);
 
         return await ctx.db.insert("sponsorshipRequests", {
             ...args,

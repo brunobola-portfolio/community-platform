@@ -18,6 +18,9 @@ export interface CalendarEvent {
 /** Events carry no end time; two hours is what an evening event usually takes. */
 const DEFAULT_DURATION_MS = 2 * 60 * 60 * 1000;
 
+/** A record with a bad date must hide the button, not throw from toISOString. */
+export const canAddToCalendar = (event: Pick<CalendarEvent, 'date'>): boolean => !Number.isNaN(new Date(event.date).getTime());
+
 const stamp = (date: Date) => date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 
 export function escapeIcsText(value: string): string {
@@ -29,6 +32,7 @@ export function escapeIcsText(value: string): string {
 }
 
 export function icsContent(event: CalendarEvent, now: Date = new Date()): string {
+    if (!canAddToCalendar(event)) return '';
     const start = new Date(event.date);
     const end = new Date(start.getTime() + DEFAULT_DURATION_MS);
     const lines = [
@@ -52,6 +56,7 @@ export function icsContent(event: CalendarEvent, now: Date = new Date()): string
 }
 
 export function googleCalendarUrl(event: CalendarEvent): string {
+    if (!canAddToCalendar(event)) return '';
     const start = new Date(event.date);
     const end = new Date(start.getTime() + DEFAULT_DURATION_MS);
     const params = new URLSearchParams({
@@ -66,6 +71,7 @@ export function googleCalendarUrl(event: CalendarEvent): string {
 
 /** Saves the .ics file; phones hand it to their calendar app. */
 export function downloadIcs(event: CalendarEvent): void {
+    if (!canAddToCalendar(event)) return;
     const blob = new Blob([icsContent(event)], { type: 'text/calendar;charset=utf-8' });
     const href = URL.createObjectURL(blob);
     const link = document.createElement('a');

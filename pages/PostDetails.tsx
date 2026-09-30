@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArticleMeta } from '../components/StructuredData';
 import { useData } from '../context/DataContext';
 import { ArrowLeft, Calendar, Volume2, Clock, Tag, Loader2 } from 'lucide-react';
@@ -12,6 +12,9 @@ import { api } from "../convex/_generated/api";
 import { sanitizeHtml } from '../utils/security';
 import { playBase64Audio } from '../utils/audio';
 import { getSessionId } from '../utils/session';
+import { FALLBACK_IMAGES } from '../utils/constants';
+import { Avatar } from '../components/ui/Avatar';
+import { useToast } from '../context/ToastContext';
 
 interface PostDetailsProps {
    postId: string;
@@ -27,6 +30,7 @@ const computeReadTime = (html: string): string => {
 export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) => {
    const { posts, settings, isLoading } = useData();
    const navigate = useNavigate();
+   const { showToast } = useToast();
    const ttsAction = useAction(api.aiMedia.tts);
    const [isNarrating, setIsNarrating] = useState(false);
    const summary = posts.find(p => p.id === postId || p.slug === postId);
@@ -61,6 +65,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
       } catch (e) {
          console.error("TTS Error:", e);
          setIsNarrating(false);
+         showToast('Não foi possível ler o artigo em voz alta. Tente novamente dentro de momentos.', 'error');
       }
    };
 
@@ -89,7 +94,6 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
 
    return (
       <div className="bg-slate-50 dark:bg-dark-bg min-h-screen pb-24 selection:bg-brand-500/30">
-         <title>{`${post.title} — ${settings.siteName}`}</title>
          <ArticleMeta title={post.title} description={post.excerpt} image={post.coverUrl} path={`/blog/${post.slug}`} />
          {/* Cinematic Hero Header */}
          <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden">
@@ -100,7 +104,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
             </div>
 
             <div className="absolute inset-0">
-               <img src={post.coverUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop'} alt={post.title} className="w-full h-full object-cover brightness-[0.5] scale-105" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop'; }} />
+               <img src={post.coverUrl || FALLBACK_IMAGES.post} alt={post.title} className="w-full h-full object-cover brightness-[0.5] scale-105" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post; }} />
                <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/60 to-transparent"></div>
             </div>
 
@@ -117,7 +121,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                      <button
                         onClick={handleNarrate}
                         disabled={isNarrating}
-                        className="flex items-center gap-2 bg-brand-500/20 text-brand-700 dark:text-brand-400 px-5 py-1.5 rounded-full border border-brand-500/30 hover:bg-brand-500 hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-brand-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        className="flex items-center gap-2 bg-black/30 text-white px-5 py-1.5 rounded-full border border-white/30 backdrop-blur-md hover:bg-brand-600 hover:border-brand-500 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-brand-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                      >
                         {isNarrating ? <Loader2 size={14} className="animate-spin" /> : <Volume2 size={14} />}
                         {isNarrating ? 'A Narrar...' : 'Ouvir Artigo'}
@@ -131,11 +135,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                   {/* Author Header Info */}
                   <div className="flex items-center gap-4 mt-8 pt-8 border-t border-white/10">
                      <div className="w-14 h-14 rounded-full border-2 border-brand-500/50 p-0.5 shadow-xl">
-                        <img
-                           src={post.authorAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author || 'A')}&background=DF3D32&color=fff`}
-                           alt={post.author}
-                           className="w-full h-full rounded-full object-cover"
-                        />
+                        <Avatar name={post.author || `Equipa ${settings.siteName}`} src={post.authorAvatar} className="w-full h-full rounded-full text-lg" />
                      </div>
                      <div>
                         <div className="text-white font-bold text-lg">{post.author || `Equipa ${settings.siteName}`}</div>
@@ -184,12 +184,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
 
                   {/* Author Bio Section (Mobile Friendly) */}
                   <div className="mt-16 p-8 rounded-3xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-                     <img
-                        src={post.authorAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author || 'A')}&background=DF3D32&color=fff`}
-                        alt={post.author}
-                        loading="lazy"
-                        className="w-20 h-20 rounded-2xl object-cover shadow-2xl ring-4 ring-brand-500/20"
-                     />
+                     <Avatar name={post.author || `Equipa ${settings.siteName}`} src={post.authorAvatar} className="w-20 h-20 rounded-2xl text-2xl shadow-2xl ring-4 ring-brand-500/20" />
                      <div>
                         <h3 className="text-slate-900 dark:text-white font-serif font-bold text-xl mb-1">Escrito por {post.author || `Equipa ${settings.siteName}`}</h3>
                         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
@@ -216,23 +211,22 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                   {relatedPosts.map(p => (
                      <div
                         key={p.id}
-                        onClick={() => { window.scrollTo(0, 0); navigate(`/blog/${p.slug}`); }}
-                        className="group cursor-pointer bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-slate-900/[0.08] dark:hover:bg-white/[0.08] transition-all"
+                        className="group relative bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-slate-900/[0.08] dark:hover:bg-white/[0.08] transition-all"
                      >
                         <div className="aspect-video overflow-hidden bg-slate-200 dark:bg-slate-800">
                            <img
-                              src={p.coverUrl || 'https://images.unsplash.com/photo-1495020689067-958852a7735e?w=800&q=80'}
+                              src={p.coverUrl || FALLBACK_IMAGES.post}
                               alt={p.title}
                               loading="lazy"
                               onError={(e) => {
-                                 (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1495020689067-958852a7735e?w=800&q=80';
+                                 (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post;
                               }}
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                            />
                         </div>
                         <div className="p-6">
                            <Badge className="bg-brand-700 text-white border-none shadow-md mb-3 text-[10px]">{p.category}</Badge>
-                           <h3 className="text-slate-900 dark:text-white font-bold line-clamp-2 mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{p.title}</h3>
+                           <h3 className="text-slate-900 dark:text-white font-bold line-clamp-2 mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"><Link to={postPath(p.slug)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{p.title}</Link></h3>
                            <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{p.excerpt}</p>
                         </div>
                      </div>

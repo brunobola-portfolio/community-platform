@@ -105,14 +105,13 @@ export async function reconcileImageUpdate(
   if (!existingDoc) return;
   const stored = existingDoc[storageField];
   const nextStored = updates[storageField];
-  if (nextStored !== undefined && nextStored !== stored) {
-    await cleanupStorageOnUpdate(ctx, existingDoc, nextStored, storageField);
-    return;
-  }
+  const storageChanged = nextStored !== undefined && nextStored !== stored;
+  if (storageChanged) await cleanupStorageOnUpdate(ctx, existingDoc, nextStored, storageField);
   const nextExternal = updates[externalField];
   if (nextExternal === undefined || nextExternal === existingDoc[externalField]) return;
+  // Both changed in one patch: the ledger still has to move from the old URL to the new
   await swapUrl(ctx, existingDoc[externalField], nextExternal);
-  if (!stored) return;
+  if (storageChanged || !stored) return;
   try { await ctx.storage.delete(stored as Id<"_storage">); } catch (e) { console.error("Failed to delete storage:", e); }
   // undefined in a patch removes the field
   updates[storageField] = undefined;

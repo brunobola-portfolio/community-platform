@@ -6,7 +6,7 @@
  * Extracted from App.tsx to support the router-based layout architecture.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Loader2, LogIn, ShieldCheck, UserCircle } from 'lucide-react';
 import { Button, Modal, Input, cn } from './ui/UIComponents';
@@ -26,6 +26,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
   const [flow, setFlow] = useState<'signIn' | 'signUp'>('signIn');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // The modal stays mounted for the whole session; wiping on close keeps
+  // credentials from lingering on shared computers.
+  useEffect(() => {
+    if (isOpen) return;
+    setEmail('');
+    setName('');
+    setPassword('');
+    setError('');
+    setFlow('signIn');
+  }, [isOpen]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +63,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
         setError('Erro na autenticação. Verifique os dados e tente novamente.');
       }
     } finally {
+      setPassword('');
       setIsLoading(false);
     }
   };

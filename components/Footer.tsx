@@ -7,10 +7,11 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Mail, Phone, Facebook, Instagram, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { PlatformCredit } from './PlatformCredit';
 import { useData } from '../context/DataContext';
-import { sanitizeUrl } from '../utils/security';
+import { mapsSearchUrl, sanitizeUrl } from '../utils/security';
 
 interface FooterProps {
   onContact?: () => void;
@@ -86,7 +87,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
                 {settings.address && (
                   <li className="flex items-start space-x-3 group">
                     <MapPin size={18} className="text-brand-500 shrink-0 group-hover:text-slate-900 dark:group-hover:text-white" />
-                    <a href={sanitizeUrl(settings.mapsUrl ?? '') || '#'} target="_blank" rel="noopener noreferrer" className="group-hover:text-slate-900 dark:group-hover:text-white">
+                    <a href={sanitizeUrl(settings.mapsUrl ?? '') || mapsSearchUrl(settings.address)} target="_blank" rel="noopener noreferrer" className="rounded group-hover:text-slate-900 dark:group-hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                       {addressLine1}{addressLine2 && <><br/>{addressLine2}</>}
                     </a>
                   </li>
@@ -115,7 +116,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
             <span className="hidden sm:inline"> · </span>
             <PlatformCredit />
             <span className="hidden sm:inline"> · </span>
-            <a href="/privacidade" className="block sm:inline text-slate-600 dark:text-slate-400 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Privacidade</a>
+            <Link to="/privacidade" className="block sm:inline text-slate-600 dark:text-slate-400 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Privacidade</Link>
           </div>
           <div className="flex items-center space-x-6">
             <button onClick={onAdminLogin} disabled={!onAdminLogin} className="group flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 hover:bg-amber-900/10 hover:border-amber-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">

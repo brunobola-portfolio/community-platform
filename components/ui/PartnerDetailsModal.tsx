@@ -4,6 +4,7 @@ import type { Sponsor } from '../../types';
 import { Globe, Handshake, Building2 } from 'lucide-react';
 import { useData } from '../../context/DataContext';
 import { sponsorTierLabel } from '../../utils/sponsorTiers';
+import { sanitizeExternalUrl } from '../../utils/security';
 
 interface PartnerDetailsModalProps {
   sponsor: Sponsor | null;
@@ -17,6 +18,8 @@ export const PartnerDetailsModal: React.FC<PartnerDetailsModalProps> = ({ sponso
   if (!sponsor) return null;
 
   const tierName = sponsorTierLabel(sponsorTiers, sponsor.tier);
+  // Hand-typed and stored as-is: normalised and checked before it reaches window.open
+  const websiteUrl = sanitizeExternalUrl(sponsor.website);
 
   return (
     <Modal
@@ -32,8 +35,8 @@ export const PartnerDetailsModal: React.FC<PartnerDetailsModalProps> = ({ sponso
           <Button variant="ghost" onClick={() => { onClose(); onBecomePartner(); }}>
             <Handshake size={16} /> Juntar-se à rede
           </Button>
-          {sponsor.website && (
-            <Button onClick={() => window.open(sponsor.website, '_blank', 'noopener,noreferrer')}>
+          {websiteUrl && (
+            <Button onClick={() => window.open(websiteUrl, '_blank', 'noopener,noreferrer')}>
               <Globe size={16} /> Visitar website
             </Button>
           )}

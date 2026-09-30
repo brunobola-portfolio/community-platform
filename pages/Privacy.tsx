@@ -1,5 +1,6 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
+import { PageMeta } from '../components/PageMeta';
 
 const SECTION = 'space-y-3';
 const H2 = 'font-serif text-2xl text-slate-900 dark:text-white';
@@ -17,7 +18,7 @@ export const PrivacyPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-slate-50 pb-24 pt-32 dark:bg-dark-bg">
-            <title>{`Privacidade — ${settings.siteName}`}</title>
+            <PageMeta title="Privacidade" description={`Como ${controller} trata os dados pessoais neste site.`} />
             <article className="mx-auto max-w-3xl space-y-10 px-4 text-slate-700 dark:text-slate-300 sm:px-6">
                 <header className="space-y-3">
                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-700 dark:text-brand-400">Aviso de privacidade</p>
@@ -55,8 +56,14 @@ export const PrivacyPage: React.FC = () => {
                     <p>Serviços que usamos para o site funcionar, sob contrato e com as garantias do RGPD:</p>
                     <ul className="list-disc space-y-2 pl-5">
                         <li><b>Convex</b> — base de dados e alojamento do site (Estados Unidos, com cláusulas contratuais-tipo aprovadas pela Comissão Europeia).</li>
-                        <li><b>Google</b> — serviço de inteligência artificial do assistente virtual.</li>
-                        <li><b>Sentry</b> — registo técnico de erros do site, sem nome nem email de quem o usa.</li>
+                        <li><b>Fornecedor de inteligência artificial</b> — as perguntas ao assistente virtual, a leitura de textos em voz alta e a procura de direções são processadas pelo serviço que a associação configurou, por omissão a Google (Gemini), ou por outro fornecedor compatível.</li>
+                        <li><b>Sentry</b> — registo técnico de erros do site, sem nome nem email de quem o usa. Só existe nos sites em que a associação o ativou.</li>
+                        <li><b>Google Fonts</b> — as letras do site são pedidas à Google quando a página abre, o que lhe revela o endereço IP e o browser de quem visita.</li>
+                    </ul>
+                    <p>Duas funcionalidades envolvem ainda terceiros, apenas se as usar:</p>
+                    <ul className="list-disc space-y-2 pl-5">
+                        <li><b>Perguntar por voz</b> — o reconhecimento de voz é feito pelo próprio browser, que envia o áudio ao seu fabricante (por exemplo Google, no Chrome e Android, ou Apple, no Safari). O site não recebe nem guarda o áudio, só o texto reconhecido.</li>
+                        <li><b>Ligações externas</b> — mapas, WhatsApp, Facebook e calendário abrem no serviço respetivo quando clica; só então esse serviço recebe dados seus.</li>
                     </ul>
                 </section>
 

@@ -80,3 +80,25 @@ export function sanitizeUrl(url: string): string {
   return '';
 }
 
+
+/**
+ * Website fields are typed by hand, so "www.exemplo.pt" is the common case.
+ * Adding the protocol first keeps those links working while sanitizeUrl still
+ * decides whether the result is safe to open.
+ */
+export function sanitizeExternalUrl(url: string | undefined | null): string {
+  const trimmed = (url ?? '').trim();
+  if (!trimmed) return '';
+  const hasScheme = /^[a-z][a-z0-9+.-]*:/i.test(trimmed);
+  const isRelative = trimmed.startsWith('/');
+  // "javascript:x" and "host:8080" both match the scheme test; only a real
+  // host-and-port pair may be treated as a bare domain.
+  const looksLikeHostPort = /^[^\s/:]+\.[^\s/:]+:\d+(\/|$)/.test(trimmed);
+  const candidate = !hasScheme && !isRelative || looksLikeHostPort ? `https://${trimmed}` : trimmed;
+  return sanitizeUrl(candidate);
+}
+
+/** Search link for an address, for places that have no stored maps URL. */
+export function mapsSearchUrl(address: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}

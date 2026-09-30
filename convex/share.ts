@@ -2,7 +2,8 @@ import { httpAction, internalQuery, type QueryCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
 import { toExcerpt } from "./lib/text";
-import { renderSharePage, type ShareCard } from "./lib/shareHtml";
+import { parseEventDate } from "./lib/time";
+import { renderSharePage, resolveImageUrl, type ShareCard } from "./lib/shareHtml";
 
 /**
  * Link previews for shared events and articles. Only published content is
@@ -34,7 +35,7 @@ export const eventCard = internalQuery({
             .first();
         if (!event || event.status !== "published") return null;
 
-        const when = new Date(event.date);
+        const when = new Date(parseEventDate(event.date));
         const dateLine = Number.isNaN(when.getTime())
             ? ""
             : when.toLocaleDateString("pt-PT", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Lisbon" });
@@ -140,7 +141,7 @@ export const sharePage = httpAction(async (ctx, request) => {
         siteName: card.siteName,
         title: card.title,
         description: card.description,
-        image: card.image,
+        image: resolveImageUrl(card.image, origin),
         canonicalUrl,
         type: kind === "events" ? "event" : "article",
     };

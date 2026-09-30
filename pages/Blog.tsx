@@ -1,13 +1,17 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { Search, Calendar, ArrowRight, X, Sparkles, Clock } from 'lucide-react';
 import { Badge, Button } from '../components/ui/UIComponents';
 import { PostCardSkeleton } from '../components/ui/Skeleton';
 import { categoryColorClass, categoryLabelClass } from '../utils/categoryColors';
+import { FALLBACK_IMAGES } from '../utils/constants';
+import { postPath } from '../utils/share';
+import { Avatar } from '../components/ui/Avatar';
+import { PageMeta } from '../components/PageMeta';
 
-export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onViewPost }) => {
+export const BlogPage: React.FC = () => {
    const { posts, categories, isLoading, settings } = useData();
    const [searchTerm, setSearchTerm] = useState('');
    const [inputValue, setInputValue] = useState('');
@@ -56,7 +60,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
 
    return (
       <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg">
-         <title>{`Blog & Notícias — ${settings.siteName}`}</title>
+         <PageMeta title="Blog & Notícias" description={`Notícias, histórias e novidades de ${settings.siteName}.`} />
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {/* Header */}
@@ -74,12 +78,11 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
             {/* Featured Post Hero */}
             {featuredPost && !searchTerm && activeFilter === 'Todos' && (
                <div
-                  className="relative group mb-20 rounded-[2.5rem] overflow-hidden bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 cursor-pointer hover:border-brand-500/30 transition-all duration-500 animate-fade-in-up shadow-2xl"
-                  onClick={() => onViewPost(featuredPost.slug || featuredPost.id)}
+                  className="relative group mb-20 rounded-[2.5rem] overflow-hidden bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 hover:border-brand-500/30 transition-all duration-500 animate-fade-in-up shadow-2xl"
                >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 dark:from-dark-bg/90 dark:via-dark-bg/40 to-transparent z-10"></div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px]">
-                     <div className="relative z-20 p-10 md:p-16 flex flex-col justify-center">
+                     <div className="z-20 p-10 md:p-16 flex flex-col justify-center">
                         <div className="flex items-center gap-3 mb-6">
                            <Badge className={`${categoryColorMap[featuredPost.category] || 'bg-brand-700'} border-none text-white px-4 py-1.5 shadow-md`}>{featuredPost.category}</Badge>
                            <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-sm">
@@ -88,15 +91,15 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                            </div>
                         </div>
                         <h2 className="text-4xl md:text-6xl font-serif text-slate-900 dark:text-white mb-6 leading-[1.1] group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                           {featuredPost.title}
+                           <Link to={postPath(featuredPost.slug || featuredPost.id)} className="after:absolute after:inset-0 after:rounded-[2.5rem] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{featuredPost.title}</Link>
                         </h2>
                         <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 line-clamp-3 leading-relaxed max-w-xl">
                            {featuredPost.excerpt}
                         </p>
                         <div className="flex items-center gap-6">
-                           <Button size="lg" className="rounded-full px-8 bg-slate-900 text-white hover:bg-brand-800 hover:text-white dark:bg-white dark:text-black dark:hover:bg-brand-500 dark:hover:text-white transition-all font-semibold">
+                           <span className="inline-flex h-12 items-center justify-center rounded-full bg-slate-900 px-8 text-base font-semibold text-white transition-all group-hover:bg-brand-800 dark:bg-white dark:text-black dark:group-hover:bg-brand-500 dark:group-hover:text-white">
                               Ler Artigo Completo
-                           </Button>
+                           </span>
                            <div className="flex items-center gap-4 text-slate-600 dark:text-slate-400">
                               <div className="flex items-center gap-2">
                                  <Clock size={16} className="text-brand-700 dark:text-brand-400" />
@@ -109,11 +112,12 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                      </div>
                      <div className="relative h-full min-h-[300px] lg:min-h-0">
                         <img
-                           src={featuredPost.coverUrl || '/placeholder.jpg'}
+                           src={featuredPost.coverUrl || FALLBACK_IMAGES.post}
                            alt={featuredPost.title}
                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                           decoding="async"
                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop';
+                              (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post;
                            }}
                         />
                         <div className="absolute inset-0 bg-brand-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -188,7 +192,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                            >
                               <span className={`w-2 h-2 rounded-full ${categoryColorClass(cat.color)} shrink-0`}></span>
                               {cat.name}
-                              <span className={`tabular-nums text-[10px] px-1.5 py-0.5 rounded-full leading-none ${activeFilter === cat.name ? 'bg-slate-900/10 text-slate-900 dark:bg-white/20 dark:text-white' : 'bg-slate-900/5 dark:bg-white/5 text-slate-600 dark:text-slate-600'}`}>
+                              <span className={`tabular-nums text-[10px] px-1.5 py-0.5 rounded-full leading-none ${activeFilter === cat.name ? 'bg-slate-900/10 text-slate-900 dark:bg-white/20 dark:text-white' : 'bg-slate-900/5 dark:bg-white/5 text-slate-600 dark:text-slate-400'}`}>
                                  {count}
                               </span>
                            </button>
@@ -216,10 +220,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                {displayPosts.map((post) => (
                   <article
                      key={post.id}
-                     className="group flex flex-col h-full bg-white dark:bg-dark-surface border border-slate-900/5 dark:border-white/5 rounded-[2rem] overflow-hidden hover:border-brand-500/20 transition-all duration-500 cursor-pointer"
-                     tabIndex={0}
-                     onClick={() => onViewPost(post.slug || post.id)}
-                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onViewPost(post.slug || post.id); } }}
+                     className="group relative flex flex-col h-full bg-white dark:bg-dark-surface border border-slate-900/5 dark:border-white/5 rounded-[2rem] overflow-hidden hover:border-brand-500/20 transition-all duration-500"
                   >
                      {/* Image Container */}
                      <div className="relative h-64 overflow-hidden">
@@ -229,7 +230,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                            loading="lazy"
                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop';
+                              (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post;
                            }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-dark-surface via-transparent to-transparent opacity-60"></div>
@@ -251,7 +252,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
                      {/* Content Wrapper */}
                      <div className="p-8 flex-1 flex flex-col">
                         <h3 className="text-2xl font-serif text-slate-900 dark:text-white mb-4 leading-snug group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2">
-                           {post.title}
+                           <Link to={postPath(post.slug || post.id)} className="after:absolute after:inset-0 after:rounded-[2rem] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{post.title}</Link>
                         </h3>
                         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-3 mb-8 flex-1">
                            {post.excerpt}
@@ -259,13 +260,11 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
 
                         <div className="flex items-center justify-between pt-6 border-t border-slate-900/5 dark:border-white/5">
                            <div className="flex items-center gap-2">
-                              <div className="w-6 h-6 rounded-full overflow-hidden border border-slate-900/10 dark:border-white/10">
-                                 <img
-                                    src={post.authorAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author || 'A')}&background=DF3D32&color=fff`}
-                                    alt={post.author}
-                                    className="w-full h-full object-cover"
-                                 />
-                              </div>
+                              <Avatar
+                                 name={post.author || 'Equipa'}
+                                 src={post.authorAvatar}
+                                 className="h-6 w-6 rounded-full border border-slate-900/10 text-[10px] dark:border-white/10"
+                              />
                               <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                                  {post.author || 'Equipa'}
                               </span>
@@ -315,13 +314,7 @@ export const BlogPage: React.FC<{ onViewPost: (id: string) => void }> = ({ onVie
  * Bridges React Router navigation to the legacy prop-based interface.
  */
 export const BlogPageWrapper: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
-    <BlogPage
-      onViewPost={(id: string) => {
-        navigate(`/blog/${id}`);
-      }}
-    />
+    <BlogPage />
   );
 };

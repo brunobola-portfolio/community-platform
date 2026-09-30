@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Maximize2 } from 'lucide-react';
 import { Lightbox } from '../ui/Lightbox';
+import { FALLBACK_IMAGES } from '../../utils/constants';
 
 interface EventPosterProps {
     src?: string;
@@ -8,7 +9,6 @@ interface EventPosterProps {
     title: string;
 }
 
-const FALLBACK = 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop';
 
 /**
  * Event images are usually posters: portrait, with the date and the details
@@ -20,7 +20,7 @@ export const EventPoster: React.FC<EventPosterProps> = ({ src, title }) => {
     const [failed, setFailed] = useState(false);
     const [open, setOpen] = useState<number | null>(null);
     const hasPoster = Boolean(src) && !failed;
-    const image = hasPoster ? (src as string) : FALLBACK;
+    const image = hasPoster ? (src as string) : FALLBACK_IMAGES.event;
 
     const frame = (
         <>

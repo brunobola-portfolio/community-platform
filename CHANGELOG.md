@@ -6,6 +6,78 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.14.0] - 2026-09-30
+
+A full audit of the backend, the backoffice and the public portal, with every finding fixed
+and checked in the running app: the public routes pass on phone and desktop with no console
+errors, broken images or overflow, axe reports no WCAG 2 AA violation in either theme, and
+every backoffice tab opens clean.
+
+### Fixed
+
+- **Backoffice saves that did not save.** Editing a highlighted number changed nothing, and
+  renaming a partnership level created a second one; both now edit the record in place. A
+  new number with only label and value no longer fails, and a duplicate label or name is
+  refused with a clear message instead of a false "created"
+- Generating an image with AI made the save of events, news, members, partners and
+  milestones fail; the image now lands only on the form that asked for it, and a failed
+  generation says so instead of saving a stock photo as generated
+- "Melhorar com IA" reads and rewrites the text the form actually shows (the long
+  description of an action area had no visible effect)
+- An event's seat limit can be removed again; a news item's summary follows its edited
+  content; an empty author reads "Direção" as promised; an action area saves without a long
+  description; features ignore blank lines; an order of 0 is kept
+- Confirming or cancelling a registration from its detail reports a failure instead of a
+  false success; errors from the gallery, registrations and member quotas reach the admin in
+  plain Portuguese, and a redacted "Server Error" no longer shows raw
+- Duplicating the same event or news twice no longer fails on the slug
+- A record still pointing to a deleted category shows that in the select instead of
+  pretending the first category is chosen
+- Settings refuse an empty site name or an invalid contact email before saving, and long
+  fields stop at the length the server accepts
+- **Public portal.** Going back from a registration and opening another event showed
+  "Inscrição recebida" for an event nobody signed up to. The sign-in form kept email and
+  password after closing, a risk on a shared computer; it now clears
+- Inactive partners no longer appear in the home page carousel
+- The agenda opens the chosen event; maintenance mode no longer locks the admin out;
+  the Team page opens on the first existing body when there is no "Direção"
+- A crashed page reports to Sentry, recovers when you navigate away, and reloads once
+  when a deploy made its code chunk disappear
+- Event times are compared in local time everywhere, so an event later today is upcoming
+  on every page and registrations close at the venue's time, not an hour off in summer
+- News cards, recommendations and the logo are real links (keyboard, new tab, crawlers);
+  the closed mobile menu leaves the tab order and closes with Escape; the hidden navbar
+  returns on keyboard focus; the partner carousel's copy is hidden from screen readers
+- Light-theme contrast and focus rings across About, Member area, Blog, agenda, chat and
+  partnership dialogs; the chat traps focus; the member area tabs are real tabs
+- Each page declares its own canonical URL and Open Graph title instead of the home's
+- The download button of member documents shows on phones; links typed without https work
+- Text-to-speech, clipboard, calendar and deleted-album failures say so instead of failing
+  silently; audio resumes on iOS
+- Gallery photos are resized in the browser before upload, like every other image
+- **Backend.** The guest-registration purge could stall and stop the 90/30-day deletion;
+  it now pages through guests only. The setup gate, the album list and the photo counts read
+  by index instead of whole tables
+- Updates of events, news, notifications, settings and partnership requests validate like
+  their creates; re-confirming a cancelled registration respects the seat limit
+- Shared links of events whose image is a relative path now carry an absolute og:image
+- Running the demo seed on a real instance aborts unless forced, and never wipes the team
+  without its photos
+
+### Changed
+
+- Avatars without a photo are drawn locally from the initials; no name is sent to a
+  third-party avatar service. Image fallbacks are local, not hotlinked from Unsplash
+- The privacy notice lists every third party the portal actually uses
+- `sponsors.list` returns active partners; the backoffice uses the new `sponsors.listAll`
+- AI usage logs are kept 90 days; the log, rate-limit and upload sweeps catch up when
+  behind
+
+### Removed
+
+- `albums.list` and `maintenance.safeCleanup`, unused; the latter deleted duplicates
+  without cascade or storage cleanup
+
 ## [2.13.5] - 2026-09-30
 
 ### Fixed

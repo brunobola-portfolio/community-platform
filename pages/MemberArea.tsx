@@ -10,7 +10,7 @@
  * - System notifications.
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
@@ -24,7 +24,6 @@ import {
   ShieldCheck,
   Download,
   History,
-  QrCode,
   Smartphone,
   Landmark,
   Copy,
@@ -33,7 +32,9 @@ import {
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { cn } from '../utils/cn';
-import { sanitizeUrl } from '../utils/security';
+import { sanitizeExternalUrl } from '../utils/security';
+import { useToast } from '../context/ToastContext';
+import { PageMeta } from '../components/PageMeta';
 import { EmptyState } from '../components/ui/EmptyState';
 import type { Document, Notification, Settings } from '../types';
 
@@ -45,6 +46,8 @@ interface QuotaInfo {
   status: QuotaStatus;
   badgeLabel: string;
   badgeClassName: string;
+  /** The member card is dark in both themes, so its badge uses fixed light tones. */
+  cardBadgeClassName: string;
   cardText: string;
   nextPayment: string;
 }
@@ -62,7 +65,8 @@ const getQuotaInfo = (quotaPaidUntil: string | null | undefined): QuotaInfo => {
     return {
       status: 'em-dia',
       badgeLabel: 'Em dia',
-      badgeClassName: 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30',
+      badgeClassName: 'bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30',
+      cardBadgeClassName: 'bg-green-500/20 text-green-300 border-green-500/30',
       cardText: `Regularizada até ${quotaPaidUntil}`,
       nextPayment: `Janeiro ${paidUntilYear + 1}`,
     };
@@ -72,7 +76,8 @@ const getQuotaInfo = (quotaPaidUntil: string | null | undefined): QuotaInfo => {
     return {
       status: 'atrasada',
       badgeLabel: 'Por regularizar',
-      badgeClassName: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30',
+      badgeClassName: 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30',
+      cardBadgeClassName: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       cardText: `Última quota: ${quotaPaidUntil}`,
       nextPayment: 'Assim que possível',
     };
@@ -82,6 +87,7 @@ const getQuotaInfo = (quotaPaidUntil: string | null | undefined): QuotaInfo => {
     status: 'desconhecido',
     badgeLabel: 'Sem registo',
     badgeClassName: 'bg-slate-500/20 text-slate-600 dark:text-slate-400 border-slate-500/30',
+    cardBadgeClassName: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
     cardText: 'Contacta a direção para regularizar o teu registo de sócio.',
     nextPayment: '—',
   };
@@ -133,18 +139,18 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                           <div className="relative z-10 mt-auto">
                               <div className="text-xl sm:text-2xl text-white font-mono tracking-wider font-medium mb-3 sm:mb-4 truncate text-shadow">{memberData.name}</div>
                               <div className="flex flex-wrap gap-4 sm:gap-8 text-sm items-end">
-                                  <div><div className="text-slate-600 dark:text-slate-400 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Sócio Nº</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.number}</div></div>
-                                  <div><div className="text-slate-600 dark:text-slate-400 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Desde</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.since}</div></div>
-                                  <div className="ml-auto"><Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">Ativo</Badge></div>
+                                  <div><div className="text-slate-400 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Sócio Nº</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.number}</div></div>
+                                  <div><div className="text-slate-400 text-[8px] sm:text-[10px] uppercase tracking-wider mb-0.5">Desde</div><div className="text-white font-mono text-base sm:text-lg leading-none">{memberData.since}</div></div>
+                                  {quotaInfo && <div className="ml-auto"><Badge className={cn('text-xs', quotaInfo.cardBadgeClassName)}>{quotaInfo.badgeLabel}</Badge></div>}
                               </div>
                           </div>
                       </div>
-                      {/* Back Face (QR Code) */}
-                      <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-slate-900 border border-brand-500/30 rounded-2xl p-6 flex flex-col justify-center items-center shadow-xl">
-                          <div className="bg-white p-3 rounded-xl mb-4 shadow-lg w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center">
-                              <QrCode size={100} className="text-black"/>
-                          </div>
-                          <div className="text-brand-300 text-sm font-mono animate-pulse flex items-center gap-2"><QrCode size={16}/> Aproxime do leitor</div>
+                      {/* Back Face: identity only; there is no scanner behind the card, so no code is drawn */}
+                      <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-slate-900 border border-brand-500/30 rounded-2xl p-6 flex flex-col justify-center items-center text-center gap-3 shadow-xl">
+                          <ShieldCheck className="text-brand-500 w-10 h-10" aria-hidden="true" />
+                          <div className="text-brand-400 font-serif font-bold text-xl tracking-wide">{siteName}</div>
+                          <div className="text-white font-mono text-lg tracking-wider">Sócio Nº {memberData.number}</div>
+                          <div className="text-slate-400 text-xs max-w-[16rem]">Cartão pessoal e intransmissível.</div>
                       </div>
                   </div>
               </div>
@@ -227,7 +233,10 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ documents }) => (
           <EmptyState icon={FileText} title="Sem documentos" description="Quando a direção publicar estatutos, atas ou regulamentos, aparecem aqui." />
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {documents.map(doc => (
+          {documents.map(doc => {
+              // Typed by hand, so "www.x.pt" is normalised before being checked
+              const href = sanitizeExternalUrl(doc.url || doc.externalUrl);
+              return (
               <div key={doc.id} className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl p-5 hover:border-brand-500/30 transition-colors group">
                   <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4">
@@ -239,12 +248,12 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ documents }) => (
                               <p className="text-slate-600 dark:text-slate-400 text-sm">{doc.category}</p>
                           </div>
                       </div>
-                      {doc.url || doc.externalUrl ? (
+                      {href ? (
                           <a
-                              href={sanitizeUrl(doc.url || doc.externalUrl || '')}
+                              href={href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="opacity-0 group-hover:opacity-100 transition-opacity inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5"
+                              className="md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                               aria-label={`Descarregar ${doc.title}`}
                           >
                               <Download size={16} />
@@ -256,7 +265,8 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ documents }) => (
                       )}
                   </div>
               </div>
-          ))}
+              );
+          })}
       </div>
   </div>
 );
@@ -299,11 +309,16 @@ interface CopyableFieldProps {
 /** Labeled value row with a copy-to-clipboard action; flips to a check icon for 2s after copying. */
 const CopyableField: React.FC<CopyableFieldProps> = ({ label, value, monospace }) => {
   const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(value);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      showToast('Não foi possível copiar. Selecione o texto e copie manualmente.', 'error');
+    }
   };
 
   return (
@@ -349,7 +364,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
       <div className="space-y-4 py-2">
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 text-amber-700 dark:text-amber-400 text-sm space-y-2">
           <p className="font-medium">O pagamento digital de quotas ainda não está disponível.</p>
-          <p>Podes regularizar a quota diretamente com a direção no pavilhão, ou por email.</p>
+          <p>Podes regularizar a quota diretamente com a direção, ou por email.</p>
         </div>
         <a
           href={`mailto:${settings.contactEmail}`}
@@ -427,6 +442,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
   const quotaInfo = profile === undefined ? null : getQuotaInfo(profile?.quotaPaidUntil);
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -437,9 +453,19 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
     { id: 'notifications', label: 'Notificações', icon: Bell },
   ];
 
+  // Arrow keys move between tabs, as the tablist role promises
+  const handleTabKeyDown = (e: React.KeyboardEvent, index: number) => {
+    const keys: Record<string, number> = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    const next = tabs[(keys[e.key] + tabs.length) % tabs.length];
+    setActiveTab(next.id);
+    tabRefs.current[next.id]?.focus();
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-dark-bg">
-      <title>{`Área de Sócio — ${settings.siteName}`}</title>
+      <PageMeta title="Área de Sócio" />
       <div className="max-w-7xl mx-auto px-4 pt-28 sm:pt-32 pb-16">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 animate-fade-in-up">
@@ -454,14 +480,19 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-            {tabs.map(tab => (
+        <div role="tablist" aria-label="Secções da área de sócio" className="flex gap-2 mb-8 overflow-x-auto p-1">
+            {tabs.map((tab, index) => (
                 <button
                     key={tab.id}
+                    ref={(node) => { tabRefs.current[tab.id] = node; }}
+                    id={`member-tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
+                    onKeyDown={(e) => handleTabKeyDown(e, index)}
                     role="tab"
                     aria-selected={activeTab === tab.id}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                    aria-controls="member-tabpanel"
+                    tabIndex={activeTab === tab.id ? 0 : -1}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                         activeTab === tab.id
                             ? 'bg-brand-700 text-white'
                             : 'bg-white dark:bg-dark-surface text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-900/10 dark:border-white/10'
@@ -474,8 +505,9 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
         </div>
 
         {/* Tab Content */}
+        <div role="tabpanel" id="member-tabpanel" aria-labelledby={`member-tab-${activeTab}`}>
         {activeTab === 'dashboard' && (
-          <DashboardTab siteName={settings.siteName}             memberData={memberData}
+          <DashboardTab siteName={settings.siteName} memberData={memberData}
             quotaInfo={quotaInfo}
             isFlipped={isFlipped}
             onFlip={() => setIsFlipped(!isFlipped)}
@@ -490,6 +522,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
         {activeTab === 'notifications' && (
           <NotificationsTab notifications={notifications} />
         )}
+        </div>
 
         {/* Payment Modal */}
         <Modal

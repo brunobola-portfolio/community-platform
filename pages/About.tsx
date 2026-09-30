@@ -11,6 +11,9 @@ import { api } from "../convex/_generated/api";
 import { ConvexError } from 'convex/values';
 import { playBase64Audio } from '../utils/audio';
 import { useData } from '../context/DataContext';
+import { useToast } from '../context/ToastContext';
+import { PageMeta } from '../components/PageMeta';
+import { sanitizeUrl } from '../utils/security';
 
 interface AboutPageProps {
   onNavigate: (page: string) => void;
@@ -46,6 +49,7 @@ const LocationCommand: React.FC = () => {
   const { settings } = useData();
   const geoQueryAction = useAction(api.aiText.geoQuery);
   const ttsAction = useAction(api.aiMedia.tts);
+  const { showToast } = useToast();
   const [query, setQuery] = useState('');
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [aiError, setAiError] = useState(false);
@@ -53,9 +57,10 @@ const LocationCommand: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Both axes fall back to the same default coordinates, never to a place of their own
   const LOCATION = {
     lat: parseFloat(settings.latitude) || parseFloat(INITIAL_SETTINGS.latitude),
-    lon: parseFloat(settings.longitude) || -8.586681
+    lon: parseFloat(settings.longitude) || parseFloat(INITIAL_SETTINGS.longitude),
   };
   const ADDRESS = settings.address || "";
 
@@ -78,6 +83,16 @@ const LocationCommand: React.FC = () => {
     }
   };
 
+  const copyCoordinates = async () => {
+    try {
+      await navigator.clipboard.writeText(`${LOCATION.lat}, ${LOCATION.lon}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      showToast('Não foi possível copiar as coordenadas. Selecione-as e copie manualmente.', 'error');
+    }
+  };
+
   const handleSpeak = async () => {
     if (!aiResponse) return;
     setIsSpeaking(true);
@@ -86,6 +101,7 @@ const LocationCommand: React.FC = () => {
       await playBase64Audio(result.audioBase64);
     } catch (e) {
       console.error("TTS Error:", e);
+      showToast('Não foi possível ler a resposta em voz alta. Tente novamente dentro de momentos.', 'error');
     } finally {
       setIsSpeaking(false);
     }
@@ -124,7 +140,7 @@ const LocationCommand: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-widest block mb-1 font-bold">Horário</span>
-                  <p className="text-emerald-400 text-sm font-medium flex items-center gap-2">
+                  <p className="text-emerald-700 dark:text-emerald-400 text-sm font-medium flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_5px_#10b981]"></span> {settings.openingHours}
                   </p>
                 </div>
@@ -143,7 +159,7 @@ const LocationCommand: React.FC = () => {
                     <button
                       onClick={handleSpeak}
                       aria-label="Ouvir resposta"
-                      className={cn("p-2 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-brand-700 dark:text-brand-400 transition-all", isSpeaking && "animate-pulse text-slate-900 dark:text-white bg-brand-500/20")}
+                      className={cn("p-2 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-brand-700 dark:text-brand-400 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", isSpeaking && "animate-pulse text-slate-900 dark:text-white bg-brand-500/20")}
                     >
                       <Volume2 size={16} />
                     </button>
@@ -154,7 +170,7 @@ const LocationCommand: React.FC = () => {
                     type="text"
                     placeholder="Como chegar do Porto?"
                     aria-label="Pesquisar localização"
-                    className="w-full bg-white dark:bg-black/40 border border-slate-900/10 dark:border-white/5 rounded-xl py-4 pl-5 pr-12 text-sm text-slate-900 dark:text-white focus:border-brand-500/40 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 shadow-inner"
+                    className="w-full bg-white dark:bg-black/40 border border-slate-900/10 dark:border-white/5 rounded-xl py-4 pl-5 pr-12 text-sm text-slate-900 dark:text-white focus:border-brand-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && askLocalAI()}
@@ -163,7 +179,7 @@ const LocationCommand: React.FC = () => {
                     onClick={askLocalAI}
                     disabled={isSearching}
                     aria-label="Pesquisar"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-brand-700 hover:text-slate-900 dark:text-brand-400 dark:hover:text-white transition-all disabled:opacity-50"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-brand-700 hover:text-slate-900 dark:text-brand-400 dark:hover:text-white transition-all disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     {isSearching ? <Loader2 className="animate-spin" size={18}/> : <Search size={18}/>}
                   </button>
@@ -185,25 +201,20 @@ const LocationCommand: React.FC = () => {
 
           <div className="mt-14 pt-8 border-t border-slate-900/5 dark:border-white/5 flex items-center justify-between">
              <button
-                onClick={() => { navigator.clipboard.writeText(`${LOCATION.lat}, ${LOCATION.lon}`); setCopied(true); setTimeout(()=>setCopied(false), 2000); }}
-                className="text-[10px] font-mono text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group/coords"
+                onClick={copyCoordinates}
+                className="rounded text-[10px] font-mono text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group/coords focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
              >
                 {copied ? <CheckCircle2 size={12} className="text-green-500"/> : <LocateFixed size={12} className="group-hover/coords:scale-125 transition-transform"/>}
                 {LOCATION.lat}, {LOCATION.lon}
              </button>
-             <span className="text-[10px] font-mono text-slate-400 dark:text-slate-700 tracking-tighter">{[settings.region, settings.locality].filter(Boolean).join(' · ') || settings.siteName}</span>
+             <span className="text-[10px] font-mono text-slate-600 dark:text-slate-400 tracking-tighter">{[settings.region, settings.locality].filter(Boolean).join(' · ') || settings.siteName}</span>
           </div>
         </div>
 
         {/* Visual Command (The Launch Area) */}
         <div className="lg:col-span-7 relative bg-slate-100 dark:bg-[#010205] flex items-center justify-center p-12 overflow-hidden">
-           {/* High-aesthetic Satellite Context */}
+           {/* Decorative grid and vignette only: a hotlinked satellite photo leaked every visit to a third party */}
            <div className="absolute inset-0 z-0">
-             <img
-               src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=2000&auto=format&fit=crop"
-               alt="Satellite Context"
-               className="w-full h-full object-cover opacity-[0.12] dark:opacity-[0.15] group-hover/module:scale-105 transition-transform duration-[5s] grayscale brightness-100 contrast-100 dark:brightness-50 dark:contrast-125"
-             />
              <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
              <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-[#02040a] via-transparent to-transparent"></div>
              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#f1f5f9_90%)] dark:bg-[radial-gradient(circle_at_center,transparent_20%,#010205_90%)]"></div>
@@ -227,10 +238,10 @@ const LocationCommand: React.FC = () => {
               </div>
 
               <a
-                href={settings.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${settings.latitude},${settings.longitude}`}
+                href={sanitizeUrl(settings.mapsUrl ?? '') || `https://www.google.com/maps/search/?api=1&query=${LOCATION.lat},${LOCATION.lon}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group/btn flex items-center gap-5 bg-brand-700 hover:bg-brand-800 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgba(223,61,50,0.2)] transition-all hover:scale-105 active:scale-95"
+                className="group/btn flex items-center gap-5 bg-brand-700 hover:bg-brand-800 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgba(223,61,50,0.2)] transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 <Navigation size={26} className="group-hover/btn:rotate-45 transition-transform duration-500" />
                 <span className="text-lg tracking-widest uppercase">Obter Direções</span>
@@ -239,15 +250,15 @@ const LocationCommand: React.FC = () => {
            </div>
 
            {/* Telemetry Display */}
-           <div className="absolute top-10 right-10 text-right hidden lg:block font-mono">
-              <div className="text-[10px] text-slate-700 uppercase tracking-widest mb-1">Estado do Sinal</div>
-              <div className="text-green-500 text-xs font-bold flex items-center justify-end gap-2">
+           <div aria-hidden="true" className="absolute top-10 right-10 text-right hidden lg:block font-mono">
+              <div className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1">Estado do Sinal</div>
+              <div className="text-green-700 dark:text-green-500 text-xs font-bold flex items-center justify-end gap-2">
                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> SISTEMA_ONLINE
               </div>
            </div>
 
            <div className="absolute bottom-10 right-10 text-right hidden lg:block font-mono">
-              <div className="text-[10px] text-slate-400 dark:text-slate-700 uppercase tracking-widest mb-1">Código Postal</div>
+              <div className="text-[10px] text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-1">Código Postal</div>
               <div className="text-slate-700 dark:text-white text-xs font-bold">{settings.address.split(",").slice(-1)[0]?.trim()}</div>
            </div>
         </div>
@@ -331,22 +342,22 @@ const ContactForm: React.FC = () => {
                 <CheckCircle2 size={48}/>
               </div>
               <h3 className="text-4xl font-serif text-slate-900 dark:text-white mb-4 tracking-tight">Comunicação Efetuada</h3>
-              <p className="text-slate-600 dark:text-slate-400 text-xl font-light">A sua mensagem foi encriptada e enviada.</p>
+              <p className="text-slate-600 dark:text-slate-400 text-xl font-light">A sua mensagem foi enviada. Responderemos assim que possível.</p>
               <Button variant="outline" className="mt-10 rounded-2xl px-12 h-14" onClick={() => setSuccess(false)}>Nova Mensagem</Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-8 bg-slate-900/5 dark:bg-black/40 p-10 md:p-12 rounded-[3rem] border border-slate-900/10 dark:border-white/10 backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.6)]">
               <div className="space-y-2.5">
                 <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Sua Identidade</label>
-                <input required aria-label="Sua Identidade" value={formState.name} onChange={e=>setFormState({...formState, name: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white outline-none focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-700 shadow-inner" placeholder="Como devemos tratá-lo?"/>
+                <input required aria-label="Sua Identidade" value={formState.name} onChange={e=>setFormState({...formState, name: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="Como devemos tratá-lo?"/>
               </div>
               <div className="space-y-2.5">
                 <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Email de Contacto</label>
-                <input required type="email" aria-label="Email de Contacto" value={formState.email} onChange={e=>setFormState({...formState, email: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white outline-none focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-700 shadow-inner" placeholder="exemplo@servidor.com"/>
+                <input required type="email" aria-label="Email de Contacto" value={formState.email} onChange={e=>setFormState({...formState, email: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="exemplo@servidor.com"/>
               </div>
               <div className="space-y-2.5">
                 <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Mensagem</label>
-                <textarea required rows={4} aria-label="Mensagem" value={formState.message} onChange={e=>setFormState({...formState, message: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white outline-none focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all resize-none placeholder:text-slate-400 dark:placeholder:text-slate-700 shadow-inner" placeholder="O que tem em mente?"/>
+                <textarea required rows={4} aria-label="Mensagem" value={formState.message} onChange={e=>setFormState({...formState, message: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all resize-none placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="O que tem em mente?"/>
               </div>
               {error && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm p-3 rounded-lg">
@@ -369,7 +380,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
   const pillars = settings.aboutPillars ?? [];
   return (
     <div className="bg-slate-50 dark:bg-dark-bg min-h-screen">
-      <title>{`Sobre Nós — ${settings.siteName}`}</title>
+      <PageMeta title="Sobre Nós" description={settings.aboutMission || undefined} />
       <div className="pt-40 pb-24 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto space-y-48">
 
         {/* Modern Hero Section */}

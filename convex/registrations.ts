@@ -4,7 +4,8 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Id } from "./_generated/dataModel";
 import { requireAuth, requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
-import { DuplicateRegistration, insertRegistration, normalizeEmail, syncParticipantCount } from "./lib/registrationRules";
+import { DuplicateRegistration, assertPlaceForReactivation, insertRegistration, normalizeEmail, syncParticipantCount } from "./lib/registrationRules";
+import { parseEventDate } from "./lib/time";
 import { keyHash } from "./lib/keyHash";
 
 export const list = query({
@@ -27,7 +28,7 @@ export const myRegistrations = query({
     handler: async (ctx) => {
         const userId = await getAuthUserId(ctx);
         if (!userId) {
-            throw new Error("Autenticação necessária.");
+            throw new ConvexError("Autenticação necessária.");
         }
         return await ctx.db
             .query("registrations")
@@ -128,6 +129,7 @@ export const updateStatus = mutation({
         await requireAdmin(ctx);
         const existing = await ctx.db.get(args.id);
         if (!existing) throw new ConvexError("Inscrição não encontrada.");
+        await assertPlaceForReactivation(ctx, existing, args.status);
         await ctx.db.patch(args.id, { status: args.status });
         await syncParticipantCount(ctx, existing.eventId);
     },
@@ -143,6 +145,7 @@ export const bulkUpdateStatus = mutation({
         for (const id of args.ids) {
             const row = await ctx.db.get(id);
             if (!row) continue;
+            await assertPlaceForReactivation(ctx, row, args.status);
             await ctx.db.patch(id, { status: args.status });
             events.add(row.eventId);
         }
@@ -169,32 +172,44 @@ export const GUEST_RETENTION_DAYS = 90;
 export const CANCELLED_RETENTION_DAYS = 30;
 const DAY = 24 * 60 * 60 * 1000;
 
+const PURGE_BATCH = 200;
+
 /**
  * Daily: registrations without an account are deleted 90 days after their event,
  * cancelled ones after 30 days. Members' registrations stay with the account.
  * The event keeps its participant count.
+ *
+ * Rows that are not yet due stay in the index, so every run walks forward from
+ * `after` (the last timestamp it looked at) and reschedules itself while a batch
+ * comes back full; a fixed window from the start would stall on those rows.
  */
 export const purgeExpiredGuests = internalMutation({
-    args: {},
-    handler: async (ctx) => {
+    args: { after: v.optional(v.number()) },
+    handler: async (ctx, args) => {
         const now = Date.now();
-        const candidates = await ctx.db
+        const after = args.after ?? 0;
+        const rows = await ctx.db
             .query("registrations")
-            .withIndex("by_timestamp", (q) => q.lt("timestamp", now - CANCELLED_RETENTION_DAYS * DAY))
-            .take(500);
+            .withIndex("by_user_timestamp", (q) =>
+                q.eq("userId", undefined).gt("timestamp", after).lt("timestamp", now - CANCELLED_RETENTION_DAYS * DAY))
+            .take(PURGE_BATCH);
         const eventDates = new Map<string, number>();
         let removed = 0;
-        for (const row of candidates) {
-            if (row.userId) continue;
+        for (const row of rows) {
             if (!eventDates.has(row.eventId)) {
                 const event = await ctx.db.get(row.eventId);
-                eventDates.set(row.eventId, event ? new Date(event.date).getTime() : 0);
+                // An event without a readable date is judged by when the person registered
+                const eventAt = event ? parseEventDate(event.date) : 0;
+                eventDates.set(row.eventId, Number.isNaN(eventAt) ? row.timestamp : eventAt);
             }
             const eventAt = eventDates.get(row.eventId) ?? 0;
             if (row.status === "cancelled" || eventAt < now - GUEST_RETENTION_DAYS * DAY) {
                 await ctx.db.delete(row._id);
                 removed++;
             }
+        }
+        if (rows.length === PURGE_BATCH) {
+            await ctx.scheduler.runAfter(0, internal.registrations.purgeExpiredGuests, { after: rows[rows.length - 1].timestamp });
         }
         return removed;
     },

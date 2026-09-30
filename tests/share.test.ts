@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { absoluteUrl, eventPath, eventShareText, facebookShareUrl, postPath, whatsappShareUrl } from '../utils/share';
-import { escapeHtml, renderSharePage, scriptString, shortDescription, SHARE_DESCRIPTION_LENGTH } from '../convex/lib/shareHtml';
+import { escapeHtml, renderSharePage, resolveImageUrl, scriptString, shortDescription, SHARE_DESCRIPTION_LENGTH } from '../convex/lib/shareHtml';
 import { convexSiteOrigin, sharePreviewRule } from '../vite.config';
 
 describe('share links', () => {
@@ -116,5 +116,17 @@ describe('crawler proxy rule', () => {
     const redirect = sharePreviewRule('https://x.convex.site', 'redirect');
     expect(redirect).toContain('<action type="Redirect"');
     expect(redirect).toContain('redirectType="Found"');
+  });
+});
+
+describe('resolveImageUrl', () => {
+  it('turns a site-relative image into an absolute one', () => {
+    expect(resolveImageUrl('/images/a.jpg', 'https://example.org')).toBe('https://example.org/images/a.jpg');
+  });
+
+  it('leaves absolute URLs alone and handles protocol-relative ones', () => {
+    expect(resolveImageUrl('https://cdn.example/a.jpg', 'https://example.org')).toBe('https://cdn.example/a.jpg');
+    expect(resolveImageUrl('//cdn.example/a.jpg', 'https://example.org')).toBe('https://cdn.example/a.jpg');
+    expect(resolveImageUrl(undefined, 'https://example.org')).toBeUndefined();
   });
 });

@@ -54,7 +54,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
       <input
         type={type}
         className={cn(
-          "flex h-12 w-full rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/50 px-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-inner",
+          "flex h-12 w-full rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/50 px-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:border-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-inner",
           className
         )}
         ref={ref}

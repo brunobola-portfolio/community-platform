@@ -1,7 +1,7 @@
 import { query, mutation, internalQuery } from "./_generated/server";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import { requireAuth, requireAdmin, isAdmin } from "./lib/auth";
-import { validateMaxLength } from "./lib/validation";
+import { validateEmail, validateMaxLength } from "./lib/validation";
 import { swapUrl } from "./lib/uploads";
 
 export const getPublic = query({
@@ -188,7 +188,7 @@ export const update = mutation({
     handler: async (ctx, args) => {
         await requireAdmin(ctx);
         if (args.aiProvider !== undefined && !["gemini", "openrouter", "custom"].includes(args.aiProvider)) {
-            throw new Error("aiProvider inválido: usa gemini, openrouter ou custom.");
+            throw new ConvexError("aiProvider inválido: usa gemini, openrouter ou custom.");
         }
         if (args.openrouterApiKey !== undefined) validateMaxLength(args.openrouterApiKey, "openrouterApiKey", 500);
         if (args.openrouterModel !== undefined) validateMaxLength(args.openrouterModel, "openrouterModel", 100);
@@ -196,7 +196,12 @@ export const update = mutation({
         if (args.customApiKey !== undefined) validateMaxLength(args.customApiKey, "customApiKey", 500);
         if (args.customModel !== undefined) validateMaxLength(args.customModel, "customModel", 100);
         if (args.siteName !== undefined) validateMaxLength(args.siteName, "siteName", 200);
-        if (args.contactEmail !== undefined) validateMaxLength(args.contactEmail, "contactEmail", 254);
+        if (args.contactEmail !== undefined) {
+            validateMaxLength(args.contactEmail, "contactEmail", 254);
+            if (args.contactEmail.trim() && !validateEmail(args.contactEmail.trim())) {
+                throw new ConvexError("O email de contacto tem um formato inválido.");
+            }
+        }
         if (args.logoUrl !== undefined) validateMaxLength(args.logoUrl, "logoUrl", 500);
         if (args.currentMandate !== undefined) validateMaxLength(args.currentMandate, "currentMandate", 100);
         if (args.siteFullName !== undefined) validateMaxLength(args.siteFullName, "siteFullName", 600);
@@ -235,7 +240,7 @@ export const update = mutation({
         if (args.multibancoReference !== undefined) validateMaxLength(args.multibancoReference, "multibancoReference", 15);
         if (args.aboutMission !== undefined) validateMaxLength(args.aboutMission, "aboutMission", 1000);
         if (args.aboutPillars !== undefined) {
-            if (args.aboutPillars.length > 6) throw new Error("aboutPillars: máximo de 6 pilares.");
+            if (args.aboutPillars.length > 6) throw new ConvexError("aboutPillars: máximo de 6 pilares.");
             for (const pillar of args.aboutPillars) {
                 validateMaxLength(pillar.icon, "aboutPillars.icon", 50);
                 validateMaxLength(pillar.title, "aboutPillars.title", 100);

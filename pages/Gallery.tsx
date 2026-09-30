@@ -9,6 +9,8 @@ import { ArrowLeft, Image, Calendar } from 'lucide-react';
 import { Button } from '../components/ui/UIComponents';
 import { Skeleton } from '../components/ui/Skeleton';
 import { Lightbox } from '../components/ui/Lightbox';
+import { FALLBACK_IMAGES } from '../utils/constants';
+import { PageMeta } from '../components/PageMeta';
 
 export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () => {
     const { albums, isLoading, settings } = useData();
@@ -21,6 +23,8 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
         selectedAlbum ? { id: selectedAlbum as Id<"albums"> } : "skip"
     );
 
+    // null means the album was deleted after the list loaded; undefined is still loading
+    const albumMissing = albumDetail === null;
     const activeAlbum = albumDetail ? { ...albumDetail, id: albumDetail._id as string } : undefined;
 
     const lightboxImages = (activeAlbum?.photos ?? []).map((photo, i) => ({
@@ -30,7 +34,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
 
     return (
         <div className="pt-32 pb-24 min-h-screen bg-slate-50 dark:bg-dark-bg">
-            <title>{`Galeria — ${settings.siteName}`}</title>
+            <PageMeta title="Galeria" description={`Galeria de fotografias e momentos de ${settings.siteName}.`} />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Header */}
@@ -73,7 +77,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                                 onClick={() => setSelectedAlbum(album.id)}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedAlbum(album.id); } }}
                             >
-                                <img src={album.coverUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'} alt={album.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'; }} />
+                                <img src={album.coverUrl || FALLBACK_IMAGES.gallery} alt={album.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.gallery; }} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
                                 <div className="absolute bottom-0 left-0 p-8 w-full">
                                     <h3 className="text-2xl font-serif text-white mb-2 group-hover:text-brand-400 transition-colors">{album.title}</h3>
@@ -95,7 +99,13 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
 
                         <h2 className="text-3xl font-serif text-slate-900 dark:text-white mb-8 border-b border-slate-900/10 dark:border-white/10 pb-4">{activeAlbum?.title}</h2>
 
-                        {!activeAlbum && (
+                        {albumMissing && (
+                            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-900/10 py-16 text-center dark:border-white/10">
+                                <h3 className="mb-2 text-xl font-serif text-slate-900 dark:text-white">Este álbum já não está disponível</h3>
+                                <p className="max-w-md text-slate-600 dark:text-slate-400">Pode ter sido removido. Volte aos álbuns para ver o que está publicado.</p>
+                            </div>
+                        )}
+                        {!activeAlbum && !albumMissing && (
                             <div className="columns-1 md:columns-3 gap-6 space-y-6 animate-pulse">
                                 {[0, 1, 2, 3, 4, 5].map(i => <div key={i} className="break-inside-avoid h-56 rounded-2xl bg-slate-900/5 dark:bg-white/5" />)}
                             </div>

@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { useMutation } from 'convex/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useConvexAuth, useMutation } from 'convex/react';
 import { ConvexError } from 'convex/values';
 import { api } from '../convex/_generated/api';
 import type { Id } from '../convex/_generated/dataModel';
@@ -62,15 +62,32 @@ export function useEventRegistration(event: Event | null, isAuthenticated: boole
     const [errors, setErrors] = useState<RegistrationErrors>({});
     const [submitting, setSubmitting] = useState(false);
     const [done, setDone] = useState(false);
+    const { isLoading: authLoading } = useConvexAuth();
 
-    const isGuest = !isAuthenticated;
-    const canRegister = Boolean(event && (isAuthenticated || event.allowGuestRegistration !== false));
+    // A member whose session is still resolving must not be sent down the guest path
+    const isGuest = !isAuthenticated && !authLoading;
+    const canRegister = Boolean(event && (isAuthenticated || authLoading || event.allowGuestRegistration !== false));
+
+    // Kept in a ref so reset stays stable while the account loads
+    const meRef = useRef(me);
+    meRef.current = me;
+
+    // The account arrives after the form may already be open; without this the
+    // email stays empty while the field is locked to the account's email
+    const accountEmail = me?.email ?? '';
+    const accountName = me?.name ?? '';
+    useEffect(() => {
+        if (!accountEmail) return;
+        setValues((current) => (current.email === accountEmail && (current.name || !accountName)
+            ? current
+            : { ...current, email: accountEmail, name: current.name || accountName }));
+    }, [accountEmail, accountName]);
 
     const reset = useCallback(() => {
-        setValues(emptyValues(me));
+        setValues(emptyValues(meRef.current));
         setErrors({});
         setDone(false);
-    }, [me]);
+    }, []);
 
     const update = useCallback(<K extends keyof RegistrationValues>(key: K, value: RegistrationValues[K]) => {
         setValues((current) => ({ ...current, [key]: value }));
@@ -83,7 +100,7 @@ export function useEventRegistration(event: Event | null, isAuthenticated: boole
     }, []);
 
     const submit = useCallback(async () => {
-        if (!event || submitting) return;
+        if (!event || submitting || authLoading) return;
         const found = validateRegistration(values, event);
         if (Object.values(found).some(Boolean)) {
             setErrors(found);
@@ -116,7 +133,7 @@ export function useEventRegistration(event: Event | null, isAuthenticated: boole
         } finally {
             setSubmitting(false);
         }
-    }, [event, submitting, values, isGuest, createGuest, createMember]);
+    }, [event, submitting, authLoading, values, isGuest, createGuest, createMember]);
 
-    return { values, errors, submitting, done, isGuest, canRegister, update, updateExtra, submit, reset };
+    return { values, errors, submitting, done, isGuest, authLoading, canRegister, update, updateExtra, submit, reset };
 }

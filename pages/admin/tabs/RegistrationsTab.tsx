@@ -10,6 +10,7 @@ import { formatEventDate } from '../../../utils/share';
 import { progressWidthClass } from '../../../utils/text';
 import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
 import type { ActionResult, Event, Registration, RegistrationStatus } from '../../../types';
+import { describeActionError } from '../errors';
 
 type Row = Registration & { eventTitle: string };
 
@@ -95,7 +96,7 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
         try {
             const result = await work();
             if (result.success) notify(done);
-            else notify('error' in result ? result.error : 'Não foi possível atualizar.', 'error');
+            else notify(describeActionError('error' in result ? result.error : undefined, 'Não foi possível atualizar.'), 'error');
         } finally {
             setBusy(false);
         }

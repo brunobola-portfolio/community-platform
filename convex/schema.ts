@@ -16,7 +16,10 @@ export default defineSchema({
     phone: v.optional(v.string()),
     phoneVerificationTime: v.optional(v.number()),
     role: v.optional(v.union(v.literal("admin"), v.literal("user"))),
-  }).index("email", ["email"]),
+  })
+    .index("email", ["email"])
+    // First-run probe (setup.ts) asks "is there an admin" on every page load
+    .index("by_role", ["role"]),
 
   // Member quota profiles, keyed by email so the direção can register a
   // sócio before (or independently of) their portal account
@@ -133,7 +136,9 @@ export default defineSchema({
     .index("by_event_email", ["eventId", "email"])
     .index("by_user", ["userId"])
     .index("by_status", ["status"])
-    .index("by_timestamp", ["timestamp"]),
+    .index("by_timestamp", ["timestamp"])
+    // Retention purge reads only rows without an account (userId unset)
+    .index("by_user_timestamp", ["userId", "timestamp"]),
 
   // Documents
   documents: defineTable({
@@ -179,6 +184,9 @@ export default defineSchema({
     // coverId/externalCover); cleared automatically if that photo is removed
     coverImageId: v.optional(v.id("galleryImages")),
     description: v.optional(v.string()),
+    // Denormalized so the public list does not read every photo row; rows
+    // written before it existed fall back to a count (albums.backfillPhotoCounts fills them)
+    photoCount: v.optional(v.number()),
   })
     .index("by_date", ["date"]),
 
@@ -291,7 +299,8 @@ export default defineSchema({
     externalImage: v.optional(v.string()),
     iconName: v.string(), // Name of the Lucide icon
     order: v.number(),
-  }).index("by_order", ["order"]),
+  }).index("by_order", ["order"])
+    .index("by_title", ["title"]),
 
   // History Page Timeline (editable milestones)
   milestones: defineTable({
@@ -319,7 +328,8 @@ export default defineSchema({
     order: v.number(),
     color: v.optional(v.string()), // Gradient class for styling
     textColor: v.optional(v.string()), // Text color class
-  }).index("by_order", ["order"]),
+  }).index("by_order", ["order"])
+    .index("by_name", ["name"]),
 
   // Contact Form Submissions
   contactSubmissions: defineTable({

@@ -1,5 +1,5 @@
 import { query, mutation } from "./_generated/server";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { requireAdmin, requireAuth, getCurrentUser } from "./lib/auth";
 import { validateMaxLength, sanitizeContentServer } from "./lib/validation";
@@ -52,7 +52,7 @@ export const markRead = mutation({
 
         const notification = await ctx.db.get(args.id);
         if (!notification) {
-            throw new Error("Notificação não encontrada.");
+            throw new ConvexError("Notificação não encontrada.");
         }
 
         // Permission check
@@ -62,7 +62,7 @@ export const markRead = mutation({
 
         if (!isAdminUser) {
             if (notification.target !== "all" && notification.target !== "user") {
-                throw new Error("Sem permissão para esta notificação.");
+                throw new ConvexError("Sem permissão para esta notificação.");
             }
         }
 
@@ -116,7 +116,10 @@ export const update = mutation({
     },
     handler: async (ctx, args) => {
         await requireAdmin(ctx);
+        if (args.title !== undefined) validateMaxLength(args.title, "title", 200);
+        if (args.message !== undefined) validateMaxLength(args.message, "message", 2000);
         const { id, ...updates } = args;
+        if (updates.message !== undefined) updates.message = sanitizeContentServer(updates.message);
         await ctx.db.patch(id, updates);
     },
 });

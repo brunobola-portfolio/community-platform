@@ -17,14 +17,14 @@ import type { UserWithRole } from "./lib/auth";
 
 /**
  * Public probe used by the routing gate. Returns true when at least one
- * admin user exists in the database. Cheap (uses an index-less scan but the
- * users collection is tiny — single-digit rows in practice).
+ * admin user exists. Reactive and public, so it reads one indexed row
+ * instead of the whole users table.
  */
 export const isSetupComplete = query({
     args: {},
     handler: async (ctx) => {
-        const users = await ctx.db.query("users").collect();
-        return users.some((u) => (u as unknown as UserWithRole).role === "admin");
+        const admin = await ctx.db.query("users").withIndex("by_role", (q) => q.eq("role", "admin")).first();
+        return admin !== null;
     },
 });
 
@@ -42,8 +42,7 @@ export const isSetupComplete = query({
 export const bootstrapInitialAdmin = mutation({
     args: {},
     handler: async (ctx) => {
-        const users = await ctx.db.query("users").collect();
-        const existingAdmin = users.find((u) => (u as unknown as UserWithRole).role === "admin");
+        const existingAdmin = await ctx.db.query("users").withIndex("by_role", (q) => q.eq("role", "admin")).first();
         if (existingAdmin) {
             // ConvexError: plain Error messages are redacted to "Server Error"
             // on production deployments; only ConvexError data reaches clients.

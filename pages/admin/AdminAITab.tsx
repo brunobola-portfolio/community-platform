@@ -186,12 +186,12 @@ const GuardrailsConfig: React.FC<ConfigSectionProps> = ({ settingsForm, update }
             <ToggleRow label="Guardrails Ativos" description="Classifica e filtra perguntas fora do âmbito da associação" checked={settingsForm.aiGuardrailsEnabled} onChange={v => update('aiGuardrailsEnabled', v)} />
             <div>
                 <label htmlFor="ai-allowed-topics" className={LABEL_CLASS}>Tópicos permitidos</label>
-                <input id="ai-allowed-topics" value={settingsForm.aiAllowedTopics ?? ''} onChange={e => update('aiAllowedTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="associação, localidade, eventos, cultura, desporto, comunidade" />
+                <input id="ai-allowed-topics" maxLength={200} value={settingsForm.aiAllowedTopics ?? ''} onChange={e => update('aiAllowedTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="associação, localidade, eventos, cultura, desporto, comunidade" />
                 <p className="text-slate-600 text-xs mt-1">Separados por vírgula. O chatbot foca-se nestes temas.</p>
             </div>
             <div>
                 <label htmlFor="ai-forbidden-topics" className={LABEL_CLASS}>Tópicos proibidos</label>
-                <input id="ai-forbidden-topics" value={settingsForm.aiForbiddenTopics ?? ''} onChange={e => update('aiForbiddenTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="política partidária, religião, aconselhamento médico, conteúdo adulto" />
+                <input id="ai-forbidden-topics" maxLength={200} value={settingsForm.aiForbiddenTopics ?? ''} onChange={e => update('aiForbiddenTopics', e.target.value)} className={STD_INPUT_CLASS} placeholder="política partidária, religião, aconselhamento médico, conteúdo adulto" />
                 <p className="text-slate-600 text-xs mt-1">Separados por vírgula. Perguntas sobre estes temas são recusadas educadamente.</p>
             </div>
         </div>

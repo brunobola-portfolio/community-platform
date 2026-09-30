@@ -146,7 +146,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                                     <span className="text-right">
                                         <span className="block text-base font-bold text-slate-900 dark:text-white">{tier.price}</span>
                                         {isPricedTier && (
-                                            <span className="block text-[10px] uppercase tracking-widest text-slate-400">Doação anual</span>
+                                            <span className="block text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">Doação anual</span>
                                         )}
                                     </span>
                                 </div>

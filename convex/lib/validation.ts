@@ -23,6 +23,20 @@ export async function assertUniqueSlug(
 }
 
 /**
+ * First free slug for a new record: `base`, then `base-2`, `base-3`, and so on.
+ * Duplicating a record twice derives the same slug from the same title, which
+ * should not fail the save.
+ */
+export async function uniqueSlug(ctx: MutationCtx, table: SlugTable, base: string): Promise<string> {
+  for (let n = 1; n <= 100; n++) {
+    const candidate = n === 1 ? base : `${base}-${n}`;
+    const taken = await ctx.db.query(table).withIndex("by_slug", (q) => q.eq("slug", candidate)).first();
+    if (!taken) return candidate;
+  }
+  throw new ConvexError(`Já existem demasiados registos com o slug "${base}".`);
+}
+
+/**
  * Assert that a category reference resolves to an existing category.
  * Accepts a category document id, slug or name — the admin UI stores the
  * document id while seeds/legacy data may reference slug or name.

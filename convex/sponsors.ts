@@ -1,22 +1,39 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, type QueryCtx } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
 import { v } from "convex/values";
-import { requireAdmin } from "./lib/auth";
+import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateRequired, validateMaxLength } from "./lib/validation";
 import { retainUrl } from "./lib/uploads";
 
+async function withLogoUrls(ctx: QueryCtx, sponsors: Doc<"sponsors">[]) {
+    return Promise.all(
+        sponsors.map(async (s) => ({
+            ...s,
+            logoUrl: s.logo ? await ctx.storage.getUrl(s.logo) : s.externalLogo,
+        }))
+    );
+}
+
+// Public: only partners marked active; an inactive one must not show on the home page
 export const list = query({
     args: {},
     handler: async (ctx) => {
-        const sponsors = await ctx.db.query("sponsors").take(500);
+        const sponsors = await ctx.db
+            .query("sponsors")
+            .withIndex("by_active", (q) => q.eq("active", true))
+            .take(500);
+        return withLogoUrls(ctx, sponsors);
+    },
+});
 
-        return Promise.all(
-            sponsors.map(async (s) => ({
-                ...s,
-                logoUrl: s.logo ? await ctx.storage.getUrl(s.logo) : s.externalLogo,
-            }))
-        );
+// Backoffice: every partner, active or not; empty for non-admins instead of throwing
+export const listAll = query({
+    args: {},
+    handler: async (ctx) => {
+        if (!(await isAdmin(ctx))) return [];
+        return withLogoUrls(ctx, await ctx.db.query("sponsors").take(500));
     },
 });
 

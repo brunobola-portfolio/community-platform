@@ -2,6 +2,7 @@ import React from 'react';
 import { useData } from '../context/DataContext';
 import type { Event } from '../types';
 import { eventSummaryText } from '../utils/text';
+import { PageMeta } from './PageMeta';
 
 /** Serialises JSON-LD without letting a "</script>" in content break out. */
 const serialize = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
@@ -63,20 +64,7 @@ export const EventsJsonLd: React.FC<{ events: Event[] }> = ({ events }) => {
   );
 };
 
-/** Per-article social tags; React 19 hoists these into the document head. */
-export const ArticleMeta: React.FC<{ title: string; description?: string; image?: string; path: string }> = ({ title, description, image, path }) => {
-  const url = `${siteUrl()}${path}`;
-  return (
-    <>
-      <meta property="og:type" content="article" />
-      <meta property="og:title" content={title} />
-      <meta property="og:url" content={url} />
-      {description && <meta property="og:description" content={description} />}
-      {image && <meta property="og:image" content={image} />}
-      <meta name="twitter:title" content={title} />
-      {description && <meta name="twitter:description" content={description} />}
-      {image && <meta name="twitter:image" content={image} />}
-      <link rel="canonical" href={url} />
-    </>
-  );
-};
+/** Per-article social tags, through the same PageMeta every page uses so nothing is duplicated. */
+export const ArticleMeta: React.FC<{ title: string; description?: string; image?: string; path: string }> = ({ title, description, image, path }) => (
+  <PageMeta title={title} description={description} image={image} path={path} type="article" />
+);

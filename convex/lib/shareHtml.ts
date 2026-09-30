@@ -83,3 +83,14 @@ export function renderSharePage(card: ShareCard): string {
 </html>
 `;
 }
+
+/**
+ * Crawlers reject a relative og:image. Images bundled with the site are stored as
+ * "/images/..." (the seed does this), so they are resolved against the site origin.
+ */
+export function resolveImageUrl(image: string | undefined, origin: string): string | undefined {
+    if (!image) return undefined;
+    if (image.startsWith("//")) return `https:${image}`;
+    if (image.startsWith("/")) return `${origin}${image}`;
+    return image;
+}

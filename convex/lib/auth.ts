@@ -1,10 +1,11 @@
+import { ConvexError } from "convex/values";
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Doc } from "../_generated/dataModel";
 
 /**
  * Extended user type with optional role field.
- * The 'role' field is added via patch (bootstrapAdmin) and not in the schema.
+ * The role field is declared in the schema (users table override) and set by patch.
  */
 export interface UserWithRole {
   role?: string;
@@ -33,11 +34,11 @@ export async function requireAuth(
 ): Promise<{ userId: string; user: Doc<"users"> }> {
   const userId = await getAuthUserId(ctx);
   if (!userId) {
-    throw new Error("Autenticação necessária. Faz login para continuar.");
+    throw new ConvexError("Autenticação necessária. Faz login para continuar.");
   }
   const user = await ctx.db.get(userId);
   if (!user) {
-    throw new Error("Utilizador não encontrado.");
+    throw new ConvexError("Utilizador não encontrado.");
   }
   return { userId: userId as string, user };
 }
@@ -69,7 +70,7 @@ export async function requireAdmin(
   // The user document may have a 'role' field added via patch
   const userWithRole = user as unknown as UserWithRole;
   if (userWithRole.role !== "admin") {
-    throw new Error("Acesso negado. Permissões de administrador necessárias.");
+    throw new ConvexError("Acesso negado. Permissões de administrador necessárias.");
   }
   return { userId, user };
 }

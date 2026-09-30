@@ -5,6 +5,7 @@ import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { Button, cn } from '../../../components/ui/UIComponents';
 import { STD_INPUT_CLASS } from '../constants';
+import { optimizeImage } from '../../../utils/imageOptimize';
 
 interface PhotoUploaderProps {
     albumId: Id<'albums'>;
@@ -44,14 +45,15 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ albumId, onDone })
         let added = 0;
         let failed = 0;
         for (let i = 0; i < accepted.length; i++) {
-            const file = accepted[i];
             const index = base + i;
+            setItem(index, { status: 'uploading' });
+            // Phone photos are 4-8 MB; every visitor of the album would download that
+            const file = await optimizeImage(accepted[i]);
             if (file.size > MAX_BYTES) {
                 setItem(index, { status: 'error', error: 'Mais de 10 MB' });
                 failed++;
                 continue;
             }
-            setItem(index, { status: 'uploading' });
             try {
                 const uploadUrl = await generateUploadUrl();
                 const res = await fetch(uploadUrl, { method: 'POST', headers: { 'Content-Type': file.type }, body: file });
@@ -99,7 +101,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ albumId, onDone })
             >
                 <UploadCloud className="mx-auto mb-3 text-brand-400" size={32} />
                 <p className="text-white font-medium">Arrasta fotos para aqui ou clica para escolher</p>
-                <p className="text-slate-400 text-xs mt-1">JPG, PNG ou WebP · até 10 MB cada · várias de uma vez</p>
+                <p className="text-slate-400 text-xs mt-1">JPG, PNG ou WebP · reduzidas automaticamente · várias de uma vez</p>
                 <input
                     ref={inputRef}
                     type="file"

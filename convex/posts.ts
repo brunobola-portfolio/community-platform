@@ -3,8 +3,9 @@ import { v } from "convex/values";
 import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
-import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
+import { assertCategoryExists, assertUniqueSlug, uniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
 import { retainUrl } from "./lib/uploads";
+import { toExcerpt } from "./lib/text";
 
 export const list = query({
     args: {
@@ -175,11 +176,11 @@ export const create = mutation({
         // Sanitize HTML content (defense-in-depth)
         const sanitizedContent = sanitizeContentServer(args.content);
 
-        // Ensure slug uniqueness
-        await assertUniqueSlug(ctx, "posts", args.slug);
+        // A slug derived from the title collides when a post is duplicated; suffix it
+        const slug = await uniqueSlug(ctx, "posts", args.slug);
 
         await retainUrl(ctx, args.externalImage);
-        return await ctx.db.insert("posts", { ...args, content: sanitizedContent });
+        return await ctx.db.insert("posts", { ...args, slug, content: sanitizedContent });
     },
 });
 
@@ -210,12 +211,25 @@ export const update = mutation({
         if (args.slug) {
             await assertUniqueSlug(ctx, "posts", args.slug, args.id);
         }
+        if (args.title !== undefined) validateMaxLength(args.title, "título", 200);
+        if (args.content !== undefined) validateMaxLength(args.content, "conteúdo", 100000);
         const { id, ...updates } = args;
+        const current = await ctx.db.get(id);
+        // Only a changed category is checked: legacy rows may reference a slug or name
+        // that no longer exists, and they must stay editable
+        if (args.categoryId && args.categoryId !== current?.categoryId) {
+            await assertCategoryExists(ctx, args.categoryId);
+        }
         // Sanitize HTML content if provided (defense-in-depth)
         if (updates.content !== undefined) {
             updates.content = sanitizeContentServer(updates.content);
+            // An excerpt the form echoes back unchanged would leave the public list
+            // showing the old text; one the admin actually edited is kept
+            if (current && (updates.excerpt === undefined || updates.excerpt === current.excerpt)) {
+                updates.excerpt = toExcerpt(updates.content) || current.excerpt;
+            }
         }
-        await reconcileImageUpdate(ctx, await ctx.db.get(id), updates, "coverImage", "externalImage");
+        await reconcileImageUpdate(ctx, current, updates, "coverImage", "externalImage");
         await ctx.db.patch(id, updates);
     },
 });

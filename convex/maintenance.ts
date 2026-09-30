@@ -1,133 +1,16 @@
-import { mutation, internalMutation } from "./_generated/server";
-import { requireAdmin } from "./lib/auth";
+import { internalMutation } from "./_generated/server";
+import { internal } from "./_generated/api";
 import { sweepAbandonedUploads as sweepUploads } from "./lib/uploads";
 
 /**
- * Maintenance mutations for database cleanup and integrity.
- * these are administrative functions to be run from the Convex Dashboard or CLI.
+ * Retention jobs run by convex/crons.ts. Each one deletes a bounded batch and
+ * schedules itself again while batches come back full, so a backlog drains
+ * without one mutation growing past Convex's per-transaction limits.
  */
 
-// Repurposing cleanAll to be the smart deduplication function
-// This avoids issues where new function names aren't picked up by the dev server
-export const safeCleanup = mutation({
-    args: {},
-    handler: async (ctx) => {
-        await requireAdmin(ctx);
-        const results: Record<string, number> = {};
-        console.log("Starting safe duplicate cleanup (Smart Deduplication)...");
-
-        // Per-table deduplication with explicit typed queries (no dynamic table names)
-
-        // 1. Stats - unique by label
-        {
-            const docs = await ctx.db.query("stats").collect();
-            const seen = new Set<string>();
-            let removedCount = 0;
-            for (const doc of docs) {
-                const key = doc.label;
-                if (key != null && seen.has(key)) { await ctx.db.delete(doc._id); removedCount++; }
-                else if (key != null) { seen.add(key); }
-            }
-            results.stats = removedCount;
-        }
-
-        // 2. Action Areas - unique by title
-        {
-            const docs = await ctx.db.query("actionAreas").collect();
-            const seen = new Set<string>();
-            let removedCount = 0;
-            for (const doc of docs) {
-                const key = doc.title;
-                if (key != null && seen.has(key)) { await ctx.db.delete(doc._id); removedCount++; }
-                else if (key != null) { seen.add(key); }
-            }
-            results.actionAreas = removedCount;
-        }
-
-        // 3. Events - unique by slug
-        {
-            const docs = await ctx.db.query("events").collect();
-            const seen = new Set<string>();
-            let removedCount = 0;
-            for (const doc of docs) {
-                const key = doc.slug;
-                if (key != null && seen.has(key)) { await ctx.db.delete(doc._id); removedCount++; }
-                else if (key != null) { seen.add(key); }
-            }
-            results.events = removedCount;
-        }
-
-        // 4. Posts - unique by slug
-        {
-            const docs = await ctx.db.query("posts").collect();
-            const seen = new Set<string>();
-            let removedCount = 0;
-            for (const doc of docs) {
-                const key = doc.slug;
-                if (key != null && seen.has(key)) { await ctx.db.delete(doc._id); removedCount++; }
-                else if (key != null) { seen.add(key); }
-            }
-            results.posts = removedCount;
-        }
-
-        // 5. Sponsors - unique by name
-        {
-            const docs = await ctx.db.query("sponsors").collect();
-            const seen = new Set<string>();
-            let removedCount = 0;
-            for (const doc of docs) {
-                const key = doc.name;
-                if (key != null && seen.has(key)) { await ctx.db.delete(doc._id); removedCount++; }
-                else if (key != null) { seen.add(key); }
-            }
-            results.sponsors = removedCount;
-        }
-
-        // 6. Categories - unique by slug
-        {
-            const docs = await ctx.db.query("categories").collect();
-            const seen = new Set<string>();
-            let removedCount = 0;
-            for (const doc of docs) {
-                const key = doc.slug;
-                if (key != null && seen.has(key)) { await ctx.db.delete(doc._id); removedCount++; }
-                else if (key != null) { seen.add(key); }
-            }
-            results.categories = removedCount;
-        }
-
-        // 7. Sponsor Tiers - unique by name
-        {
-            const docs = await ctx.db.query("sponsorTiers").collect();
-            const seen = new Set<string>();
-            let removedCount = 0;
-            for (const doc of docs) {
-                const key = doc.name;
-                if (key != null && seen.has(key)) { await ctx.db.delete(doc._id); removedCount++; }
-                else if (key != null) { seen.add(key); }
-            }
-            results.sponsorTiers = removedCount;
-        }
-
-        // 8. Members - unique by name + group (composite key)
-        const members = await ctx.db.query("members").collect();
-        const seenMembers = new Set<string>();
-        let membersRemoved = 0;
-        for (const member of members) {
-            const key = `${member.name}::${member.group}`;
-            if (seenMembers.has(key)) {
-                await ctx.db.delete(member._id);
-                membersRemoved++;
-            } else {
-                seenMembers.add(key);
-            }
-        }
-        results.members = membersRemoved;
-
-        console.log("Cleanup results:", results);
-        return results;
-    },
-});
+const BATCH = 1000;
+const DAY_MS = 24 * 3600 * 1000;
+const LOG_RETENTION_DAYS = 90;
 
 export const cleanupRateLimits = internalMutation({
     args: {},
@@ -136,48 +19,60 @@ export const cleanupRateLimits = internalMutation({
         const staleEntries = await ctx.db
             .query("rateLimits")
             .withIndex("by_lastRefill", (q) => q.lt("lastRefill", oneHourAgo))
-            .take(1000);
+            .take(BATCH);
 
-        let cleaned = 0;
-        for (const entry of staleEntries) {
-            await ctx.db.delete(entry._id);
-            cleaned++;
-        }
+        for (const entry of staleEntries) await ctx.db.delete(entry._id);
 
-        if (cleaned > 0) {
-            console.log(`Cleaned up ${cleaned} stale rate limit entries.`);
+        if (staleEntries.length > 0) {
+            console.log(`Cleaned up ${staleEntries.length} stale rate limit entries.`);
         }
+        if (staleEntries.length === BATCH) await ctx.scheduler.runAfter(0, internal.maintenance.cleanupRateLimits, {});
     },
 });
 
 export const cleanupOldLogs = internalMutation({
     args: {},
     handler: async (ctx) => {
-        const ninetyDaysAgo = Date.now() - 90 * 24 * 3600000;
+        const cutoff = Date.now() - LOG_RETENTION_DAYS * DAY_MS;
         const oldLogs = await ctx.db
             .query("activityLogs")
-            .withIndex("by_timestamp", (q) => q.lt("timestamp", ninetyDaysAgo))
-            .take(1000);
+            .withIndex("by_timestamp", (q) => q.lt("timestamp", cutoff))
+            .take(BATCH);
 
-        let cleaned = 0;
-        for (const log of oldLogs) {
-            if (log.timestamp < ninetyDaysAgo) {
-                await ctx.db.delete(log._id);
-                cleaned++;
-            }
-        }
+        for (const log of oldLogs) await ctx.db.delete(log._id);
 
-        if (cleaned > 0) {
-            console.log(`Cleaned up ${cleaned} old activity log entries.`);
+        if (oldLogs.length > 0) {
+            console.log(`Cleaned up ${oldLogs.length} old activity log entries.`);
         }
+        if (oldLogs.length === BATCH) await ctx.scheduler.runAfter(0, internal.maintenance.cleanupOldLogs, {});
     },
 });
+
+// AI usage rows carry a user id and the failure text, so they are not kept indefinitely
+export const cleanupOldAiUsageLogs = internalMutation({
+    args: {},
+    handler: async (ctx) => {
+        const cutoff = Date.now() - LOG_RETENTION_DAYS * DAY_MS;
+        const old = await ctx.db
+            .query("aiUsageLogs")
+            .withIndex("by_timestamp", (q) => q.lt("timestamp", cutoff))
+            .take(BATCH);
+
+        for (const row of old) await ctx.db.delete(row._id);
+
+        if (old.length > 0) console.log(`Cleaned up ${old.length} old AI usage log entries.`);
+        if (old.length === BATCH) await ctx.scheduler.runAfter(0, internal.maintenance.cleanupOldAiUsageLogs, {});
+    },
+});
+
+const UPLOAD_SWEEP_BATCH = 200;
 
 // Uploads nobody saved into a record within the grace period (convex/lib/uploads.ts)
 export const sweepAbandonedUploads = internalMutation({
     args: {},
     handler: async (ctx) => {
-        const removed = await sweepUploads(ctx, Date.now());
+        const removed = await sweepUploads(ctx, Date.now(), UPLOAD_SWEEP_BATCH);
         if (removed > 0) console.log(`Removed ${removed} abandoned uploads.`);
+        if (removed === UPLOAD_SWEEP_BATCH) await ctx.scheduler.runAfter(0, internal.maintenance.sweepAbandonedUploads, {});
     },
 });
