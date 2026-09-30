@@ -1,7 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser, requireAdmin } from "./lib/auth";
-import { cleanupStorageOnDelete } from "./lib/cascade";
+import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateMaxLength } from "./lib/validation";
 
 export const list = query({
@@ -65,6 +65,8 @@ export const update = mutation({
         if (args.description) validateMaxLength(args.description, "description", 2000);
         if (args.category) validateMaxLength(args.category, "category", 100);
         const { id, ...updates } = args;
+        // A new link replaces an uploaded file; keeping the file would only orphan it
+        await reconcileImageUpdate(ctx, await ctx.db.get(id), updates, "fileId", "externalUrl");
         await ctx.db.patch(id, updates);
     },
 });

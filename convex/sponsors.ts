@@ -2,7 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
-import { cleanupStorageOnDelete, cleanupStorageOnUpdate } from "./lib/cascade";
+import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateRequired, validateMaxLength } from "./lib/validation";
 
 export const list = query({
@@ -60,12 +60,7 @@ export const update = mutation({
             userId,
         });
         const { id, ...updates } = args;
-        if (updates.logo !== undefined) {
-            const existing = await ctx.db.get(id);
-            if (existing) {
-                await cleanupStorageOnUpdate(ctx, existing, updates.logo, "logo");
-            }
-        }
+        await reconcileImageUpdate(ctx, await ctx.db.get(id), updates, "logo", "externalLogo");
         await ctx.db.patch(id, updates);
     },
 });

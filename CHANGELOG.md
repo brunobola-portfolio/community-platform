@@ -6,6 +6,28 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.13.4] - 2026-09-30
+
+### Fixed
+
+- **Changing an image in the backoffice now always shows.** A record whose picture lived in
+  Convex storage kept showing the old one after a new photo was chosen: the save went through
+  and said so, but the read side prefers the stored file over the new link. Every update with
+  an image (team members, events, news, milestones, partners, action areas, album covers)
+  now releases the stored file on the server when a new link or a removal arrives, and the
+  file no longer lingers in storage
+- A cover set in an album's form now shows even when a photo had been picked as cover in the
+  photo manager
+- Editing a document's link was ignored when the document already had one; the new link is
+  saved, and a replaced upload is deleted from storage
+- Duplicating a record no longer shares the original's stored image, so replacing the
+  picture of one of them cannot delete the other's
+
+### Removed
+
+- The `clearStorageImage` mutations of albums, events, members and posts; removing an image
+  is part of `update`
+
 ## [2.13.3] - 2026-09-30
 
 ### Fixed

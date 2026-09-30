@@ -11,7 +11,6 @@ import type { ActionDeps } from './deps';
 /** Post wrappers: Convex mutations behind an ActionResult and an activity log entry. */
 export function usePostActions({ logActivity, describeAction }: ActionDeps) {
   const createPostMut = useMutation(api.posts.create);
-  const clearStorageMut = useMutation(api.posts.clearStorageImage);
   const updatePostMut = useMutation(api.posts.update);
   const deletePostMut = useMutation(api.posts.remove);
 
@@ -50,11 +49,8 @@ export function usePostActions({ logActivity, describeAction }: ActionDeps) {
         const { coverUrl, category: _category, coverImageUrl: _cover, ...rest } =
           data as Partial<PostCreateArgs> & { category?: string; coverImageUrl?: string };
         if (coverUrl !== undefined) rest.externalImage = coverUrl;
-        // '' also has to drop the stored file, which the read side prefers over the URL
-        const clearStored = coverUrl === '';
         if (rest.categoryId) rest.categoryId = String(rest.categoryId);
         await updatePostMut({ id: id as Id<"posts">, ...rest });
-        if (clearStored) await clearStorageMut({ id: id as Id<"posts"> });
         logActivity('update', 'Notícia', describeAction('Notícia atualizada', id));
         return { success: true };
       } catch (e) {
@@ -62,7 +58,7 @@ export function usePostActions({ logActivity, describeAction }: ActionDeps) {
         return toActionResult(e);
       }
     },
-    [updatePostMut, clearStorageMut, logActivity, describeAction]
+    [updatePostMut, logActivity, describeAction]
   );
 
   const deletePost = useCallback(

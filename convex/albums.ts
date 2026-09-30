@@ -2,7 +2,7 @@ import { query, mutation, type QueryCtx, type MutationCtx } from "./_generated/s
 import { v } from "convex/values";
 import type { Doc, Id } from "./_generated/dataModel";
 import { requireAdmin } from "./lib/auth";
-import { cascadeDeleteAlbum, cleanupStorageOnUpdate } from "./lib/cascade";
+import { cascadeDeleteAlbum, reconcileImageUpdate } from "./lib/cascade";
 import { validateRequired, validateMaxLength } from "./lib/validation";
 
 type Ctx = QueryCtx | MutationCtx;
@@ -253,13 +253,13 @@ export const update = mutation({
         if (args.title) validateMaxLength(args.title, "title", 200);
         if (args.description) validateMaxLength(args.description, "description", 2000);
         const { id, ...updates } = args;
-        if (updates.coverId !== undefined) {
-            const existing = await ctx.db.get(id);
-            if (existing) {
-                await cleanupStorageOnUpdate(ctx, existing, updates.coverId, "coverId");
-            }
-        }
-        await ctx.db.patch(id, updates);
+        const existing = await ctx.db.get(id);
+        // A photo picked as cover in the manager outranks both cover fields, so a cover set
+        // in the form has to release that pick or the save would not show
+        const coverChanged = (updates.externalCover !== undefined && updates.externalCover !== existing?.externalCover)
+            || (updates.coverId !== undefined && updates.coverId !== existing?.coverId);
+        await reconcileImageUpdate(ctx, existing, updates, "coverId", "externalCover");
+        await ctx.db.patch(id, coverChanged ? { ...updates, coverImageId: undefined } : updates);
     },
 });
 
@@ -268,18 +268,5 @@ export const remove = mutation({
     handler: async (ctx, args) => {
         await requireAdmin(ctx);
         await cascadeDeleteAlbum(ctx, args.id);
-    },
-});
-
-export const clearStorageImage = mutation({
-    args: { id: v.id("albums") },
-    handler: async (ctx, args) => {
-        await requireAdmin(ctx);
-        const album = await ctx.db.get(args.id);
-        if (album && album.coverId) {
-            try { await ctx.storage.delete(album.coverId); } catch (e) { console.error("Failed to delete storage:", e); }
-            const { coverId, ...rest } = album;
-            await ctx.db.replace(args.id, rest);
-        }
     },
 });

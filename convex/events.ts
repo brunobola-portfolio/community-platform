@@ -2,7 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
-import { cascadeDeleteEvent, cleanupStorageOnUpdate } from "./lib/cascade";
+import { cascadeDeleteEvent, reconcileImageUpdate } from "./lib/cascade";
 import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
 // Rich-text descriptions are the largest field on the table and every visitor
 // subscribes to the whole list, so the public query ships a plain-text excerpt
@@ -189,13 +189,7 @@ export const update = mutation({
         if (updates.description !== undefined) {
             updates.description = sanitizeContentServer(updates.description);
         }
-        // Clean up old storage if image is being replaced
-        if (updates.image !== undefined) {
-            const existing = await ctx.db.get(id);
-            if (existing) {
-                await cleanupStorageOnUpdate(ctx, existing, updates.image, "image");
-            }
-        }
+        await reconcileImageUpdate(ctx, await ctx.db.get(id), updates, "image", "externalImage");
         await ctx.db.patch(id, updates);
     },
 });
@@ -216,18 +210,5 @@ export const getParticipantCount = query({
             .withIndex("by_event", (q) => q.eq("eventId", args.eventId))
             .collect();
         return registrations.filter((r) => r.status !== "cancelled").length;
-    },
-});
-
-export const clearStorageImage = mutation({
-    args: { id: v.id("events") },
-    handler: async (ctx, args) => {
-        await requireAdmin(ctx);
-        const event = await ctx.db.get(args.id);
-        if (event && event.image) {
-            try { await ctx.storage.delete(event.image); } catch (e) { console.error("Failed to delete storage:", e); }
-            const { image, ...rest } = event;
-            await ctx.db.replace(args.id, rest);
-        }
     },
 });

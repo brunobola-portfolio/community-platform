@@ -55,10 +55,13 @@ const failureText = (result: unknown): string | undefined => {
     return undefined;
 };
 
-/** Derived image URLs the queries attach to records for display. */
-const MEDIA_KEYS = ['imageUrl', 'coverUrl', 'logoUrl', 'photoUrl'] as const;
+/** Derived media URLs the queries attach to records for display (`url` is a document's resolved link). */
+const MEDIA_KEYS = ['imageUrl', 'coverUrl', 'logoUrl', 'photoUrl', 'url'] as const;
 const pickMedia = (item: AdminRecord): Record<string, unknown> =>
     Object.fromEntries(MEDIA_KEYS.filter(k => k in item).map(k => [k, item[k]]));
+
+/** Raw storage references: a copy must not share them, or replacing one image deletes the other's file. */
+const STORAGE_KEYS = ['image', 'coverImage', 'photo', 'logo', 'coverId', 'coverImageId', 'fileId'] as const;
 
 /** Entity type created by the primary action of each list tab. */
 const NEW_ENTITY_BY_TAB: Partial<Record<Tab, string>> = {
@@ -173,6 +176,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
     const handleDuplicate = (type: string, item: AdminRecord) => {
         const copy: AdminFormData = { ...item, id: null };
+        for (const key of STORAGE_KEYS) delete copy[key];
         if (typeof item.title === 'string') copy.title = `${item.title} (Cópia)`;
         if (typeof item.name === 'string') copy.name = `${item.name} (Cópia)`;
         if (type === 'event') { copy.date = formatDateForInput(new Date().toISOString()); copy.currentParticipants = 0; copy.slug = ''; copy.registrationOpen = false; }
@@ -234,8 +238,9 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             case 'tier':
                 return { ...rest, benefits: typeof rest.benefits === 'string' ? rest.benefits.split('\n').filter(x => x.trim()) : (rest.benefits ?? []), order: Number(rest.order) || sponsorTiers.length + 1 };
             case 'document':
-                // Whitelist mutation args: the form keeps the legacy `url` key and edits carry read-only fields the validator rejects
-                return { title: rest.title, description: rest.description, category: rest.category || 'Outros', date: rest.date, size: rest.size, externalUrl: rest.externalUrl || (rest.fileId ? undefined : rest.url) || undefined };
+                // Whitelist mutation args: edits carry read-only fields the validator rejects. The form
+                // edits the resolved `url`, which only survives the media filter above when it changed
+                return { title: rest.title, description: rest.description, category: rest.category || 'Outros', date: rest.date, size: rest.size, externalUrl: rest.url || undefined };
             case 'notification':
                 return { title: rest.title, message: rest.message, type: rest.type || 'info', target: rest.target || 'all' };
             case 'milestone':

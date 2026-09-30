@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import { requireAdmin } from "./lib/auth";
-import { cleanupStorageOnDelete, cleanupStorageOnUpdate } from "./lib/cascade";
+import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { validateMaxLength } from "./lib/validation";
 
 export const list = query({
@@ -66,13 +66,7 @@ export const update = mutation({
         if (args.description) validateMaxLength(args.description, "description", 2000);
         if (args.longDescription) validateMaxLength(args.longDescription, "longDescription", 5000);
         const { id, ...updates } = args;
-        // Clean up old storage if image is being replaced
-        if (updates.image !== undefined) {
-            const existing = await ctx.db.get(id);
-            if (existing) {
-                await cleanupStorageOnUpdate(ctx, existing, updates.image, "image");
-            }
-        }
+        await reconcileImageUpdate(ctx, await ctx.db.get(id), updates, "image", "externalImage");
         await ctx.db.patch(id, updates);
     },
 });

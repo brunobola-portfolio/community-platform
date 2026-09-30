@@ -11,7 +11,6 @@ import type { ActionDeps } from './deps';
 /** Event wrappers: Convex mutations behind an ActionResult and an activity log entry. */
 export function useEventActions({ logActivity, describeAction }: ActionDeps) {
   const createEventMut = useMutation(api.events.create);
-  const clearStorageMut = useMutation(api.events.clearStorageImage);
   const updateEventMut = useMutation(api.events.update);
   const deleteEventMut = useMutation(api.events.remove);
 
@@ -50,14 +49,11 @@ export function useEventActions({ logActivity, describeAction }: ActionDeps) {
         if (rest.categoryId) rest.categoryId = String(rest.categoryId);
         // '' means the admin removed the image; undefined means untouched
         if (imageUrl !== undefined) rest.externalImage = imageUrl;
-        // '' also has to drop the stored file, which the read side prefers over the URL
-        const clearStored = imageUrl === '';
         await updateEventMut({
           id: id as Id<"events">,
           ...rest,
           ...(status !== undefined ? { status: status as 'published' | 'draft' } : {}),
         });
-        if (clearStored) await clearStorageMut({ id: id as Id<"events"> });
         logActivity('update', 'Evento', describeAction('Evento atualizado', id));
         return { success: true };
       } catch (e) {
@@ -65,7 +61,7 @@ export function useEventActions({ logActivity, describeAction }: ActionDeps) {
         return toActionResult(e);
       }
     },
-    [updateEventMut, clearStorageMut, logActivity, describeAction]
+    [updateEventMut, logActivity, describeAction]
   );
 
   const deleteEvent = useCallback(

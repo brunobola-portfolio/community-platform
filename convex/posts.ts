@@ -2,7 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
-import { cleanupStorageOnDelete, cleanupStorageOnUpdate } from "./lib/cascade";
+import { cleanupStorageOnDelete, reconcileImageUpdate } from "./lib/cascade";
 import { assertCategoryExists, assertUniqueSlug, validateMaxLength, validateRequired, sanitizeContentServer } from "./lib/validation";
 
 export const list = query({
@@ -213,12 +213,7 @@ export const update = mutation({
         if (updates.content !== undefined) {
             updates.content = sanitizeContentServer(updates.content);
         }
-        if (updates.coverImage !== undefined) {
-            const existing = await ctx.db.get(id);
-            if (existing) {
-                await cleanupStorageOnUpdate(ctx, existing, updates.coverImage, "coverImage");
-            }
-        }
+        await reconcileImageUpdate(ctx, await ctx.db.get(id), updates, "coverImage", "externalImage");
         await ctx.db.patch(id, updates);
     },
 });
@@ -231,19 +226,6 @@ export const remove = mutation({
         if (doc) {
             await cleanupStorageOnDelete(ctx, doc, ["coverImage"]);
             await ctx.db.delete(args.id);
-        }
-    },
-});
-
-export const clearStorageImage = mutation({
-    args: { id: v.id("posts") },
-    handler: async (ctx, args) => {
-        await requireAdmin(ctx);
-        const post = await ctx.db.get(args.id);
-        if (post && post.coverImage) {
-            try { await ctx.storage.delete(post.coverImage); } catch (e) { console.error("Failed to delete storage:", e); }
-            const { coverImage, ...rest } = post;
-            await ctx.db.replace(args.id, rest);
         }
     },
 });

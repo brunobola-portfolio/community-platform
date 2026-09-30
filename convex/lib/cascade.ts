@@ -81,3 +81,31 @@ export async function cleanupStorageOnUpdate(
     try { await ctx.storage.delete(existingDoc[field] as Id<"_storage">); } catch (e) { console.error("Failed to delete storage:", e); }
   }
 }
+
+/**
+ * Keep an entity's image pair coherent on update. Reads prefer the storage id over the
+ * external URL, so a new URL (or '' to remove the image) has to release the stored file,
+ * otherwise the save succeeds and the old picture keeps showing. A new storage id releases
+ * the previous one. The admin form echoes the raw fields it loaded, so values equal to the
+ * stored ones count as untouched. Mutates `updates` so the caller patches once.
+ */
+export async function reconcileImageUpdate(
+  ctx: MutationCtx,
+  existingDoc: Record<string, unknown> | null,
+  updates: Record<string, unknown>,
+  storageField: string,
+  externalField: string
+) {
+  if (!existingDoc) return;
+  const stored = existingDoc[storageField];
+  const nextStored = updates[storageField];
+  if (nextStored !== undefined && nextStored !== stored) {
+    await cleanupStorageOnUpdate(ctx, existingDoc, nextStored, storageField);
+    return;
+  }
+  const nextExternal = updates[externalField];
+  if (nextExternal === undefined || nextExternal === existingDoc[externalField] || !stored) return;
+  try { await ctx.storage.delete(stored as Id<"_storage">); } catch (e) { console.error("Failed to delete storage:", e); }
+  // undefined in a patch removes the field
+  updates[storageField] = undefined;
+}

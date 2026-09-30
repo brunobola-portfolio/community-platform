@@ -97,7 +97,13 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   `Admin.tsx` traduz o texto com `pages/admin/errors.ts` (`describeActionError`) em vez de
   mostrar "erro de validação" ou o dump do validador.
 - **Upload de imagens**: sempre Convex storage (`files.generateUploadUrl` + `files.getUrl`)
-  via MediaStudio — nunca base64 em documentos.
+  via MediaStudio — nunca base64 em documentos. O MediaStudio devolve um URL (vai para o
+  campo `external*`), mas as queries preferem o id de storage (`photo`, `image`, `logo`…)
+  quando existe. Por isso todo o `update` com imagem passa por `reconcileImageUpdate`
+  (`convex/lib/cascade.ts`): um URL novo, ou `''` para remover, liberta o ficheiro guardado.
+  Sem isso, a gravação passa e a imagem antiga continua a aparecer. O formulário reenvia os
+  campos em bruto que carregou, e valores iguais aos guardados contam como intocados. Entidade
+  nova com imagem = o mesmo helper no `update`.
 - **Admin sem comandos**: BD sem admin redireciona qualquer acesso para o wizard `/setup`.
   Fallback CLI raro: `npx convex run lib/bootstrapAdmin:setUserRole`.
 
