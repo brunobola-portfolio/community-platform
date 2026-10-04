@@ -101,14 +101,15 @@ export const TeamPage: React.FC = () => {
 
         {/* Navigation Tabs for Organizational Organs */}
         <div className="flex justify-center mb-16 animate-fade-in-up [animation-delay:0.1s]">
-          <div className="flex flex-wrap justify-center gap-2 bg-slate-900/5 dark:bg-white/5 p-1 rounded-full border border-slate-900/10 dark:border-white/10">
+          {/* Equal segments on phones (labels may take two lines) so no body is cut off; a pill from sm up */}
+          <div className="flex w-full max-w-md gap-1 bg-slate-900/5 dark:bg-white/5 p-1 rounded-2xl sm:inline-flex sm:w-auto sm:max-w-none sm:rounded-full border border-slate-900/10 dark:border-white/10">
             {tabOptions.map((tab) => (
               <button
                 key={tab}
                 onClick={() => selectTab(tab)}
-                className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500
+                className={`flex-1 sm:flex-none leading-tight sm:whitespace-nowrap px-2 sm:px-6 py-2.5 sm:py-2 rounded-xl sm:rounded-full text-[13px] sm:text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500
                     ${activeTab === tab
-                    ? 'bg-brand-700 text-white shadow-lg scale-105'
+                    ? 'bg-brand-700 text-white shadow-lg'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5'
                   }
                   `}

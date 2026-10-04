@@ -6,6 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.18.1] - 2026-10-04
+
+### Fixed
+
+- **Footer on phones**: one consistent centred layout (links, contacts and the legal lines),
+  the legal block in three tidy lines in the body font instead of a cramped monospaced run,
+  room below for the floating assistant button so nothing hides under it; one line on desktop
+- The organs on the Team page fit on a phone as equal segments instead of wrapping inside the
+  pill or being cut off; the About buttons share one width on phones
+- Home on phones: the impact cards grow with their text instead of leaving a hole (and no
+  longer clip "Explorar"), sections use phone-sized spacing, long partner names take two lines
+- The "Comece por aqui" row on /ajuda snaps card by card without a visible scrollbar
+- IIS serves `.html` as UTF-8, so static pages next to the portal (an instance's brand guide)
+  never show broken accents
+
 ## [2.18.0] - 2026-10-04
 
 ### Added

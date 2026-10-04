@@ -64,6 +64,12 @@ VITE_BRAND_COLOR, VITE_FONT_HEADING, VITE_FONT_BODY, VITE_BRAND_GUIDE_URL
 valor fica vazio; o `npm run dist` recusa o build nesse caso)
 ```
 
+O guia de marca de cada instância (ex.: `/marca/`, servido do overlay `brand/` do repositório
+da instância) tem de ser uma página HTML completa: `<!doctype html>`, `<meta charset="utf-8">` e
+`<meta name="viewport" content="width=device-width, initial-scale=1">`. Sem viewport o telemóvel
+desenha-a à largura de desktop. O `web.config` da plataforma já envia `text/html; charset=utf-8`,
+por isso os acentos ficam certos mesmo que falte o `<meta charset>`.
+
 `VITE_SITE_URL` também gera `sitemap.xml` e `robots.txt` no `npm run dist`. No deployment
 Convex (server-side): `GEMINI_API_KEY` (obrigatória para IA) e, opcionalmente,
 `SITE_LATITUDE`/`SITE_LONGITUDE` para o geo-assistente e `SITE_PHONE` para a migração de

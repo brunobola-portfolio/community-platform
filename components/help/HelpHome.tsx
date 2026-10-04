@@ -61,7 +61,7 @@ export const HelpHome: React.FC<HelpHomeProps> = ({ tutorials, categories, siteN
             {featured.length > 0 && (
                 <section aria-labelledby="help-start" className="space-y-4">
                     <h2 id="help-start" className={SECTION_TITLE}>Comece por aqui</h2>
-                    <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-2 custom-scrollbar md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
+                    <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 no-scrollbar md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 xl:grid-cols-4">
                         {featured.map(t => (
                             <TutorialCard key={t.id} tutorial={t} siteName={siteName} onSelect={onSelect} className="w-72 shrink-0 snap-start md:w-auto" />
                         ))}

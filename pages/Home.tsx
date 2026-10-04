@@ -252,7 +252,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
       </div>
 
       {/* Action Areas Section */}
-      <section className="py-32 bg-slate-50 dark:bg-dark-bg relative overflow-hidden">
+      <section className="py-20 md:py-32 bg-slate-50 dark:bg-dark-bg relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgb(var(--brand-600)/0.05)_0,transparent_70%)] pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -267,7 +267,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden h-[420px] p-8 flex flex-col">
+                <div key={i} className="rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden min-h-[300px] md:h-[420px] p-8 flex flex-col">
                   <Skeleton className="w-14 h-14 rounded-2xl" />
                   <div className="mt-auto space-y-3">
                     <Skeleton className="h-3 w-20" />
@@ -282,7 +282,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               return (
                 <div
                   key={area.id}
-                  className="group relative h-[420px] rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.15)] transition-all duration-500"
+                  className="group relative min-h-[300px] md:h-[420px] rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.15)] transition-all duration-500"
                   role="button"
                   tabIndex={0}
                   onClick={() => setSelectedArea(area)}
@@ -324,7 +324,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
       {/* Bento Grid News Section: hidden until there is something to read */}
       {(isLoading || posts.length > 0) && (
-      <section className="py-32 relative">
+      <section className="py-20 md:py-32 relative">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -424,7 +424,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
       )}
 
       {/* Events Stream */}
-      <section id="events" className="py-32 bg-white dark:bg-black relative overflow-hidden">
+      <section id="events" className="py-20 md:py-32 bg-white dark:bg-black relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-200 dark:via-brand-900 to-transparent"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -524,7 +524,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
       </section>
 
       {/* Infinite Partners Marquee: with no partners only the invitation remains */}
-      <section className={cn('border-t border-slate-900/5 dark:border-white/5 bg-slate-900/[0.01] dark:bg-white/[0.01] overflow-hidden', sponsors.length > 0 ? 'py-24' : 'py-12')}>
+      <section className={cn('border-t border-slate-900/5 dark:border-white/5 bg-slate-900/[0.01] dark:bg-white/[0.01] overflow-hidden', sponsors.length > 0 ? 'py-16 md:py-24' : 'py-12')}>
         {sponsors.length > 0 && (
           <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
@@ -552,9 +552,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedSponsor(sponsor); } }}
                   >
                     {sponsor.logoUrl ? (
-                      <div className="h-28 px-8 py-4 bg-white rounded-2xl border border-slate-900/10 dark:border-white/15 shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-2">
+                      <div className="min-h-28 px-8 py-4 bg-white rounded-2xl border border-slate-900/10 dark:border-white/15 shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-2">
                         <img src={sponsor.logoUrl} alt={sponsor.name} loading="lazy" className="h-12 max-w-[180px] w-auto object-contain" />
-                        <span className="text-[10px] uppercase tracking-widest text-slate-700 truncate max-w-[180px]">{sponsor.name}</span>
+                        <span className="max-w-[200px] whitespace-normal text-center text-[10px] uppercase leading-snug tracking-widest text-slate-700 line-clamp-2">{sponsor.name}</span>
                       </div>
                     ) : (
                       <div className="h-28 px-8 bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/15 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex items-center justify-center text-slate-900 dark:text-white font-serif font-bold text-xl">

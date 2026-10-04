@@ -393,11 +393,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
           <p className="text-2xl md:text-3xl text-slate-600 dark:text-slate-400 font-light leading-relaxed mb-16 max-w-4xl mx-auto">
             {settings.aboutMission}
           </p>
-          <div className="flex flex-wrap justify-center gap-6">
-             <Button size="lg" className="rounded-2xl px-14 h-16 text-lg" onClick={() => onNavigate?.('history')}>
+          <div className="mx-auto flex w-full max-w-sm flex-col gap-4 sm:max-w-none sm:flex-row sm:justify-center sm:gap-6">
+             <Button size="lg" className="w-full sm:w-auto rounded-2xl px-14 h-14 sm:h-16 text-lg" onClick={() => onNavigate?.('history')}>
                Ver Legado
              </Button>
-             <Button variant="glass" size="lg" className="rounded-2xl px-14 h-16 text-lg" onClick={() => onContact?.('Geral')}>
+             <Button variant="glass" size="lg" className="w-full sm:w-auto rounded-2xl px-14 h-14 sm:h-16 text-lg" onClick={() => onContact?.('Geral')}>
                Contactar Direção
              </Button>
           </div>

@@ -18,7 +18,7 @@ export const PlatformCredit: React.FC = () => {
   const status = updateStatus(site, latest?.version);
 
   return (
-    <span className="block sm:inline">
+    <span className="inline-flex flex-wrap items-center justify-center gap-x-1 gap-y-1 md:justify-start">
       <a
         href="https://bolalabs.pt"
         target="_blank"
@@ -34,7 +34,7 @@ export const PlatformCredit: React.FC = () => {
         </span>
       )}
       {status === 'current' && (
-        <span className="ml-2 inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400" title="É a versão mais recente da plataforma">
+        <span className="ml-1 inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400" title="É a versão mais recente da plataforma">
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current" /> atualizada
         </span>
       )}
@@ -44,7 +44,7 @@ export const PlatformCredit: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           title="Há uma versão mais recente da plataforma: ver as novidades"
-          className="ml-2 inline-flex items-center gap-1 rounded text-amber-700 dark:text-amber-400 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="ml-1 inline-flex items-center gap-1 rounded text-amber-700 dark:text-amber-400 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current" />
           <span className="tabular-nums">v{latest.version}</span> disponível
