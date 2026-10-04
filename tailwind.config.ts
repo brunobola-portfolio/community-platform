@@ -17,24 +17,27 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Brand tokens are CSS variables written at runtime from settings (see
+      // components/BrandTheme.tsx); index.css holds the platform defaults so the
+      // first paint is right before any JS runs
       fontFamily: {
-        sans: ['Geist', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-heading)', 'Georgia', 'serif'],
       },
       colors: {
-        // Brand scale: the single per-instance colour (platform default red #df3d32)
+        // Space-separated RGB channels keep opacity modifiers (bg-brand-500/10) working
         brand: {
-          50: '#fef3f2',
-          100: '#fde5e3',
-          200: '#fbcfcb',
-          300: '#f7aaa4',
-          400: '#ef7a70',
-          500: '#e65649',
-          600: '#df3d32', // Platform default
-          700: '#bb2d24',
-          800: '#9a2820',
-          900: '#802621',
-          950: '#45100c',
+          50: 'rgb(var(--brand-50) / <alpha-value>)',
+          100: 'rgb(var(--brand-100) / <alpha-value>)',
+          200: 'rgb(var(--brand-200) / <alpha-value>)',
+          300: 'rgb(var(--brand-300) / <alpha-value>)',
+          400: 'rgb(var(--brand-400) / <alpha-value>)',
+          500: 'rgb(var(--brand-500) / <alpha-value>)',
+          600: 'rgb(var(--brand-600) / <alpha-value>)',
+          700: 'rgb(var(--brand-700) / <alpha-value>)',
+          800: 'rgb(var(--brand-800) / <alpha-value>)',
+          900: 'rgb(var(--brand-900) / <alpha-value>)',
+          950: 'rgb(var(--brand-950) / <alpha-value>)',
         },
         dark: {
           bg: '#020617', // Deep Slate for background
@@ -43,7 +46,7 @@ const config: Config = {
         },
         accent: {
           gold: '#fbbf24',
-          glow: 'rgba(223, 61, 50, 0.5)',
+          glow: 'rgb(var(--brand-600) / 0.5)',
         },
       },
       animation: {
@@ -69,7 +72,7 @@ const config: Config = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'hero-glow':
-          'conic-gradient(from 180deg at 50% 50%, #df3d32 0deg, #000000 180deg, #df3d32 360deg)',
+          'conic-gradient(from 180deg at 50% 50%, rgb(var(--brand-600)) 0deg, #000000 180deg, rgb(var(--brand-600)) 360deg)',
       },
     },
   },

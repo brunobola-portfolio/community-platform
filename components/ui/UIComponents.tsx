@@ -26,7 +26,7 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const base = "inline-flex items-center justify-center gap-2 rounded-2xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]";
   const variants = {
-    default: "bg-brand-700 text-white hover:bg-brand-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgba(223,61,50,0.3)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_8px_30px_rgba(223,61,50,0.4)] border border-brand-500/50",
+    default: "bg-brand-700 text-white hover:bg-brand-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgb(var(--brand-600)/0.3)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_8px_30px_rgb(var(--brand-600)/0.4)] border border-brand-500/50",
     outline: "border border-slate-300 dark:border-slate-700 bg-transparent hover:bg-slate-900/5 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:border-brand-500/50",
     ghost: "hover:bg-slate-900/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white text-slate-600 dark:text-slate-400",
     link: "text-brand-700 dark:text-brand-400 underline-offset-4 hover:underline",

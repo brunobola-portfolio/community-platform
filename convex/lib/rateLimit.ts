@@ -15,6 +15,11 @@ const RATE_LIMITS: Record<string, BucketConfig> = {
   "ai:geoQuery:anonymous": { maxTokens: 60, refillPerMinute: 30 },
   "ai:generateImage": { maxTokens: 3, refillPerMinute: 3 },
   "ai:enhanceText": { maxTokens: 10, refillPerMinute: 10 },
+  // One studio draft is a text call plus a poster: a few in a row, then a pause
+  "ai:studio": { maxTokens: 4, refillPerMinute: 2 },
+  // Account management: an admin creating access, and anyone changing their own password
+  "access:manage": { maxTokens: 10, refillPerMinute: 5 },
+  "access:password": { maxTokens: 5, refillPerMinute: 2 },
   "content:create": { maxTokens: 20, refillPerMinute: 10 },
   "content:update": { maxTokens: 30, refillPerMinute: 15 },
   "registration:create": { maxTokens: 5, refillPerMinute: 5 },

@@ -11,6 +11,7 @@ import {
   DEFAULT_CHAT_MODEL_FALLBACK,
   DEFAULT_TTS_MODEL,
   DEFAULT_IMAGE_MODEL,
+  DEFAULT_OPENROUTER_IMAGE_MODEL,
 } from '../convex/lib/aiDefaults';
 
 /**
@@ -65,6 +66,13 @@ export const INITIAL_SETTINGS: Settings = {
   contactEmail: getEnvVar("VITE_CONTACT_EMAIL", "geral@exemplo.pt"),
   logoUrl: '',
   heroImageUrl: '',
+  // Platform default brand (indigo); instances set theirs in Definições or VITE_BRAND_COLOR
+  brandColor: getEnvVar("VITE_BRAND_COLOR", "#4f46e5"),
+  fontHeading: getEnvVar("VITE_FONT_HEADING", "Playfair Display"),
+  fontBody: getEnvVar("VITE_FONT_BODY", "Geist"),
+  brandGuideUrl: getEnvVar("VITE_BRAND_GUIDE_URL", ""),
+  imageProvider: 'gemini',
+  openrouterImageModel: DEFAULT_OPENROUTER_IMAGE_MODEL,
   maintenanceMode: getEnvBool("VITE_MAINTENANCE_MODE", false),
 
   // AI Chatbot Configuration (uses latest Gemini 3.0 with 2.5 fallback)

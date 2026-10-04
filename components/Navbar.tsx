@@ -173,7 +173,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
                 <img
                   src={settings.logoUrl}
                   alt=""
-                  className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_10px_rgba(223,61,50,0.4)]"
+                  className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_10px_rgb(var(--brand-600)/0.4)]"
                   onError={() => setImgError(true)}
                 />
               )}
@@ -255,7 +255,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           </div>
           <div className="flex flex-col gap-4 mt-12 w-full max-w-xs mx-auto">
             <button onClick={() => { onOpenAgenda(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-slate-900/5 border border-slate-900/10 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><CalendarDays size={20} /> Agenda Cultural</button>
-            <button onClick={() => { onMemberLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-brand-700 text-white font-medium flex items-center justify-center gap-3 hover:bg-brand-800 active:scale-[0.97] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgba(223,61,50,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"><UserCircle size={20} /> Área de Sócio</button>
+            <button onClick={() => { onMemberLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-brand-700 text-white font-medium flex items-center justify-center gap-3 hover:bg-brand-800 active:scale-[0.97] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgb(var(--brand-600)/0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"><UserCircle size={20} /> Área de Sócio</button>
             {onAdminLogin && <button onClick={() => { onAdminLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl border border-amber-600/40 text-amber-700 dark:border-amber-500/30 dark:text-amber-400 font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={20} /> Acesso Reservado</button>}
           </div>
         </div>

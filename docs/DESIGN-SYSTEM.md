@@ -2,7 +2,8 @@
 
 Referência visual da plataforma. Fonte de verdade dos tokens:
 [tailwind.config.ts](../tailwind.config.ts) e [index.css](../index.css). Estética:
-glassmorphism sobre neutros slate, com uma cor brand quente por instância.
+glassmorphism sobre neutros slate, com uma cor brand por instância (escolhida no
+backoffice, ver [Marca dinâmica](#marca-dinâmica)).
 
 ## Temas
 
@@ -18,14 +19,15 @@ glassmorphism sobre neutros slate, com uma cor brand quente por instância.
 
 | Token | Valor | Uso |
 |-------|-------|-----|
-| `brand-600` | `#df3d32` | Cor principal em light (cor de marca por omissão da plataforma — trocar por instância) |
-| `brand-400` / `brand-500` | `#ef7a70` / `#e65649` | Cor principal em dark (contraste sobre fundo escuro) |
-| `brand-50…950` | escala completa | Fundos suaves, borders, hovers |
+| `brand-600` | `rgb(var(--brand-600))` | A cor escolhida pela instância (por omissão `#4f46e5`); títulos grandes, gradientes |
+| `brand-700` | `rgb(var(--brand-700))` | Botões com texto branco e texto da marca em light (AA garantido) |
+| `brand-400` / `brand-500` | `rgb(var(--brand-400))` / `…500` | Texto da marca em dark / ícones, rings de foco, pontos |
+| `brand-50…950` | variáveis `--brand-*` | Fundos suaves, borders, hovers |
 | `dark-bg` | `#020617` | Fundo dark (slate-950); também `theme-color`/manifest |
 | `dark-surface` | `#0f172a` | Cartões e superfícies em dark |
 | `dark-border` | `rgba(255,255,255,0.08)` | Borders em dark |
 | `accent-gold` | `#fbbf24` | Destaques (quota paga, tiers ouro) |
-| `accent-glow` | `rgba(223,61,50,0.5)` | Glows decorativos |
+| `accent-glow` | `rgb(var(--brand-600) / 0.5)` | Glows decorativos |
 | Neutrals | escala `slate` | Texto e fundos (light bg: `slate-50`) |
 
 Regra de contraste: em dark, a brand para texto é `brand-400`; `brand-600` é para light.
@@ -41,13 +43,16 @@ e o ponto de cor fica invisível — nunca gravar uma classe fora da paleta.
 
 ## Tipografia
 
-| Família | Papel |
-|---------|-------|
-| **Geist** (`font-sans`) | Corpo, UI, dados |
-| **Playfair Display** (`font-serif`) | Headings display, títulos de página, marca no footer |
+| Classe | Variável | Por omissão | Papel |
+|--------|----------|-------------|-------|
+| `font-sans` | `--font-body` | **Geist** | Corpo, UI, dados |
+| `font-serif` | `--font-heading` | **Playfair Display** | Headings display, títulos de página, marca no footer |
 
-Carregadas via Google Fonts com `preconnect`; o CSP permite apenas
-`fonts.googleapis.com`/`fonts.gstatic.com` e `'self'`.
+A família de cada papel é escolhida por instância numa lista curada
+([utils/brandFonts.ts](../utils/brandFonts.ts)). O `index.html` carrega só as duas por
+omissão (com `preconnect`); o `BrandTheme` acrescenta um único `<link>` css2 quando a
+instância escolhe outras. O CSP permite apenas `fonts.googleapis.com`/`fonts.gstatic.com`
+e `'self'`.
 
 ## Forma e espaçamento
 
@@ -112,8 +117,38 @@ seguirem o tema escuro independentemente da preferência do visitante.
 Formulários por entidade vivem em `pages/admin/forms/` (conteúdo, pessoas, sistema);
 o modal é só a casca e o encaminhamento.
 
-## White-label
+## Marca dinâmica
 
-A escala `brand` é o único ponto de cor por instância — trocar em
-[tailwind.config.ts](../tailwind.config.ts) e manter os neutros slate. Ver
+Os tokens `brand-*`, `font-sans` e `font-serif` do
+[tailwind.config.ts](../tailwind.config.ts) são variáveis CSS
+(`rgb(var(--brand-500) / <alpha-value>)`, com canais RGB separados por espaço para os
+modificadores `/10`, `/20` continuarem a funcionar). Quem as escreve:
+
+1. **`index.css` `:root`** — valores da cor por omissão (`#4f46e5`), para o primeiro paint
+   sem JS. O teste `tests/brandPalette.test.ts` falha se divergirem do gerador.
+2. **`applyCachedBrand()`** (`index.tsx`) — a última marca vista neste browser, antes do
+   React montar.
+3. **`components/BrandTheme.tsx`** — montado uma vez acima do router (portal, `/admin` e
+   `/setup`): aplica `settings.brandColor`/`fontHeading`/`fontBody` em
+   `document.documentElement`, o `<link>` das fontes e a `meta theme-color` (brand-700).
+
+**Como a escala é gerada** ([utils/brandPalette.ts](../utils/brandPalette.ts)): 50–500 são a
+cor misturada com branco (6% a 82% de cor), 600 é a cor escolhida, 700 é a cor com 16% de
+preto e 800–950 escurecem a partir do 700 corrigido. Depois, correções por passos pequenos
+(para manter o tom o mais perto possível da escolha):
+
+| Garantia | Limiar | Correção |
+|----------|--------|----------|
+| Texto branco em `brand-700` e `brand-700` sobre branco / tinta `brand-100` | ≥ 4.5:1 | escurece o 700 |
+| Texto branco grande em `brand-600` | ≥ 3:1 | escurece o 600 |
+| `brand-400` como texto sobre `dark-surface` (e com tinta brand) | ≥ 4.5:1 | clareia o 400 |
+| Escala monótona (cada passo nunca mais claro que o anterior) | — | reordena |
+
+Consequência para quem escreve UI: **texto da marca em light é `text-brand-700`** (nunca
+600/500 em texto normal), **em dark é `text-brand-400`**, e botões com texto branco usam
+`bg-brand-700` (hover `bg-brand-800`). `brand-500` e `brand-600` são para ícones, rings,
+glows, gradientes e títulos grandes. Cores fixas da marca em classes arbitrárias
+(`shadow-[...rgba(...)]`) escrevem-se com a variável: `rgb(var(--brand-600)/0.3)`.
+
+Os neutros slate, `accent-gold` e o fundo escuro são fixos da plataforma. Ver
 [WHITE-LABEL.md](WHITE-LABEL.md) para o resto do branding.

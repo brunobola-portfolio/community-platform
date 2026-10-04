@@ -6,6 +6,44 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.15.0] - 2026-10-04
+
+Creating content, giving access and dressing the portal in an association's brand become
+things anyone on the board can do from the backoffice, without help.
+
+### Added
+
+- **AI studio for events and news.** "Criar com IA" turns a sentence ("torneio de sueca no
+  sábado às 15h, 5 € por dupla") into a filled form: title, text, date (relative days
+  resolved), place, category, tournament and registration questions, plus a finished poster.
+  Give it last year's poster and it reads it, keeps the look and updates the edition, date
+  and details. Nothing is published until the form is saved; the poster arrives optimised
+- **Image engine choice**: NanoBanana (Gemini) or an OpenRouter image model such as GPT
+  Image 2, the engine behind ChatGPT's images, with automatic fallback to the other; the
+  image tool can use the current picture as reference
+- **Acessos tab**: give someone access by email (administrator or member) with a temporary
+  password shown once and a ready-to-send message; change the role, issue a new password,
+  remove an account. The last administrator and one's own access are protected
+- **Change password** for everyone, in the member area and the backoffice sidebar
+- **Dynamic brand**: colour (the full scale is derived and kept WCAG AA, even for light
+  colours like yellow), heading and body fonts from a curated Google Fonts list, and a
+  "Marca e imprensa" link to the instance's brand guide or media kit, all in Definições ›
+  Marca with a live light/dark preview
+- `access:grantFromCli` for operators when nobody can sign in
+
+### Changed
+
+- The platform's own default brand is a neutral indigo with neutral icons; a client's colour,
+  logos and guide live only in its instance (DB settings, `VITE_BRAND_*`, brand overlay)
+- Emails are stored lower-case, so capitalisation no longer creates a second account
+- Every dialog renders at the document root, so one opened inside an animated section can no
+  longer end up under the page and lose its clicks
+- A failed AI image generation says so instead of returning a stock photo
+
+### Removed
+
+- `lib/bootstrapAdmin:setUserRole`, replaced by the Acessos tab and `access:grantFromCli`
+
 ## [2.14.1] - 2026-09-30
 
 ### Fixed

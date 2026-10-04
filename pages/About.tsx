@@ -117,7 +117,7 @@ const LocationCommand: React.FC = () => {
 
           <div>
             <div className="flex items-center gap-3 mb-10">
-               <div className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_10px_#df3d32]"></div>
+               <div className="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse shadow-[0_0_10px_rgb(var(--brand-600))]"></div>
                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.4em]">{[settings.locality, settings.region].filter(Boolean).join(" · ") || settings.siteName}</span>
             </div>
 
@@ -228,20 +228,20 @@ const LocationCommand: React.FC = () => {
                  <div className="relative w-32 h-32 md:w-44 md:h-44 rounded-full border border-slate-900/10 dark:border-white/5 flex items-center justify-center backdrop-blur-3xl shadow-[0_0_50px_rgba(15,23,42,0.15)] dark:shadow-[0_0_50px_rgba(0,0,0,0.8)]">
                     <div className="absolute inset-0 border border-brand-500/20 rounded-full animate-ping [animation-duration:3s]"></div>
                     <div className="absolute inset-4 border-2 border-dashed border-brand-500/10 rounded-full animate-[spin_20s_linear_infinite]"></div>
-                    <MapPin size={64} className="text-brand-500 drop-shadow-[0_0_30px_rgba(223,61,50,0.8)]" fill="currentColor" />
+                    <MapPin size={64} className="text-brand-500 drop-shadow-[0_0_30px_rgb(var(--brand-600)/0.8)]" fill="currentColor" />
                  </div>
               </div>
 
               <div className="text-center mb-12">
                  <h3 className="text-slate-900 dark:text-white text-3xl font-serif mb-2 tracking-tight">{settings.venueName || settings.siteName}</h3>
-                 <p className="text-brand-600/70 dark:text-brand-400/60 text-xs font-bold uppercase tracking-[0.4em]">{settings.address.split(",")[0]}</p>
+                 <p className="text-brand-700 dark:text-brand-400 text-xs font-bold uppercase tracking-[0.4em]">{settings.address.split(",")[0]}</p>
               </div>
 
               <a
                 href={sanitizeUrl(settings.mapsUrl ?? '') || `https://www.google.com/maps/search/?api=1&query=${LOCATION.lat},${LOCATION.lon}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group/btn flex items-center gap-5 bg-brand-700 hover:bg-brand-800 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgba(223,61,50,0.2)] transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="group/btn flex items-center gap-5 bg-brand-700 hover:bg-brand-800 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgb(var(--brand-600)/0.2)] transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 <Navigation size={26} className="group-hover/btn:rotate-45 transition-transform duration-500" />
                 <span className="text-lg tracking-widest uppercase">Obter Direções</span>
@@ -364,7 +364,7 @@ const ContactForm: React.FC = () => {
                   {error}
                 </div>
               )}
-              <Button type="submit" className="w-full py-8 text-xl rounded-2xl h-16 shadow-[0_20px_40px_rgba(223,61,50,0.3)] bg-brand-700 hover:bg-brand-800" disabled={isSubmitting}>
+              <Button type="submit" className="w-full py-8 text-xl rounded-2xl h-16 shadow-[0_20px_40px_rgb(var(--brand-600)/0.3)] bg-brand-700 hover:bg-brand-800" disabled={isSubmitting}>
                 {isSubmitting ? <RotateCw className="animate-spin" /> : <><Send size={22} className="mr-3" /> Enviar Mensagem</>}
               </Button>
             </form>

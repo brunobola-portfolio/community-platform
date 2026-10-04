@@ -253,7 +253,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
       {/* Action Areas Section */}
       <section className="py-32 bg-slate-50 dark:bg-dark-bg relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(223,61,50,0.05)_0,transparent_70%)] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgb(var(--brand-600)/0.05)_0,transparent_70%)] pointer-events-none"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
@@ -282,7 +282,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               return (
                 <div
                   key={area.id}
-                  className="group relative h-[420px] rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_30px_rgba(223,61,50,0.15)] transition-all duration-500"
+                  className="group relative h-[420px] rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.15)] transition-all duration-500"
                   role="button"
                   tabIndex={0}
                   onClick={() => setSelectedArea(area)}
@@ -303,7 +303,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                     </div>
 
                     <div className="mt-8">
-                      <div className="mb-2 text-xs font-mono uppercase tracking-widest text-brand-700 dark:text-brand-400/80">{area.subtitle}</div>
+                      <div className="mb-2 text-xs font-mono uppercase tracking-widest text-brand-700 dark:text-brand-400">{area.subtitle}</div>
                       <h3 className="text-3xl font-serif text-slate-900 dark:text-white mb-4 group-hover:translate-x-1 transition-transform duration-300">{area.title}</h3>
 
                       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">
@@ -364,7 +364,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
 
                 <div className="absolute top-6 right-6">
-                  <div className="bg-brand-700 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_10px_rgba(223,61,50,0.5)]">Destaque</div>
+                  <div className="bg-brand-700 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_10px_rgb(var(--brand-600)/0.5)]">Destaque</div>
                 </div>
 
                 <div className="absolute bottom-0 left-0 p-8 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
@@ -408,7 +408,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             )}
 
             {/* Gallery Link */}
-            <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl bg-brand-700 p-6 flex flex-col justify-center items-center text-center hover:bg-brand-800 transition-colors shadow-[0_0_30px_rgba(223,61,50,0.2)]">
+            <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl bg-brand-700 p-6 flex flex-col justify-center items-center text-center hover:bg-brand-800 transition-colors shadow-[0_0_30px_rgb(var(--brand-600)/0.2)]">
               <h3 className="text-2xl font-serif text-white mb-2 z-10"><Link to="/gallery" className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">Multimédia</Link></h3>
               <p className="text-brand-100 text-sm mb-4">Explore a galeria de fotos e vídeos.</p>
               <span className="inline-flex w-full items-center justify-center rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition-colors group-hover:bg-white/20">Ver Galeria</span>

@@ -22,6 +22,12 @@ export const getPublic = query({
             heroTagline: settings.heroTagline,
             heroSubtitle: settings.heroSubtitle,
             heroImageUrl: settings.heroImageUrl,
+            brandColor: settings.brandColor,
+            fontHeading: settings.fontHeading,
+            fontBody: settings.fontBody,
+            brandGuideUrl: settings.brandGuideUrl,
+            imageProvider: settings.imageProvider,
+            openrouterImageModel: settings.openrouterImageModel,
             historyIntro: settings.historyIntro,
             historyQuote: settings.historyQuote,
             venueName: settings.venueName,
@@ -115,6 +121,12 @@ export const getForAI = internalQuery({
             thinkingBudget: doc.thinkingBudget,
             ttsModel: doc.ttsModel,
             imageModel: doc.imageModel,
+            // The AI studio: poster palette, image engine and the default venue
+            imageProvider: doc.imageProvider,
+            openrouterImageModel: doc.openrouterImageModel,
+            defaultImageStyle: doc.defaultImageStyle,
+            brandColor: doc.brandColor,
+            venueName: doc.venueName,
             contentTone: doc.contentTone,
             aiProvider: doc.aiProvider,
             openrouterApiKey: doc.openrouterApiKey,
@@ -140,6 +152,12 @@ export const update = mutation({
         heroTagline: v.optional(v.string()),
         heroSubtitle: v.optional(v.string()),
         heroImageUrl: v.optional(v.string()),
+        brandColor: v.optional(v.string()),
+        fontHeading: v.optional(v.string()),
+        fontBody: v.optional(v.string()),
+        brandGuideUrl: v.optional(v.string()),
+        imageProvider: v.optional(v.union(v.literal("gemini"), v.literal("openrouter"))),
+        openrouterImageModel: v.optional(v.string()),
         historyIntro: v.optional(v.string()),
         historyQuote: v.optional(v.string()),
         venueName: v.optional(v.string()),
@@ -211,6 +229,14 @@ export const update = mutation({
         if (args.heroTagline !== undefined) validateMaxLength(args.heroTagline, "heroTagline", 600);
         if (args.heroSubtitle !== undefined) validateMaxLength(args.heroSubtitle, "heroSubtitle", 600);
         if (args.heroImageUrl !== undefined) validateMaxLength(args.heroImageUrl, "heroImageUrl", 500);
+        // The palette is derived from this value, so anything but #rrggbb would break every page
+        if (args.brandColor !== undefined && args.brandColor !== "" && !/^#[0-9a-fA-F]{6}$/.test(args.brandColor)) {
+            throw new ConvexError("A cor da marca tem de estar no formato #rrggbb.");
+        }
+        if (args.fontHeading !== undefined) validateMaxLength(args.fontHeading, "fontHeading", 60);
+        if (args.fontBody !== undefined) validateMaxLength(args.fontBody, "fontBody", 60);
+        if (args.brandGuideUrl !== undefined) validateMaxLength(args.brandGuideUrl, "brandGuideUrl", 500);
+        if (args.openrouterImageModel !== undefined) validateMaxLength(args.openrouterImageModel, "openrouterImageModel", 100);
         if (args.historyIntro !== undefined) validateMaxLength(args.historyIntro, "historyIntro", 4000);
         if (args.historyQuote !== undefined) validateMaxLength(args.historyQuote, "historyQuote", 600);
         if (args.venueName !== undefined) validateMaxLength(args.venueName, "venueName", 600);
@@ -268,6 +294,12 @@ export const update = mutation({
                 heroTagline: args.heroTagline,
                 heroSubtitle: args.heroSubtitle,
                 heroImageUrl: args.heroImageUrl,
+                brandColor: args.brandColor,
+                fontHeading: args.fontHeading,
+                fontBody: args.fontBody,
+                brandGuideUrl: args.brandGuideUrl,
+                imageProvider: args.imageProvider,
+                openrouterImageModel: args.openrouterImageModel,
                 historyIntro: args.historyIntro,
                 historyQuote: args.historyQuote,
                 venueName: args.venueName,

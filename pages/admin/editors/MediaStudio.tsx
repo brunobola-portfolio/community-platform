@@ -1,14 +1,13 @@
 
 import React, { useState } from 'react';
 import { useMutation } from 'convex/react';
-import { Image as ImageIcon, Wand2, Upload, Link as LinkIcon, Sparkles, Loader2, Trash2 } from 'lucide-react';
-import { Button, cn } from '../../../components/ui/UIComponents';
-import { AdminSelect } from '../components/AdminSelect';
+import { Image as ImageIcon, Wand2, Upload, Link as LinkIcon, Loader2, Trash2 } from 'lucide-react';
+import { cn } from '../../../components/ui/UIComponents';
 import { STD_INPUT_CLASS, LABEL_CLASS } from '../constants';
 import { api } from '../../../convex/_generated/api';
-import { DEFAULT_IMAGE_MODEL } from '../../../convex/lib/aiDefaults';
-import { GEMINI_IMAGE_MODELS } from '../../../convex/lib/aiDefaults';
 import { optimizeImage } from '../../../utils/imageOptimize';
+import { MediaStudioAIPanel } from './MediaStudioAIPanel';
+import type { GenerateImageOptions } from '../types';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -16,7 +15,7 @@ export interface MediaStudioProps {
     imageUrl: string;
     onChange: (url: string) => void;
     /** Without it the studio offers upload and link only (e.g. site photos in the settings). */
-    onGenerateAI?: (prompt: string, options?: { model?: string; resolution?: string }) => void;
+    onGenerateAI?: (prompt: string, options?: GenerateImageOptions) => void;
     isGenerating?: boolean;
     defaultStyle?: string;
     defaultModel?: string;
@@ -38,9 +37,6 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
     // Uploading a poster or a photo is the everyday action; generation is the exception
     const [mode, setMode] = useState<'url' | 'ai' | 'upload'>('upload');
     const [savedNote, setSavedNote] = useState('');
-    const [aiPrompt, setAiPrompt] = useState('');
-    const [aiModel, setAiModel] = useState(defaultModel || DEFAULT_IMAGE_MODEL);
-    const [aiResolution, setAiResolution] = useState(defaultResolution || '1k');
     const [uploadError, setUploadError] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const generateUploadUrl = useMutation(api.files.generateUploadUrl);
@@ -127,38 +123,7 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                         ))}
                     </div>
                     {mode === 'ai' && onGenerateAI && (
-                        <div className="space-y-3">
-                            <div className="flex gap-2">
-                                <div className="min-w-0 flex-1">
-                                    <AdminSelect value={aiModel} onChange={e => setAiModel(e.target.value)} aria-label="Modelo de geração de imagem" className="text-xs">
-                                        {GEMINI_IMAGE_MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
-                                    </AdminSelect>
-                                </div>
-                                <div className="w-24 shrink-0">
-                                    <AdminSelect value={aiResolution} onChange={e => setAiResolution(e.target.value)} aria-label="Resolução" className="text-xs">
-                                        <option value="1k">1K</option>
-                                        <option value="2k">2K</option>
-                                        <option value="4k">4K</option>
-                                    </AdminSelect>
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <div className="flex-1 min-w-0 relative">
-                                    <Sparkles size={16} className="absolute left-3 top-3 text-brand-400" />
-                                    <input
-                                        aria-label="Descrição da imagem a gerar"
-                                        placeholder={defaultStyle ? `Ex: "Futsal..." (${defaultStyle})` : "Descreva..."}
-                                        className={cn(STD_INPUT_CLASS, "pl-10")}
-                                        value={aiPrompt}
-                                        onChange={e => setAiPrompt(e.target.value)}
-                                        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); onGenerateAI(aiPrompt, { model: aiModel, resolution: aiResolution }); } }}
-                                    />
-                                </div>
-                                <Button type="button" size="icon" aria-label="Gerar imagem" onClick={() => onGenerateAI(aiPrompt, { model: aiModel, resolution: aiResolution })} disabled={isGenerating || !aiPrompt} className="bg-brand-700 hover:bg-brand-800 shrink-0">
-                                    {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Wand2 size={20} />}
-                                </Button>
-                            </div>
-                        </div>
+                        <MediaStudioAIPanel imageUrl={imageUrl} onGenerate={onGenerateAI} isGenerating={isGenerating} defaultStyle={defaultStyle} defaultModel={defaultModel} defaultResolution={defaultResolution} />
                     )}
                     {mode === 'url' && (
                         <input aria-label="Endereço da imagem" placeholder="https://..." value={imageUrl} onChange={e => onChange(e.target.value)} className={STD_INPUT_CLASS} />

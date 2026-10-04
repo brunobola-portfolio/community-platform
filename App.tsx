@@ -14,11 +14,13 @@ import React from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { BrandTheme } from './components/BrandTheme';
 import { router } from './router';
 
 const App: React.FC = () => (
   <ErrorBoundary>
     <DataProvider>
+      <BrandTheme />
       <RouterProvider router={router} />
     </DataProvider>
   </ErrorBoundary>

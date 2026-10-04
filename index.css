@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Brand defaults for the first paint. BrandTheme overwrites these on <html>
+ * as soon as the instance settings load. The values are derived from the
+ * platform default (#4f46e5) by utils/brandPalette.ts; tests/brandPalette.test.ts
+ * fails if they drift apart.
+ */
+:root {
+  --brand-50: 244 244 253;
+  --brand-100: 234 233 252;
+  --brand-200: 213 211 249;
+  --brand-300: 185 181 245;
+  --brand-400: 146 140 239;
+  --brand-500: 111 103 234;
+  --brand-600: 79 70 229;
+  --brand-700: 66 59 192;
+  --brand-800: 53 48 156;
+  --brand-900: 43 39 126;
+  --brand-950: 27 24 80;
+  --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 @layer utilities {
   /* Slim themed scrollbar for modal bodies and horizontal rails */
   .custom-scrollbar {

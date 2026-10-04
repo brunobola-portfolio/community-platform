@@ -17,7 +17,9 @@ export const { auth, signIn, signOut, store } = convexAuth({
             // The member card and the greeting use `name`; without it the UI falls back to the email prefix
             profile(params) {
                 const name = typeof params.name === "string" ? params.name.trim().slice(0, 80) : "";
-                return { email: params.email as string, ...(name ? { name } : {}) };
+                // One account per address whatever the capitalisation; access.grant stores it the same way
+                const email = String(params.email ?? "").trim().toLowerCase();
+                return { email, ...(name ? { name } : {}) };
             },
         }),
     ],

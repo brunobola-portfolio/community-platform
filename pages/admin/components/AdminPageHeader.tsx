@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, Plus } from 'lucide-react';
+import { ExternalLink, Plus, Sparkles } from 'lucide-react';
 import { Button } from '../../../components/ui/UIComponents';
 
 interface AdminPageHeaderProps {
@@ -9,9 +9,11 @@ interface AdminPageHeaderProps {
     /** Record count for list tabs. */
     count?: number;
     action?: { label: string; onClick: () => void };
+    /** Secondary "Criar com IA" next to the primary action, on the tabs the AI studio supports. */
+    aiAction?: { label: string; onClick: () => void };
 }
 
-export const AdminPageHeader: React.FC<AdminPageHeaderProps> = ({ title, description, count, action }) => (
+export const AdminPageHeader: React.FC<AdminPageHeaderProps> = ({ title, description, count, action, aiAction }) => (
     <header className="mb-6 flex flex-col gap-4 md:mb-8 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
             <h1 className="flex items-center gap-3 font-serif text-2xl text-white md:text-3xl">
@@ -25,7 +27,7 @@ export const AdminPageHeader: React.FC<AdminPageHeaderProps> = ({ title, descrip
             {description && <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-400">{description}</p>}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
             <a
                 href="/"
                 target="_blank"
@@ -34,6 +36,11 @@ export const AdminPageHeader: React.FC<AdminPageHeaderProps> = ({ title, descrip
             >
                 <ExternalLink size={14} /> Ver site
             </a>
+            {aiAction && (
+                <Button variant="outline" onClick={aiAction.onClick} className="w-full dark:border-brand-500/40 dark:bg-brand-500/10 dark:text-brand-200 dark:hover:border-brand-400 dark:hover:text-white md:w-auto">
+                    <Sparkles size={16} /> {aiAction.label}
+                </Button>
+            )}
             {action && (
                 <Button onClick={action.onClick} className="w-full shadow-lg md:w-auto">
                     <Plus size={18} /> {action.label}

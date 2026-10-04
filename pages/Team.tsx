@@ -18,7 +18,7 @@ import { PageMeta } from '../components/PageMeta';
 const MemberCard: React.FC<{ member: Member, isFeatured?: boolean, onOpenPhoto: () => void }> = ({ member, isFeatured, onOpenPhoto }) => (
   <div className={`relative group transition-transform duration-300 hover:-translate-y-1 ${isFeatured ? 'md:col-span-1 md:row-span-1' : ''}`}>
     <div className="absolute inset-0 bg-gradient-to-r from-brand-500 to-brand-800 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
-    <div className={`relative bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl overflow-hidden hover:border-slate-900/20 dark:hover:border-white/20 transition-all duration-300 h-full flex flex-col ${isFeatured ? 'shadow-[0_0_30px_rgba(223,61,50,0.2)]' : ''}`}>
+    <div className={`relative bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl overflow-hidden hover:border-slate-900/20 dark:hover:border-white/20 transition-all duration-300 h-full flex flex-col ${isFeatured ? 'shadow-[0_0_30px_rgb(var(--brand-600)/0.2)]' : ''}`}>
 
       <div
         className={`relative overflow-hidden ${member.photoUrl ? 'cursor-zoom-in' : ''} ${isFeatured ? 'h-96' : 'h-80'}`}

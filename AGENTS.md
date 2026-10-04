@@ -49,6 +49,12 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   Instâncias reais vivem em repositórios privados próprios (padrão e template em
   `docs/INSTANCE-REPO.md` + `templates/instance/`) — nunca commitar camadas de uma
   instância neste repositório.
+- **A marca é dinâmica**: `settings.brandColor`/`fontHeading`/`fontBody`/`brandGuideUrl`
+  (Admin > Definições > Marca). `utils/brandPalette.ts` gera a escala `brand-50…950` de uma
+  cor com contraste AA corrigido, `components/BrandTheme.tsx` (acima do router) escreve as
+  variáveis `--brand-*`/`--font-*` no `<html>` e carrega as fontes da lista curada
+  `utils/brandFonts.ts`; os defaults do `index.css` cobrem o primeiro paint. Nunca escrever
+  um hex de marca em código: usar `brand-*` ou `rgb(var(--brand-600)/0.3)` em arbitrários.
 - **Modelos IA têm fonte única**: `convex/lib/aiDefaults.ts`. Tanto o frontend
   (`utils/defaultSettings.ts`) como as actions (`convex/ai.ts`) importam de lá — não
   duplicar strings de modelo em mais lado nenhum. Em OpenRouter o chat percorre
@@ -116,7 +122,10 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   imagem = os três pontos (create, update, delete); sem eles, um ficheiro substituído fica no
   storage para sempre.
 - **Admin sem comandos**: BD sem admin redireciona qualquer acesso para o wizard `/setup`.
-  Fallback CLI raro: `npx convex run lib/bootstrapAdmin:setUserRole`.
+  Depois disso, acessos geridos no backoffice (separador Acessos, `convex/access.ts`): conta nova
+  com palavra-passe temporária mostrada uma vez, mudar tipo, repor palavra-passe, remover;
+  cada pessoa muda a sua em "Alterar palavra-passe". Sem serviço de email, por desenho.
+  Fallback CLI: `npx convex run --prod access:grantFromCli '{"email":"…","role":"admin"}'`.
 
 ## Regras Convex (obrigatórias)
 

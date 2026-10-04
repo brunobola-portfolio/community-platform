@@ -73,7 +73,7 @@ export const HistoryPage: React.FC = () => {
               <div key={idx} className={`relative flex flex-col md:flex-row gap-8 items-center ${idx % 2 !== 0 ? 'md:flex-row-reverse' : ''} group`}>
                 
                 {/* Center Dot */}
-                <div className="absolute left-4 md:left-1/2 w-8 h-8 rounded-full border-4 border-slate-50 dark:border-dark-bg bg-brand-500 shadow-[0_0_20px_#df3d32] transform -translate-x-1/2 z-10 flex items-center justify-center">
+                <div className="absolute left-4 md:left-1/2 w-8 h-8 rounded-full border-4 border-slate-50 dark:border-dark-bg bg-brand-500 shadow-[0_0_20px_rgb(var(--brand-600))] transform -translate-x-1/2 z-10 flex items-center justify-center">
                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                 </div>
 
@@ -94,7 +94,7 @@ export const HistoryPage: React.FC = () => {
                 {/* Image Side */}
                 <div className={`w-full md:w-1/2 pl-12 md:pl-0 ${idx % 2 === 0 ? 'md:pl-16' : 'md:pr-16'}`}>
                    <div
-                      className="relative h-64 md:h-80 w-full rounded-2xl overflow-hidden border border-slate-900/10 dark:border-white/10 group-hover:border-brand-500/50 group-hover:shadow-[0_0_30px_rgba(223,61,50,0.2)] transition-all duration-500 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      className="relative h-64 md:h-80 w-full rounded-2xl overflow-hidden border border-slate-900/10 dark:border-white/10 group-hover:border-brand-500/50 group-hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.2)] transition-all duration-500 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                       role="button"
                       tabIndex={0}
                       aria-label={`Ampliar imagem: ${item.title} (${item.year})`}

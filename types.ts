@@ -59,6 +59,12 @@ export interface Settings {
   heroTagline?: string;
   heroSubtitle?: string;
   heroImageUrl?: string;
+  brandColor?: string;
+  fontHeading?: string;
+  fontBody?: string;
+  brandGuideUrl?: string;
+  imageProvider?: 'gemini' | 'openrouter';
+  openrouterImageModel?: string;
   historyIntro?: string;
   historyQuote?: string;
   venueName?: string;

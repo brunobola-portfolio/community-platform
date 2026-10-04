@@ -242,7 +242,7 @@ Sem comandos. Enquanto a base de dados não tem admin, qualquer acesso redirecio
 dígito) e entras no `/admin`.
 
 > Reset (raro): apaga o campo `role` do utilizador no Convex Dashboard, ou usa o fallback
-> CLI `npx convex run lib/bootstrapAdmin:setUserRole '{"email":"...","role":"admin"}'`.
+> CLI `npx convex run access:grantFromCli '{"email":"...","role":"admin"}'`.
 
 ## Comandos
 
@@ -347,9 +347,9 @@ Referência completa em [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md).
 | Propriedade | Valor |
 |-------------|-------|
 | Tema | Claro + escuro (`darkMode: 'class'`, default escuro), glassmorphism |
-| Cor brand | `brand-600` #df3d32 (light) / `brand-400`–`brand-500` (dark) |
+| Cor brand | Por instância, em Admin > Definições > Marca (por omissão índigo #4f46e5); `brand-50…950` gerada em runtime com contraste AA garantido |
 | Accent | Gold #fbbf24 · Neutrals: slate (dark bg #020617, surface #0f172a) |
-| Fontes | Geist (sans), Playfair Display (serif) |
+| Fontes | Por instância, de uma lista curada do Google Fonts (por omissão Geist + Playfair Display) |
 | Radius | `rounded-xl` 12px · `rounded-2xl` 16px · `rounded-3xl` 24px |
 
 ## Contribuição

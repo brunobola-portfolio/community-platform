@@ -7,6 +7,7 @@ import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import type { AdminSettingsTabProps } from './types';
 import type { AboutPillar } from '../../types';
 import { AdminIdentitySection } from './AdminIdentitySection';
+import { AdminBrandSection } from './AdminBrandSection';
 import { Field } from './components/Field';
 
 // Icon options must match PILLAR_ICONS in pages/About.tsx
@@ -72,6 +73,8 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
             </div>
 
             <AdminIdentitySection settingsForm={settingsForm} onChange={update} />
+
+            <AdminBrandSection settingsForm={settingsForm} onChange={update} />
 
             {/* Contact & Location */}
             <div className="bg-dark-surface border border-white/10 rounded-2xl p-6">

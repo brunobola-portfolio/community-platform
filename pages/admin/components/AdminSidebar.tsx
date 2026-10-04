@@ -3,8 +3,9 @@ import React from 'react';
 import {
     LogOut, LayoutDashboard, Calendar, FileText, Users, Image as ImageIcon,
     Settings as SettingsIcon, Handshake, Bell, Layers, Award, ChevronRight,
-    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet, X, ClipboardCheck
+    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet, X, ClipboardCheck, KeyRound
 } from 'lucide-react';
+import { ChangePasswordModal } from '../../../components/ChangePasswordModal';
 import { Button, cn } from '../../../components/ui/UIComponents';
 import type { Tab } from '../types';
 
@@ -17,6 +18,19 @@ interface SidebarItemProps {
     /** Items waiting for action, shown as a count. */
     badge?: number;
 }
+
+/** Own state so the stateless sidebar can open the password dialog. */
+const AccountButton: React.FC = () => {
+    const [open, setOpen] = React.useState(false);
+    return (
+        <>
+            <Button variant="ghost" className="w-full justify-start text-slate-400 hover:bg-white/5 hover:text-white h-9" onClick={() => setOpen(true)}>
+                <KeyRound size={16} className="mr-2" /> Alterar palavra-passe
+            </Button>
+            <ChangePasswordModal isOpen={open} onClose={() => setOpen(false)} />
+        </>
+    );
+};
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ id, icon: Icon, label, activeTab, onSelect, badge }) => (
     <button
@@ -58,7 +72,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
     )}>
         <div className="flex items-center justify-between p-6 pb-4 md:pb-6">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-brand-700 rounded-xl flex items-center justify-center text-white shadow-[0_0_15px_rgba(223,61,50,0.3)]">
+                <div className="w-10 h-10 bg-brand-700 rounded-xl flex items-center justify-center text-white shadow-[0_0_15px_rgb(var(--brand-600)/0.3)]">
                     <Shield size={24} />
                 </div>
                 <div>
@@ -104,13 +118,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
                     <SidebarItem id="notifications" icon={Bell} label="Avisos aos sócios" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="categories" icon={Layers} label="Categorias" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="tiers" icon={Award} label="Níveis de Parceria" activeTab={activeTab} onSelect={onTabSelect} />
+                    <SidebarItem id="access" icon={KeyRound} label="Acessos" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="ai" icon={Bot} label="Assistente virtual" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="settings" icon={SettingsIcon} label="Definições" activeTab={activeTab} onSelect={onTabSelect} />
                 </div>
             </div>
         </nav>
 
-        <div className="p-4 border-t border-white/5 bg-black/20">
+        <div className="p-4 border-t border-white/5 bg-black/20 space-y-1">
+            <AccountButton />
             <Button variant="ghost" className="w-full justify-start text-red-400 hover:bg-red-900/10 hover:text-red-300 h-9" onClick={onLogout}>
                 <LogOut size={16} className="mr-2" /> Terminar Sessão
             </Button>

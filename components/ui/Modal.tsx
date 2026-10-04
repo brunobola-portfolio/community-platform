@@ -8,6 +8,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
@@ -117,7 +118,9 @@ export const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  // Portalled to <body>: a dialog opened inside an animated (transformed) section would
+  // otherwise be trapped by it, drawn under later content and lose its clicks
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-end justify-center p-0 sm:items-center sm:p-6">
       <div
         className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm dark:bg-black/70"
@@ -192,6 +195,7 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

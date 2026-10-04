@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/UIComponents';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import { AdminSelect } from './components/AdminSelect';
 import { ProviderConfigSection } from './components/ProviderConfigSection';
+import { ImageEngineSection } from './components/ImageEngineSection';
 import type { AdminAITabProps } from './types';
 import { Field } from './components/Field';
 import { GEMINI_CHAT_MODELS, GEMINI_TTS_MODELS, GEMINI_IMAGE_MODELS } from '../../convex/lib/aiDefaults';
@@ -31,6 +32,7 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
             <ChatbotConfig settingsForm={settingsForm} update={update} />
             <GuardrailsConfig settingsForm={settingsForm} update={update} />
             <ImageGenerationConfig settingsForm={settingsForm} update={update} />
+            <ImageEngineSection settingsForm={settingsForm} update={update} />
             <TestChatSection />
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-white/10 bg-dark-bg/95 p-4 backdrop-blur">

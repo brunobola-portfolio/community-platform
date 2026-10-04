@@ -6,6 +6,7 @@ import type { AdminFormModalProps } from './types';
 import { EventForm, PostForm, MilestoneForm, ActionAreaForm, AlbumForm } from './forms/ContentForms';
 import { MemberForm, SponsorForm, TierForm, CategoryForm } from './forms/PeopleForms';
 import { DocumentForm, NotificationForm, StatForm } from './forms/SystemForms';
+import { AI_DRAFT_FLAG } from './studio/draftToForm';
 
 
 /** Human labels for the dialog header, one per entity the form can edit. */
@@ -69,7 +70,8 @@ export const AdminFormModal: React.FC<AdminFormModalProps> = ({
     // Snapshot on open so closing with pending edits can warn instead of
     // silently throwing the work away
     const initialSnapshot = useRef(JSON.stringify(formData));
-    const isDirty = JSON.stringify(formData) !== initialSnapshot.current;
+    // An AI draft is unsaved work from its first render, so its snapshot alone cannot tell
+    const isDirty = formData[AI_DRAFT_FLAG] === true || JSON.stringify(formData) !== initialSnapshot.current;
     const [askDiscard, setAskDiscard] = useState(false);
     const requestClose = () => (isDirty ? setAskDiscard(true) : onClose());
 

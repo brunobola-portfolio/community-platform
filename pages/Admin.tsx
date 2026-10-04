@@ -6,7 +6,7 @@
  * Owns top-level state (activeTab, modal, formData) and routes to the correct tab.
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, Suspense, lazy } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { Menu, PenTool, Calendar, Bell } from 'lucide-react';
@@ -14,7 +14,7 @@ import { useAction, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
 
-import type { Tab, ToastState, AIStats, AdminFormData, AdminRecord } from './admin/types';
+import type { Tab, ToastState, AIStats, AdminFormData, AdminRecord, GenerateImageOptions } from './admin/types';
 import type { ActionResult, Registration } from '../types';
 import { TAB_NAMES, TAB_DESCRIPTIONS, NEW_LABELS, formatDateForInput, getGreeting } from './admin/constants';
 import { describeActionError } from './admin/errors';
@@ -30,6 +30,7 @@ import { AdminSettingsTab } from './admin/AdminSettingsTab';
 import { AdminAITab } from './admin/AdminAITab';
 import { AdminLeadsTab } from './admin/AdminLeadsTab';
 import { AdminMemberQuotasTab } from './admin/AdminMemberQuotasTab';
+import { AdminAccessTab } from './admin/AdminAccessTab';
 import { AdminFormModal } from './admin/AdminFormModal';
 import { HomepageTab } from './admin/tabs/HomepageTab';
 import { EventsTab } from './admin/tabs/EventsTab';
@@ -42,6 +43,9 @@ import { DocumentsTab } from './admin/tabs/DocumentsTab';
 import { NotificationsTab } from './admin/tabs/NotificationsTab';
 import { MilestonesTab } from './admin/tabs/MilestonesTab';
 import { AdminGalleryManager } from './admin/gallery/AdminGalleryManager';
+import { AI_DRAFT_FLAG } from './admin/studio/draftToForm';
+
+const AIStudioModal = lazy(() => import('./admin/studio/AIStudioModal').then(m => ({ default: m.AIStudioModal })));
 
 /**
  * The wrappers return either an ActionResult (`error`) or the category shape
@@ -129,6 +133,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const [deleteConfirm, setDeleteConfirm] = useState<DeleteConfirmState | null>(null);
     const [tempPhotoUrl, setTempPhotoUrl] = useState('');
     const [viewRegistration, setViewRegistration] = useState<Registration | null>(null);
+    const [studioKind, setStudioKind] = useState<'event' | 'post' | null>(null);
 
     useEffect(() => { setSettingsForm(settings); }, [settings]);
 
@@ -142,13 +147,13 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const notify = (message: string, type: ToastState['type'] = 'success') => setToast({ message, type });
 
     // ── AI Handlers ──────────────────────────────────────────────────────────
-    const handleGenerateImage = async (customPrompt?: string, options?: { model?: string; resolution?: string }) => {
+    const handleGenerateImage = async (customPrompt?: string, options?: GenerateImageOptions) => {
         setIsGeneratingImage(true);
         const prompt = customPrompt || String(formData.title ?? '') || "Community event";
         try {
-            const result = await generateImageAction({ prompt, style: settings.defaultImageStyle, model: options?.model, resolution: options?.resolution });
+            const result = await generateImageAction({ prompt, style: settings.defaultImageStyle, model: options?.model, resolution: options?.resolution, referenceUrl: options?.referenceUrl, engine: options?.engine });
             // A failed generation answers with a stock photo; saving it as "generated" would mislead
-            if (!result.isGenerated) {
+            if (!result.isGenerated || !result.imageUrl) {
                 notify('Não foi possível gerar a imagem. Tente outro pedido ou carregue uma imagem sua.', 'error');
                 return;
             }
@@ -301,8 +306,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         if (!showModal || isSubmitting) return;
         setIsSubmitting(true);
         try {
-            const { _id, _creationTime, id, _originalMedia, ...rest } = formData;
-            void _id; void _creationTime; void id;
+            const { _id, _creationTime, id, _originalMedia, [AI_DRAFT_FLAG]: _aiDraft, ...rest } = formData;
+            void _id; void _creationTime; void id; void _aiDraft;
             // An image the admin did not change must not travel back as a URL
             const original = (_originalMedia ?? {}) as Record<string, unknown>;
             for (const key of MEDIA_KEYS) {
@@ -370,6 +375,13 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         setShowModal(type);
     };
 
+    /** Opens a create form already filled in (the AI studio); nothing is saved until Guardar. */
+    const openPrefilled = (type: string, data: AdminFormData) => {
+        setEditingId(null); setEditingTierId(null); setTempPhotoUrl('');
+        setFormData(data);
+        setShowModal(type);
+    };
+
     const openNewModal = () => {
         const type = NEW_ENTITY_BY_TAB[activeTab];
         if (type) openModalFor(type);
@@ -406,6 +418,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                         description={TAB_DESCRIPTIONS[activeTab]}
                         count={tabCounts[activeTab]}
                         action={showNewButton ? { label: NEW_LABELS[activeTab] ?? 'Novo registo', onClick: openNewModal } : undefined}
+                        aiAction={activeTab === 'events' || activeTab === 'news' ? { label: 'Criar com IA', onClick: () => setStudioKind(activeTab === 'events' ? 'event' : 'post') } : undefined}
                     />
 
                     <div className="mb-4 flex gap-3 overflow-x-auto pb-4 no-scrollbar md:hidden">
@@ -429,6 +442,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     {activeTab === 'ai' && <AdminAITab aiStats={aiStats} settingsForm={settingsForm} onSettingsChange={setSettingsForm} onSave={() => void handleSaveSettings('Definições de IA')} isSaving={isSavingSettings} />}
                     {activeTab === 'leads' && <AdminLeadsTab />}
                     {activeTab === 'member-quotas' && <AdminMemberQuotasTab />}
+                    {activeTab === 'access' && <AdminAccessTab siteName={settings.siteName} notify={notify} />}
                     {activeTab === 'homepage' && <HomepageTab actionAreas={actionAreas} stats={stats} {...handlers} onNewStat={() => openModalFor('stat')} />}
                     {activeTab === 'events' && <EventsTab events={events} {...handlers} />}
                     {activeTab === 'registrations' && <RegistrationsTab events={events} registrations={registrations} onView={setViewRegistration} onSetStatus={(id, status) => updateRegistrationStatus(id, status)} onBulkStatus={bulkUpdateRegistrationStatus} onRemove={removeRegistration} notify={notify} />}
@@ -462,6 +476,19 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     onConfirm={(id) => { void setRegistrationStatus(id, 'confirmed'); }}
                     onCancel={(id) => { void setRegistrationStatus(id, 'cancelled'); }}
                 />
+            )}
+            {studioKind && (
+                <Suspense fallback={null}>
+                    <AIStudioModal
+                        kind={studioKind}
+                        onClose={() => setStudioKind(null)}
+                        onDraft={(type, data, notes) => {
+                            setStudioKind(null);
+                            openPrefilled(type, data);
+                            notify(['Rascunho criado com IA — reveja e guarde.', ...notes].join(' '), 'info');
+                        }}
+                    />
+                </Suspense>
             )}
             {showModal && <AdminFormModal showModal={showModal} editingId={editingId} editingTierId={editingTierId} formData={formData} isSubmitting={isSubmitting} isGeneratingImage={isGeneratingImage} isEnhancingText={isEnhancingText} categories={categories} sponsorTiers={sponsorTiers} tempPhotoUrl={tempPhotoUrl} settings={settings} onFormDataChange={setFormData} onTempPhotoUrlChange={setTempPhotoUrl} onSubmit={handleSubmit} onClose={() => { setShowModal(null); setEditingTierId(null); }} onGenerateImage={handleGenerateImage} onEnhanceText={handleEnhanceText} />}
         </div>

@@ -229,6 +229,15 @@ export default defineSchema({
     heroTagline: v.optional(v.string()),
     heroSubtitle: v.optional(v.string()),
     heroImageUrl: v.optional(v.string()),
+    // Per-instance brand: one colour (the scale is derived client-side), two Google fonts
+    brandColor: v.optional(v.string()),
+    fontHeading: v.optional(v.string()),
+    fontBody: v.optional(v.string()),
+    // Public link to the instance brand guide / media kit (shown in the footer when set)
+    brandGuideUrl: v.optional(v.string()),
+    // Image engine for AI posters: Gemini direct or an OpenRouter image model (e.g. GPT Image)
+    imageProvider: v.optional(v.union(v.literal("gemini"), v.literal("openrouter"))),
+    openrouterImageModel: v.optional(v.string()),
     historyIntro: v.optional(v.string()),
     historyQuote: v.optional(v.string()),
     venueName: v.optional(v.string()),

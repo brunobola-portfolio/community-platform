@@ -1,7 +1,7 @@
 import { internalMutation, mutation } from "./_generated/server";
 import { v, ConvexError } from "convex/values";
 import { requireAdmin } from "./lib/auth";
-import { registerUpload } from "./lib/uploads";
+import { discardUnretained, registerUpload } from "./lib/uploads";
 
 export const generateUploadUrl = mutation({
     args: {},
@@ -38,5 +38,15 @@ export const registerGenerated = internalMutation({
     args: { storageId: v.id("_storage"), url: v.string() },
     handler: async (ctx, args) => {
         await registerUpload(ctx, args.storageId, args.url);
+    },
+});
+
+// The browser re-optimises AI images and drops reference pictures as soon as they
+// have served; waiting 48 h for the sweep would count them against storage meanwhile
+export const discardUnsaved = mutation({
+    args: { url: v.string() },
+    handler: async (ctx, args) => {
+        await requireAdmin(ctx);
+        return await discardUnretained(ctx, args.url);
     },
 });

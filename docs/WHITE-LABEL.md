@@ -33,6 +33,8 @@ criada em `/setup`:
   (carregada ali mesmo; sem ela, o fundo é só a cor da marca), nome completo, localidade,
   concelho, ano de fundação, tagline e subtítulo do hero, nome e descrição da sede, introdução e citação da
   página História, nota dos sócios fundadores. Campos vazios escondem a secção respetiva.
+- **Admin > Definições > Marca** — cor da marca, letra dos títulos e do texto, link para o
+  guia de marca / media kit (ver secção 4).
 - **Admin > Definições > Geral / Contacto** — nome curto, email, **URL do logótipo**
   (ex: `/logo.svg`, servido pelo overlay), telefone, horário, morada, Maps, coordenadas,
   redes sociais, missão e pilares, quotas e pagamentos.
@@ -56,7 +58,8 @@ VITE_LOCALITY, VITE_REGION, VITE_FOUNDED_YEAR, VITE_HERO_TAGLINE, VITE_HERO_SUBT
 VITE_VENUE_NAME, VITE_VENUE_DESCRIPTION, VITE_HISTORY_INTRO (parágrafos com \n\n),
 VITE_HISTORY_QUOTE, VITE_FOUNDERS_NOTE, VITE_ABOUT_MISSION,
 VITE_CONTACT_EMAIL, VITE_PHONE, VITE_ADDRESS, VITE_MAPS_URL, VITE_LATITUDE, VITE_LONGITUDE,
-VITE_FACEBOOK_PAGE_ID, VITE_INSTAGRAM_URL, VITE_AI_ALLOWED_TOPICS
+VITE_FACEBOOK_PAGE_ID, VITE_INSTAGRAM_URL, VITE_AI_ALLOWED_TOPICS,
+VITE_BRAND_COLOR, VITE_FONT_HEADING, VITE_FONT_BODY, VITE_BRAND_GUIDE_URL
 ```
 
 `VITE_SITE_URL` também gera `sitemap.xml` e `robots.txt` no `npm run dist`. No deployment
@@ -74,11 +77,37 @@ Espelha a estrutura de `public/`. Ficheiros com o mesmo nome substituem os gené
 ├── favicon.svg
 ├── og-image.png      # 1200x630 para partilhas sociais
 ├── manifest.json     # PWA com o nome da associação
+├── icons/            # apple-touch-icon.png, icon-192.png, icon-512*.png com o logótipo
+├── marca/            # guia de marca / media kit servido em /marca/ (opcional)
 └── images/           # fotos de equipa, cartazes, logos de parceiros (URLs /images/... na BD)
 ```
 
-A cor da marca é o único ponto de branding que vive no código: a escala `brand` em
-[tailwind.config.ts](../tailwind.config.ts) (por omissão, vermelho `#df3d32`).
+## 4. Marca: cor, tipografia e guia
+
+Nada da marca vive no código. Em **Admin > Definições > Marca**:
+
+| Campo | O que faz | Fallback (`VITE_*` → plataforma) |
+|-------|-----------|----------------------------------|
+| `brandColor` | Uma cor `#rrggbb`; a escala `brand-50…950` inteira é gerada a partir dela em runtime | `VITE_BRAND_COLOR` → `#4f46e5` (índigo) |
+| `fontHeading` | Letra dos títulos (`font-serif`), de uma lista curada | `VITE_FONT_HEADING` → Playfair Display |
+| `fontBody` | Letra do texto e da UI (`font-sans`), de uma lista curada | `VITE_FONT_BODY` → Geist |
+| `brandGuideUrl` | Link «Marca e imprensa» no rodapé (escondido se vazio) | `VITE_BRAND_GUIDE_URL` → vazio |
+
+- **Contraste garantido.** Uma cor clara (amarelo, ciano) é escurecida automaticamente nos
+  tons que levam texto (botões, links), por isso qualquer escolha mantém AA. O painel mostra
+  os rácios e avisa quando houve ajuste. Detalhes em [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md#marca-dinâmica).
+- **Fontes só da lista** em [utils/brandFonts.ts](../utils/brandFonts.ts) (8 de títulos, 8 de
+  texto, todas Google Fonts). O CSP já permite `fonts.googleapis.com`/`fonts.gstatic.com`;
+  acrescentar uma família é uma entrada nessa lista com a query css2 exata.
+- **Primeiro paint.** O `index.css` traz os valores da cor por omissão; o browser guarda a
+  última marca vista, por isso quem volta já não vê o índigo antes das settings chegarem.
+- **Guia de marca / media kit.** Os ficheiros (logótipos, PDF do guia, fotos para imprensa)
+  são da associação: vivem no **repositório da instância** e são publicados pelo overlay
+  (`.brand/public/marca/index.html`, `.brand/public/marca/logo.zip`, ...), servidos em
+  `/marca/`. Nas settings fica só o caminho (`/marca/`) ou um link externo (Drive, site da
+  associação), que abre noutro separador. Nunca commitar estes ficheiros neste repositório.
+- Os ícones PWA (`public/icons/*.png`) e o `favicon.svg` do repositório são neutros; a
+  instância substitui-os no overlay (`.brand/public/icons/`, `.brand/public/favicon.svg`).
 
 ## Regra para contribuidores
 

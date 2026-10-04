@@ -287,7 +287,7 @@ export const SetupPage: React.FC = () => {
                                 <Button
                                     type="submit"
                                     disabled={submitting}
-                                    className="h-14 w-full text-sm font-semibold tracking-wide shadow-[0_8px_30px_rgba(223,61,50,0.35)]"
+                                    className="h-14 w-full text-sm font-semibold tracking-wide shadow-[0_8px_30px_rgb(var(--brand-600)/0.35)]"
                                 >
                                     {submitting ? (
                                         <>
@@ -364,7 +364,7 @@ const SuccessState: React.FC<{ email: string }> = ({ email }) => (
 const BackgroundDecor: React.FC = () => (
     <>
         {/* Layered radial mesh: brand cyan, indigo, accent cyan */}
-        <div className="absolute inset-0 opacity-70 bg-[radial-gradient(60%_50%_at_30%_20%,rgba(223,61,50,0.18)_0%,rgba(223,61,50,0)_60%),radial-gradient(50%_40%_at_80%_80%,rgba(99,102,241,0.16)_0%,rgba(99,102,241,0)_60%),radial-gradient(40%_35%_at_70%_10%,rgba(239,122,112,0.10)_0%,rgba(239,122,112,0)_60%)]" />
+        <div className="absolute inset-0 opacity-70 bg-[radial-gradient(60%_50%_at_30%_20%,rgb(var(--brand-600)/0.18)_0%,rgb(var(--brand-600)/0)_60%),radial-gradient(50%_40%_at_80%_80%,rgba(99,102,241,0.16)_0%,rgba(99,102,241,0)_60%),radial-gradient(40%_35%_at_70%_10%,rgb(var(--brand-400)/0.10)_0%,rgb(var(--brand-400)/0)_60%)]" />
         {/* Subtle 48px grid masked toward edges */}
         <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
         {/* Vignette */}

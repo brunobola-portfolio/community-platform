@@ -22,6 +22,7 @@ export type Tab =
     | 'historia'
     | 'leads'
     | 'member-quotas'
+    | 'access'
     | 'ai';
 
 export type AdminFormData = Record<string, unknown>;
@@ -98,6 +99,15 @@ export interface AdminDashboardProps {
     eventTitles?: Map<string, string>;
 }
 
+/** What the MediaStudio "Gerar com IA" panel may ask for besides the prompt. */
+export interface GenerateImageOptions {
+    model?: string;
+    resolution?: string;
+    /** The current image, to start from it instead of from nothing. */
+    referenceUrl?: string;
+    engine?: 'gemini' | 'openrouter';
+}
+
 /** Props for the form modal */
 export interface AdminFormModalProps {
     showModal: string;
@@ -115,6 +125,6 @@ export interface AdminFormModalProps {
     onTempPhotoUrlChange: (url: string) => void;
     onSubmit: (e: React.FormEvent) => void;
     onClose: () => void;
-    onGenerateImage: (prompt?: string, options?: { model?: string; resolution?: string }) => Promise<void>;
+    onGenerateImage: (prompt?: string, options?: GenerateImageOptions) => Promise<void>;
     onEnhanceText: () => Promise<void>;
 }

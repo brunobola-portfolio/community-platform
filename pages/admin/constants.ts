@@ -39,6 +39,7 @@ export const TAB_DESCRIPTIONS: Partial<Record<Tab, string>> = {
     historia: 'Linha do tempo da página História.',
     leads: 'Mensagens de contacto e pedidos de parceria recebidos no portal.',
     'member-quotas': 'Registo de sócios e estado das quotas mostrado na área reservada.',
+    access: 'Quem entra no portal e quem gere o site: dar acesso, mudar o tipo e repor palavras-passe.',
     documents: 'Estatutos, atas e regulamentos disponíveis aos sócios.',
     notifications: 'Avisos mostrados aos sócios com sessão iniciada.',
     categories: 'Categorias e cores usadas por eventos e notícias.',
@@ -63,6 +64,7 @@ export const TAB_NAMES: Record<Tab, string> = {
     historia: "História",
     leads: "Mensagens recebidas",
     "member-quotas": "Sócios & Quotas",
+    access: "Acessos",
     homepage: "Página inicial",
     ai: "Assistente virtual"
 };

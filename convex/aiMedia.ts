@@ -4,11 +4,12 @@ import { action } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { Modality } from "@google/genai";
 import { api, internal } from "./_generated/api";
-import { DEFAULT_TTS_MODEL, DEFAULT_IMAGE_MODEL } from "./lib/aiDefaults";
+import { DEFAULT_TTS_MODEL } from "./lib/aiDefaults";
 import { getAI, classifyProviderError, consumePublicBudget } from "./lib/aiShared";
+import { generateWithFallback, loadReference, storeGeneratedImage } from "./lib/aiImage";
 
 /**
- * Media actions: text-to-speech and image generation (always Gemini).
+ * Media actions: text-to-speech (Gemini) and image generation (Gemini or OpenRouter).
  */
 // ---------------------------------------------------------------------------
 // Action 2: tts
@@ -105,15 +106,13 @@ export const tts = action({
 
 // ---------------------------------------------------------------------------
 // Action 4: generateImage
-// Admin-only: protected by admin auth + tight rate limiting
-// Image generation via Gemini, with Unsplash fallback
+// Admin-only: protected by admin auth + tight rate limiting. Gemini or
+// OpenRouter, optionally from a reference image (the current poster)
 // ---------------------------------------------------------------------------
 
-interface GeminiPart {
-  inlineData?: { data: string; mimeType: string };
-}
+const RESOLUTION_SIZE: Record<string, string> = { "1k": "1K", "2k": "2K", "4k": "4K" };
 
-const SAFE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+type GenerateImageResult = { isGenerated: true; imageUrl: string; engine: string } | { isGenerated: false; imageUrl: null };
 
 export const generateImage = action({
   args: {
@@ -121,141 +120,63 @@ export const generateImage = action({
     style: v.optional(v.string()),
     model: v.optional(v.string()),
     resolution: v.optional(v.string()), // "1k", "2k", "4k"
+    /** Image the result should start from: an upload (storage id) or the current image URL. */
+    referenceStorageId: v.optional(v.id("_storage")),
+    referenceUrl: v.optional(v.string()),
+    engine: v.optional(v.union(v.literal("gemini"), v.literal("openrouter"))),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<GenerateImageResult> => {
     const startTime = Date.now();
-    let imageModel = "unknown";
+    let userId = "unknown";
     try {
-      // Admin auth + rate limiting
-      const userId = await ctx.runQuery(api.lib.actionAuth.checkAdminAuth);
-      await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, {
-        key: "ai:generateImage",
-        userId: userId as string,
-      });
+      userId = (await ctx.runQuery(api.lib.actionAuth.checkAdminAuth)) as string;
+    } catch {
+      throw new ConvexError("Só administradores podem gerar imagens.");
+    }
+    await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, { key: "ai:generateImage", userId });
 
-      const ai = getAI();
-
-      // Read settings for default image style; model from env vars or args
-      const settings = await ctx.runQuery(api.settings.getPublic);
-      const defaultStyle =
-        settings?.defaultImageStyle ??
-        "Cinematic lighting, photorealistic, 4k, community atmosphere, warm tones";
-      imageModel =
-        args.model ??
-        settings?.imageModel ??
-        process.env.GEMINI_IMAGE_MODEL ??
-        DEFAULT_IMAGE_MODEL;
-
-      // Map resolution to quality hint in prompt
-      const resolutionHint =
-        args.resolution === "4k"
-          ? ", ultra high resolution 4k"
-          : args.resolution === "2k"
-            ? ", high resolution 2k"
-            : args.resolution === "1k"
-              ? ", 1080p resolution"
-              : "";
-
-      const style = args.style ?? defaultStyle;
-      const enhancedPrompt = `${args.prompt}, ${style}${resolutionHint}`;
-
-      try {
-        const response = await ai.models.generateContent({
-          model: imageModel,
-          contents: enhancedPrompt,
-          config: {
-            responseModalities: [Modality.IMAGE],
-          },
-        });
-
-        // Extract image data from response with proper type guard
-        const parts = response.candidates?.[0]?.content?.parts as GeminiPart[] | undefined;
-        const imagePart = parts?.find((p: GeminiPart) =>
-          p.inlineData?.mimeType?.startsWith("image/")
-        );
-
-        if (imagePart?.inlineData?.data && imagePart?.inlineData?.mimeType) {
-          const mimeType = imagePart.inlineData.mimeType;
-          if (!SAFE_IMAGE_TYPES.has(mimeType)) {
-            throw new Error("Tipo de imagem não suportado.");
-          }
-
-          // Convert base64 to Blob and upload to Convex storage
-          const binaryData = Buffer.from(
-            imagePart.inlineData.data,
-            "base64"
-          );
-          const blob = new Blob([binaryData], { type: mimeType });
-          const storageId = await ctx.storage.store(blob);
-          const imageUrl = await ctx.storage.getUrl(storageId);
-
-          if (imageUrl) {
-            await ctx.runMutation(internal.files.registerGenerated, { storageId, url: imageUrl });
-            // Log success
-            try {
-              await ctx.runMutation(internal.aiLogs.log, {
-                userId: userId as string,
-                action: "generateImage",
-                model: imageModel,
-                latencyMs: Date.now() - startTime,
-                success: true,
-              });
-            } catch { /* ignore logging errors */ }
-            return { imageUrl, storageId, isGenerated: true };
-          }
-        }
-
-        // Fallback if no image data in response
-        console.warn("No image data in Gemini response, using placeholder.");
-        // Log success (fallback)
-        try {
-          await ctx.runMutation(internal.aiLogs.log, {
-            userId: userId as string,
-            action: "generateImage",
-            model: imageModel,
-            latencyMs: Date.now() - startTime,
-            success: true,
-          });
-        } catch { /* ignore logging errors */ }
-        const imageUrl =
-          "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1600&auto=format&fit=crop";
-        return { imageUrl, isGenerated: false };
-      } catch (imgError) {
-        console.warn(
-          "Image generation failed, using placeholder:",
-          imgError instanceof Error ? imgError.message : imgError
-        );
-        // Log failure (inner)
-        try {
-          await ctx.runMutation(internal.aiLogs.log, {
-            userId: userId as string,
-            action: "generateImage",
-            model: imageModel,
-            latencyMs: Date.now() - startTime,
-            success: false,
-            errorMessage: (imgError instanceof Error ? imgError.message : "Image generation failed").slice(0, 200),
-          });
-        } catch { /* ignore logging errors */ }
-        const imageUrl =
-          "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?q=80&w=1000";
-        return { imageUrl, isGenerated: false };
-      }
+    const settings = await ctx.runQuery(internal.settings.getForAI);
+    const style = args.style ?? settings?.defaultImageStyle ?? "Cinematic lighting, photorealistic, community atmosphere, warm tones";
+    let reference = null;
+    try {
+      reference = await loadReference(ctx, { storageId: args.referenceStorageId, url: args.referenceUrl });
     } catch (error) {
-      const errorMsg =
-        error instanceof Error ? error.message : "Erro desconhecido";
-      console.error("Image Generation error:", errorMsg);
-      // Log failure
+      if (error instanceof ConvexError) throw error;
+      console.warn("generateImage: reference unreadable:", error instanceof Error ? error.message : error);
+    }
+    const lead = reference ? "Using the attached image as the starting point, keep its composition and identity and apply this change: " : "";
+    const prompt = `${lead}${args.prompt.slice(0, 1500)}. Style: ${style}`;
+
+    const { result, errors } = await generateWithFallback({
+      prompt,
+      reference,
+      settings,
+      engine: args.engine,
+      geminiModel: args.model,
+      imageSize: args.resolution ? RESOLUTION_SIZE[args.resolution] : undefined,
+    });
+    const log = async (model: string, error?: string) => {
       try {
         await ctx.runMutation(internal.aiLogs.log, {
-          userId: "unknown",
-          action: "generateImage",
-          model: imageModel ?? "unknown",
-          latencyMs: Date.now() - startTime,
-          success: false,
-          errorMessage: errorMsg.slice(0, 200),
+          userId, action: "generateImage", model, latencyMs: Date.now() - startTime,
+          success: !error, errorMessage: error?.slice(0, 200),
         });
       } catch { /* ignore logging errors */ }
-      throw new Error(`Erro na geração de imagem: ${errorMsg}`);
+    };
+    if (!result) {
+      console.error("Image generation failed:", errors.join(" | "));
+      await log(args.model ?? "unknown", errors.join(" | ") || "no image engine configured");
+      // The client treats this as a failure; a stock photo would be saved as if generated
+      return { isGenerated: false, imageUrl: null };
+    }
+    try {
+      const stored = await storeGeneratedImage(ctx, result.image);
+      await log(result.model);
+      return { isGenerated: true, imageUrl: stored.url, engine: result.engine };
+    } catch (error) {
+      const raw = error instanceof Error ? error.message : "store failed";
+      await log(result.model, raw);
+      throw new ConvexError(classifyProviderError(raw));
     }
   },
 });

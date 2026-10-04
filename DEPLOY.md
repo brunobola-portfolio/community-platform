@@ -334,7 +334,7 @@ Não. O servidor só serve ficheiros estáticos via IIS. Node/npm são só no te
 Não. São sites independentes no IIS. O antigo continua no domínio; o novo fica só em `:8080` até fazeres o cutover.
 
 **Esqueci-me e parti o URL antes de criar o admin. E agora?**
-Quem abrir `/setup` primeiro fica admin. Se foi outra pessoa por engano: apaga o campo `role` desse utilizador no Convex Dashboard (Data → users) e volta a fazer `/setup`. Em alternativa, promove a conta certa com `npx convex run lib/bootstrapAdmin:setUserRole '{"email":"...","role":"admin"}' --prod`.
+Quem abrir `/setup` primeiro fica admin. Se foi outra pessoa por engano: apaga o campo `role` desse utilizador no Convex Dashboard (Data → users) e volta a fazer `/setup`. Em alternativa, promove a conta certa com `npx convex run --prod access:grantFromCli '{"email":"...","role":"admin"}'`.
 
 **O `/setup` deixou de aparecer e sou enviado para a homepage.**
 Normal — já existe um admin. Faz login em `/admin` com essa conta. O wizard só corre uma vez.
@@ -426,7 +426,7 @@ npx convex dashboard --prod       # abrir painel de produção
 # -- ADMIN --
 # Criar admin: abrir o site -> /setup (no browser, sem comandos)
 # Reset/fallback (raro):
-npx convex run lib/bootstrapAdmin:setUserRole '{"email":"...","role":"admin"}' --prod
+npx convex run --prod access:grantFromCli '{"email":"...","role":"admin"}'
 
 # -- IIS (no servidor, via RDP) --
 # Abrir o Manager:  Win+R -> inetmgr

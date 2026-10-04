@@ -129,7 +129,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   if (message.role === 'user') {
     return (
       <div className="flex justify-end pl-8">
-        <div className="rounded-2xl rounded-br-sm bg-gradient-to-br from-brand-500 to-brand-700 px-4 py-2.5 text-sm leading-relaxed text-white shadow-[0_8px_20px_-10px_rgba(223,61,50,0.9)]">
+        <div className="rounded-2xl rounded-br-sm bg-gradient-to-br from-brand-500 to-brand-700 px-4 py-2.5 text-sm leading-relaxed text-white shadow-[0_8px_20px_-10px_rgb(var(--brand-600)/0.9)]">
           {message.text}
         </div>
       </div>

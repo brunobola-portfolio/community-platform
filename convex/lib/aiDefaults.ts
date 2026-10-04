@@ -29,6 +29,23 @@ export const GEMINI_IMAGE_MODELS = [
   { id: "gemini-3-pro-image", label: "NanoBanana Pro (qualidade máxima)" },
   { id: "gemini-2.5-flash-image", label: "NanoBanana (legado)" },
 ] as const;
+/**
+ * OpenRouter image models that accept a reference image. GPT Image 2 is the
+ * engine behind ChatGPT's image generation; it renders poster text best.
+ */
+export const DEFAULT_OPENROUTER_IMAGE_MODEL = "openai/gpt-5.4-image-2";
+export const OPENROUTER_IMAGE_MODELS = [
+  { id: "openai/gpt-5.4-image-2", label: "GPT Image 2 (o do ChatGPT, melhor texto em cartazes)" },
+  { id: "openai/gpt-5-image-mini", label: "GPT Image Mini (económico)" },
+  { id: "google/gemini-3-pro-image", label: "NanoBanana Pro via OpenRouter" },
+  { id: "google/gemini-3.1-flash-image", label: "NanoBanana 2 via OpenRouter" },
+] as const;
+/**
+ * Vision-capable OpenRouter model the AI studio uses to read a reference poster
+ * when the deployment has no GEMINI_API_KEY (the configured chat model may be a
+ * free text-only slug).
+ */
+export const DEFAULT_OPENROUTER_VISION_MODEL = "google/gemini-2.5-flash";
 // OpenRouter fallback when the configured slug disappears (free-tier slugs
 // rotate often): Google open-weights MoE, 4B active params — fast, free,
 // solid Portuguese

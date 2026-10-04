@@ -53,6 +53,18 @@ export async function swapUrl(ctx: MutationCtx, previous: unknown, next: unknown
   await releaseUrl(ctx, previous);
 }
 
+/**
+ * Drops an upload no record holds yet: the heavy original of an image the browser
+ * re-optimised, or a reference picture that only fed the AI. A retained URL is
+ * left alone, so a stale call can never delete a file a record uses.
+ */
+export async function discardUnretained(ctx: MutationCtx, url: string): Promise<boolean> {
+  const row = await findByUrl(ctx, url);
+  if (!row || row.refs > 0) return false;
+  await dropUpload(ctx, row);
+  return true;
+}
+
 /** Remove uploads nobody saved within the grace period. Returns how many went. */
 export async function sweepAbandonedUploads(ctx: MutationCtx, now: number, limit = 200) {
   const stale = await ctx.db

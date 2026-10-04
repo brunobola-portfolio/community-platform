@@ -3,6 +3,7 @@ import type { MutationCtx } from '../convex/_generated/server';
 import type { Id } from '../convex/_generated/dataModel';
 import {
   ABANDONED_UPLOAD_MS,
+  discardUnretained,
   registerUpload,
   releaseUrl,
   retainUrl,
@@ -110,5 +111,16 @@ describe('uploads ledger', () => {
     const updates: Record<string, unknown> = { externalPhoto: 'https://s/second' };
     await reconcileImageUpdate(ctx, { externalPhoto: 'https://s/first' }, updates, 'photo', 'externalPhoto');
     expect(deletedFiles).toEqual(['first']);
+  });
+
+  it('discarding drops an unsaved upload at once but never one a record holds', async () => {
+    const { ctx, deletedFiles } = fakeCtx();
+    await registerUpload(ctx, file('heavy'), 'https://s/heavy');
+    await registerUpload(ctx, file('saved'), 'https://s/saved');
+    await retainUrl(ctx, 'https://s/saved');
+    expect(await discardUnretained(ctx, 'https://s/heavy')).toBe(true);
+    expect(await discardUnretained(ctx, 'https://s/saved')).toBe(false);
+    expect(await discardUnretained(ctx, 'https://elsewhere/x.jpg')).toBe(false);
+    expect(deletedFiles).toEqual(['heavy']);
   });
 });

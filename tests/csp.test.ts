@@ -55,4 +55,12 @@ describe('buildCsp', () => {
       expect(policy).toContain("default-src 'self'");
     }
   });
+
+  it('lets the brand fonts chosen in the backoffice load from Google Fonts', () => {
+    // BrandTheme injects a css2 stylesheet at runtime; blocking it would leave
+    // every heading in the fallback serif with no error visible to the admin
+    const policy = buildCsp(HTML);
+    expect(directive(policy, 'style-src')).toContain('https://fonts.googleapis.com');
+    expect(directive(policy, 'font-src')).toContain('https://fonts.gstatic.com');
+  });
 });

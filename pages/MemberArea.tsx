@@ -29,7 +29,9 @@ import {
   Copy,
   Check,
   Mail,
+  KeyRound,
 } from 'lucide-react';
+import { ChangePasswordModal } from '../components/ChangePasswordModal';
 import { useData } from '../context/DataContext';
 import { cn } from '../utils/cn';
 import { sanitizeExternalUrl } from '../utils/security';
@@ -134,7 +136,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                                   <div className="text-brand-400 font-serif font-bold text-xl sm:text-2xl tracking-wide">{siteName}</div>
                                   <div className="text-[8px] sm:text-[10px] text-slate-400 tracking-[0.4em] uppercase mt-1">Cartão de Sócio</div>
                               </div>
-                              <ShieldCheck className="text-brand-500 drop-shadow-[0_0_10px_rgba(223,61,50,0.5)] w-8 h-8 sm:w-10 sm:h-10" />
+                              <ShieldCheck className="text-brand-500 drop-shadow-[0_0_10px_rgb(var(--brand-600)/0.5)] w-8 h-8 sm:w-10 sm:h-10" />
                           </div>
                           <div className="relative z-10 mt-auto">
                               <div className="text-xl sm:text-2xl text-white font-mono tracking-wider font-medium mb-3 sm:mb-4 truncate text-shadow">{memberData.name}</div>
@@ -444,6 +446,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
   const [activeTab, setActiveTab] = useState('dashboard');
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
 
   // Navigation Tabs
@@ -474,9 +477,15 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
                 <h1 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mt-2 mb-2">Área de Sócio</h1>
                 <p className="text-slate-600 dark:text-slate-400">Bem-vindo à sua área reservada.</p>
             </div>
-            <Button variant="ghost" onClick={onLogout} className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                <LogOut size={18} /> Terminar Sessão
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+                <Button variant="ghost" onClick={() => setShowPassword(true)} className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                    <KeyRound size={18} /> Alterar palavra-passe
+                </Button>
+                <Button variant="ghost" onClick={onLogout} className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                    <LogOut size={18} /> Terminar Sessão
+                </Button>
+            </div>
+            <ChangePasswordModal isOpen={showPassword} onClose={() => setShowPassword(false)} />
         </div>
 
         {/* Tab Navigation */}
