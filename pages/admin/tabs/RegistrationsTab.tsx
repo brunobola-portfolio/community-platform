@@ -229,7 +229,7 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
                 emptyIcon={eventId === ALL ? ClipboardCheck : UserX}
                 emptyTitle={eventId === ALL ? 'Ainda não há inscrições' : 'Ninguém se inscreveu ainda'}
                 emptyDescription={eventId === ALL
-                    ? 'Abra as inscrições num evento (Eventos → editar → Inscrições Abertas) e partilhe-o no WhatsApp.'
+                    ? 'Abra as inscrições num evento (Eventos → editar → «Aceitar inscrições pelo site») e partilhe-o no WhatsApp.'
                     : 'Partilhe o evento no WhatsApp ou no Facebook a partir do site: as inscrições aparecem aqui assim que chegarem.'}
             />
 

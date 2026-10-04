@@ -5,8 +5,10 @@ import { applyBrandVariables, extraFonts, resolveBrand, syncFontStylesheet } fro
 
 interface BrandPreviewProps {
     color?: string;
+    accent?: string;
     heading?: string;
     body?: string;
+    mono?: string;
 }
 
 // Separate from the live site's stylesheet so trying fonts here never changes
@@ -19,21 +21,26 @@ interface ThemeSampleProps {
 
 // Mirrors the classes the public site uses for each theme. The backoffice root
 // carries `dark`, so the light sample spells its colours out instead of
-// relying on dark: variants
+// relying on dark: variants, and each sample re-resolves the display token
+// through its brand-scope class
 const SAMPLE_CLASSES = {
     light: {
-        surface: 'bg-white border-slate-900/10',
-        label: 'text-slate-500',
+        scope: 'brand-scope-light',
+        surface: 'bg-slate-50 border-slate-900/10',
+        label: 'text-slate-600',
         badge: 'bg-brand-500/10 text-brand-700',
         title: 'text-slate-900',
+        gradientEnd: 'to-accent-600',
         text: 'text-slate-600',
         link: 'text-brand-700',
     },
     dark: {
-        surface: 'bg-dark-surface border-white/10',
+        scope: 'brand-scope-dark',
+        surface: 'bg-dark-bg border-white/10',
         label: 'text-slate-400',
         badge: 'bg-brand-500/15 text-brand-400',
         title: 'text-white',
+        gradientEnd: 'to-accent-400',
         text: 'text-slate-300',
         link: 'text-brand-400',
     },
@@ -42,14 +49,19 @@ const SAMPLE_CLASSES = {
 const ThemeSample: React.FC<ThemeSampleProps> = ({ tone }) => {
     const c = SAMPLE_CLASSES[tone];
     return (
-        <div className={cn('rounded-xl border p-5 space-y-3 font-sans', c.surface)}>
+        <div className={cn('rounded-xl border p-5 space-y-3 font-sans', c.scope, c.surface)}>
             <p className={cn('text-[10px] font-mono uppercase tracking-widest', c.label)}>
-                {tone === 'light' ? 'Tema claro' : 'Tema escuro'}
+                {tone === 'light' ? 'Tema claro' : 'Tema escuro'} · 12 jul 2026
+            </p>
+            <h4 className={cn('font-serif text-3xl font-bold leading-tight', c.title)}>
+                Festa de <span className="italic text-brand-display">Verão</span>
+            </h4>
+            <p className={cn('font-serif text-xl leading-tight', c.title)}>
+                Eventos & <span className={cn('text-transparent bg-clip-text bg-gradient-to-r from-brand-display', c.gradientEnd)}>Atividades</span>
             </p>
             <span className={cn('inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider', c.badge)}>
                 Próximo evento
             </span>
-            <h4 className={cn('font-serif text-2xl font-bold leading-tight', c.title)}>Festa de Verão</h4>
             <p className={cn('text-sm leading-relaxed', c.text)}>
                 Música ao vivo, petiscos e jogos para toda a família no largo da sede.
             </p>
@@ -59,23 +71,25 @@ const ThemeSample: React.FC<ThemeSampleProps> = ({ tone }) => {
                 </span>
                 <span className={cn('text-sm font-semibold underline underline-offset-4', c.link)}>Ver agenda</span>
             </div>
+            <div className="h-1 rounded-full bg-gradient-to-r from-brand-500 via-accent-500 to-brand-500" aria-hidden="true" />
         </div>
     );
 };
 
 /**
- * Live preview of an unsaved brand. The palette and font variables are set on
- * this container only, so Tailwind's brand classes inside resolve to the
- * preview values while the backoffice keeps the saved brand.
+ * Live preview of an unsaved brand. Every brand variable (scales, neutrals,
+ * accent, display, fonts) is set on this container only, so Tailwind classes
+ * inside resolve to the preview values while the backoffice keeps the saved
+ * brand.
  */
-export const BrandPreview: React.FC<BrandPreviewProps> = ({ color, heading, body }) => {
+export const BrandPreview: React.FC<BrandPreviewProps> = ({ color, accent, heading, body, mono }) => {
     const ref = useRef<HTMLDivElement>(null);
 
     useLayoutEffect(() => {
-        const brand = resolveBrand(color, heading, body);
+        const brand = resolveBrand({ color, accent, heading, body, mono });
         if (ref.current) applyBrandVariables(ref.current, brand);
         syncFontStylesheet(PREVIEW_FONT_LINK_ID, extraFonts(brand));
-    }, [color, heading, body]);
+    }, [color, accent, heading, body, mono]);
 
     useLayoutEffect(() => () => syncFontStylesheet(PREVIEW_FONT_LINK_ID, []), []);
 

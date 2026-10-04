@@ -23,8 +23,10 @@ export const getPublic = query({
             heroSubtitle: settings.heroSubtitle,
             heroImageUrl: settings.heroImageUrl,
             brandColor: settings.brandColor,
+            accentColor: settings.accentColor,
             fontHeading: settings.fontHeading,
             fontBody: settings.fontBody,
+            fontMono: settings.fontMono,
             brandGuideUrl: settings.brandGuideUrl,
             imageProvider: settings.imageProvider,
             openrouterImageModel: settings.openrouterImageModel,
@@ -153,8 +155,10 @@ export const update = mutation({
         heroSubtitle: v.optional(v.string()),
         heroImageUrl: v.optional(v.string()),
         brandColor: v.optional(v.string()),
+        accentColor: v.optional(v.string()),
         fontHeading: v.optional(v.string()),
         fontBody: v.optional(v.string()),
+        fontMono: v.optional(v.string()),
         brandGuideUrl: v.optional(v.string()),
         imageProvider: v.optional(v.union(v.literal("gemini"), v.literal("openrouter"))),
         openrouterImageModel: v.optional(v.string()),
@@ -235,8 +239,13 @@ export const update = mutation({
         if (args.brandColor !== undefined && args.brandColor !== "" && !/^#[0-9a-fA-F]{6}$/.test(args.brandColor)) {
             throw new ConvexError("A cor da marca tem de estar no formato #rrggbb.");
         }
+        // Empty clears the accent back to the automatic choice
+        if (args.accentColor !== undefined && args.accentColor !== "" && !/^#[0-9a-fA-F]{6}$/.test(args.accentColor)) {
+            throw new ConvexError("A cor de destaque tem de estar no formato #rrggbb.");
+        }
         if (args.fontHeading !== undefined) validateMaxLength(args.fontHeading, "fontHeading", 60);
         if (args.fontBody !== undefined) validateMaxLength(args.fontBody, "fontBody", 60);
+        if (args.fontMono !== undefined) validateMaxLength(args.fontMono, "fontMono", 60);
         if (args.brandGuideUrl !== undefined) validateMaxLength(args.brandGuideUrl, "brandGuideUrl", 500);
         if (args.openrouterImageModel !== undefined) validateMaxLength(args.openrouterImageModel, "openrouterImageModel", 100);
         if (args.historyIntro !== undefined) validateMaxLength(args.historyIntro, "historyIntro", 4000);
@@ -301,8 +310,10 @@ export const update = mutation({
                 heroSubtitle: args.heroSubtitle,
                 heroImageUrl: args.heroImageUrl,
                 brandColor: args.brandColor,
+                accentColor: args.accentColor,
                 fontHeading: args.fontHeading,
                 fontBody: args.fontBody,
+                fontMono: args.fontMono,
                 brandGuideUrl: args.brandGuideUrl,
                 imageProvider: args.imageProvider,
                 openrouterImageModel: args.openrouterImageModel,

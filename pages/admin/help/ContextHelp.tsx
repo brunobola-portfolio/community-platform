@@ -3,7 +3,8 @@ import { ArrowLeft, BookOpen, HelpCircle } from 'lucide-react';
 import { Button, Modal } from '../../../components/ui/UIComponents';
 import { TutorialCard } from '../../../components/help/TutorialCard';
 import { TutorialReader } from '../../../components/help/TutorialReader';
-import { HELP_TUTORIALS, getCategory, tutorialsForTab } from '../../../content/help';
+import { HELP_PARAM, HELP_TUTORIALS, getCategory, tutorialsForTab } from '../../../content/help';
+import { helpLink } from '../../../content/help/format';
 import { TAB_NAMES } from '../constants';
 import type { Tab } from '../types';
 
@@ -14,7 +15,7 @@ interface ContextHelpProps {
     onOpenCenter: (tutorialId: string | null) => void;
 }
 
-const BACK = 'inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const BACK = 'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
 
 /** "Como funciona" next to the page title: the guides of the current tab, without leaving it. */
 export const ContextHelp: React.FC<ContextHelpProps> = ({ tab, siteName, onOpenCenter }) => {
@@ -32,9 +33,10 @@ export const ContextHelp: React.FC<ContextHelpProps> = ({ tab, siteName, onOpenC
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-brand-500/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                aria-haspopup="dialog"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-500/40 bg-brand-500/10 px-4 text-sm font-semibold text-brand-200 transition-colors hover:border-brand-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:min-h-0 sm:py-2 sm:text-xs"
             >
-                <HelpCircle size={14} aria-hidden="true" /> Como funciona
+                <HelpCircle size={16} aria-hidden="true" /> Como funciona
             </button>
             <Modal
                 isOpen={open}
@@ -43,7 +45,7 @@ export const ContextHelp: React.FC<ContextHelpProps> = ({ tab, siteName, onOpenC
                 icon={<HelpCircle size={20} />}
                 eyebrow="Ajuda"
                 title={`Como funciona: ${TAB_NAMES[tab]}`}
-                description={reading ? undefined : 'Escolha um guia. Todos os guias estão no separador Ajuda.'}
+                description={reading ? undefined : `${guides.length} guias para esta secção. Escolha um para ler aqui mesmo.`}
                 footer={
                     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                         <Button type="button" variant="ghost" onClick={close}>Fechar</Button>
@@ -53,8 +55,14 @@ export const ContextHelp: React.FC<ContextHelpProps> = ({ tab, siteName, onOpenC
             >
                 {reading ? (
                     <div className="space-y-4">
-                        {guides.length > 1 && <button type="button" onClick={() => setChosen(null)} className={BACK}><ArrowLeft size={16} aria-hidden="true" /> Outros guias</button>}
-                        <TutorialReader tutorial={reading} siteName={siteName} categoryTitle={getCategory(reading.category)?.title} headingLevel={3} />
+                        {guides.length > 1 && <button type="button" onClick={() => setChosen(null)} className={BACK}><ArrowLeft size={16} aria-hidden="true" /> Outros guias desta secção</button>}
+                        <TutorialReader
+                            tutorial={reading}
+                            siteName={siteName}
+                            categoryTitle={getCategory(reading.category)?.title}
+                            headingLevel={3}
+                            shareUrl={helpLink(window.location.origin, '/admin', HELP_PARAM, reading.id)}
+                        />
                     </div>
                 ) : (
                     <div className="grid gap-3 sm:grid-cols-2">

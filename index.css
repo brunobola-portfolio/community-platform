@@ -5,30 +5,82 @@
 /*
  * Brand defaults for the first paint. BrandTheme overwrites these on <html>
  * as soon as the instance settings load. The values are derived from the
- * platform default (#4f46e5) by utils/brandPalette.ts; tests/brandPalette.test.ts
- * fails if they drift apart.
+ * platform defaults (brand #4f46e5, automatic accent, Playfair Display /
+ * Geist / Geist Mono) by utils/brandTheme.ts; tests/brandTheme.test.ts fails
+ * if they drift apart.
  */
 :root {
-  --brand-50: 244 244 253;
-  --brand-100: 234 233 252;
-  --brand-200: 213 211 249;
-  --brand-300: 185 181 245;
-  --brand-400: 146 140 239;
-  --brand-500: 111 103 234;
+  --brand-50: 238 240 252;
+  --brand-100: 223 228 253;
+  --brand-200: 199 208 255;
+  --brand-300: 162 174 254;
+  --brand-400: 124 133 253;
+  --brand-500: 97 98 247;
   --brand-600: 79 70 229;
-  --brand-700: 66 59 192;
-  --brand-800: 53 48 156;
-  --brand-900: 43 39 126;
-  --brand-950: 27 24 80;
+  --brand-700: 66 55 198;
+  --brand-800: 53 42 167;
+  --brand-900: 43 36 138;
+  --brand-950: 22 16 83;
+  --brand-display-light: 79 70 229;
+  --brand-display-dark: 83 76 235;
+  --neutral-50: 249 250 251;
+  --neutral-100: 244 244 247;
+  --neutral-200: 231 231 236;
+  --neutral-300: 210 212 218;
+  --neutral-400: 159 162 172;
+  --neutral-500: 112 115 126;
+  --neutral-600: 82 84 94;
+  --neutral-700: 62 64 74;
+  --neutral-800: 39 40 49;
+  --neutral-900: 22 23 32;
+  --neutral-950: 6 7 14;
+  --accent-50: 252 243 225;
+  --accent-100: 253 236 201;
+  --accent-200: 254 224 165;
+  --accent-300: 255 211 118;
+  --accent-400: 255 199 71;
+  --accent-500: 251 191 36;
+  --accent-600: 182 136 0;
+  --accent-700: 145 108 0;
+  --accent-800: 117 87 0;
+  --accent-900: 95 70 4;
+  --accent-950: 50 35 0;
   --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
   --font-body: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, "Cascadia Mono", Menlo, Consolas, monospace;
+}
+
+/*
+ * Large display accents switch per theme from one token (text-brand-display).
+ * The two variants are set inline by BrandTheme; the pick lives here so it
+ * follows the `dark` class. `.brand-scope-*` re-resolve it inside a container
+ * that carries its own variables (the backoffice brand preview).
+ */
+:root,
+.brand-scope-light {
+  --brand-display: var(--brand-display-light);
+}
+.dark,
+.brand-scope-dark {
+  --brand-display: var(--brand-display-dark);
+}
+
+/*
+ * Theme switch (hooks/useTheme.ts): a short cross-fade of the whole page
+ * through the View Transitions API. Only the root snapshot animates, so
+ * nothing moves or reflows; browsers without the API switch instantly.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @layer utilities {
   /* Slim themed scrollbar for modal bodies and horizontal rails */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgb(100 116 139 / 0.4) transparent;
+    scrollbar-color: rgb(var(--neutral-500) / 0.4) transparent;
   }
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
@@ -38,7 +90,7 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgb(100 116 139 / 0.35);
+    background: rgb(var(--neutral-500) / 0.35);
     border-radius: 8px;
   }
 

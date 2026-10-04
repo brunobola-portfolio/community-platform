@@ -12,10 +12,11 @@ import { GALLERY_TUTORIALS, PEOPLE_TUTORIALS } from './people';
 import { PUBLIC_TUTORIALS } from './public';
 import { ASSISTANT_TUTORIALS, PRACTICE_TUTORIALS, SETTINGS_TUTORIALS } from './settings';
 import { START_TUTORIALS } from './start';
+import { SUPPORT_TUTORIALS } from './support';
 import type { HelpAudience, HelpCategory, HelpTutorial } from './types';
 
 export { HELP_CATEGORIES };
-export { fillTokens, searchHelp, tutorialsForTab } from './search';
+export { fillTokens, relatedTutorials, searchHelp, tutorialsForTab } from './search';
 export type { HelpTokens } from './search';
 export type * from './types';
 
@@ -31,6 +32,7 @@ export const HELP_TUTORIALS: HelpTutorial[] = [
     ...SETTINGS_TUTORIALS,
     ...ASSISTANT_TUTORIALS,
     ...PRACTICE_TUTORIALS,
+    ...SUPPORT_TUTORIALS,
     ...PUBLIC_TUTORIALS,
 ];
 

@@ -136,7 +136,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-50/90 to-slate-50 dark:from-dark-bg dark:via-dark-bg/90 dark:to-dark-bg"></div>
           {/* Animated Glow Orbs */}
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 dark:bg-brand-500/20 rounded-full blur-[120px] animate-float"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent-gold/5 dark:bg-accent-gold/10 rounded-full blur-[120px] animate-float [animation-delay:2s]"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent-500/5 dark:bg-accent-500/10 rounded-full blur-[120px] animate-float [animation-delay:2s]"></div>
         </div>
 
         <div className="relative z-10 container mx-auto px-4 flex flex-col items-center text-center pb-20">
@@ -152,7 +152,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-slate-900 via-slate-800 to-slate-500 dark:from-white dark:via-white dark:to-slate-500 mb-8 leading-[0.9] tracking-tight animate-fade-in-up drop-shadow-2xl [animation-delay:0.1s]">
             {settings.locality || settings.siteName}<br />
             {settings.locality && (
-              <span className="text-4xl md:text-6xl lg:text-7xl font-light italic font-sans text-brand-700 dark:text-brand-400 opacity-90">{settings.siteName}</span>
+              <span className="text-4xl md:text-6xl lg:text-7xl font-light italic font-sans text-brand-display">{settings.siteName}</span>
             )}
           </h1>
 
@@ -258,7 +258,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
             <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.25em] text-xs font-bold mb-4 block">Os Nossos Pilares</span>
-            <h2 className="font-serif text-5xl md:text-6xl text-slate-900 dark:text-white mb-8 leading-tight">Áreas de <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400 dark:from-brand-400 dark:to-brand-200">Impacto</span></h2>
+            <h2 className="font-serif text-5xl md:text-6xl text-slate-900 dark:text-white mb-8 leading-tight">Áreas de <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Impacto</span></h2>
             <p className="text-slate-600 dark:text-slate-300 max-w-3xl mx-auto text-lg font-light leading-relaxed">
               {`Da vida recreativa ao desporto, da cultura à solidariedade — a nossa missão assenta em áreas de ação ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}.`}
             </p>
@@ -380,7 +380,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             {/* Secondary Post 1 */}
             {secondaryPosts[0] && (
               <div className="md:col-span-2 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface flex items-center">
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 to-accent-gold/10 dark:from-brand-900/20 dark:to-amber-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 to-accent-500/10 dark:from-brand-900/20 dark:to-accent-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="w-1/3 h-full relative">
                   <img src={secondaryPosts[0].coverUrl || FALLBACK_IMAGES.post} alt={secondaryPosts[0].title} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post; }} />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white dark:to-dark-surface"></div>
@@ -397,7 +397,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             {secondaryPosts[1] && (
               <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface p-6 flex flex-col justify-between hover:border-brand-500/30 transition-colors hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                 <div>
-                  <Sparkles className="text-accent-gold mb-4 w-8 h-8" />
+                  <Sparkles className="text-accent-500 mb-4 w-8 h-8" />
                   <h3 className="text-lg font-serif text-slate-900 dark:text-white leading-snug"><Link to={postPath(secondaryPosts[1].slug || secondaryPosts[1].id)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{secondaryPosts[1].title}</Link></h3>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-900/5 dark:border-white/5 flex justify-between items-center">

@@ -69,7 +69,7 @@ export const BlogPage: React.FC = () => {
                   <Sparkles size={12} />
                   <span>Jornal da Associação</span>
                </div>
-               <h1 className="text-5xl md:text-8xl font-serif text-slate-900 dark:text-white mb-6 tracking-tight">Blog & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-accent-gold dark:to-amber-300">Notícias</span></h1>
+               <h1 className="text-5xl md:text-8xl font-serif text-slate-900 dark:text-white mb-6 tracking-tight">Blog & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Notícias</span></h1>
                <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto leading-relaxed">
                   Histórias, conquistas e momentos que definem a nossa comunidade.
                </p>

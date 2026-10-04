@@ -5,18 +5,20 @@ import { PageMeta } from '../components/PageMeta';
 import { HelpCenter } from '../components/help/HelpCenter';
 import { Button } from '../components/ui/UIComponents';
 import { useData } from '../context/DataContext';
-import { categoriesFor, getTutorial, HELP_PARAM, tutorialsFor } from '../content/help';
+import { categoriesFor, HELP_PARAM, tutorialsFor } from '../content/help';
+import type { HelpContact, HelpHero } from '../components/help/types';
 import type { LayoutOutletContext } from '../layouts/types';
 import type { Settings } from '../types';
 
 const TUTORIALS = tutorialsFor('socio');
 const CATEGORIES = categoriesFor('socio');
 
-const HERO = {
+const HERO: HelpHero = {
     eyebrow: 'Ajuda',
     title: 'Como podemos ajudar?',
     text: 'Respostas rápidas para sócios e visitantes da {siteName}: inscrições em eventos, área de sócio, quotas e palavra-passe.',
-    placeholder: 'Ex.: inscrever-me, pagar a quota, esqueci-me da palavra-passe…',
+    placeholder: 'Ex.: inscrever-me, pagar a quota, palavra-passe…',
+    suggestions: ['inscrições', 'palavra-passe', 'quota', 'cartão de sócio'],
 };
 
 const CONTACT_LINK = 'inline-flex items-center gap-2 rounded text-slate-700 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-300 dark:hover:text-brand-400 [overflow-wrap:anywhere]';
@@ -46,10 +48,16 @@ export const HelpPage: React.FC = () => {
     const { settings } = useData();
     const { openContact } = useOutletContext<LayoutOutletContext>();
     const [params, setParams] = useSearchParams();
-    const selected = getTutorial(params.get(HELP_PARAM));
-    const selectedId = selected && selected.audience === 'socio' ? selected.id : null;
+    const requestedId = params.get(HELP_PARAM);
+    const selected = TUTORIALS.find(t => t.id === requestedId);
 
     const select = (id: string | null) => setParams(id ? { [HELP_PARAM]: id } : {});
+    const contact: HelpContact = {
+        title: 'Não encontrou o que procurava?',
+        text: 'A direção da {siteName} responde a todas as mensagens.',
+        actionLabel: 'Fale com a direção',
+        onClick: () => openContact('Geral'),
+    };
 
     return (
         <div className="min-h-screen bg-slate-50 pb-24 pt-28 dark:bg-dark-bg sm:pt-32">
@@ -62,9 +70,11 @@ export const HelpPage: React.FC = () => {
                     tutorials={TUTORIALS}
                     categories={CATEGORIES}
                     siteName={settings.siteName}
-                    selectedId={selectedId}
+                    selectedId={requestedId}
                     onSelect={select}
                     hero={HERO}
+                    linkPath="/ajuda"
+                    contact={contact}
                     footer={<Contacts settings={settings} onContact={() => openContact('Geral')} />}
                 />
             </div>

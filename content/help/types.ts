@@ -20,6 +20,7 @@ export type HelpCategoryId =
     | 'marca'
     | 'assistente'
     | 'boas-praticas'
+    | 'suporte'
     | 'inscricoes-publico'
     | 'area-socio'
     | 'conta';
@@ -27,7 +28,7 @@ export type HelpCategoryId =
 /** Icon keys resolved to lucide icons by the UI, so the content stays free of React. */
 export type HelpIconKey =
     | 'rocket' | 'calendar' | 'newspaper' | 'sparkles' | 'users' | 'image' | 'wallet'
-    | 'key' | 'palette' | 'bot' | 'shield' | 'ticket' | 'id-card' | 'user';
+    | 'key' | 'palette' | 'bot' | 'shield' | 'ticket' | 'id-card' | 'user' | 'life-buoy';
 
 export interface HelpCategory {
     id: HelpCategoryId;
@@ -38,9 +39,14 @@ export interface HelpCategory {
 }
 
 export interface HelpStep {
-    /** Short imperative sentence; may carry {siteName}. */
+    /**
+     * One action, at most 20 words; may carry {siteName}. Exact button and field
+     * names go between **double asterisks** so the reader shows them in bold.
+     */
     text: string;
     tip?: string;
+    /** "Porquê": the reason behind a step people tend to skip. */
+    why?: string;
     warning?: string;
 }
 
@@ -59,6 +65,8 @@ export interface HelpTutorial {
     category: HelpCategoryId;
     title: string;
     summary: string;
+    /** "Em resumo": the whole guide in one sentence, for people who only skim. */
+    recap: string;
     minutes: number;
     audience: HelpAudience;
     steps: HelpStep[];
@@ -68,6 +76,8 @@ export interface HelpTutorial {
     /** Other tabs whose "Como funciona" should also list this tutorial. */
     relatedTabs?: Tab[];
     keywords: string[];
+    /** Guides offered at the end; defaults to the rest of the category. */
+    related?: string[];
     /** Shown in the "Comece por aqui" row. */
     featured?: boolean;
 }

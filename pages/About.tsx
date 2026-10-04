@@ -121,7 +121,7 @@ const LocationCommand: React.FC = () => {
                <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.4em]">{[settings.locality, settings.region].filter(Boolean).join(" · ") || settings.siteName}</span>
             </div>
 
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-slate-900 dark:text-white mb-10 leading-[1.05] tracking-tight">A Nossa <br/><span className="text-brand-700 dark:text-brand-400 italic">Casa</span></h2>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-slate-900 dark:text-white mb-10 leading-[1.05] tracking-tight">A Nossa <br/><span className="text-brand-display italic">Casa</span></h2>
 
             <div className="space-y-8 mb-14">
               <div className="flex gap-6 group/item">
@@ -306,7 +306,7 @@ const ContactForm: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div>
            <Badge className="mb-8 border-brand-500/20">Canais de Atendimento</Badge>
-           <h2 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mb-10 leading-[1] tracking-tighter">Vamos criar o <span className="text-brand-700 dark:text-brand-400 italic">próximo</span> capítulo?</h2>
+           <h2 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mb-10 leading-[1] tracking-tighter">Vamos criar o <span className="text-brand-display italic">próximo</span> capítulo?</h2>
            <p className="text-slate-600 dark:text-slate-400 text-xl mb-14 font-light leading-relaxed max-w-md">
              Seja para uma proposta de parceria, inscrição como sócio ou reserva de espaço, a nossa equipa está disponível para o ouvir.
            </p>
@@ -388,7 +388,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
           <Badge className="mb-8 border-brand-500/30 px-6 py-2">{`${settings.foundedYear ? `Desde ${settings.foundedYear} ` : ""}ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}`}</Badge>
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif text-slate-900 dark:text-white mb-10 leading-[0.95] tracking-tighter">
             A apoiar a <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-300 via-brand-500 dark:via-brand-300 to-accent-gold dark:to-amber-300 font-bold">Comunidade</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400 font-bold">Comunidade</span>
           </h1>
           <p className="text-2xl md:text-3xl text-slate-600 dark:text-slate-400 font-light leading-relaxed mb-16 max-w-4xl mx-auto">
             {settings.aboutMission}

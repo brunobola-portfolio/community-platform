@@ -40,7 +40,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                 {/* Header */}
                 <div className="text-center mb-16 animate-fade-in-up">
                     <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Multimédia</span>
-                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Galeria <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 dark:from-brand-400 to-accent-gold dark:to-amber-300">Visual</span></h1>
+                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Galeria <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Visual</span></h1>
                     <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto">
                         Recorde os melhores momentos da vida comunitária.
                     </p>

@@ -343,8 +343,11 @@ export interface SettingsUpdateArgs {
   heroSubtitle?: string;
   heroImageUrl?: string;
   brandColor?: string;
+  /** Second brand colour (#rrggbb); empty means automatic (gold, or a warm analogous colour for gold-like brands). */
+  accentColor?: string;
   fontHeading?: string;
   fontBody?: string;
+  fontMono?: string;
   brandGuideUrl?: string;
   imageProvider?: 'gemini' | 'openrouter';
   openrouterImageModel?: string;

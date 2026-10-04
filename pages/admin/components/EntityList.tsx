@@ -209,7 +209,7 @@ export function EntityList<T>({
                         />
                       )}
                       <div className="min-w-0 flex-1">
-                        <h4 className="truncate text-sm font-medium text-white">{getTitle(item)}</h4>
+                        <h2 className="truncate text-sm font-medium text-white">{getTitle(item)}</h2>
                         {subtitle && <p className="mt-0.5 truncate text-xs text-slate-400">{subtitle}</p>}
                         {status && <div className="mt-1.5">{status}</div>}
                       </div>

@@ -1,6 +1,13 @@
 import type { Config } from 'tailwindcss';
 import { CATEGORY_COLOR_CLASSES, CATEGORY_LABEL_CLASSES } from './utils/categoryColors';
 
+const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const;
+
+/** `{ 50: 'rgb(var(--name-50) / <alpha-value>)', … }` for a runtime colour scale. */
+function scale(name: string): Record<string, string> {
+  return Object.fromEntries(STEPS.map((step) => [step, `rgb(var(--${name}-${step}) / <alpha-value>)`]));
+}
+
 const config: Config = {
   darkMode: 'class',
   // Category colours are chosen in the backoffice and stored in the database,
@@ -23,28 +30,28 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-body)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         serif: ['var(--font-heading)', 'Georgia', 'serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
       colors: {
         // Space-separated RGB channels keep opacity modifiers (bg-brand-500/10) working
         brand: {
-          50: 'rgb(var(--brand-50) / <alpha-value>)',
-          100: 'rgb(var(--brand-100) / <alpha-value>)',
-          200: 'rgb(var(--brand-200) / <alpha-value>)',
-          300: 'rgb(var(--brand-300) / <alpha-value>)',
-          400: 'rgb(var(--brand-400) / <alpha-value>)',
-          500: 'rgb(var(--brand-500) / <alpha-value>)',
-          600: 'rgb(var(--brand-600) / <alpha-value>)',
-          700: 'rgb(var(--brand-700) / <alpha-value>)',
-          800: 'rgb(var(--brand-800) / <alpha-value>)',
-          900: 'rgb(var(--brand-900) / <alpha-value>)',
-          950: 'rgb(var(--brand-950) / <alpha-value>)',
+          ...scale('brand'),
+          // Large display accents: the brand colour itself where 3:1 allows,
+          // switched per theme in index.css
+          display: 'rgb(var(--brand-display) / <alpha-value>)',
         },
+        // Every slate class follows the brand-tinted neutrals: same luminance
+        // per step as Tailwind's slate (so audited contrast holds), brand hue
+        slate: scale('neutral'),
         dark: {
-          bg: '#020617', // Deep Slate for background
-          surface: '#0f172a', // Lighter Slate for cards
-          border: 'rgba(255, 255, 255, 0.08)',
+          bg: 'rgb(var(--neutral-950) / <alpha-value>)',
+          surface: 'rgb(var(--neutral-900) / <alpha-value>)',
+          border: 'rgb(var(--neutral-50) / 0.08)',
         },
         accent: {
+          ...scale('accent'),
+          // Fixed on purpose: the "Destaque" badge and gold tiers mean the same
+          // thing on every instance, whatever the brand accent is
           gold: '#fbbf24',
           glow: 'rgb(var(--brand-600) / 0.5)',
         },

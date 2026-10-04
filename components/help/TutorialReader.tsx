@@ -1,9 +1,18 @@
-import React from 'react';
-import { AlertTriangle, ArrowLeft, ArrowRight, Clock, Lightbulb } from 'lucide-react';
+import React, { useId, useMemo, useState } from 'react';
+import { ArrowRight, Clock, ListChecks, MessageCircle, PlayCircle, Sparkles } from 'lucide-react';
 import { Button } from '../ui/UIComponents';
+import { Lightbox } from '../ui/Lightbox';
+import { HelpContactAction } from './HelpContactCard';
 import { HelpMediaFigure } from './HelpMediaFigure';
+import { HelpPrintSheet } from './HelpPrintSheet';
+import { HelpText } from './HelpText';
+import { TutorialRelated } from './TutorialRelated';
+import { TutorialStep } from './TutorialStep';
+import { TutorialToolbar } from './TutorialToolbar';
+import { useStepProgress } from './useStepProgress';
 import { fillTokens } from '../../content/help';
-import type { HelpStep, HelpTutorial } from '../../content/help';
+import type { HelpContact } from './types';
+import type { HelpTutorial } from '../../content/help';
 
 interface TutorialReaderProps {
     tutorial: HelpTutorial;
@@ -13,95 +22,100 @@ interface TutorialReaderProps {
     goTo?: { label: string; onClick: () => void };
     prev?: HelpTutorial;
     next?: HelpTutorial;
+    related?: HelpTutorial[];
     onSelect?: (id: string) => void;
     /** h1 when the guide is the page, h3 inside a dialog that already has its own title. */
     headingLevel?: 1 | 2 | 3;
+    shareUrl?: string;
+    contact?: HelpContact;
 }
 
-interface StepItemProps {
-    step: HelpStep;
-    index: number;
-    isLast: boolean;
-    siteName: string;
-}
+const CHIP = 'inline-flex items-center gap-1.5 rounded-full border border-slate-900/10 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-white/10 dark:text-slate-300';
 
-const NOTE = 'mt-3 flex gap-2.5 rounded-xl border px-3.5 py-2.5 text-sm leading-relaxed';
-
-const StepItem: React.FC<StepItemProps> = ({ step, index, isLast, siteName }) => (
-    <li className="relative flex gap-4 pb-6 last:pb-0">
-        {!isLast && <span aria-hidden="true" className="absolute left-4 top-9 h-[calc(100%-2.5rem)] w-px bg-slate-900/10 dark:bg-white/10" />}
-        <span aria-hidden="true" className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-700 font-sans text-sm font-bold tabular-nums text-white shadow-[0_0_0_4px_rgb(var(--brand-600)/0.15)]">
-            {index + 1}
-        </span>
-        <div className="min-w-0 flex-1 pt-1">
-            <p className="text-[15px] leading-relaxed text-slate-800 dark:text-slate-100">
-                <span className="sr-only">Passo {index + 1}: </span>{fillTokens(step.text, { siteName })}
-            </p>
-            {step.tip && (
-                <p className={`${NOTE} border-brand-500/25 bg-brand-500/10 text-slate-700 dark:text-slate-200`}>
-                    <Lightbulb size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-brand-700 dark:text-brand-400" />
-                    <span><b className="font-semibold text-brand-700 dark:text-brand-400">Dica: </b>{fillTokens(step.tip, { siteName })}</span>
-                </p>
-            )}
-            {step.warning && (
-                <p className={`${NOTE} border-amber-500/30 bg-amber-500/10 text-slate-700 dark:text-slate-200`}>
-                    <AlertTriangle size={16} aria-hidden="true" className="mt-0.5 shrink-0 text-amber-700 dark:text-amber-300" />
-                    <span><b className="font-semibold text-amber-800 dark:text-amber-300">Atenção: </b>{fillTokens(step.warning, { siteName })}</span>
-                </p>
-            )}
-        </div>
-    </li>
-);
-
-const NAV_BUTTON = 'group flex min-w-0 flex-1 flex-col gap-1 rounded-2xl border border-slate-900/10 p-4 text-left transition-colors hover:border-brand-500/40 hover:bg-slate-900/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:hover:bg-white/[0.04]';
-
-/** One tutorial as a numbered timeline; shared by the backoffice, the contextual dialog and /ajuda. */
-export const TutorialReader: React.FC<TutorialReaderProps> = ({ tutorial, siteName, categoryTitle, goTo, prev, next, onSelect, headingLevel = 2 }) => {
+/** One guide as a numbered timeline; shared by the backoffice, the contextual dialog and /ajuda. */
+export const TutorialReader: React.FC<TutorialReaderProps> = ({
+    tutorial, siteName, categoryTitle, goTo, prev, next, related = [], onSelect, headingLevel = 2, shareUrl, contact,
+}) => {
     const Title = `h${headingLevel}` as const;
+    const subLevel = (headingLevel + 1) as 2 | 3 | 4;
+    const Sub = `h${subLevel}` as const;
+    const idPrefix = useId();
+    const { done, toggle, reset } = useStepProgress(tutorial.id, tutorial.steps.length);
+    const [zoom, setZoom] = useState<number | null>(null);
+
+    const media = tutorial.media ?? [];
+    const images = useMemo(
+        () => (tutorial.media ?? []).flatMap(m => (m.kind === 'image' ? [{ src: m.src, alt: m.alt, caption: m.alt }] : [])),
+        [tutorial.media],
+    );
+    const hasVideo = media.some(m => m.kind === 'video');
+
     return (
         <article className="space-y-8">
-            <header className="space-y-3">
+            <header className="space-y-4">
                 {categoryTitle && <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-700 dark:text-brand-400">{categoryTitle}</p>}
-                <Title className="font-serif text-3xl leading-tight text-slate-900 dark:text-white md:text-4xl">{fillTokens(tutorial.title, { siteName })}</Title>
+                <Title className="font-serif text-3xl leading-tight text-slate-900 [overflow-wrap:anywhere] [hyphens:auto] dark:text-white md:text-4xl">
+                    {fillTokens(tutorial.title, { siteName })}
+                </Title>
                 <p className="max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300">{fillTokens(tutorial.summary, { siteName })}</p>
-                <p className="inline-flex items-center gap-1.5 rounded-full border border-slate-900/10 px-3 py-1 text-xs font-semibold text-slate-600 dark:border-white/10 dark:text-slate-300">
-                    <Clock size={13} aria-hidden="true" /> {tutorial.minutes} min · {tutorial.steps.length} passos
+                <div className="flex flex-wrap gap-2">
+                    <span className={CHIP}><Clock size={13} aria-hidden="true" /> Cerca de {tutorial.minutes} min</span>
+                    <span className={CHIP}><ListChecks size={13} aria-hidden="true" /> {tutorial.steps.length} passos</span>
+                    {hasVideo && <span className={CHIP}><PlayCircle size={13} aria-hidden="true" /> Com vídeo</span>}
+                </div>
+                <p className="flex gap-3 rounded-2xl border border-brand-500/25 bg-brand-500/[0.07] p-4 text-base leading-relaxed text-slate-800 dark:text-slate-100">
+                    <Sparkles size={18} aria-hidden="true" className="mt-1 shrink-0 text-brand-700 dark:text-brand-400" />
+                    <span><b className="font-semibold text-brand-700 dark:text-brand-400">Em resumo: </b><HelpText text={tutorial.recap} siteName={siteName} /></span>
                 </p>
             </header>
 
-            {tutorial.media?.map(media => <HelpMediaFigure key={media.src} media={media} />)}
+            <TutorialToolbar doneCount={done.length} stepCount={tutorial.steps.length} onReset={reset} shareUrl={shareUrl} />
 
-            <section aria-label="Passos">
+            {media.map(m => (
+                <HelpMediaFigure
+                    key={m.src}
+                    media={m}
+                    onZoom={m.kind === 'image' ? () => setZoom(images.findIndex(i => i.src === m.src)) : undefined}
+                />
+            ))}
+
+            <section aria-labelledby={`${idPrefix}-steps`} className="space-y-4">
+                <Sub id={`${idPrefix}-steps`} className="font-serif text-xl text-slate-900 dark:text-white">Passo a passo</Sub>
                 <ol className="list-none">
                     {tutorial.steps.map((step, index) => (
-                        <StepItem key={step.text} step={step} index={index} isLast={index === tutorial.steps.length - 1} siteName={siteName} />
+                        <TutorialStep
+                            key={step.text}
+                            step={step}
+                            index={index}
+                            isLast={index === tutorial.steps.length - 1}
+                            done={done.includes(index)}
+                            onToggle={toggle}
+                            siteName={siteName}
+                            idPrefix={idPrefix}
+                        />
                     ))}
                 </ol>
             </section>
 
             {goTo && (
-                <div className="flex flex-col gap-3 rounded-2xl border border-brand-500/20 bg-brand-500/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-3 rounded-2xl border border-brand-500/20 bg-brand-500/5 p-4 sm:flex-row sm:items-center sm:justify-between print:hidden">
                     <p className="text-sm text-slate-700 dark:text-slate-300">Pronto para experimentar?</p>
                     <Button onClick={goTo.onClick} className="w-full sm:w-auto">{goTo.label} <ArrowRight size={16} aria-hidden="true" /></Button>
                 </div>
             )}
 
-            {onSelect && (prev || next) && (
-                <nav aria-label="Outros guias" className="flex flex-col gap-3 border-t border-slate-900/10 pt-6 dark:border-white/10 sm:flex-row">
-                    {prev && (
-                        <button type="button" onClick={() => onSelect(prev.id)} className={NAV_BUTTON}>
-                            <span className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400"><ArrowLeft size={13} aria-hidden="true" /> Anterior</span>
-                            <span className="truncate font-medium text-slate-900 group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-400">{fillTokens(prev.title, { siteName })}</span>
-                        </button>
-                    )}
-                    {next && (
-                        <button type="button" onClick={() => onSelect(next.id)} className={`${NAV_BUTTON} sm:items-end sm:text-right`}>
-                            <span className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-400">Seguinte <ArrowRight size={13} aria-hidden="true" /></span>
-                            <span className="max-w-full truncate font-medium text-slate-900 group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-400">{fillTokens(next.title, { siteName })}</span>
-                        </button>
-                    )}
-                </nav>
+            {onSelect && <TutorialRelated related={related} prev={prev} next={next} siteName={siteName} onSelect={onSelect} level={subLevel} />}
+
+            {contact && (contact.href || contact.onClick) && (
+                <p className="flex flex-wrap items-center gap-x-2 text-sm text-slate-600 dark:text-slate-400 print:hidden">
+                    <MessageCircle size={16} aria-hidden="true" className="shrink-0" />
+                    <span>Ficou com dúvidas?</span>
+                    <HelpContactAction contact={contact} variant="link" />
+                </p>
             )}
+
+            <Lightbox images={images} index={zoom} onClose={() => setZoom(null)} onNavigate={setZoom} label="Imagem do guia em ecrã inteiro" />
+            <HelpPrintSheet tutorial={tutorial} siteName={siteName} shareUrl={shareUrl} />
         </article>
     );
 };

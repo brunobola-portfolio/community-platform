@@ -33,8 +33,8 @@ criada em `/setup`:
   (carregada ali mesmo; sem ela, o fundo é só a cor da marca), nome completo, localidade,
   concelho, ano de fundação, tagline e subtítulo do hero, nome e descrição da sede, introdução e citação da
   página História, nota dos sócios fundadores. Campos vazios escondem a secção respetiva.
-- **Admin > Definições > Marca** — cor da marca, letra dos títulos e do texto, link para o
-  guia de marca / media kit (ver secção 4).
+- **Admin > Definições > Marca** — cor da marca, cor de destaque, letra dos títulos, do texto
+  e mono, link para o guia de marca / media kit (ver secção 4).
 - **Admin > Definições > Geral / Contacto** — nome curto, email, **URL do logótipo**
   (ex: `/logo.svg`, servido pelo overlay), telefone, horário, morada, Maps, coordenadas,
   redes sociais, missão e pilares, quotas e pagamentos.
@@ -59,9 +59,10 @@ VITE_VENUE_NAME, VITE_VENUE_DESCRIPTION, VITE_HISTORY_INTRO (parágrafos com \n\
 VITE_HISTORY_QUOTE, VITE_FOUNDERS_NOTE, VITE_ABOUT_MISSION,
 VITE_CONTACT_EMAIL, VITE_PHONE, VITE_ADDRESS, VITE_MAPS_URL, VITE_LATITUDE, VITE_LONGITUDE,
 VITE_FACEBOOK_PAGE_ID, VITE_INSTAGRAM_URL, VITE_AI_ALLOWED_TOPICS,
-VITE_BRAND_COLOR, VITE_FONT_HEADING, VITE_FONT_BODY, VITE_BRAND_GUIDE_URL
-(a cor vai entre aspas, `VITE_BRAND_COLOR="#df3d32"`: sem aspas o `#` começa um comentário e o
-valor fica vazio; o `npm run dist` recusa o build nesse caso)
+VITE_BRAND_COLOR, VITE_ACCENT_COLOR, VITE_FONT_HEADING, VITE_FONT_BODY, VITE_FONT_MONO,
+VITE_BRAND_GUIDE_URL
+(as cores vão entre aspas, `VITE_BRAND_COLOR="#df3d32"`: sem aspas o `#` começa um comentário e
+o valor fica vazio; o `npm run dist` recusa o build nesse caso)
 ```
 
 O guia de marca de cada instância (ex.: `/marca/`, servido do overlay `brand/` do repositório
@@ -96,19 +97,48 @@ Nada da marca vive no código. Em **Admin > Definições > Marca**:
 
 | Campo | O que faz | Fallback (`VITE_*` → plataforma) |
 |-------|-----------|----------------------------------|
-| `brandColor` | Uma cor `#rrggbb`; a escala `brand-50…950` inteira é gerada a partir dela em runtime | `VITE_BRAND_COLOR` → `#4f46e5` (índigo) |
+| `brandColor` | Uma cor `#rrggbb`; as escalas `brand-*`, o destaque dos títulos e os neutros tingidos são gerados a partir dela em runtime | `VITE_BRAND_COLOR` → `#4f46e5` (índigo) |
+| `accentColor` | Segunda cor `#rrggbb` (fim dos gradientes de título, brilhos, distintivo dos fundadores); vazia = automática | `VITE_ACCENT_COLOR` → automática: `#fbbf24` (dourado), ou um coral se a marca já for dourada/laranja |
 | `fontHeading` | Letra dos títulos (`font-serif`), de uma lista curada | `VITE_FONT_HEADING` → Playfair Display |
 | `fontBody` | Letra do texto e da UI (`font-sans`), de uma lista curada | `VITE_FONT_BODY` → Geist |
+| `fontMono` | Letra mono (`font-mono`: datas, etiquetas, labels), de uma lista curada | `VITE_FONT_MONO` → Geist Mono |
 | `brandGuideUrl` | Link «Marca e imprensa» no rodapé (escondido se vazio) | `VITE_BRAND_GUIDE_URL` → vazio |
 
+**Do guia de marca do cliente para as settings.** Um guia típico traz uma cor primária, uma
+ou duas cores secundárias, uma família de títulos, uma de texto e às vezes uma mono. Mapear:
+
+| No guia | Campo | Notas |
+|---------|-------|-------|
+| Cor primária (a do logótipo) | `brandColor` | O hex exato; não escolher um tom "mais escuro para contraste", o gerador já faz isso |
+| Cor secundária / de destaque (ex.: dourado) | `accentColor` | Se o guia não tiver, deixar vazia; evitar repetir a primária (o painel avisa) |
+| Neutros / cinzentos do guia | — | Não há campo: os cinzentos do site já são tingidos pela cor da marca |
+| Letra de títulos | `fontHeading` | Se não estiver na lista, escolher a mais próxima e acrescentar a família a `utils/brandFonts.ts` num PR |
+| Letra de texto | `fontBody` | idem |
+| Letra mono (código, números) | `fontMono` | idem; sem mono no guia, Geist Mono |
+| PDF / página do guia | `brandGuideUrl` | `/marca/` servido pelo overlay da instância, ou link externo |
+
+Exemplo: guia com primária `#df3d32`, destaque `#fbbf24`, Playfair Display +
+Geist + Geist Mono. Em `.env.production` (fallback do build) fica:
+
+```
+VITE_BRAND_COLOR="#df3d32"
+VITE_ACCENT_COLOR="#fbbf24"
+VITE_FONT_HEADING=Playfair Display
+VITE_FONT_BODY=Geist
+VITE_FONT_MONO=Geist Mono
+```
+
 - **Contraste garantido.** Uma cor clara (amarelo, ciano) é escurecida automaticamente nos
-  tons que levam texto (botões, links), por isso qualquer escolha mantém AA. O painel mostra
-  os rácios e avisa quando houve ajuste. Detalhes em [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md#marca-dinâmica).
+  tons que levam texto (botões, links), uma cor escura é clareada nos títulos do tema escuro,
+  e o mesmo vale para a cor de destaque, por isso qualquer escolha mantém AA. O painel mostra
+  os rácios da marca, do destaque dos títulos e da cor de destaque, e avisa quando houve
+  ajuste. Detalhes em [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md#marca-dinâmica).
 - **Fontes só da lista** em [utils/brandFonts.ts](../utils/brandFonts.ts) (8 de títulos, 8 de
-  texto, todas Google Fonts). O CSP já permite `fonts.googleapis.com`/`fonts.gstatic.com`;
+  texto, 5 mono, todas Google Fonts). O CSP já permite `fonts.googleapis.com`/`fonts.gstatic.com`;
   acrescentar uma família é uma entrada nessa lista com a query css2 exata.
-- **Primeiro paint.** O `index.css` traz os valores da cor por omissão; o browser guarda a
-  última marca vista, por isso quem volta já não vê o índigo antes das settings chegarem.
+- **Primeiro paint.** O `index.css` traz os valores das predefinições; o browser guarda a
+  última marca vista (cores e fontes), por isso quem volta já não vê o índigo antes das
+  settings chegarem.
 - **Guia de marca / media kit.** Os ficheiros (logótipos, PDF do guia, fotos para imprensa)
   são da associação: vivem no **repositório da instância** e são publicados pelo overlay
   (`.brand/public/marca/index.html`, `.brand/public/marca/logo.zip`, ...), servidos em

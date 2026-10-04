@@ -19,6 +19,7 @@ export interface BrandFont {
 
 const SERIF = 'Georgia, "Times New Roman", serif';
 const SANS = 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif';
+const MONO = 'ui-monospace, SFMono-Regular, "Cascadia Mono", Menlo, Consolas, monospace';
 
 export const HEADING_FONTS: readonly BrandFont[] = [
   { family: 'Playfair Display', query: 'Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400', fallback: SERIF },
@@ -42,8 +43,21 @@ export const BODY_FONTS: readonly BrandFont[] = [
   { family: 'DM Sans', query: 'DM+Sans:wght@300..900', fallback: SANS },
 ];
 
+// Eyebrows, dates and figures: a brand guide usually names its mono, and the
+// system fallback (Consolas on Windows) looks nothing like any of them
+export const MONO_FONTS: readonly BrandFont[] = [
+  { family: 'Geist Mono', query: 'Geist+Mono:wght@100..900', fallback: MONO },
+  { family: 'JetBrains Mono', query: 'JetBrains+Mono:wght@100..800', fallback: MONO },
+  { family: 'IBM Plex Mono', query: 'IBM+Plex+Mono:wght@300;400;500;600;700', fallback: MONO },
+  { family: 'DM Mono', query: 'DM+Mono:wght@300;400;500', fallback: MONO },
+  { family: 'Space Mono', query: 'Space+Mono:wght@400;700', fallback: MONO },
+];
+
 export const DEFAULT_HEADING_FONT = HEADING_FONTS[0];
 export const DEFAULT_BODY_FONT = BODY_FONTS[0];
+export const DEFAULT_MONO_FONT = MONO_FONTS[0];
+/** Families the static `<link>` in index.html already loads, in its order. */
+export const DEFAULT_FONTS: readonly BrandFont[] = [DEFAULT_BODY_FONT, DEFAULT_MONO_FONT, DEFAULT_HEADING_FONT];
 
 /** Resolves a stored family name against the curated list; unknown names fall back to the default. */
 export function resolveFont(list: readonly BrandFont[], family: string | null | undefined, fallback: BrandFont): BrandFont {

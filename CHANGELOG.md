@@ -6,6 +6,42 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.19.0] - 2026-10-04
+
+Each association looks like its own brand guide, and the help center reads like a friendly
+manual.
+
+### Added
+
+- **Brand system v2: every instance on-brand from its brand guide values.** The palette is now
+  generated in OKLCH (hue kept, chroma shaped per step like Tailwind's palettes), so a red's
+  tints stay red/coral instead of turning pink; every AA guarantee of the old scale holds
+- **Brand-tinted neutrals**: all `slate-*` classes and the dark background/surfaces follow a
+  neutral scale with the brand hue at low chroma (warm near-blacks for a red, cool for indigo,
+  pure grey for a grey or black brand), with Tailwind slate's exact luminance per step so every
+  text contrast stays the same
+- **Display colour for large titles** (`text-brand-display`): the brand colour itself in the
+  dark theme whenever it reaches 3:1, instead of the pastel brand-400 meant for body text
+- **Accent colour** (Definições > Marca, `VITE_ACCENT_COLOR`): the second colour of the guide
+  drives title gradients, glows and the founders' badge; empty means automatic (gold, or a warm
+  coral for gold-like brands). The "Destaque" badge and warnings keep their fixed colours
+- **Mono font** (Geist Mono by default, plus JetBrains Mono, IBM Plex Mono, DM Mono, Space
+  Mono; `VITE_FONT_MONO`) for dates, eyebrows and labels instead of the system monospace
+- Backoffice brand preview shows the display word, the accent gradient and the mono line, and
+  the contrast panel reports brand, display and accent
+- Smooth light/dark switch (View Transitions API; instant with reduced motion or older browsers)
+- **Help center, easier to follow**: 44 guides rewritten in plain language (one action per step,
+  exact button names in bold, "Porquê" tips, "Em resumo"), plus guides on AI costs and budget,
+  checking the site version and what to do when something goes wrong; steps can be ticked off
+  with a progress bar, guides can be copied as a link or printed cleanly, screenshots zoom,
+  videos start on tap; search tolerates accents, plurals and typos and suggests words and a
+  contact when nothing matches; an unknown guide link shows a friendly notice
+
+### Fixed
+
+- The backoffice list cards use a correct heading level, and the empty Inscrições tab names the
+  option as it reads ("Aceitar inscrições pelo site")
+
 ## [2.18.1] - 2026-10-04
 
 ### Fixed

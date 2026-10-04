@@ -68,8 +68,11 @@ export const INITIAL_SETTINGS: Settings = {
   heroImageUrl: '',
   // Platform default brand (indigo); instances set theirs in Definições or VITE_BRAND_COLOR
   brandColor: getEnvVar("VITE_BRAND_COLOR", "#4f46e5"),
+  // Empty = automatic accent (utils/brandAccent.ts): gold, or a warm analogous colour for gold-like brands
+  accentColor: getEnvVar("VITE_ACCENT_COLOR", ""),
   fontHeading: getEnvVar("VITE_FONT_HEADING", "Playfair Display"),
   fontBody: getEnvVar("VITE_FONT_BODY", "Geist"),
+  fontMono: getEnvVar("VITE_FONT_MONO", "Geist Mono"),
   brandGuideUrl: getEnvVar("VITE_BRAND_GUIDE_URL", ""),
   openrouterImageModel: DEFAULT_OPENROUTER_IMAGE_MODEL,
   maintenanceMode: getEnvBool("VITE_MAINTENANCE_MODE", false),
