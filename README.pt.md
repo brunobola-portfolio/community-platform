@@ -75,6 +75,10 @@ run seed:seed`), sem marca de nenhum cliente. A visita guiada de um minuto está
 |:---:|:---:|
 | ![Dashboard admin](docs/assets/admin-dashboard.png) | ![Eventos no admin](docs/assets/admin-events.png) |
 
+| Estúdio de IA: uma frase dá o evento com cartaz | Ajuda no próprio site: guias, vídeos, "Como funciona" |
+|:---:|:---:|
+| ![Estúdio de IA](docs/assets/ai-studio.png) | ![Centro de ajuda](docs/assets/admin-help.png) |
+
 ## Sobre
 
 Associações culturais e recreativas, clubes desportivos, juntas de freguesia, IPSS e outras

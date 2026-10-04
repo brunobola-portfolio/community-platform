@@ -75,6 +75,10 @@ seed:seed`), captured with no client branding. The one-minute tour lives on the
 |:---:|:---:|
 | ![Admin dashboard](docs/assets/admin-dashboard.png) | ![Admin events](docs/assets/admin-events.png) |
 
+| AI studio: one sentence becomes an event with its poster | Built-in help: guides, videos, "Como funciona" |
+|:---:|:---:|
+| ![AI studio](docs/assets/ai-studio.png) | ![Help center](docs/assets/admin-help.png) |
+
 ## About
 
 Cultural and recreational associations, sports clubs, parish councils, non-profits and
