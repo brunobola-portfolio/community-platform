@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.18.0] - 2026-10-04
+
+### Added
+
+- **Up-to-date badge in the footer**: next to "Community Platform vX by BolaLabs" each site says
+  "atualizada" or "vY disponível" (linking to the release notes), so anyone looking at an instance
+  knows at a glance whether it runs the latest release. The backoffice Plataforma card shows the
+  latest release too, with a note to ask for the update. The Convex backend reads the newest
+  release from the repository in package.json every 6 hours (the releases page redirect, which,
+  unlike GitHub's anonymous API, is not rate limited on Convex's shared IPs)
+
 ## [2.17.0] - 2026-10-04
 
 The board learns the site from the site itself, and AI spending is cheap by default and visible

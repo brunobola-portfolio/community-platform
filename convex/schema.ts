@@ -395,4 +395,11 @@ export default defineSchema({
   })
     .index("by_url", ["url"])
     .index("by_refs_created", ["refs", "createdAt"]),
+
+  // Newest platform release seen on GitHub (convex/platform.ts), one row, refreshed by a cron
+  platformRelease: defineTable({
+    version: v.string(),
+    url: v.string(),
+    checkedAt: v.number(),
+  }),
 });

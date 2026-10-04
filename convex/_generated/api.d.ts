@@ -48,6 +48,7 @@ import type * as lib_openRouterRequest from "../lib/openRouterRequest.js";
 import type * as lib_rateLimit from "../lib/rateLimit.js";
 import type * as lib_referenceUrl from "../lib/referenceUrl.js";
 import type * as lib_registrationRules from "../lib/registrationRules.js";
+import type * as lib_semver from "../lib/semver.js";
 import type * as lib_shareHtml from "../lib/shareHtml.js";
 import type * as lib_text from "../lib/text.js";
 import type * as lib_time from "../lib/time.js";
@@ -121,6 +122,7 @@ declare const fullApi: ApiFromModules<{
   "lib/rateLimit": typeof lib_rateLimit;
   "lib/referenceUrl": typeof lib_referenceUrl;
   "lib/registrationRules": typeof lib_registrationRules;
+  "lib/semver": typeof lib_semver;
   "lib/shareHtml": typeof lib_shareHtml;
   "lib/text": typeof lib_text;
   "lib/time": typeof lib_time;

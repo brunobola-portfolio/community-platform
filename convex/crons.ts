@@ -18,4 +18,7 @@ crons.daily("cleanup:guestRegistrations", { hourUTC: 3, minuteUTC: 30 }, interna
 // Files uploaded from the MediaStudio but never saved into a record
 crons.daily("cleanup:abandonedUploads", { hourUTC: 4, minuteUTC: 0 }, internal.maintenance.sweepAbandonedUploads);
 
+// Latest platform release, for the "atualizada / nova versão" badge in the footer
+crons.interval("platform:latestRelease", { hours: 6 }, internal.platform.refreshLatest);
+
 export default crons;

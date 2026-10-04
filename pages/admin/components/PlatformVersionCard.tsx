@@ -3,6 +3,7 @@ import { useQuery } from 'convex/react';
 import { Package, RefreshCw, ShieldCheck, ShieldOff } from 'lucide-react';
 import { isMonitoringEnabled } from '../../../utils/monitoring';
 import { api } from '../../../convex/_generated/api';
+import { updateStatus } from '../../../convex/lib/semver';
 
 /**
  * Two versions that are easy to confuse and expensive to mix up: the one this
@@ -40,7 +41,9 @@ export const PlatformVersionCard: React.FC = () => {
     }, []);
 
     const backend = useQuery(api.platform.version);
+    const latest = useQuery(api.platform.latest);
     const running = __PLATFORM_VERSION__;
+    const release = updateStatus(served?.version ?? running, latest?.version);
     const isStale = Boolean(served && served.version !== running);
     // The web server and Convex deploy separately; a mismatch means one of them missed the release
     const backendBehind = Boolean(backend && served && backend.version !== served.version);
@@ -68,6 +71,18 @@ export const PlatformVersionCard: React.FC = () => {
                         {backend ? backend.version : '…'}
                     </dd>
                 </div>
+                <div className="flex items-baseline justify-between gap-4">
+                    <dt className="text-slate-400">Última publicada</dt>
+                    <dd className="flex items-center gap-2 font-mono tabular-nums text-white">
+                        {latest ? latest.version : '—'}
+                        {release === 'current' && <span className="font-sans text-xs text-emerald-400">atualizada</span>}
+                        {release === 'behind' && latest && (
+                            <a href={latest.url} target="_blank" rel="noopener noreferrer" className="rounded font-sans text-xs text-amber-300 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                                ver novidades
+                            </a>
+                        )}
+                    </dd>
+                </div>
                 {served && (
                     <div className="flex items-baseline justify-between gap-4">
                         <dt className="text-slate-400">Build</dt>
@@ -87,6 +102,11 @@ export const PlatformVersionCard: React.FC = () => {
             {backendBehind && (
                 <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
                     O servidor Convex não está na mesma versão do site. Falta publicar o backend: peça à equipa técnica.
+                </p>
+            )}
+            {release === 'behind' && latest && (
+                <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+                    Existe a versão {latest.version} da plataforma. Peça à equipa técnica para atualizar este site.
                 </p>
             )}
             {isStale && (
