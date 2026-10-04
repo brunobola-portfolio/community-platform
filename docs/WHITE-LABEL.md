@@ -60,6 +60,8 @@ VITE_HISTORY_QUOTE, VITE_FOUNDERS_NOTE, VITE_ABOUT_MISSION,
 VITE_CONTACT_EMAIL, VITE_PHONE, VITE_ADDRESS, VITE_MAPS_URL, VITE_LATITUDE, VITE_LONGITUDE,
 VITE_FACEBOOK_PAGE_ID, VITE_INSTAGRAM_URL, VITE_AI_ALLOWED_TOPICS,
 VITE_BRAND_COLOR, VITE_FONT_HEADING, VITE_FONT_BODY, VITE_BRAND_GUIDE_URL
+(a cor vai entre aspas, `VITE_BRAND_COLOR="#df3d32"`: sem aspas o `#` começa um comentário e o
+valor fica vazio; o `npm run dist` recusa o build nesse caso)
 ```
 
 `VITE_SITE_URL` também gera `sitemap.xml` e `robots.txt` no `npm run dist`. No deployment

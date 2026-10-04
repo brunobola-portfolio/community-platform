@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.15.1] - 2026-10-04
+
+### Fixed
+
+- `npm run dist` refuses a `.env.production` where a `VITE_*` value starts with an unquoted
+  `#`: the .env format reads it as a comment, so `VITE_BRAND_COLOR=#df3d32` built as empty and
+  the site fell back to the platform colour. The example and the white-label guide quote it
+
 ## [2.15.0] - 2026-10-04
 
 Creating content, giving access and dressing the portal in an association's brand become
