@@ -10,7 +10,7 @@ import { ReferenceDrop } from './ReferenceDrop';
 import { StudioProgress } from './StudioProgress';
 import { useStudioUploads } from './useStudioUploads';
 import { draftToFormData } from './draftToForm';
-import { EXAMPLES, PLACEHOLDER, localStamp, stageAt, stagesFor, studioErrorMessage, type StageId, type StudioKind } from './studioCopy';
+import { EXAMPLES, PLACEHOLDER, localStamp, stageAt, stagesFor, studioErrorMessage, type StageId, type StudioKind, posterWaitHint } from './studioCopy';
 import { api } from '../../../convex/_generated/api';
 import type { Id } from '../../../convex/_generated/dataModel';
 import { OPENROUTER_IMAGE_MODELS } from '../../../convex/lib/aiDefaults';
@@ -161,7 +161,7 @@ export const AIStudioModal: React.FC<AIStudioModalProps> = ({ kind, onClose, onD
             footer={footer}
         >
             {running ? (
-                <StudioProgress stages={stages} current={stage} />
+                <StudioProgress stages={stages} current={stage} hint={posterWaitHint(imageOn ? chosenEngine : undefined, caps?.openrouterImageModel)} />
             ) : (
                 <form id={FORM_ID} onSubmit={run} className="space-y-5">
                     <Field label={`O que quer anunciar? (${noun})`} hint={`${brief.length}/${MAX_BRIEF} caracteres`}>

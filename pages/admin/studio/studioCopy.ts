@@ -81,3 +81,14 @@ export function localStamp(now: Date = new Date()): { day: string; minute: strin
     const day = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
     return { day, minute: `${day}T${pad(now.getHours())}:${pad(now.getMinutes())}` };
 }
+
+/** What the admin should expect to wait, measured per engine on a text poster. */
+export function posterWaitHint(engine: 'gemini' | 'openrouter' | undefined, openrouterModel: string | undefined): string {
+    if (engine === 'openrouter') {
+        if (openrouterModel?.includes('gpt-5.4-image')) return 'O GPT Image desenha o cartaz com todo o cuidado: conte com cerca de 2 minutos.';
+        if (openrouterModel?.includes('gpt-5-image-mini')) return 'O cartaz demora cerca de 1 minuto.';
+        return 'O cartaz demora menos de meio minuto.';
+    }
+    if (engine === 'gemini') return 'O cartaz demora menos de meio minuto.';
+    return 'Sem cartaz, o rascunho fica pronto em segundos.';
+}

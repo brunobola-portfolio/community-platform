@@ -6,10 +6,12 @@ import { STAGE_LABEL, type StageId } from './studioCopy';
 interface StudioProgressProps {
     stages: StageId[];
     current: StageId;
+    /** Expected wait for the chosen image engine. */
+    hint: string;
 }
 
 /** Staged checklist shown while the draft is prepared; announced politely to screen readers. */
-export const StudioProgress: React.FC<StudioProgressProps> = ({ stages, current }) => {
+export const StudioProgress: React.FC<StudioProgressProps> = ({ stages, current, hint }) => {
     const currentIndex = stages.indexOf(current);
     return (
         <div className="rounded-2xl border border-brand-500/20 bg-brand-500/[0.06] p-5">
@@ -35,7 +37,7 @@ export const StudioProgress: React.FC<StudioProgressProps> = ({ stages, current 
                     );
                 })}
             </ol>
-            <p className="mt-4 text-xs text-slate-400">Costuma demorar entre meio minuto e dois minutos, sobretudo por causa do cartaz. Pode cancelar a qualquer momento.</p>
+            <p className="mt-4 text-xs text-slate-400">{hint} Pode cancelar a qualquer momento.</p>
         </div>
     );
 };

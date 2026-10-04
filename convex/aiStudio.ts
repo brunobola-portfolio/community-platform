@@ -8,7 +8,7 @@ import { formatDay, parseDay } from "./lib/aiStudioDates";
 import { coerceEventDraft, coercePostDraft, extractJson, type PosterLines, type StudioCategory, type StudioKind, type StudioResult } from "./lib/aiStudioDraft";
 import { buildDraftPrompt, buildPosterPrompt } from "./lib/aiStudioPrompts";
 import { draftText } from "./lib/aiStudioText";
-import { availableEngines, generateWithFallback, loadReference, storeGeneratedImage, type ImageEngine, type ImageSettings } from "./lib/aiImage";
+import { availableEngines, generateWithFallback, loadReference, storeGeneratedImage, type ImageEngine, type ImageSettings, preferredImageEngine, fallbackReason } from "./lib/aiImage";
 import type { ImageData } from "./lib/openRouterRequest";
 import type { Id } from "./_generated/dataModel";
 
@@ -152,7 +152,7 @@ export const draft = action({
 interface AttachOptions {
   userId: string;
   args: { kind: StudioKind; posterText: boolean; imageEngine?: ImageEngine };
-  settings: (ImageSettings & { brandColor?: string; defaultImageStyle?: string }) | null;
+  settings: (ImageSettings & { brandColor?: string; defaultImageStyle?: string; siteName?: string }) | null;
   reference: ImageData | null;
   imagePrompt: string;
   lines?: PosterLines;
@@ -167,13 +167,14 @@ async function attachImage(ctx: ActionCtx, o: AttachOptions) {
     result.notes.push(`Não há nenhum motor de imagem configurado, por isso o rascunho segue sem ${o.args.kind === "event" ? "cartaz" : "imagem"}.`);
     return;
   }
-  const requested = o.args.imageEngine ?? o.settings?.imageProvider ?? "gemini";
+  const requested = o.args.imageEngine ?? preferredImageEngine(o.settings);
   const prompt = buildPosterPrompt({
     kind: o.args.kind,
     imagePrompt: o.imagePrompt,
     posterText: o.args.posterText,
     lines: o.lines,
     brandColor: o.settings?.brandColor,
+    organizer: o.settings?.siteName,
     // A poster with rendered text should not be pushed towards photorealism
     style: o.args.posterText && o.args.kind === "event" ? undefined : o.settings?.defaultImageStyle,
     hasReference: Boolean(o.reference),
@@ -199,7 +200,9 @@ async function attachImage(ctx: ActionCtx, o: AttachOptions) {
     result.imageEngine = generated.engine;
     await logAi(ctx, { userId: o.userId, action: "studioImage", model: generated.model, startedAt });
     if (generated.engine !== requested) {
-      result.notes.push(`O motor escolhido falhou; ${noun} foi criad${o.args.kind === "event" ? "o" : "a"} com ${ENGINE_LABEL[generated.engine]}.`);
+      const why = fallbackReason(errors);
+      const made = `${noun} foi criad${o.args.kind === "event" ? "o" : "a"} com ${ENGINE_LABEL[generated.engine]}`;
+      result.notes.push(why ? `Como ${why}, ${made}.` : `O motor escolhido falhou; ${made}.`);
     }
   } catch (error) {
     const raw = error instanceof Error ? error.message : String(error);

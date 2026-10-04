@@ -35,10 +35,10 @@ export const GEMINI_IMAGE_MODELS = [
  */
 export const DEFAULT_OPENROUTER_IMAGE_MODEL = "openai/gpt-5.4-image-2";
 export const OPENROUTER_IMAGE_MODELS = [
-  { id: "openai/gpt-5.4-image-2", label: "GPT Image 2 (o do ChatGPT, melhor texto em cartazes)" },
-  { id: "openai/gpt-5-image-mini", label: "GPT Image Mini (económico)" },
-  { id: "google/gemini-3-pro-image", label: "NanoBanana Pro via OpenRouter" },
-  { id: "google/gemini-3.1-flash-image", label: "NanoBanana 2 via OpenRouter" },
+  { id: "openai/gpt-5.4-image-2", label: "GPT Image 2 — o do ChatGPT, qualidade máxima (~2 min, ~0,23 $)" },
+  { id: "openai/gpt-5-image-mini", label: "GPT Image Mini — económico (~50 s, ~0,04 $)" },
+  { id: "google/gemini-3-pro-image", label: "NanoBanana Pro via OpenRouter (~30 s)" },
+  { id: "google/gemini-3.1-flash-image", label: "NanoBanana 2 via OpenRouter — o mais rápido (~10 s, ~0,07 $)" },
 ] as const;
 /**
  * Vision-capable OpenRouter model the AI studio uses to read a reference poster

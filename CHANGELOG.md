@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.16.0] - 2026-10-04
+
+### Changed
+
+- **GPT Image is the default poster engine** whenever an OpenRouter key is configured (the
+  engine behind ChatGPT's images: print-quality posters with exact Portuguese text); Gemini
+  stays the automatic fallback and the default without an OpenRouter key. An admin choice in
+  Assistente virtual › Motor de imagem still wins
+- Posters carry the association's real name as a discreet footer line and may no longer
+  invent organiser names, crests or slogans
+- Model choices show their measured trade-off (GPT Image 2 ~2 min and ~0.23 $ per poster,
+  Mini ~50 s and ~0.04 $, NanoBanana ~10 s), and the studio tells how long the chosen engine
+  takes while it draws
+
+### Added
+
+- The OpenRouter balance in Motor de imagem, with how many GPT posters it still pays for and
+  a warning below 5 $
+- When the fallback engine is used, the note says why: no OpenRouter balance (and where to top
+  it up), a rate limit or a timeout
+
+### Fixed
+
+- A slow GPT Image poster (~2 min) no longer risks the 150 s image timeout
+
 ## [2.15.2] - 2026-10-04
 
 ### Fixed

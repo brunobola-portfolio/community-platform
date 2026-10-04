@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from 'convex/react';
+import { useAction, useQuery } from 'convex/react';
 import { Palette } from 'lucide-react';
 import { api } from '../../../convex/_generated/api';
 import { cn } from '../../../components/ui/UIComponents';
@@ -16,9 +16,22 @@ interface ImageEngineSectionProps {
 type Engine = 'gemini' | 'openrouter';
 
 const ENGINES: Array<{ id: Engine; name: string; description: string }> = [
-    { id: 'gemini', name: 'NanoBanana (Gemini)', description: 'Rápido e económico; usa a chave Gemini do servidor.' },
-    { id: 'openrouter', name: 'OpenRouter', description: 'GPT Image 2 e outros; melhor texto nos cartazes, custa mais por imagem.' },
+    { id: 'openrouter', name: 'GPT Image (OpenRouter) · recomendado', description: 'O motor de imagem do ChatGPT: cartazes ao nível de uma gráfica, com o texto certo. Cerca de 2 minutos e 0,23 $ por cartaz.' },
+    { id: 'gemini', name: 'NanoBanana (Gemini)', description: 'Rápido (uns segundos) e económico; bom para ilustrações e fotos sem texto.' },
 ];
+
+/** Asks the server for the OpenRouter balance once per visit to the tab. */
+function useOpenRouterBalance(enabled: boolean) {
+    const fetchBalance = useAction(api.aiProviderTools.openRouterBalance);
+    const [balance, setBalance] = React.useState<{ remainingUsd: number; postersLeft: number } | null>(null);
+    React.useEffect(() => {
+        if (!enabled) return;
+        let alive = true;
+        fetchBalance({}).then(b => { if (alive) setBalance(b); }).catch(() => undefined);
+        return () => { alive = false; };
+    }, [enabled, fetchBalance]);
+    return balance;
+}
 
 /**
  * Engine for the posters of the AI studio and the MediaStudio. Whichever is
@@ -26,7 +39,8 @@ const ENGINES: Array<{ id: Engine; name: string; description: string }> = [
  */
 export const ImageEngineSection: React.FC<ImageEngineSectionProps> = ({ settingsForm, update }) => {
     const caps = useQuery(api.aiStudioInfo.capabilities);
-    const engine: Engine = settingsForm.imageProvider ?? 'gemini';
+    const engine: Engine = settingsForm.imageProvider ?? caps?.preferred ?? 'openrouter';
+    const balance = useOpenRouterBalance(Boolean(caps?.openrouter));
     const available = (id: Engine) => (id === 'gemini' ? caps?.gemini : caps?.openrouter) ?? true;
 
     return (
@@ -58,6 +72,15 @@ export const ImageEngineSection: React.FC<ImageEngineSectionProps> = ({ settings
                     </button>
                 ))}
             </div>
+            {balance && (
+                <p className={cn(
+                    'mb-4 rounded-xl border px-4 py-3 text-xs',
+                    balance.remainingUsd < 5 ? 'border-amber-400/30 bg-amber-400/10 text-amber-200' : 'border-white/10 bg-black/20 text-slate-300',
+                )}>
+                    Saldo OpenRouter: {balance.remainingUsd.toLocaleString('pt-PT', { style: 'currency', currency: 'USD' })} · dá para cerca de {balance.postersLeft} cartazes com GPT Image 2.
+                    {balance.remainingUsd < 5 && ' Quando acabar, os cartazes passam a ser feitos com o Gemini; carregue créditos em openrouter.ai › Credits.'}
+                </p>
+            )}
             {engine === 'openrouter' && (
                 <Field label="Modelo OpenRouter" hint="GPT Image 2 escreve o texto dos cartazes com mais rigor; o Mini é mais barato.">
                     <AdminSelect value={settingsForm.openrouterImageModel ?? DEFAULT_OPENROUTER_IMAGE_MODEL} onChange={e => update('openrouterImageModel', e.target.value)}>

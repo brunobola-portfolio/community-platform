@@ -95,6 +95,10 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   vem só de `utils/eventTime.ts`. Nunca `new Date(event.date)` para decidir prazos no servidor.
 - **Metadados por página**: cada página pública usa `components/PageMeta.tsx` (título,
   canonical, og). O `index.html` não declara canonical nem `og:url`.
+- **Motor de imagem** (`convex/lib/aiImage.ts`): sem escolha do admin, GPT Image 2 via
+  OpenRouter quando há chave OpenRouter (`preferredImageEngine`), senão Gemini; o outro é o
+  fallback automático e `fallbackReason` explica a troca (sem saldo, limite, timeout). O
+  prompt do cartaz assina com `siteName` e proíbe nomes, brasões e slogans inventados.
 - **Catálogo de modelos Gemini** (`GEMINI_*_MODELS` em `convex/lib/aiDefaults.ts`) alimenta
   os selects do admin, o Media Studio e `aiProviderTools.listModels` — uma lista, três ecrãs.
 - **O seed é a demonstração do produto**: `convex/mockData.ts` gera datas de eventos relativas

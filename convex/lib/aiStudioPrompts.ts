@@ -106,6 +106,8 @@ export interface PosterPromptOptions {
   brandColor?: string;
   style?: string;
   hasReference: boolean;
+  /** The association's real name, the only organiser the poster may show. */
+  organizer?: string;
 }
 
 /** Prompt for the image model; text-free unless a finished poster was asked for. */
@@ -121,7 +123,9 @@ export function buildPosterPrompt(o: PosterPromptOptions): string {
 
   if (withText && o.lines) {
     const text = [o.lines.title, o.lines.date, o.lines.place, o.lines.extra].filter(Boolean).map(l => `"${l}"`).join(", ");
-    return `Design a finished, print-ready event poster in portrait orientation (3:4, A4-like).${reference} Artwork: ${o.imagePrompt}.${palette}${style} Render exactly these Portuguese text lines, large and perfectly legible, with correct accents and spelling, clear hierarchy (title biggest): ${text}. Do not add any other text, logos, URLs or watermarks.`;
+    // Image models invent organiser names, crests and slogans unless told the real one
+    const organizer = o.organizer ? ` Add one small, discreet footer line with the organiser's name exactly as "${o.organizer}".` : "";
+    return `Design a finished, print-ready event poster in portrait orientation (3:4, A4-like).${reference} Artwork: ${o.imagePrompt}.${palette}${style} Render exactly these Portuguese text lines, large and perfectly legible, with correct accents and spelling, clear hierarchy (title biggest): ${text}.${organizer} Do not add any other text, slogans, invented names, logos, crests, emblems, URLs or watermarks.`;
   }
   const format = o.kind === "event" ? "portrait orientation (3:4)" : "landscape orientation (16:9), suitable as a news article cover";
   return `Create an image in ${format}.${reference} ${o.imagePrompt}.${palette}${style} The image must contain NO text, letters, numbers, logos or watermarks.`;

@@ -32,7 +32,8 @@ export interface ImageSettings {
 
 const SAFE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_REFERENCE_BYTES = 10 * 1024 * 1024;
-const IMAGE_TIMEOUT_MS = 150_000;
+// GPT Image 2 measured ~115 s for a text poster; the headroom keeps a slow day from failing
+const IMAGE_TIMEOUT_MS = 240_000;
 
 export function openRouterKey(settings: ImageSettings | null): string | undefined {
   return settings?.openrouterApiKey || process.env.OPENROUTER_API_KEY || undefined;
@@ -43,6 +44,25 @@ export function availableEngines(settings: ImageSettings | null): ImageEngine[] 
   if (process.env.GEMINI_API_KEY) engines.push("gemini");
   if (openRouterKey(settings)) engines.push("openrouter");
   return engines;
+}
+
+/**
+ * The engine an instance gets unless an admin chose one: GPT Image through
+ * OpenRouter when a key exists (best poster text), otherwise Gemini.
+ */
+export function preferredImageEngine(settings: ImageSettings | null): ImageEngine {
+  return settings?.imageProvider ?? (openRouterKey(settings) ? "openrouter" : "gemini");
+}
+
+/** Plain-language reason a fallback happened, for the admin; null when nothing specific is known. */
+export function fallbackReason(errors: string[]): string | null {
+  const text = errors.join(" ").toLowerCase();
+  if (/http 402|insufficient|credits|payment required/.test(text)) {
+    return "a conta OpenRouter ficou sem saldo (carregue créditos em openrouter.ai para voltar ao GPT Image)";
+  }
+  if (/http 429|quota|rate limit|resource_exhausted/.test(text)) return "o motor escolhido atingiu o limite de pedidos";
+  if (/timeout/.test(text)) return "o motor escolhido demorou demasiado a responder";
+  return null;
 }
 
 /** The preferred engine first, then the rest; engines without credentials are left out. */
@@ -142,7 +162,7 @@ export interface GeneratedImage { image: ImageData; engine: ImageEngine; model: 
 /** Tries each available engine in order; returns null with the errors when all fail. */
 export async function generateWithFallback(o: GenerateOptions): Promise<{ result: GeneratedImage | null; errors: string[] }> {
   const errors: string[] = [];
-  const order = engineOrder(o.engine ?? o.settings?.imageProvider ?? "gemini", availableEngines(o.settings));
+  const order = engineOrder(o.engine ?? preferredImageEngine(o.settings), availableEngines(o.settings));
   for (const engine of order) {
     if (engine === "gemini") {
       const configured = o.geminiModel ?? o.settings?.imageModel ?? process.env.GEMINI_IMAGE_MODEL ?? DEFAULT_IMAGE_MODEL;

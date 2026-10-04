@@ -71,7 +71,6 @@ export const INITIAL_SETTINGS: Settings = {
   fontHeading: getEnvVar("VITE_FONT_HEADING", "Playfair Display"),
   fontBody: getEnvVar("VITE_FONT_BODY", "Geist"),
   brandGuideUrl: getEnvVar("VITE_BRAND_GUIDE_URL", ""),
-  imageProvider: 'gemini',
   openrouterImageModel: DEFAULT_OPENROUTER_IMAGE_MODEL,
   maintenanceMode: getEnvBool("VITE_MAINTENANCE_MODE", false),
 

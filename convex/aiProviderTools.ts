@@ -158,3 +158,32 @@ function shortError(e: unknown): string {
     }
     return "Erro desconhecido.";
 }
+
+/** Approximate GPT Image 2 cost per poster, measured on 2026-10-04 (~0.23 USD). */
+const GPT_IMAGE_POSTER_USD = 0.23;
+
+/**
+ * Remaining OpenRouter balance, so the admin sees when posters are about to
+ * fall back to Gemini. Null when there is no key or OpenRouter does not answer.
+ */
+export const openRouterBalance = action({
+    args: {},
+    handler: async (ctx): Promise<{ remainingUsd: number; postersLeft: number } | null> => {
+        await ctx.runQuery(api.lib.actionAuth.checkAdminAuth);
+        const stored = await ctx.runQuery(internal.settings.getForAI);
+        const key = stored?.openrouterApiKey || process.env.OPENROUTER_API_KEY;
+        if (!key) return null;
+        try {
+            const res = await fetch("https://openrouter.ai/api/v1/credits", {
+                headers: { Authorization: `Bearer ${key}` },
+                signal: AbortSignal.timeout(MODELS_TIMEOUT_MS),
+            });
+            if (!res.ok) return null;
+            const body = (await res.json()) as { data?: { total_credits?: number; total_usage?: number } };
+            const remainingUsd = Math.max(0, (body.data?.total_credits ?? 0) - (body.data?.total_usage ?? 0));
+            return { remainingUsd, postersLeft: Math.floor(remainingUsd / GPT_IMAGE_POSTER_USD) };
+        } catch {
+            return null;
+        }
+    },
+});
