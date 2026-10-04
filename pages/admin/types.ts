@@ -23,7 +23,8 @@ export type Tab =
     | 'leads'
     | 'member-quotas'
     | 'access'
-    | 'ai';
+    | 'ai'
+    | 'help';
 
 export type AdminFormData = Record<string, unknown>;
 

@@ -3,7 +3,7 @@ import React from 'react';
 import {
     LogOut, LayoutDashboard, Calendar, FileText, Users, Image as ImageIcon,
     Settings as SettingsIcon, Handshake, Bell, Layers, Award, ChevronRight,
-    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet, X, ClipboardCheck, KeyRound
+    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet, X, ClipboardCheck, KeyRound, LifeBuoy
 } from 'lucide-react';
 import { ChangePasswordModal } from '../../../components/ChangePasswordModal';
 import { Button, cn } from '../../../components/ui/UIComponents';
@@ -76,7 +76,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
                     <Shield size={24} />
                 </div>
                 <div>
-                    <h1 className="font-serif font-bold text-lg text-white leading-none">Gestão do site</h1>
+                    <p className="font-serif font-bold text-lg text-white leading-none">Gestão do site</p>
                     <span className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Backoffice</span>
                 </div>
             </div>
@@ -91,14 +91,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
 
         <nav aria-label="Menu de administração" className="flex-1 px-4 space-y-6 overflow-y-auto py-4 custom-scrollbar">
             <div>
-                <h3 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Geral</h3>
+                <h2 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Geral</h2>
                 <div className="space-y-1">
                     <SidebarItem id="dashboard" icon={LayoutDashboard} label="Início" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="homepage" icon={PenTool} label="Página inicial" activeTab={activeTab} onSelect={onTabSelect} />
                 </div>
             </div>
             <div>
-                <h3 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Conteúdos</h3>
+                <h2 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Conteúdos</h2>
                 <div className="space-y-1">
                     <SidebarItem id="events" icon={Calendar} label="Eventos" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="registrations" icon={ClipboardCheck} label="Inscrições" activeTab={activeTab} onSelect={onTabSelect} badge={pendingRegistrations} />
@@ -112,7 +112,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
                 </div>
             </div>
             <div>
-                <h3 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Sistema</h3>
+                <h2 className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Sistema</h2>
                 <div className="space-y-1">
                     <SidebarItem id="documents" icon={FileBox} label="Documentos" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="notifications" icon={Bell} label="Avisos aos sócios" activeTab={activeTab} onSelect={onTabSelect} />
@@ -126,6 +126,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
         </nav>
 
         <div className="p-4 border-t border-white/5 bg-black/20 space-y-1">
+            <SidebarItem id="help" icon={LifeBuoy} label="Ajuda" activeTab={activeTab} onSelect={onTabSelect} />
             <AccountButton />
             <Button variant="ghost" className="w-full justify-start text-red-400 hover:bg-red-900/10 hover:text-red-300 h-9" onClick={onLogout}>
                 <LogOut size={16} className="mr-2" /> Terminar Sessão

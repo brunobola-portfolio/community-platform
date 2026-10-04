@@ -1,6 +1,11 @@
-import { internalMutation, query } from "./_generated/server";
+import { internalMutation, query, type QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
-import { requireAdmin } from "./lib/auth";
+import { isAdmin, requireAdmin } from "./lib/auth";
+import { clampSince, failureReason, featureOf, summarizeUsage } from "./lib/aiUsageStats";
+
+/** Enough for months of a community portal; past it the panel says the numbers are partial. */
+const MAX_ROWS = 5000;
+const RECENT_ROWS = 25;
 
 export const log = internalMutation({
   args: {
@@ -11,6 +16,8 @@ export const log = internalMutation({
     latencyMs: v.number(),
     success: v.boolean(),
     errorMessage: v.optional(v.string()),
+    costUsd: v.optional(v.number()),
+    feature: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert("aiUsageLogs", {
@@ -87,5 +94,66 @@ export const getStats = query({
       byClassification,
       daily,
     };
+  },
+});
+
+async function rowsSince(ctx: QueryCtx, since: number) {
+  return ctx.db
+    .query("aiUsageLogs")
+    .withIndex("by_timestamp", (q) => q.gte("timestamp", clampSince(since, Date.now())))
+    .order("desc")
+    .take(MAX_ROWS);
+}
+
+/** "quem" for the latest requests: the account email, or a plain label for visitors. */
+async function whoIs(ctx: QueryCtx, userId: string): Promise<string> {
+  if (userId === "anonymous") return "Visitante";
+  const id = ctx.db.normalizeId("users", userId);
+  const user = id ? await ctx.db.get(id) : null;
+  return user?.email ?? user?.name ?? "Desconhecido";
+}
+
+/**
+ * Everything the "Utilização e custos" panel shows for a period. The browser
+ * sends the start of the period in its own calendar (and its UTC offset for
+ * the daily buckets), so "este mês" means the admin's month.
+ */
+export const usage = query({
+  args: { since: v.number(), tzOffsetMinutes: v.number() },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx);
+    const now = Date.now();
+    const rows = await rowsSince(ctx, args.since);
+    const summary = summarizeUsage(rows, { since: clampSince(args.since, now), until: now, tzOffsetMinutes: args.tzOffsetMinutes });
+    const recent = await Promise.all(rows.slice(0, RECENT_ROWS).map(async (row) => ({
+      id: row._id,
+      timestamp: row.timestamp,
+      who: await whoIs(ctx, row.userId),
+      feature: featureOf(row),
+      model: row.model,
+      latencyMs: row.latencyMs,
+      costUsd: row.costUsd,
+      success: row.success,
+      reason: row.success ? undefined : failureReason(row.errorMessage),
+    })));
+    const settings = await ctx.db.query("settings").first();
+    return { ...summary, recent, truncated: rows.length === MAX_ROWS, budgetUsd: settings?.aiMonthlyBudgetUsd };
+  },
+});
+
+/**
+ * This month's spend for the dashboard tile and the budget warning in the
+ * studio and the MediaStudio. Null for non-admins, so it can be subscribed to
+ * unconditionally.
+ */
+export const monthSummary = query({
+  args: { since: v.number() },
+  handler: async (ctx, args) => {
+    if (!(await isAdmin(ctx).catch(() => false))) return null;
+    const rows = await rowsSince(ctx, args.since);
+    const costUsd = rows.reduce((s, r) => s + (r.costUsd ?? 0), 0);
+    const settings = await ctx.db.query("settings").first();
+    const budgetUsd = settings?.aiMonthlyBudgetUsd;
+    return { costUsd, calls: rows.length, budgetUsd, overBudget: Boolean(budgetUsd && costUsd > budgetUsd) };
   },
 });

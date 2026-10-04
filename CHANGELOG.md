@@ -6,6 +6,44 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.17.0] - 2026-10-04
+
+The board learns the site from the site itself, and AI spending is cheap by default and visible
+to whoever uses it.
+
+### Changed
+
+- **NanoBanana (Gemini) is the default image engine again** whenever a Gemini key exists
+  (~0.07 $ and ~10 s per poster against ~0.23 $ and ~2 min for GPT Image 2); GPT Image is the
+  default only when OpenRouter is the sole engine with a key, and stays available as "qualidade
+  máxima" in Assistente virtual › Motor de imagem
+
+### Added
+
+- Every AI call records its cost: the real price reported by OpenRouter, or an estimate from
+  Gemini's token counts and the published price table (2026-10-04)
+- "Utilização e custos" in Assistente virtual: cost, requests, success rate and average time
+  for 7 days, 30 days or this month, daily chart, cost by feature and by model, and the latest
+  requests with who asked, the model, duration, cost and a plain failure reason
+- Optional monthly AI budget with a progress bar; past it, the AI studio and "Gerar com IA"
+  show a non-blocking warning
+- The AI studio and "Gerar com IA" show the estimated cost before generating and the real
+  cost afterwards; the backoffice home shows "IA este mês"
+- **Help center**: an "Ajuda" tab in the backoffice with 25 step-by-step guides (search, short
+  silent videos and screenshots, "Ir para…" buttons), a "Como funciona" button on every tab that
+  opens that tab's guides, and deep links (`/admin?ajuda=<id>`); a public `/ajuda` page with 8
+  guides for members and visitors (registering for an event, member area, quotas, passwords),
+  linked from the footer and the member area. Content lives in `content/help` and is written
+  for any association (`{siteName}`)
+
+### Fixed
+
+- When Gemini direct has no image quota (a free key), the fallback is NanoBanana through
+  OpenRouter at the same price, not GPT Image, and the admin is not warned about a non-event
+- `.webm` is served by IIS (help videos)
+- The quota badges in the member area ("Em dia", "Por regularizar") reach AA in the light theme;
+  the backoffice sidebar and empty states use a correct heading order
+
 ## [2.16.0] - 2026-10-04
 
 ### Changed

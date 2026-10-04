@@ -5,7 +5,8 @@ import { ConvexError, v } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { resolveProvider, openAiCompatibleChat } from "./lib/aiProvider";
 import { DEFAULT_CHAT_MODEL_FALLBACK } from "./lib/aiDefaults";
-import { getAI, classifyProviderError, consumePublicBudget, injectionPatterns } from "./lib/aiShared";
+import { getAI, classifyProviderError, consumePublicBudget, injectionPatterns, logAiUsage, AI_FEATURE } from "./lib/aiShared";
+import { createCostMeter, geminiCost } from "./lib/aiCost";
 
 /**
  * Text actions: geo assistant for the About page and editorial text enhancement.
@@ -22,10 +23,12 @@ export const geoQuery = action({
   handler: async (ctx, args) => {
     const startTime = Date.now();
     let geoModel = "unknown";
+    let logUserId = "unknown";
     try {
       // Public geo queries: per-session bucket plus the global ceiling
       const userId = await ctx.runQuery(api.lib.actionAuth.getOptionalAuth);
       await consumePublicBudget(ctx, "ai:geoQuery", userId as string | null, args.sessionId);
+      logUserId = (userId as string | null) ?? "anonymous";
       const aiSettings = await ctx.runQuery(internal.settings.getForAI);
       if (aiSettings?.enableChatbot === false) throw new ConvexError("ERR_UNAVAILABLE");
 
@@ -68,17 +71,7 @@ export const geoQuery = action({
       });
 
       const text = response.text ?? "Informação não encontrada.";
-
-      // Log success
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: (userId as string | null) ?? "anonymous",
-          action: "geoQuery",
-          model: geoModel,
-          latencyMs: Date.now() - startTime,
-          success: true,
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "geoQuery", feature: AI_FEATURE.geo, model: geoModel, startedAt: startTime, costUsd: geminiCost(geoModel, response.usageMetadata) });
 
       return { text };
     } catch (error) {
@@ -86,17 +79,7 @@ export const geoQuery = action({
         error instanceof Error ? error.message : "Erro desconhecido";
       console.error("Geo Query error:", errorMsg);
       const token = classifyProviderError(errorMsg);
-      // Log failure
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: "unknown",
-          action: "geoQuery",
-          model: geoModel ?? "unknown",
-          latencyMs: Date.now() - startTime,
-          success: false,
-          errorMessage: `${token}: ${errorMsg.slice(0, 180)}`,
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "geoQuery", feature: AI_FEATURE.geo, model: geoModel, startedAt: startTime, error: `${token}: ${errorMsg.slice(0, 180)}` });
       // ConvexError: plain Error messages are redacted to "Server Error" on
       // production deployments, which would break the client's token mapping
       throw new ConvexError(token);
@@ -118,9 +101,12 @@ export const enhanceText = action({
   handler: async (ctx, args) => {
     const startTime = Date.now();
     let enhanceModel = "unknown";
+    let logUserId = "unknown";
+    const meter = createCostMeter();
     try {
       // Admin auth + rate limiting
       const userId = await ctx.runQuery(api.lib.actionAuth.checkAdminAuth);
+      logUserId = userId as string;
       await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, {
         key: "ai:enhanceText",
         userId: userId as string,
@@ -146,45 +132,27 @@ export const enhanceText = action({
           model,
           contents: prompt,
         });
+        meter.add(geminiCost(model, response.usageMetadata));
         enhancedText = response.text ?? undefined;
       } else {
         enhanceModel = provider.model ?? "openai-compatible";
         enhancedText = await openAiCompatibleChat(provider, [
           { role: "user", content: prompt },
-        ]);
+        ], meter);
       }
 
       if (!enhancedText) {
         throw new Error("O modelo não devolveu texto melhorado.");
       }
 
-      // Log success
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: userId as string,
-          action: "enhanceText",
-          model: enhanceModel,
-          latencyMs: Date.now() - startTime,
-          success: true,
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "enhanceText", feature: AI_FEATURE.enhance, model: enhanceModel, startedAt: startTime, costUsd: meter.total });
 
       return { enhancedText };
     } catch (error) {
       const errorMsg =
         error instanceof Error ? error.message : "Erro desconhecido";
       console.error("Text Enhancement error:", errorMsg);
-      // Log failure
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: "unknown",
-          action: "enhanceText",
-          model: enhanceModel ?? "unknown",
-          latencyMs: Date.now() - startTime,
-          success: false,
-          errorMessage: errorMsg.slice(0, 200),
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "enhanceText", feature: AI_FEATURE.enhance, model: enhanceModel, startedAt: startTime, costUsd: meter.total, error: errorMsg });
       throw new Error(`Erro na melhoria de texto: ${errorMsg}`);
     }
   },

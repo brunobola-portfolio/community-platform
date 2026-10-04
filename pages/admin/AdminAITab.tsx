@@ -1,21 +1,22 @@
 
 import React from 'react';
-import { BarChart3, Bot, Shield, MessageSquare, Image as LucideImage, Loader2, Save } from 'lucide-react';
+import { Bot, Shield, MessageSquare, Image as LucideImage, Loader2, Save } from 'lucide-react';
 import { Button } from '../../components/ui/UIComponents';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import { AdminSelect } from './components/AdminSelect';
 import { ProviderConfigSection } from './components/ProviderConfigSection';
 import { ImageEngineSection } from './components/ImageEngineSection';
+import { AIUsagePanel } from './ai/AIUsagePanel';
 import type { AdminAITabProps } from './types';
 import { Field } from './components/Field';
 import { GEMINI_CHAT_MODELS, GEMINI_TTS_MODELS, GEMINI_IMAGE_MODELS } from '../../convex/lib/aiDefaults';
 
 /**
  * AI & Chatbot configuration tab.
- * Manages chatbot settings, guardrails, image generation config, and usage analytics.
+ * Usage and costs first (what the admin checks most), then chatbot, guardrails
+ * and image configuration.
  */
 export const AdminAITab: React.FC<AdminAITabProps> = ({
-    aiStats,
     settingsForm,
     onSettingsChange,
     onSave,
@@ -27,7 +28,7 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
 
     return (
         <div className="space-y-6 animate-fade-in-up">
-            <AnalyticsOverview aiStats={aiStats} />
+            <AIUsagePanel budgetUsd={settingsForm.aiMonthlyBudgetUsd} onBudgetChange={v => update('aiMonthlyBudgetUsd', v)} />
             <ProviderConfigSection settingsForm={settingsForm} update={update} />
             <ChatbotConfig settingsForm={settingsForm} update={update} />
             <GuardrailsConfig settingsForm={settingsForm} update={update} />
@@ -44,96 +45,6 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
         </div>
     );
 };
-
-// ── Analytics Overview ────────────────────────────────────────────────────────
-
-const AnalyticsOverview: React.FC<{ aiStats: AdminAITabProps['aiStats'] }> = ({ aiStats }) => (
-    <div className="bg-dark-surface border border-white/10 rounded-2xl p-6">
-        <h3 className="text-xl font-serif text-white mb-6 flex items-center gap-2">
-            <BarChart3 className="text-cyan-400" /> Análise de Uso (Últimos 7 dias)
-        </h3>
-        {aiStats ? (
-            <div className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <MetricCard label="Total Pedidos" value={String(aiStats.totalCalls)} color="text-white" />
-                    <MetricCard label="Taxa Sucesso" value={`${aiStats.successRate}%`} color="text-green-400" />
-                    <MetricCard label="Latência Média" value={`${aiStats.avgLatency}ms`} color="text-brand-400" />
-                    <MetricCard label="Erros" value={String(aiStats.errorCount)} color="text-red-400" />
-                </div>
-                {Object.keys(aiStats.byAction).length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <BreakdownCard title="Por Ação" entries={aiStats.byAction} valueColor="text-brand-400" />
-                        <BreakdownCard
-                            title="Por Modelo"
-                            entries={Object.fromEntries(
-                                Object.entries(aiStats.byModel).map(([k, v]) => [k.replace('gemini-', ''), v])
-                            )}
-                            valueColor="text-purple-400"
-                            truncateKeys
-                        />
-                        <ClassificationBreakdown entries={aiStats.byClassification} />
-                    </div>
-                )}
-            </div>
-        ) : (
-            <div className="text-center py-8 text-slate-400">
-                <p className="text-sm">Sem dados de utilização ainda.</p>
-            </div>
-        )}
-    </div>
-);
-
-// ── Metric Card ──────────────────────────────────────────────────────────────
-
-interface MetricCardProps {
-    label: string;
-    value: string;
-    color: string;
-}
-
-const MetricCard: React.FC<MetricCardProps> = ({ label, value, color }) => (
-    <div className="bg-black/40 rounded-xl p-4 border border-white/5">
-        <p className="text-slate-400 text-xs uppercase tracking-wider">{label}</p>
-        <p className={`text-2xl font-bold ${color} mt-1`}>{value}</p>
-    </div>
-);
-
-// ── Breakdown Card ──────────────────────────────────────────────────────────
-
-interface BreakdownCardProps {
-    title: string;
-    entries: Record<string, number>;
-    valueColor: string;
-    truncateKeys?: boolean;
-}
-
-const BreakdownCard: React.FC<BreakdownCardProps> = ({ title, entries, valueColor, truncateKeys }) => (
-    <div className="bg-black/30 rounded-lg p-4 border border-white/5">
-        <p className="text-slate-400 text-xs font-bold uppercase mb-2">{title}</p>
-        {Object.entries(entries).map(([key, count]) => (
-            <div key={key} className="flex justify-between text-sm py-1">
-                <span className={`text-slate-300 capitalize ${truncateKeys ? 'truncate mr-2' : ''}`}>{key}</span>
-                <span className={`${valueColor} font-mono`}>{count}</span>
-            </div>
-        ))}
-    </div>
-);
-
-// ── Classification Breakdown (custom colors per classification) ─────────────
-
-const ClassificationBreakdown: React.FC<{ entries: Record<string, number> }> = ({ entries }) => (
-    <div className="bg-black/30 rounded-lg p-4 border border-white/5">
-        <p className="text-slate-400 text-xs font-bold uppercase mb-2">Classificação</p>
-        {Object.entries(entries).map(([cls, count]) => (
-            <div key={cls} className="flex justify-between text-sm py-1">
-                <span className={`text-sm ${cls === 'FORA_DE_TEMA' ? 'text-amber-400' : cls === 'INJECTION' ? 'text-red-400' : 'text-slate-300'}`}>
-                    {cls}
-                </span>
-                <span className="text-slate-400 font-mono">{count}</span>
-            </div>
-        ))}
-    </div>
-);
 
 // ── Chatbot Config Section ──────────────────────────────────────────────────
 

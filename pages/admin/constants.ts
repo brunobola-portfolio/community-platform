@@ -46,6 +46,7 @@ export const TAB_DESCRIPTIONS: Partial<Record<Tab, string>> = {
     tiers: 'Níveis de parceria propostos no formulário de apoios.',
     ai: 'Fornecedor, modelos e limites do assistente do portal.',
     settings: 'Identidade, contactos, quotas e textos que alimentam todo o portal.',
+    help: 'Guias passo a passo para tudo o que se faz no backoffice.',
 };
 
 export const TAB_NAMES: Record<Tab, string> = {
@@ -66,7 +67,8 @@ export const TAB_NAMES: Record<Tab, string> = {
     "member-quotas": "Sócios & Quotas",
     access: "Acessos",
     homepage: "Página inicial",
-    ai: "Assistente virtual"
+    ai: "Assistente virtual",
+    help: "Ajuda"
 };
 
 /** Helper to format ISO dates for HTML datetime-local inputs */

@@ -95,10 +95,18 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   vem só de `utils/eventTime.ts`. Nunca `new Date(event.date)` para decidir prazos no servidor.
 - **Metadados por página**: cada página pública usa `components/PageMeta.tsx` (título,
   canonical, og). O `index.html` não declara canonical nem `og:url`.
-- **Motor de imagem** (`convex/lib/aiImage.ts`): sem escolha do admin, GPT Image 2 via
-  OpenRouter quando há chave OpenRouter (`preferredImageEngine`), senão Gemini; o outro é o
+- **Motor de imagem** (`convex/lib/aiImage.ts`): sem escolha do admin, NanoBanana (Gemini)
+  sempre que há `GEMINI_API_KEY` — ~0,07 $ e ~10 s por cartaz, contra ~0,23 $ e ~2 min do GPT
+  Image 2; GPT Image via OpenRouter só é o default quando é o único motor com chave
+  (`preferredImageEngine`, regra repetida em `aiStudioInfo.capabilities`); o outro é o
   fallback automático e `fallbackReason` explica a troca (sem saldo, limite, timeout). O
   prompt do cartaz assina com `siteName` e proíbe nomes, brasões e slogans inventados.
+- **Custo de cada chamada de IA** fica em `aiUsageLogs.costUsd` (+ `feature`, nome visível no
+  painel): OpenRouter devolve o preço real (`usage: { include: true }` → `usage.cost`); Gemini
+  direto estima-se a partir de `usageMetadata` com `GEMINI_PRICES` (`aiDefaults.ts`, com data).
+  Matemática pura em `convex/lib/aiCost.ts`, agregados em `lib/aiUsageStats.ts`; logar sempre
+  via `logAiUsage` (`lib/aiShared.ts`). Linhas antigas sem custo mostram "—", nunca 0.
+  `settings.aiMonthlyBudgetUsd` só avisa (0 limpa o campo), nunca bloqueia.
 - **Catálogo de modelos Gemini** (`GEMINI_*_MODELS` em `convex/lib/aiDefaults.ts`) alimenta
   os selects do admin, o Media Studio e `aiProviderTools.listModels` — uma lista, três ecrãs.
 - **O seed é a demonstração do produto**: `convex/mockData.ts` gera datas de eventos relativas
@@ -111,6 +119,11 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
 - **Erros de mutation chegam ao utilizador**: os wrappers devolvem `ActionResult`; o
   `Admin.tsx` traduz o texto com `pages/admin/errors.ts` (`describeActionError`) em vez de
   mostrar "erro de validação" ou o dump do validador.
+- **Centro de ajuda é conteúdo em dados**: guias em `content/help/` (tipados, `{siteName}` resolvido
+  no render), lidos pelo separador Ajuda do backoffice, pelo "Como funciona" de cada separador
+  (campo `tab`/`relatedTabs`) e pela página pública `/ajuda` (audience `socio`). Ao mudar um
+  botão, separador ou fluxo, atualizar o guia no mesmo commit; capturas/vídeos em `public/help/`
+  vêm só da instância demo fictícia (o teste `helpSearch` falha se um ficheiro referido faltar).
 - **Upload de imagens**: sempre Convex storage (`files.generateUploadUrl` + `files.getUrl`)
   via MediaStudio — nunca base64 em documentos. O MediaStudio devolve um URL (vai para o
   campo `external*`), mas as queries preferem o id de storage (`photo`, `image`, `logo`…)

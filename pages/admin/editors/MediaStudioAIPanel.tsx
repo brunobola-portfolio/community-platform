@@ -7,6 +7,9 @@ import { STD_INPUT_CLASS } from '../constants';
 import { api } from '../../../convex/_generated/api';
 import { DEFAULT_IMAGE_MODEL, GEMINI_IMAGE_MODELS, OPENROUTER_IMAGE_MODELS } from '../../../convex/lib/aiDefaults';
 import { isOwnStorageUrl } from '../../../convex/lib/referenceUrl';
+import { formatUsd } from '../../../convex/lib/aiCost';
+import { AIBudgetWarning } from '../ai/AIBudgetWarning';
+import { engineName, imageEstimate } from '../ai/aiUsageCopy';
 import type { GenerateImageOptions } from '../types';
 
 type Engine = 'gemini' | 'openrouter';
@@ -34,6 +37,7 @@ export const MediaStudioAIPanel: React.FC<MediaStudioAIPanelProps> = ({ imageUrl
 
     const chosenEngine: Engine = engine || caps?.defaultEngine || 'gemini';
     const referenceAvailable = Boolean(imageUrl) && canReference(imageUrl);
+    const estimate = imageEstimate({ engine: chosenEngine, openrouterModel: caps?.openrouterImageModel, geminiModel: model, resolution });
     const submit = () => {
         if (!prompt || isGenerating) return;
         onGenerate(prompt, {
@@ -48,7 +52,7 @@ export const MediaStudioAIPanel: React.FC<MediaStudioAIPanelProps> = ({ imageUrl
         <div className="space-y-3">
             {caps?.openrouter && (
                 <AdminSelect value={chosenEngine} onChange={e => setEngine(e.target.value as Engine)} aria-label="Motor de imagem" className="text-xs">
-                    {caps.gemini && <option value="gemini">NanoBanana (Gemini)</option>}
+                    {caps.gemini && <option value="gemini">NanoBanana (Gemini) — recomendado, ~10 s, ~0,07 $</option>}
                     <option value="openrouter">{OPENROUTER_IMAGE_MODELS.find(m => m.id === caps.openrouterImageModel)?.label ?? caps.openrouterImageModel}</option>
                 </AdminSelect>
             )}
@@ -86,10 +90,14 @@ export const MediaStudioAIPanel: React.FC<MediaStudioAIPanelProps> = ({ imageUrl
                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } }}
                     />
                 </div>
-                <Button type="button" size="icon" aria-label="Gerar imagem" onClick={submit} disabled={isGenerating || !prompt} className="shrink-0 bg-brand-700 hover:bg-brand-800">
+                <Button type="button" size="icon" aria-label={estimate === undefined ? 'Gerar imagem' : `Gerar imagem (custo estimado ${formatUsd(estimate)})`} onClick={submit} disabled={isGenerating || !prompt} className="shrink-0 bg-brand-700 hover:bg-brand-800">
                     {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Wand2 size={20} />}
                 </Button>
             </div>
+            {estimate !== undefined && (
+                <p className="text-xs text-slate-400">Custo estimado: <span className="text-slate-200">≈ {formatUsd(estimate)} com {engineName(chosenEngine, caps?.openrouterImageModel)}</span></p>
+            )}
+            <AIBudgetWarning />
         </div>
     );
 };

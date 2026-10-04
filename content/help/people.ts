@@ -1,0 +1,106 @@
+import { image } from './media';
+import type { HelpTutorial } from './types';
+
+export const PEOPLE_TUTORIALS: HelpTutorial[] = [
+    {
+        id: 'equipa-corpos-sociais',
+        category: 'equipa',
+        title: 'Atualizar a equipa e os corpos sociais',
+        summary: 'Quem aparece na página Equipa, com cargo, fotografia e ordem.',
+        minutes: 2,
+        audience: 'direcao',
+        tab: 'members',
+        keywords: ['equipa', 'membros', 'direção', 'assembleia geral', 'conselho fiscal', 'fundador', 'cargo', 'fotografia', 'mandato'],
+        steps: [
+            { text: 'Abra "Membros" e carregue em "Novo membro".' },
+            { text: 'Preencha "Nome" e "Cargo" e escolha o "Grupo": Direção, Assembleia Geral, Conselho Fiscal ou Sócio Fundador (página História).' },
+            { text: 'Junte uma fotografia e indique a "Ordem": números mais baixos aparecem primeiro.' },
+            { text: 'Carregue em "Guardar".', tip: 'Mudou o mandato? Edite os cargos em vez de apagar e criar de novo, e atualize o "Mandato Atual" em Definições.' },
+        ],
+    },
+    {
+        id: 'parceiros-niveis',
+        category: 'equipa',
+        title: 'Parceiros e níveis de parceria',
+        summary: 'Logótipos na faixa da página inicial e os níveis propostos a novos apoios.',
+        minutes: 3,
+        audience: 'direcao',
+        tab: 'sponsors',
+        relatedTabs: ['tiers'],
+        keywords: ['parceiros', 'patrocinadores', 'apoios', 'logótipo', 'níveis de parceria', 'benefícios', 'patrocínio'],
+        steps: [
+            { text: 'Em "Parceiros", carregue em "Novo parceiro" e preencha "Nome", "Website" e o logótipo.' },
+            { text: 'Escolha o "Nível" e deixe marcado "Ativo (visível no portal)". Desmarque para o esconder sem o apagar.' },
+            { text: 'Em "Níveis de Parceria", carregue em "Novo nível" para definir nome, preço e benefícios (um por linha).' },
+            { text: 'Os níveis aparecem no formulário de parcerias do site; os pedidos chegam a "Mensagens recebidas".', tip: 'Prefira logótipos com fundo transparente (PNG ou SVG).' },
+        ],
+    },
+    {
+        id: 'mensagens-recebidas',
+        category: 'equipa',
+        title: 'Responder a mensagens e pedidos de parceria',
+        summary: 'Tudo o que chega pelos formulários do site, num só sítio.',
+        minutes: 2,
+        audience: 'direcao',
+        tab: 'leads',
+        keywords: ['mensagens', 'contactos', 'pedidos de parceria', 'responder', 'arquivar', 'email', 'formulário de contacto'],
+        steps: [
+            { text: 'Abra "Mensagens recebidas". Em "Contactos" estão as mensagens do formulário do site; em "Pedidos de Parceria", as propostas de apoio.' },
+            { text: 'Carregue no email da pessoa para lhe responder a partir do seu programa de email.' },
+            { text: 'Depois de responder, carregue em "Marcar respondido". Use "Arquivar" para tirar da frente o que já está tratado.' },
+            { text: 'Nos pedidos de parceria, marque o andamento com "Marcar contactado" e, no fim, "Confirmar" ou "Rejeitar".' },
+        ],
+    },
+    {
+        id: 'historia-linha-tempo',
+        category: 'equipa',
+        title: 'Contar a história da associação',
+        summary: 'Os marcos da linha do tempo da página História.',
+        minutes: 2,
+        audience: 'direcao',
+        tab: 'historia',
+        keywords: ['história', 'linha do tempo', 'timeline', 'marco', 'ano', 'fundação'],
+        steps: [
+            { text: 'Abra "História" e carregue em "Novo marco".' },
+            { text: 'Indique o "Ano", o "Título" e uma "Descrição" curta; junte uma fotografia antiga se tiver.' },
+            { text: 'Use "Ordem na Timeline" para acertar a sequência e carregue em "Guardar".', tip: 'A introdução e a citação da página História editam-se em Definições, em "Identidade & Textos".' },
+        ],
+    },
+];
+
+export const GALLERY_TUTORIALS: HelpTutorial[] = [
+    {
+        id: 'galeria-album',
+        category: 'galeria',
+        title: 'Criar um álbum e carregar fotografias',
+        summary: 'Várias fotos de uma vez, reduzidas automaticamente para o site.',
+        minutes: 3,
+        audience: 'direcao',
+        tab: 'gallery',
+        featured: true,
+        keywords: ['galeria', 'álbum', 'fotos', 'fotografias', 'carregar', 'upload', 'várias'],
+        media: [image('galeria', 'Gestor de galeria com a lista de álbuns, a zona para arrastar fotos e a grelha de fotografias')],
+        steps: [
+            { text: 'Abra "Galeria" e carregue em "Novo álbum". Dê um "Título do Álbum" e a "Data" e guarde.' },
+            { text: 'Escolha o álbum na lista à esquerda.' },
+            { text: 'Arraste as fotografias para a zona "Arrasta fotos para aqui ou clica para escolher". Pode largar muitas de uma vez.', tip: 'As fotos são reduzidas automaticamente antes de subir: pode usar as do telemóvel tal como estão.' },
+            { text: 'Acompanhe o progresso de cada ficheiro; no fim aparece quantas foram adicionadas.' },
+        ],
+    },
+    {
+        id: 'galeria-legendas-ordem',
+        category: 'galeria',
+        title: 'Legendas, ordem e capa do álbum',
+        summary: 'Arrumar o álbum para que conte a história do evento.',
+        minutes: 2,
+        audience: 'direcao',
+        tab: 'gallery',
+        keywords: ['legenda', 'ordem', 'capa', 'estrela', 'apagar fotos', 'organizar'],
+        steps: [
+            { text: 'Escreva por baixo de cada foto, em "Legenda (opcional)". A legenda fica guardada quando sai do campo.' },
+            { text: 'Passe o rato sobre uma foto e use as setas "Mover para trás" e "Mover para a frente" para mudar a ordem.' },
+            { text: 'Carregue na estrela para "Definir como capa". A capa é a foto que representa o álbum na galeria.' },
+            { text: 'Para apagar várias, marque a caixa no canto de cada uma e carregue em "Apagar", que mostra quantas estão selecionadas.', warning: 'As fotos apagadas não se recuperam.' },
+        ],
+    },
+];

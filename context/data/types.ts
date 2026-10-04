@@ -348,6 +348,7 @@ export interface SettingsUpdateArgs {
   brandGuideUrl?: string;
   imageProvider?: 'gemini' | 'openrouter';
   openrouterImageModel?: string;
+  aiMonthlyBudgetUsd?: number;
   historyIntro?: string;
   historyQuote?: string;
   venueName?: string;

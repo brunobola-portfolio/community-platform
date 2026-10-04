@@ -43,7 +43,10 @@ import { DocumentsTab } from './admin/tabs/DocumentsTab';
 import { NotificationsTab } from './admin/tabs/NotificationsTab';
 import { MilestonesTab } from './admin/tabs/MilestonesTab';
 import { AdminGalleryManager } from './admin/gallery/AdminGalleryManager';
+import { AdminHelpTab } from './admin/help/AdminHelpTab';
+import { useHelpParam } from './admin/help/useHelpParam';
 import { AI_DRAFT_FLAG } from './admin/studio/draftToForm';
+import { formatUsd } from '../convex/lib/aiCost';
 
 const AIStudioModal = lazy(() => import('./admin/studio/AIStudioModal').then(m => ({ default: m.AIStudioModal })));
 
@@ -117,7 +120,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const aiStats = useQuery(api.aiLogs.getStats, { days: 7 }) as AIStats | undefined;
 
     // ── State ────────────────────────────────────────────────────────────────
-    const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+    const helpParam = useHelpParam();
+    const [activeTab, setActiveTab] = useState<Tab>(() => (helpParam.isOpen ? 'help' : 'dashboard'));
     const [showModal, setShowModal] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingTierId, setEditingTierId] = useState<string | null>(null);
@@ -159,6 +163,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             }
             const key = IMAGE_KEY_BY_ENTITY[showModal ?? ''] ?? 'imageUrl';
             setFormData(prev => ({ ...prev, [key]: result.imageUrl }));
+            notify(result.costUsd === undefined ? 'Imagem gerada.' : `Imagem gerada. Custou ${formatUsd(result.costUsd)}.`);
         } catch (e: unknown) {
             console.error("Image generation error:", e);
             notify('Não foi possível gerar a imagem. Tente outro pedido ou carregue uma imagem sua.', 'error');
@@ -387,7 +392,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         if (type) openModalFor(type);
     };
 
-    const handleTabSelect = (tab: Tab) => { setActiveTab(tab); setMobileMenuOpen(false); };
+    const handleTabSelect = (tab: Tab) => { setActiveTab(tab); setMobileMenuOpen(false); if (tab === 'help' || helpParam.isOpen) helpParam.set(tab === 'help' ? '' : null); };
+    const openHelp = (id: string | null) => { setActiveTab('help'); helpParam.set(id ?? ''); };
     const showNewButton = NEW_ENTITY_BY_TAB[activeTab] !== undefined;
     // Header counter for list tabs; the toolbar inside each tab shows the filtered subset
     const tabCounts: Partial<Record<Tab, number>> = {
@@ -413,13 +419,14 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 </div>
 
                 <div className="mx-auto max-w-7xl p-4 pb-24 md:p-8 md:pb-8">
-                    <AdminPageHeader
+                    {activeTab !== 'help' && <AdminPageHeader
                         title={activeTab === 'dashboard' ? `${getGreeting()}, ${me?.name?.split(' ')[0] || 'Admin'}` : TAB_NAMES[activeTab]}
                         description={TAB_DESCRIPTIONS[activeTab]}
                         count={tabCounts[activeTab]}
                         action={showNewButton ? { label: NEW_LABELS[activeTab] ?? 'Novo registo', onClick: openNewModal } : undefined}
                         aiAction={activeTab === 'events' || activeTab === 'news' ? { label: 'Criar com IA', onClick: () => setStudioKind(activeTab === 'events' ? 'event' : 'post') } : undefined}
-                    />
+                        help={{ tab: activeTab, siteName: settings.siteName, onOpenCenter: openHelp }}
+                    />}
 
                     <div className="mb-4 flex gap-3 overflow-x-auto pb-4 no-scrollbar md:hidden">
                         {[
@@ -463,6 +470,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                         />
                     )}
                     {activeTab === 'historia' && <MilestonesTab milestones={milestones} {...handlers} />}
+                    {activeTab === 'help' && <AdminHelpTab siteName={settings.siteName} selectedId={helpParam.id} onSelect={id => helpParam.set(id ?? '')} onGoToTab={handleTabSelect} />}
                 </div>
             </main>
 

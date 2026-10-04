@@ -9,6 +9,7 @@ import type { AdminDashboardProps } from './types';
 
 const ACTION_LABELS: Record<string, string> = { create: 'Criado', update: 'Alterado', delete: 'Apagado' };
 import { PlatformVersionCard } from './components/PlatformVersionCard';
+import { AIMonthTile } from './ai/AIMonthTile';
 
 /**
  * Dashboard tab for the admin panel.
@@ -31,7 +32,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     return (
         <div className="space-y-8 animate-fade-in-up">
             {/* Stat Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
                 <StatCard
                     label="Sócios"
                     value={membersCount}
@@ -66,6 +67,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </h3>
                     }
                 />
+                <AIMonthTile />
             </div>
 
             {/* Two-column grid: Approvals + Activity Logs */}

@@ -33,6 +33,7 @@ export function useSettingsActions({ logActivity }: ActionDeps) {
           brandGuideUrl: s.brandGuideUrl,
           imageProvider: s.imageProvider,
           openrouterImageModel: s.openrouterImageModel,
+          aiMonthlyBudgetUsd: s.aiMonthlyBudgetUsd,
           historyIntro: s.historyIntro,
           historyQuote: s.historyQuote,
           venueName: s.venueName,

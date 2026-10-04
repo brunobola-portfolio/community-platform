@@ -3,6 +3,8 @@
  * multimodal input (a reference image) and image output.
  */
 
+import { openRouterCost, type OpenRouterUsage } from "./aiCost";
+
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export interface ImageData { base64: string; mimeType: string }
@@ -15,6 +17,9 @@ interface OpenRouterMessage {
   content?: string | null;
   images?: Array<{ image_url?: { url?: string } }>;
 }
+
+/** The assistant message plus what the call cost, as OpenRouter reported it. */
+export interface OpenRouterReply extends OpenRouterMessage { costUsd?: number }
 
 export function toDataUrl(image: ImageData): string {
   return `data:${image.mimeType};base64,${image.base64}`;
@@ -30,7 +35,7 @@ export async function openRouterChat(
   apiKey: string,
   body: Record<string, unknown>,
   timeoutMs: number,
-): Promise<OpenRouterMessage> {
+): Promise<OpenRouterReply> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -43,17 +48,18 @@ export async function openRouterChat(
         "HTTP-Referer": process.env.SITE_URL ?? "https://github.com/brunobola-portfolio/community-platform",
         "X-Title": "Community Platform",
       },
-      body: JSON.stringify(body),
+      // usage.include asks OpenRouter for the real price of the call, which feeds the AI usage panel
+      body: JSON.stringify({ ...body, usage: { include: true } }),
     });
     if (!res.ok) {
       const text = await res.text().catch(() => "");
       throw new Error(`OpenRouter HTTP ${res.status}: ${text.slice(0, 200)}`);
     }
-    const data = (await res.json()) as { choices?: Array<{ message?: OpenRouterMessage }>; error?: { message?: string } };
+    const data = (await res.json()) as { choices?: Array<{ message?: OpenRouterMessage }>; error?: { message?: string }; usage?: OpenRouterUsage };
     if (data.error?.message) throw new Error(`OpenRouter: ${data.error.message.slice(0, 200)}`);
     const message = data.choices?.[0]?.message;
     if (!message) throw new Error("OpenRouter devolveu uma resposta vazia.");
-    return message;
+    return { ...message, costUsd: openRouterCost(typeof body.model === "string" ? body.model : undefined, data.usage) };
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") throw new Error("OpenRouter timeout");
     throw error;

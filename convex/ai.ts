@@ -5,7 +5,8 @@ import { ConvexError, v } from "convex/values";
 import { api, internal } from "./_generated/api";
 import { resolveProvider, openAiCompatibleChat } from "./lib/aiProvider";
 import { DEFAULT_CHAT_MODEL, DEFAULT_CHAT_MODEL_FALLBACK, OPENROUTER_FALLBACK_MODELS, isAuthError, isModelNotFoundError } from "./lib/aiDefaults";
-import { getAI, classifyProviderError, consumePublicBudget, classifyQuery, classifyQueryViaProvider, buildSuggestedActions, injectionPatterns, CLASSIFICATION_UNAVAILABLE } from "./lib/aiShared";
+import { getAI, classifyProviderError, consumePublicBudget, classifyQuery, classifyQueryViaProvider, buildSuggestedActions, injectionPatterns, CLASSIFICATION_UNAVAILABLE, logAiUsage, AI_FEATURE } from "./lib/aiShared";
+import { createCostMeter, geminiCost } from "./lib/aiCost";
 
 /**
  * Chat action: grounded RAG chat with guardrails and multi-turn history.
@@ -40,11 +41,16 @@ export const chat = action({
   handler: async (ctx, args): Promise<ChatReply> => {
     const startTime = Date.now();
     let selectedModel = "unknown";
+    // Classification, retries and the answer itself all cost; the row records the sum
+    const meter = createCostMeter();
+    // userId used for analytics logging; anonymous visitors get a stable label
+    let logUserId = "unknown";
     try {
       // Public chatbot: a per-user (or per-browser session) bucket plus a
       // global anonymous ceiling, so one client cannot drain the whole quota
       const userId = await ctx.runQuery(api.lib.actionAuth.getOptionalAuth);
       await consumePublicBudget(ctx, "ai:chat", userId as string | null, args.sessionId);
+      logUserId = (userId as string | null) ?? "anonymous";
 
       // AI model configuration from DB settings (internal query), env vars, or defaults
       const settings = await ctx.runQuery(internal.settings.getForAI);
@@ -70,43 +76,22 @@ export const chat = action({
       // --- Step 1: Classify the query (if guardrails enabled) ---
       const classification = guardrailsEnabled
         ? ai
-          ? await classifyQuery(ai, message, chatModelFallback, allowedTopics, forbiddenTopics)
-          : await classifyQueryViaProvider(provider, message, allowedTopics, forbiddenTopics)
+          ? await classifyQuery(ai, message, chatModelFallback, allowedTopics, forbiddenTopics, meter)
+          : await classifyQueryViaProvider(provider, message, allowedTopics, forbiddenTopics, meter)
         : "GERAL";
-
-      // userId used for analytics logging; anonymous visitors get a stable label
-      const logUserId = (userId as string | null) ?? "anonymous";
+      const classificationLog = { userId: logUserId, action: "chat", feature: AI_FEATURE.classification, model: chatModelFallback, classification, startedAt: startTime };
 
       // Guardrails fail closed: an unchecked message must not reach the main
       // model just because the classifier is down. The failure is logged so the
       // AI usage tab shows why the assistant went quiet.
       if (classification === CLASSIFICATION_UNAVAILABLE) {
-        try {
-          await ctx.runMutation(internal.aiLogs.log, {
-            userId: logUserId,
-            action: "chat",
-            model: chatModelFallback,
-            classification,
-            latencyMs: Date.now() - startTime,
-            success: false,
-            errorMessage: "ERR_UNAVAILABLE: guardrail classifier unavailable",
-          });
-        } catch { /* ignore logging errors */ }
+        await logAiUsage(ctx, { ...classificationLog, costUsd: meter.total, error: "ERR_UNAVAILABLE: guardrail classifier unavailable" });
         throw new ConvexError("ERR_UNAVAILABLE");
       }
 
       // Deflect off-topic queries
       if (classification.includes("FORA_DE_TEMA")) {
-        try {
-          await ctx.runMutation(internal.aiLogs.log, {
-            userId: logUserId,
-            action: "chat",
-            model: chatModelFallback,
-            classification,
-            latencyMs: Date.now() - startTime,
-            success: true,
-          });
-        } catch { /* ignore logging errors */ }
+        await logAiUsage(ctx, { ...classificationLog, costUsd: meter.total });
         return {
           text: `Essa pergunta está fora do meu âmbito como assistente da ${siteName}. Posso ajudar-te com informações sobre os nossos eventos, equipa, história, localização ou atividades da comunidade!`,
           groundingChunks: null,
@@ -120,16 +105,7 @@ export const chat = action({
 
       // Deflect injection attempts
       if (classification.includes("INJECTION")) {
-        try {
-          await ctx.runMutation(internal.aiLogs.log, {
-            userId: logUserId,
-            action: "chat",
-            model: chatModelFallback,
-            classification,
-            latencyMs: Date.now() - startTime,
-            success: true,
-          });
-        } catch { /* ignore logging errors */ }
+        await logAiUsage(ctx, { ...classificationLog, costUsd: meter.total });
         return {
           text: `Sou o assistente da ${siteName} e estou aqui para ajudar com informações sobre a nossa associação. Em que posso ser útil?`,
           groundingChunks: null,
@@ -252,6 +228,7 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
           });
         }
 
+        meter.add(geminiCost(selectedModel, response.usageMetadata));
         text = response.text ?? "Desculpe, não consegui processar o seu pedido.";
         groundingChunks =
           response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? null;
@@ -275,7 +252,7 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
         text = "";
         for (const candidate of candidates) {
           try {
-            text = await openAiCompatibleChat({ ...provider, model: candidate }, openAiMessages);
+            text = await openAiCompatibleChat({ ...provider, model: candidate }, openAiMessages, meter);
             selectedModel = candidate;
             lastError = null;
             break;
@@ -296,6 +273,7 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
             contents,
             config: { systemInstruction: systemPrompt },
           });
+          meter.add(geminiCost(DEFAULT_CHAT_MODEL, geminiResponse.usageMetadata));
           text = geminiResponse.text ?? "Desculpe, não consegui processar o seu pedido.";
           selectedModel = DEFAULT_CHAT_MODEL;
         }
@@ -304,17 +282,7 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
       // --- Step 6: Build suggested actions ---
       const suggestedActions = buildSuggestedActions(text, classification, siteName);
 
-      // Log success
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: logUserId,
-          action: "chat",
-          model: selectedModel,
-          classification,
-          latencyMs: Date.now() - startTime,
-          success: true,
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "chat", feature: AI_FEATURE.chat, model: selectedModel, classification, startedAt: startTime, costUsd: meter.total });
 
       return { text, groundingChunks, suggestedActions };
     } catch (error) {
@@ -327,17 +295,7 @@ ${portalContext}${extraPrompt ? `\n\nINSTRUÇÕES ADICIONAIS DO ADMINISTRADOR:\n
         error instanceof Error ? error.message : "Erro desconhecido";
       console.error("AI Chat error:", errorMsg);
       const token = classifyProviderError(errorMsg);
-      // Log failure
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: "unknown",
-          action: "chat",
-          model: selectedModel ?? "unknown",
-          latencyMs: Date.now() - startTime,
-          success: false,
-          errorMessage: `${token}: ${errorMsg.slice(0, 180)}`,
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "chat", feature: AI_FEATURE.chat, model: selectedModel, startedAt: startTime, costUsd: meter.total, error: `${token}: ${errorMsg.slice(0, 180)}` });
       // ConvexError: plain Error messages are redacted to "Server Error" on
       // production deployments, which would break the client's token mapping
       throw new ConvexError(token);

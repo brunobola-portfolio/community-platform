@@ -5,6 +5,8 @@
  *
  * Gemini (NanoBanana) needs GEMINI_API_KEY in the deployment; OpenRouter (GPT
  * Image 2 and friends) needs the OpenRouter key from the settings or the env.
+ * Every generated picture carries its cost: reported by OpenRouter, estimated
+ * from Gemini's token counts.
  * The chosen engine is tried first and the other one only if it fails, so a
  * retired slug or an exhausted quota still yields an image when possible.
  */
@@ -14,8 +16,9 @@ import { ConvexError } from "convex/values";
 import type { ActionCtx } from "../_generated/server";
 import type { Id } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
-import { DEFAULT_IMAGE_MODEL, DEFAULT_OPENROUTER_IMAGE_MODEL, isModelNotFoundError } from "./aiDefaults";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_OPENROUTER_IMAGE_MODEL, isModelNotFoundError, OPENROUTER_NANOBANANA_MODEL } from "./aiDefaults";
 import { getAI } from "./aiShared";
+import { geminiCost } from "./aiCost";
 import { openRouterChat, parseDataUrl, toDataUrl, type ImageData } from "./openRouterRequest";
 import { isOwnStorageUrl, REFERENCE_URL_ERROR } from "./referenceUrl";
 
@@ -47,11 +50,14 @@ export function availableEngines(settings: ImageSettings | null): ImageEngine[] 
 }
 
 /**
- * The engine an instance gets unless an admin chose one: GPT Image through
- * OpenRouter when a key exists (best poster text), otherwise Gemini.
+ * The engine an instance gets unless an admin chose one: NanoBanana (Gemini),
+ * about a third of GPT Image's price per poster and ten times faster. GPT
+ * Image is the default only when OpenRouter is the sole engine with a key.
  */
 export function preferredImageEngine(settings: ImageSettings | null): ImageEngine {
-  return settings?.imageProvider ?? (openRouterKey(settings) ? "openrouter" : "gemini");
+  if (settings?.imageProvider) return settings.imageProvider;
+  if (process.env.GEMINI_API_KEY) return "gemini";
+  return openRouterKey(settings) ? "openrouter" : "gemini";
 }
 
 /** Plain-language reason a fallback happened, for the admin; null when nothing specific is known. */
@@ -107,7 +113,9 @@ export async function loadReference(
 
 interface GeminiPart { inlineData?: { data?: string; mimeType?: string } }
 
-async function geminiImage(prompt: string, reference: ImageData | null, model: string, aspect?: ImageAspect, imageSize?: string): Promise<ImageData> {
+interface PricedImage { image: ImageData; costUsd?: number }
+
+async function geminiImage(prompt: string, reference: ImageData | null, model: string, aspect?: ImageAspect, imageSize?: string): Promise<PricedImage> {
   const parts = reference
     ? [{ inlineData: { mimeType: reference.mimeType, data: reference.base64 } }, { text: prompt }]
     : [{ text: prompt }];
@@ -122,10 +130,13 @@ async function geminiImage(prompt: string, reference: ImageData | null, model: s
   const found = (response.candidates?.[0]?.content?.parts as GeminiPart[] | undefined)
     ?.find(p => p.inlineData?.mimeType?.startsWith("image/") && p.inlineData.data);
   if (!found?.inlineData?.data || !found.inlineData.mimeType) throw new Error("O Gemini não devolveu imagem.");
-  return { base64: found.inlineData.data, mimeType: found.inlineData.mimeType };
+  return {
+    image: { base64: found.inlineData.data, mimeType: found.inlineData.mimeType },
+    costUsd: geminiCost(model, response.usageMetadata),
+  };
 }
 
-async function openRouterImage(prompt: string, reference: ImageData | null, apiKey: string, model: string, aspect?: ImageAspect): Promise<ImageData> {
+async function openRouterImage(prompt: string, reference: ImageData | null, apiKey: string, model: string, aspect?: ImageAspect): Promise<PricedImage> {
   const content = reference
     ? [{ type: "text", text: prompt }, { type: "image_url", image_url: { url: toDataUrl(reference) } }]
     : [{ type: "text", text: prompt }];
@@ -138,11 +149,11 @@ async function openRouterImage(prompt: string, reference: ImageData | null, apiK
   const url = message.images?.[0]?.image_url?.url;
   if (!url) throw new Error("O OpenRouter não devolveu imagem.");
   const inline = parseDataUrl(url);
-  if (inline) return inline;
+  if (inline) return { image: inline, costUsd: message.costUsd };
   // Some providers answer with a hosted URL instead of a data URL
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Imagem do OpenRouter HTTP ${res.status}`);
-  return blobToImage(await res.blob());
+  return { image: await blobToImage(await res.blob()), costUsd: message.costUsd };
 }
 
 export interface GenerateOptions {
@@ -157,19 +168,30 @@ export interface GenerateOptions {
   imageSize?: string;
 }
 
-export interface GeneratedImage { image: ImageData; engine: ImageEngine; model: string }
+export interface GeneratedImage { image: ImageData; engine: ImageEngine; model: string; costUsd?: number }
+
+/**
+ * Model for an OpenRouter attempt: the admin's OpenRouter choice when OpenRouter
+ * was preferred, otherwise NanoBanana through OpenRouter, so falling back from
+ * Gemini keeps the same engine family and price instead of jumping to GPT Image.
+ */
+export function openRouterImageModel(preferred: ImageEngine, settings: ImageSettings | null): string {
+  if (preferred === "openrouter") return settings?.openrouterImageModel || DEFAULT_OPENROUTER_IMAGE_MODEL;
+  return OPENROUTER_NANOBANANA_MODEL;
+}
 
 /** Tries each available engine in order; returns null with the errors when all fail. */
 export async function generateWithFallback(o: GenerateOptions): Promise<{ result: GeneratedImage | null; errors: string[] }> {
   const errors: string[] = [];
-  const order = engineOrder(o.engine ?? preferredImageEngine(o.settings), availableEngines(o.settings));
+  const preferred = o.engine ?? preferredImageEngine(o.settings);
+  const order = engineOrder(preferred, availableEngines(o.settings));
   for (const engine of order) {
     if (engine === "gemini") {
       const configured = o.geminiModel ?? o.settings?.imageModel ?? process.env.GEMINI_IMAGE_MODEL ?? DEFAULT_IMAGE_MODEL;
       const models = configured === DEFAULT_IMAGE_MODEL ? [configured] : [configured, DEFAULT_IMAGE_MODEL];
       for (const model of models) {
         try {
-          return { result: { image: await geminiImage(o.prompt, o.reference, model, o.aspect, o.imageSize), engine, model }, errors };
+          return { result: { ...(await geminiImage(o.prompt, o.reference, model, o.aspect, o.imageSize)), engine, model }, errors };
         } catch (error) {
           const raw = error instanceof Error ? error.message : String(error);
           errors.push(`gemini/${model}: ${raw.slice(0, 160)}`);
@@ -177,10 +199,10 @@ export async function generateWithFallback(o: GenerateOptions): Promise<{ result
         }
       }
     } else {
-      const model = o.settings?.openrouterImageModel || DEFAULT_OPENROUTER_IMAGE_MODEL;
+      const model = openRouterImageModel(preferred, o.settings);
       try {
         const key = openRouterKey(o.settings) ?? "";
-        return { result: { image: await openRouterImage(o.prompt, o.reference, key, model, o.aspect), engine, model }, errors };
+        return { result: { ...(await openRouterImage(o.prompt, o.reference, key, model, o.aspect)), engine, model }, errors };
       } catch (error) {
         errors.push(`openrouter/${model}: ${(error instanceof Error ? error.message : String(error)).slice(0, 160)}`);
       }

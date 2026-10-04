@@ -5,7 +5,8 @@ import { ConvexError, v } from "convex/values";
 import { Modality } from "@google/genai";
 import { api, internal } from "./_generated/api";
 import { DEFAULT_TTS_MODEL } from "./lib/aiDefaults";
-import { getAI, classifyProviderError, consumePublicBudget } from "./lib/aiShared";
+import { getAI, classifyProviderError, consumePublicBudget, logAiUsage, AI_FEATURE } from "./lib/aiShared";
+import { geminiCost } from "./lib/aiCost";
 import { generateWithFallback, loadReference, storeGeneratedImage } from "./lib/aiImage";
 
 /**
@@ -24,10 +25,12 @@ export const tts = action({
   handler: async (ctx, args) => {
     const startTime = Date.now();
     let ttsModel = DEFAULT_TTS_MODEL;
+    let logUserId = "unknown";
     try {
       // Public TTS: optional auth, shared rate-limit bucket for anonymous use
       const userId = await ctx.runQuery(api.lib.actionAuth.getOptionalAuth);
       await consumePublicBudget(ctx, "ai:tts", userId as string | null, args.sessionId);
+      logUserId = (userId as string | null) ?? "anonymous";
       const aiSettings = await ctx.runQuery(internal.settings.getForAI);
       if (aiSettings?.enableChatbot === false) throw new ConvexError("ERR_UNAVAILABLE");
 
@@ -69,16 +72,7 @@ export const tts = action({
         throw new Error("Nenhum áudio recebido do modelo TTS.");
       }
 
-      // Log success
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: (userId as string | null) ?? "anonymous",
-          action: "tts",
-          model: ttsModel,
-          latencyMs: Date.now() - startTime,
-          success: true,
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "tts", feature: AI_FEATURE.voice, model: ttsModel, startedAt: startTime, costUsd: geminiCost(ttsModel, response.usageMetadata) });
 
       return { audioBase64: base64Audio };
     } catch (error) {
@@ -86,17 +80,7 @@ export const tts = action({
         error instanceof Error ? error.message : "Erro desconhecido";
       console.error("TTS Error:", errorMsg);
       const token = classifyProviderError(errorMsg);
-      // Log failure
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId: "unknown",
-          action: "tts",
-          model: ttsModel,
-          latencyMs: Date.now() - startTime,
-          success: false,
-          errorMessage: `${token}: ${errorMsg.slice(0, 180)}`,
-        });
-      } catch { /* ignore logging errors */ }
+      await logAiUsage(ctx, { userId: logUserId, action: "tts", feature: AI_FEATURE.voice, model: ttsModel, startedAt: startTime, error: `${token}: ${errorMsg.slice(0, 180)}` });
       // ConvexError: plain Error messages are redacted to "Server Error" on
       // production deployments, which would break the client's token mapping
       throw new ConvexError(token);
@@ -112,7 +96,7 @@ export const tts = action({
 
 const RESOLUTION_SIZE: Record<string, string> = { "1k": "1K", "2k": "2K", "4k": "4K" };
 
-type GenerateImageResult = { isGenerated: true; imageUrl: string; engine: string } | { isGenerated: false; imageUrl: null };
+type GenerateImageResult = { isGenerated: true; imageUrl: string; engine: string; costUsd?: number } | { isGenerated: false; imageUrl: null };
 
 export const generateImage = action({
   args: {
@@ -155,14 +139,8 @@ export const generateImage = action({
       geminiModel: args.model,
       imageSize: args.resolution ? RESOLUTION_SIZE[args.resolution] : undefined,
     });
-    const log = async (model: string, error?: string) => {
-      try {
-        await ctx.runMutation(internal.aiLogs.log, {
-          userId, action: "generateImage", model, latencyMs: Date.now() - startTime,
-          success: !error, errorMessage: error?.slice(0, 200),
-        });
-      } catch { /* ignore logging errors */ }
-    };
+    const log = (model: string, error?: string, costUsd?: number) =>
+      logAiUsage(ctx, { userId, action: "generateImage", feature: AI_FEATURE.image, model, startedAt: startTime, costUsd, error });
     if (!result) {
       console.error("Image generation failed:", errors.join(" | "));
       await log(args.model ?? "unknown", errors.join(" | ") || "no image engine configured");
@@ -171,11 +149,11 @@ export const generateImage = action({
     }
     try {
       const stored = await storeGeneratedImage(ctx, result.image);
-      await log(result.model);
-      return { isGenerated: true, imageUrl: stored.url, engine: result.engine };
+      await log(result.model, undefined, result.costUsd);
+      return { isGenerated: true, imageUrl: stored.url, engine: result.engine, costUsd: result.costUsd };
     } catch (error) {
       const raw = error instanceof Error ? error.message : "store failed";
-      await log(result.model, raw);
+      await log(result.model, raw, result.costUsd);
       throw new ConvexError(classifyProviderError(raw));
     }
   },

@@ -140,6 +140,14 @@ Definições (identity, home photo, contacts, dues, About page, social links)
 Built for volunteers: a privacy notice at `/privacidade` written from the settings, guest data
 deleted 90 days after the event, and WCAG AA contrast in both themes, checked with axe.
 
+### Help center — nobody has to call the developer
+
+An **Ajuda** tab in the backoffice with step-by-step guides for every task (search, "Comece por
+aqui", screenshots and short silent videos, an "Ir para" button that opens the right tab), a
+**Como funciona** button on every tab that opens its guides in a dialog, and a public `/ajuda`
+page for members and visitors (registering for an event, member area, dues, password). Guides
+are typed data in `content/help/` and name the association from the settings.
+
 ### Media Studio
 
 Image generation (Gemini image models, 1K–4K), tone-aware text enhancement, TTS narration —

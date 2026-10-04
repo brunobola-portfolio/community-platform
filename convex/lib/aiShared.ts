@@ -3,6 +3,7 @@ import { internal } from "../_generated/api";
 import { GoogleGenAI } from "@google/genai";
 import { openAiCompatibleChat, type ResolvedProvider } from "./aiProvider";
 import { DEFAULT_CHAT_MODEL_FALLBACK, isAuthError, isModelNotFoundError } from "./aiDefaults";
+import { geminiCost, type CostMeter } from "./aiCost";
 
 /**
  * Helpers shared by the AI actions: client factory, error classification,
@@ -17,6 +18,37 @@ export function getAI(): GoogleGenAI {
     );
   }
   return new GoogleGenAI({ apiKey });
+}
+
+export { AI_FEATURE } from "./aiUsageStats";
+
+export interface AiLogEntry {
+  userId: string;
+  action: string;
+  feature: string;
+  model: string;
+  startedAt: number;
+  classification?: string;
+  costUsd?: number;
+  /** Present means the call failed; the text is kept for the admin, never shown raw to visitors. */
+  error?: string;
+}
+
+/** Writes one aiUsageLogs row; logging must never fail the AI call it describes. */
+export async function logAiUsage(ctx: { runMutation: ActionCtx["runMutation"] }, e: AiLogEntry): Promise<void> {
+  try {
+    await ctx.runMutation(internal.aiLogs.log, {
+      userId: e.userId,
+      action: e.action,
+      feature: e.feature,
+      model: e.model,
+      classification: e.classification,
+      latencyMs: Date.now() - e.startedAt,
+      success: e.error === undefined,
+      errorMessage: e.error?.slice(0, 200),
+      costUsd: e.costUsd,
+    });
+  } catch { /* ignore logging errors */ }
 }
 
 // Static pre-filter for common injection patterns (shared across handlers)
@@ -130,7 +162,8 @@ export async function classifyQuery(
   message: string,
   model: string,
   allowedTopics?: string,
-  forbiddenTopics?: string
+  forbiddenTopics?: string,
+  meter?: CostMeter
 ): Promise<string> {
   if (injectionPatterns.test(message)) return "INJECTION";
 
@@ -139,6 +172,7 @@ export async function classifyQuery(
       model,
       contents: buildClassificationPrompt(message, allowedTopics, forbiddenTopics),
     });
+    meter?.add(geminiCost(model, response.usageMetadata));
     return response.text ?? "GERAL";
   });
 }
@@ -147,14 +181,15 @@ export async function classifyQueryViaProvider(
   provider: ResolvedProvider,
   message: string,
   allowedTopics?: string,
-  forbiddenTopics?: string
+  forbiddenTopics?: string,
+  meter?: CostMeter
 ): Promise<string> {
   if (injectionPatterns.test(message)) return "INJECTION";
 
   const verdict = await classifyWithRetry(() =>
     openAiCompatibleChat(provider, [
       { role: "user", content: buildClassificationPrompt(message, allowedTopics, forbiddenTopics) },
-    ])
+    ], meter)
   );
   if (verdict !== CLASSIFICATION_UNAVAILABLE) return verdict;
 
@@ -162,7 +197,7 @@ export async function classifyQueryViaProvider(
   // or retired slug on the configured provider must not be enough to mute an
   // answer the chain could still produce. The guardrail gets the same anchor.
   if (!process.env.GEMINI_API_KEY) return CLASSIFICATION_UNAVAILABLE;
-  return classifyQuery(getAI(), message, DEFAULT_CHAT_MODEL_FALLBACK, allowedTopics, forbiddenTopics);
+  return classifyQuery(getAI(), message, DEFAULT_CHAT_MODEL_FALLBACK, allowedTopics, forbiddenTopics, meter);
 }
 
 // ---------------------------------------------------------------------------

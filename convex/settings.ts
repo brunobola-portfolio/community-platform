@@ -158,6 +158,8 @@ export const update = mutation({
         brandGuideUrl: v.optional(v.string()),
         imageProvider: v.optional(v.union(v.literal("gemini"), v.literal("openrouter"))),
         openrouterImageModel: v.optional(v.string()),
+        /** 0 clears it: the client cannot send undefined to remove a field. */
+        aiMonthlyBudgetUsd: v.optional(v.number()),
         historyIntro: v.optional(v.string()),
         historyQuote: v.optional(v.string()),
         venueName: v.optional(v.string()),
@@ -274,12 +276,16 @@ export const update = mutation({
             }
         }
         if (args.ttsModel !== undefined) validateMaxLength(args.ttsModel, "ttsModel", 50);
+        if (args.aiMonthlyBudgetUsd !== undefined && (!Number.isFinite(args.aiMonthlyBudgetUsd) || args.aiMonthlyBudgetUsd < 0 || args.aiMonthlyBudgetUsd > 100000)) {
+            throw new ConvexError("O orçamento mensal de IA tem de ser um valor entre 0 e 100 000 $.");
+        }
         const existing = await ctx.db.query("settings").first();
         // Site photos uploaded from the MediaStudio are counted like any record's image
         if (args.heroImageUrl !== undefined) await swapUrl(ctx, existing?.heroImageUrl, args.heroImageUrl);
         if (args.logoUrl !== undefined) await swapUrl(ctx, existing?.logoUrl, args.logoUrl);
         if (existing) {
-            await ctx.db.patch(existing._id, args);
+            const budgetPatch = args.aiMonthlyBudgetUsd === 0 ? { aiMonthlyBudgetUsd: undefined } : {};
+            await ctx.db.patch(existing._id, { ...args, ...budgetPatch });
         } else {
             await ctx.db.insert("settings", {
                 siteName: args.siteName ?? "Associação",
@@ -300,6 +306,7 @@ export const update = mutation({
                 brandGuideUrl: args.brandGuideUrl,
                 imageProvider: args.imageProvider,
                 openrouterImageModel: args.openrouterImageModel,
+                aiMonthlyBudgetUsd: args.aiMonthlyBudgetUsd || undefined,
                 historyIntro: args.historyIntro,
                 historyQuote: args.historyQuote,
                 venueName: args.venueName,

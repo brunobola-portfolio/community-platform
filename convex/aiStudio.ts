@@ -3,11 +3,13 @@
 import { action, type ActionCtx } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { api, internal } from "./_generated/api";
-import { classifyProviderError } from "./lib/aiShared";
+import { AI_FEATURE, classifyProviderError, logAiUsage } from "./lib/aiShared";
+import { sumCosts } from "./lib/aiCost";
 import { formatDay, parseDay } from "./lib/aiStudioDates";
 import { coerceEventDraft, coercePostDraft, extractJson, type PosterLines, type StudioCategory, type StudioKind, type StudioResult } from "./lib/aiStudioDraft";
 import { buildDraftPrompt, buildPosterPrompt } from "./lib/aiStudioPrompts";
 import { draftText } from "./lib/aiStudioText";
+import { OPENROUTER_NANOBANANA_MODEL } from "./lib/aiDefaults";
 import { availableEngines, generateWithFallback, loadReference, storeGeneratedImage, type ImageEngine, type ImageSettings, preferredImageEngine, fallbackReason } from "./lib/aiImage";
 import type { ImageData } from "./lib/openRouterRequest";
 import type { Id } from "./_generated/dataModel";
@@ -20,19 +22,6 @@ import type { Id } from "./_generated/dataModel";
 
 const MAX_BRIEF = 2000;
 const ENGINE_LABEL: Record<ImageEngine, string> = { gemini: "NanoBanana (Gemini)", openrouter: "OpenRouter" };
-
-async function logAi(ctx: ActionCtx, entry: { userId: string; action: string; model: string; startedAt: number; error?: string }) {
-  try {
-    await ctx.runMutation(internal.aiLogs.log, {
-      userId: entry.userId,
-      action: entry.action,
-      model: entry.model,
-      latencyMs: Date.now() - entry.startedAt,
-      success: !entry.error,
-      errorMessage: entry.error?.slice(0, 200),
-    });
-  } catch { /* logging must never fail the draft */ }
-}
 
 async function requireStudioAdmin(ctx: ActionCtx): Promise<string> {
   try {
@@ -112,10 +101,10 @@ export const draft = action({
       const raw = error instanceof Error ? error.message : String(error);
       const token = classifyProviderError(raw);
       console.error("AI studio text error:", raw);
-      await logAi(ctx, { userId, action: "studioText", model: "unknown", startedAt: textStart, error: `${token}: ${raw}` });
+      await logAiUsage(ctx, { userId, action: "studioText", feature: AI_FEATURE.draft, model: "unknown", startedAt: textStart, error: `${token}: ${raw}` });
       throw new ConvexError(token);
     }
-    await logAi(ctx, { userId, action: "studioText", model: reply.model, startedAt: textStart });
+    await logAiUsage(ctx, { userId, action: "studioText", feature: AI_FEATURE.draft, model: reply.model, startedAt: textStart, costUsd: reply.costUsd });
 
     const json = extractJson(reply.text);
     if (!json) {
@@ -127,7 +116,7 @@ export const draft = action({
     }
 
     const coerceCtx = { brief, today, categories, fallbackLocation: settings?.venueName ?? settings?.address ?? "Sede da associação" };
-    const result: StudioResult = { kind: args.kind, notes };
+    const result: StudioResult = { kind: args.kind, notes, costUsd: reply.costUsd };
     let imagePrompt: string;
     let lines: PosterLines | undefined;
     if (args.kind === "event") {
@@ -180,33 +169,38 @@ async function attachImage(ctx: ActionCtx, o: AttachOptions) {
     hasReference: Boolean(o.reference),
   });
   const startedAt = Date.now();
+  const imageLog = { userId: o.userId, action: "studioImage", feature: o.args.kind === "event" ? AI_FEATURE.poster : AI_FEATURE.image, startedAt };
   const { result: generated, errors } = await generateWithFallback({
     prompt, reference: o.reference, settings: o.settings, engine: o.args.imageEngine, aspect: o.args.kind === "event" ? "3:4" : "16:9",
   });
   if (!generated) {
     console.error("AI studio image failed:", errors.join(" | "));
-    await logAi(ctx, { userId: o.userId, action: "studioImage", model: requested, startedAt, error: errors.join(" | ") || "no engine" });
+    await logAiUsage(ctx, { ...imageLog, model: requested, error: errors.join(" | ") || "no engine" });
     result.notes.push(`Não foi possível criar ${noun} desta vez. Pode gerar de novo no formulário ou carregar uma imagem.`);
     return;
   }
   if (errors.length) {
     // The fallback hid a failure; the AI usage tab must still show why the first engine gave up
     console.warn("AI studio image fallback:", errors.join(" | "));
-    await logAi(ctx, { userId: o.userId, action: "studioImage", model: requested, startedAt, error: errors.join(" | ") });
+    await logAiUsage(ctx, { ...imageLog, model: requested, error: errors.join(" | ") });
   }
+  // Paid even when storing fails below: the provider already drew it
+  result.costUsd = sumCosts(result.costUsd, generated.costUsd);
   try {
     const stored = await storeGeneratedImage(ctx, generated.image);
     result.imageUrl = stored.url;
     result.imageEngine = generated.engine;
-    await logAi(ctx, { userId: o.userId, action: "studioImage", model: generated.model, startedAt });
-    if (generated.engine !== requested) {
+    await logAiUsage(ctx, { ...imageLog, model: generated.model, costUsd: generated.costUsd });
+    // NanoBanana through OpenRouter is the same engine at the same price: no note for the admin
+    const sameFamily = requested === "gemini" && generated.model === OPENROUTER_NANOBANANA_MODEL;
+    if (generated.engine !== requested && !sameFamily) {
       const why = fallbackReason(errors);
       const made = `${noun} foi criad${o.args.kind === "event" ? "o" : "a"} com ${ENGINE_LABEL[generated.engine]}`;
       result.notes.push(why ? `Como ${why}, ${made}.` : `O motor escolhido falhou; ${made}.`);
     }
   } catch (error) {
     const raw = error instanceof Error ? error.message : String(error);
-    await logAi(ctx, { userId: o.userId, action: "studioImage", model: generated.model, startedAt, error: raw });
+    await logAiUsage(ctx, { ...imageLog, model: generated.model, costUsd: generated.costUsd, error: raw });
     result.notes.push(`${o.args.kind === "event" ? "O cartaz foi criado" : "A imagem foi criada"} mas não foi possível guardar o ficheiro. Tente gerar de novo no formulário.`);
   }
 }

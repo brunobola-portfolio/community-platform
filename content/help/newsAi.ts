@@ -1,0 +1,103 @@
+import { image, video } from './media';
+import type { HelpTutorial } from './types';
+
+export const NEWS_TUTORIALS: HelpTutorial[] = [
+    {
+        id: 'publicar-noticia',
+        category: 'noticias',
+        title: 'Publicar uma notícia',
+        summary: 'Texto, imagem de capa e publicação, com ajuda da IA se quiser.',
+        minutes: 3,
+        audience: 'direcao',
+        tab: 'news',
+        keywords: ['notícia', 'blog', 'nova notícia', 'publicar', 'capa', 'imagem de capa', 'autor', 'rascunho'],
+        steps: [
+            { text: 'Abra "Notícias" e carregue em "Nova notícia".' },
+            { text: 'Preencha "Título", "Categoria" e "Data".' },
+            { text: 'Escreva o texto em "Notícia". Use os botões de negrito, título e lista para o organizar; "Melhorar" revê o texto com IA.' },
+            { text: 'Em "Imagem de capa", carregue uma fotografia do momento.', tip: 'Uma fotografia real do evento resulta melhor do que uma imagem genérica.' },
+            { text: 'Marque "Publicada (visível no site)" quando estiver pronta. Desmarcada, fica guardada como rascunho.' },
+            { text: 'Opcional: em "Mais opções: autor e palavras-chave" indique quem escreveu.' },
+            { text: 'Carregue em "Guardar" e partilhe a notícia a partir do site.' },
+        ],
+    },
+];
+
+export const AI_TUTORIALS: HelpTutorial[] = [
+    {
+        id: 'criar-com-ia',
+        category: 'ia',
+        title: 'Criar um evento ou uma notícia com IA',
+        summary: 'Escreva duas linhas; a IA preenche o formulário e pode criar o cartaz.',
+        minutes: 3,
+        audience: 'direcao',
+        tab: 'events',
+        relatedTabs: ['news'],
+        featured: true,
+        keywords: ['ia', 'inteligência artificial', 'criar com ia', 'estúdio', 'rascunho', 'cartaz', 'automático'],
+        media: [
+            video('criar-evento-ia', 'Em Eventos carrega-se em Criar com IA, escreve-se uma frase com o quê, quando, onde e preço, e carrega-se em Criar rascunho. O formulário do evento abre preenchido para rever antes de guardar.'),
+            image('estudio-ia', 'Janela Criar evento com IA com a descrição, os exemplos, a imagem de referência e as opções do cartaz'),
+        ],
+        steps: [
+            { text: 'Em "Eventos" ou "Notícias", carregue em "Criar com IA".' },
+            { text: 'Em "O que quer anunciar?" escreva o essencial: o quê, quando, onde, preço e como se inscrever. Os exemplos por baixo mostram o tom.' },
+            { text: 'Escolha se quer "Gerar cartaz" (ou "Gerar imagem de capa") e, nos eventos, se o cartaz leva texto ("Cartaz com texto").' },
+            { text: 'Carregue em "Criar rascunho" (ou Ctrl + Enter) e espere: sem cartaz demora segundos; com cartaz, entre 10 segundos e 2 minutos, conforme o motor.' },
+            { text: 'O formulário abre preenchido. Reveja datas, preços e nomes e carregue em "Guardar".', warning: 'Nada fica publicado sem a sua revisão, mas a IA pode enganar-se numa data ou num preço. Confirme sempre.' },
+        ],
+    },
+    {
+        id: 'ia-dicas-descricao',
+        category: 'ia',
+        title: 'Dicas para uma boa descrição',
+        summary: 'O que escrever para a IA acertar à primeira.',
+        minutes: 2,
+        audience: 'direcao',
+        tab: 'events',
+        relatedTabs: ['news'],
+        keywords: ['dicas', 'descrição', 'brief', 'prompt', 'texto', 'escrever'],
+        steps: [
+            { text: 'Diga o quê, quando (dia e hora), onde, quanto custa e se há inscrições. Exemplo: "Magusto a 11 de novembro às 16h no largo da sede, entrada livre".' },
+            { text: 'Junte o que torna o evento especial: música, comida, prémios, para quem é.' },
+            { text: 'Para uma notícia, conte o que aconteceu e com quem: "14 duplas em prova, venceu a dupla Silva e Costa".' },
+            { text: 'Escreva números e datas por extenso ou com algarismos, mas sem abreviaturas ambíguas.', tip: 'Escreva "sábado, 12 de abril" em vez de só "sábado": a IA sabe a data de hoje, mas um dia exato evita enganos.' },
+            { text: 'Não ficou como queria? Corrija no formulário ou feche e reformule a frase.' },
+        ],
+    },
+    {
+        id: 'ia-cartaz-referencia',
+        category: 'ia',
+        title: 'Usar o cartaz do ano passado como referência',
+        summary: 'A IA lê o cartaz antigo e atualiza edição, datas e preços com a sua descrição.',
+        minutes: 2,
+        audience: 'direcao',
+        tab: 'events',
+        keywords: ['referência', 'cartaz antigo', 'ano passado', 'imagem de referência', 'edição', 'reaproveitar'],
+        steps: [
+            { text: 'Em "Criar com IA", arraste o cartaz antigo para "Imagem de referência (opcional)" ou clique para o escolher (JPG, PNG ou WebP).' },
+            { text: 'Espere por "Referência pronta".' },
+            { text: 'Na descrição, diga só o que muda: "6.ª edição, 18 de outubro, inscrições a 10 €".' },
+            { text: 'Carregue em "Criar rascunho". A IA aproveita o que estava no cartaz e atualiza o resto.', tip: 'Serve também uma fotografia de um cartaz afixado, desde que se leia bem.' },
+        ],
+    },
+    {
+        id: 'ia-motor-custos',
+        category: 'ia',
+        title: 'Escolher o motor de imagem e acompanhar os custos',
+        summary: 'NanoBanana para o dia a dia, GPT Image quando o cartaz tem de ser perfeito.',
+        minutes: 2,
+        audience: 'direcao',
+        tab: 'ai',
+        relatedTabs: ['events', 'news', 'dashboard'],
+        keywords: ['motor de imagem', 'gpt image', 'nanobanana', 'gemini', 'openrouter', 'custo', 'preço', 'saldo', 'orçamento', 'cartaz'],
+        steps: [
+            { text: 'Em "Assistente virtual", na secção "Motor de imagem", escolha o motor usado por omissão.' },
+            { text: '"NanoBanana (Gemini)" é o recomendado: cerca de 10 segundos e 0,07 $ por cartaz, com bom texto em cartazes simples.' },
+            { text: '"GPT Image (OpenRouter)" dá a qualidade máxima e o texto mais rigoroso: cerca de 2 minutos e 0,23 $ por cartaz.' },
+            { text: 'No "Criar com IA" pode trocar o motor só para aquele rascunho, em "Motor de imagem"; por baixo aparece o custo estimado.', tip: 'Se o motor escolhido falhar, o outro é tentado automaticamente.' },
+            { text: 'Em "Utilização e custos" vê quanto a IA custou, quem a usou e para quê. Defina um "Orçamento mensal (USD)" para receber um aviso quando for ultrapassado.' },
+            { text: 'Desligue "Gerar cartaz" quando já tem a imagem: o rascunho sai em segundos e quase sem custo.' },
+        ],
+    },
+];

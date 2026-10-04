@@ -28,6 +28,7 @@ export interface ResolvedProvider {
 }
 
 import { DEFAULT_OPENROUTER_MODEL } from "./aiDefaults";
+import { openRouterCost, type CostMeter, type OpenRouterUsage } from "./aiCost";
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const COMPLETION_TIMEOUT_MS = 60_000;
@@ -62,11 +63,13 @@ export interface ChatMessage {
 /**
  * Call an OpenAI-compatible /chat/completions endpoint. Returns the assistant
  * text. Throws on missing configuration or upstream failure; callers map the
- * error into the existing ERR_* token flow.
+ * error into the existing ERR_* token flow. OpenRouter's reported price goes
+ * into the meter; a custom endpoint's price is unknown and left out.
  */
 export async function openAiCompatibleChat(
     provider: ResolvedProvider,
     messages: ChatMessage[],
+    meter?: CostMeter,
 ): Promise<string> {
     if (!provider.baseUrl) {
         throw new Error("Endpoint do fornecedor de IA não configurado (customApiUrl).");
@@ -94,6 +97,7 @@ export async function openAiCompatibleChat(
                 model: provider.model,
                 messages,
                 temperature: 0.7,
+                ...(provider.kind === "openrouter" ? { usage: { include: true } } : {}),
             }),
         });
         if (!res.ok) {
@@ -102,7 +106,9 @@ export async function openAiCompatibleChat(
         }
         const data = (await res.json()) as {
             choices?: Array<{ message?: { content?: string } }>;
+            usage?: OpenRouterUsage;
         };
+        if (provider.kind === "openrouter") meter?.add(openRouterCost(provider.model, data.usage));
         const text = data.choices?.[0]?.message?.content;
         if (!text) throw new Error("Fornecedor de IA devolveu resposta vazia.");
         return text;

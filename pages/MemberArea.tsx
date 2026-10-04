@@ -11,7 +11,7 @@
  */
 
 import React, { useRef, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Button, Badge, Modal } from '../components/ui/UIComponents';
@@ -67,7 +67,7 @@ const getQuotaInfo = (quotaPaidUntil: string | null | undefined): QuotaInfo => {
     return {
       status: 'em-dia',
       badgeLabel: 'Em dia',
-      badgeClassName: 'bg-green-500/20 text-green-700 dark:text-green-400 border-green-500/30',
+      badgeClassName: 'bg-green-500/20 text-green-800 dark:text-green-400 border-green-500/30',
       cardBadgeClassName: 'bg-green-500/20 text-green-300 border-green-500/30',
       cardText: `Regularizada até ${quotaPaidUntil}`,
       nextPayment: `Janeiro ${paidUntilYear + 1}`,
@@ -78,7 +78,7 @@ const getQuotaInfo = (quotaPaidUntil: string | null | undefined): QuotaInfo => {
     return {
       status: 'atrasada',
       badgeLabel: 'Por regularizar',
-      badgeClassName: 'bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30',
+      badgeClassName: 'bg-amber-500/20 text-amber-800 dark:text-amber-400 border-amber-500/30',
       cardBadgeClassName: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       cardText: `Última quota: ${quotaPaidUntil}`,
       nextPayment: 'Assim que possível',
@@ -475,7 +475,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
             <div>
                 <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.3em] text-[10px] font-bold">Portal do Sócio</span>
                 <h1 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mt-2 mb-2">Área de Sócio</h1>
-                <p className="text-slate-600 dark:text-slate-400">Bem-vindo à sua área reservada.</p>
+                <p className="text-slate-600 dark:text-slate-400">Bem-vindo à sua área reservada. <Link to="/ajuda" className="rounded font-medium text-brand-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Precisa de ajuda?</Link></p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
                 <Button variant="ghost" onClick={() => setShowPassword(true)} className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">

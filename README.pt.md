@@ -143,6 +143,15 @@ Feito para voluntários: aviso de privacidade em `/privacidade` escrito a partir
 definições, dados de convidados apagados 90 dias depois do evento, e contraste WCAG AA nos dois
 temas, verificado com axe.
 
+### Centro de ajuda — ninguém precisa de ligar ao programador
+
+Um separador **Ajuda** no backoffice com guias passo a passo para todas as tarefas (pesquisa,
+"Comece por aqui", capturas e vídeos curtos sem som, botão "Ir para" que abre o separador
+certo), um botão **Como funciona** em cada separador que abre os guias dessa secção, e uma
+página pública `/ajuda` para sócios e visitantes (inscrever-se num evento, área de sócio,
+quotas, palavra-passe). Os guias são dados tipados em `content/help/` e nomeiam a associação a
+partir das definições.
+
 ### Media Studio
 
 Geração de imagens (modelos de imagem Gemini, 1K–4K), melhoria de texto com tom configurável,

@@ -57,6 +57,8 @@ export interface StudioResult {
   post?: PostDraft;
   imageUrl?: string;
   imageEngine?: string;
+  /** What the draft cost (text plus picture), when the providers said or it could be estimated. */
+  costUsd?: number;
   /** Plain pt-PT sentences the secretary should read before saving. */
   notes: string[];
 }

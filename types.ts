@@ -65,6 +65,8 @@ export interface Settings {
   brandGuideUrl?: string;
   imageProvider?: 'gemini' | 'openrouter';
   openrouterImageModel?: string;
+  /** Monthly AI spend to stay under (USD); 0 or absent means no budget. */
+  aiMonthlyBudgetUsd?: number;
   historyIntro?: string;
   historyQuote?: string;
   venueName?: string;

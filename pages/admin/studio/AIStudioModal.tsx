@@ -9,6 +9,8 @@ import { STD_INPUT_CLASS } from '../constants';
 import { ReferenceDrop } from './ReferenceDrop';
 import { StudioProgress } from './StudioProgress';
 import { useStudioUploads } from './useStudioUploads';
+import { AIBudgetWarning } from '../ai/AIBudgetWarning';
+import { draftCostSentence, studioEstimateLine } from '../ai/aiUsageCopy';
 import { draftToFormData } from './draftToForm';
 import { EXAMPLES, PLACEHOLDER, localStamp, stageAt, stagesFor, studioErrorMessage, type StageId, type StudioKind, posterWaitHint } from './studioCopy';
 import { api } from '../../../convex/_generated/api';
@@ -105,7 +107,8 @@ export const AIStudioModal: React.FC<AIStudioModalProps> = ({ kind, onClose, onD
         const mapped = draftToFormData(result, { nowLocal: localStamp().minute, imageUrl });
         if (!mapped) throw new Error('ERR_GENERIC');
         release(referenceRef.current?.url);
-        onDraft(mapped.type, mapped.data, result.notes);
+        const cost = draftCostSentence(result.costUsd);
+        onDraft(mapped.type, mapped.data, cost ? [...result.notes, cost] : result.notes);
     };
 
     const run = async (e?: React.FormEvent) => {
@@ -196,11 +199,15 @@ export const AIStudioModal: React.FC<AIStudioModalProps> = ({ kind, onClose, onD
                         onPosterText={setPosterText}
                         engineSelect={caps?.openrouter ? (
                             <AdminSelect value={chosenEngine ?? ''} onChange={e => setEngine(e.target.value as Engine)} disabled={!imageOn} className="text-sm">
-                                {caps.gemini && <option value="gemini">NanoBanana (Gemini)</option>}
+                                {caps.gemini && <option value="gemini">NanoBanana (Gemini) — recomendado, ~10 s, ~0,07 $</option>}
                                 <option value="openrouter">{openRouterLabel(caps.openrouterImageModel)}</option>
                             </AdminSelect>
                         ) : null}
                     />
+                    <p className="text-xs text-slate-400">
+                        Custo estimado: <span className="text-slate-200">{studioEstimateLine(imageOn, { engine: chosenEngine, openrouterModel: caps?.openrouterImageModel, geminiModel: caps?.geminiImageModel })}</span>
+                    </p>
+                    <AIBudgetWarning />
                     {error && <p role="alert" className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{error}</p>}
                 </form>
             )}

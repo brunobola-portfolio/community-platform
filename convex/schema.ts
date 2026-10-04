@@ -238,6 +238,8 @@ export default defineSchema({
     // Image engine for AI posters: Gemini direct or an OpenRouter image model (e.g. GPT Image)
     imageProvider: v.optional(v.union(v.literal("gemini"), v.literal("openrouter"))),
     openrouterImageModel: v.optional(v.string()),
+    // Monthly AI spend the admin wants to stay under (USD); a warning, never a block
+    aiMonthlyBudgetUsd: v.optional(v.number()),
     historyIntro: v.optional(v.string()),
     historyQuote: v.optional(v.string()),
     venueName: v.optional(v.string()),
@@ -376,6 +378,10 @@ export default defineSchema({
     latencyMs: v.number(),
     success: v.boolean(),
     errorMessage: v.optional(v.string()),
+    // USD: OpenRouter's reported price or an estimate from Gemini token counts; absent on rows before 2.17
+    costUsd: v.optional(v.number()),
+    // Admin-facing feature name ("Cartaz", "Assistente"...); absent rows fall back to the action
+    feature: v.optional(v.string()),
     timestamp: v.number(),
   }).index("by_timestamp", ["timestamp"]).index("by_action", ["action"]).index("by_user", ["userId"]),
 

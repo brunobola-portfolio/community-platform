@@ -1,6 +1,6 @@
 import { query } from "./_generated/server";
 import { isAdmin } from "./lib/auth";
-import { DEFAULT_OPENROUTER_IMAGE_MODEL } from "./lib/aiDefaults";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_OPENROUTER_IMAGE_MODEL } from "./lib/aiDefaults";
 
 /**
  * Which image engines this deployment can actually use, for the AI studio and
@@ -15,12 +15,13 @@ export const capabilities = query({
     const doc = await ctx.db.query("settings").first();
     const gemini = Boolean(process.env.GEMINI_API_KEY);
     const openrouter = Boolean(doc?.openrouterApiKey || process.env.OPENROUTER_API_KEY);
-    // Same rule as preferredImageEngine: GPT Image when an OpenRouter key exists
-    const preferred = doc?.imageProvider ?? (openrouter ? "openrouter" : "gemini");
+    // Same rule as preferredImageEngine: NanoBanana unless only OpenRouter has a key
+    const preferred = doc?.imageProvider ?? (gemini ? "gemini" : openrouter ? "openrouter" : "gemini");
     return {
       gemini,
       openrouter,
       defaultEngine: preferred === "openrouter" && openrouter ? "openrouter" as const : gemini ? "gemini" as const : openrouter ? "openrouter" as const : null,
+      geminiImageModel: doc?.imageModel || DEFAULT_IMAGE_MODEL,
       openrouterImageModel: doc?.openrouterImageModel || DEFAULT_OPENROUTER_IMAGE_MODEL,
       preferred,
     };

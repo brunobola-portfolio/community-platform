@@ -34,6 +34,12 @@ export const GEMINI_IMAGE_MODELS = [
  * engine behind ChatGPT's image generation; it renders poster text best.
  */
 export const DEFAULT_OPENROUTER_IMAGE_MODEL = "openai/gpt-5.4-image-2";
+/**
+ * NanoBanana through OpenRouter: the fallback when Gemini direct fails (a free
+ * Gemini key has no image quota), so a NanoBanana instance never silently pays
+ * GPT Image prices.
+ */
+export const OPENROUTER_NANOBANANA_MODEL = "google/gemini-3.1-flash-image";
 export const OPENROUTER_IMAGE_MODELS = [
   { id: "openai/gpt-5.4-image-2", label: "GPT Image 2 — o do ChatGPT, qualidade máxima (~2 min, ~0,23 $)" },
   { id: "openai/gpt-5-image-mini", label: "GPT Image Mini — económico (~50 s, ~0,04 $)" },
@@ -89,3 +95,47 @@ export function isModelNotFoundError(raw: string): boolean {
     (lower.includes("404") && lower.includes("model"))
   );
 }
+
+/** USD per 1M tokens; `imageOutput` prices the image tokens of an image model's reply. */
+export interface ModelPrice { input: number; output: number; imageOutput?: number }
+
+/**
+ * Paid-tier Gemini API prices (standard, not batch), checked on 2026-10-04
+ * against ai.google.dev/gemini-api/docs/pricing and the OpenRouter catalogue,
+ * which resells the same Google models at the same rates. Used only to
+ * estimate the cost of direct Gemini calls, which, unlike OpenRouter, do not
+ * report a price. Gemini 3.7 Flash doubles on 2027-01-01. Grounding searches
+ * are left out: the first 5,000 a month are free.
+ */
+export const GEMINI_PRICES: Record<string, ModelPrice> = {
+  "gemini-3.7-flash": { input: 0.75, output: 3.75 },
+  "gemini-3.5-flash": { input: 1.5, output: 9 },
+  "gemini-3.5-flash-lite": { input: 0.3, output: 2.5 },
+  "gemini-2.5-flash": { input: 0.3, output: 2.5 },
+  "gemini-2.5-flash-lite": { input: 0.1, output: 0.4 },
+  "gemini-3.1-flash-image": { input: 0.5, output: 3, imageOutput: 60 },
+  "gemini-3.1-flash-lite-image": { input: 0.25, output: 1.5, imageOutput: 30 },
+  "gemini-3-pro-image": { input: 2, output: 12, imageOutput: 120 },
+  "gemini-2.5-flash-image": { input: 0.3, output: 2.5, imageOutput: 30 },
+  // TTS output is audio tokens (25 per second of speech)
+  "gemini-2.5-flash-preview-tts": { input: 0.5, output: 10 },
+  "gemini-3.1-flash-tts-preview": { input: 1, output: 20 },
+};
+
+/** Image tokens a Gemini image model spends per picture, by resolution (Google's published counts). */
+export const GEMINI_IMAGE_TOKENS: Record<string, number> = { "1k": 1120, "2k": 1680, "4k": 2520 };
+
+/**
+ * Measured cost of one picture on the OpenRouter image models (2026-10-04),
+ * for the estimate shown before generating; the real cost comes back from
+ * OpenRouter with each call.
+ */
+export const OPENROUTER_IMAGE_COST_USD: Record<string, number> = {
+  "openai/gpt-5.4-image-2": 0.23,
+  "openai/gpt-5-image-mini": 0.04,
+  "google/gemini-3-pro-image": 0.14,
+  "google/gemini-3.1-flash-image": 0.07,
+};
+
+/** A studio draft's text half on the default chat model (measured 0.0199 USD on 2026-10-04). */
+export const STUDIO_TEXT_COST_USD = 0.02;
