@@ -47,8 +47,7 @@ if (!existsSync('.env.production')) {
 const envContent = readFileSync('.env.production', 'utf8');
 // In a .env an unquoted # starts a comment: VITE_BRAND_COLOR=#df3d32 builds as empty and
 // the site silently falls back to the platform colour
-const commentedOut = envContent.split(/?
-/).filter(line => /^VITE_[A-Z0-9_]+=#/.test(line.trim()));
+const commentedOut = envContent.split(/\r?\n/).filter(line => /^VITE_[A-Z0-9_]+=#/.test(line.trim()));
 if (commentedOut.length) {
   fail(
     `Valor comecado por # sem aspas no .env.production (fica vazio no build): ${commentedOut.map(l => l.split('=')[0]).join(', ')}`,
