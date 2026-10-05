@@ -72,18 +72,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
       await signIn("password", { email: email.trim(), password, flow: 'signIn' });
       setAwaitingSession(true);
     } catch (err) {
-      console.error(err);
       const errorMessage = err instanceof Error ? err.message : String(err);
       const lowerError = errorMessage.toLowerCase();
 
-      if (lowerError.includes('invalid') || lowerError.includes('credentials') || lowerError.includes('password')) {
-        setError('Email ou palavra-passe incorretos.');
-      } else if (lowerError.includes('not found') || lowerError.includes('no user')) {
-        setError('Conta não encontrada. Verifique o email.');
-      } else if (lowerError.includes('network') || lowerError.includes('fetch') || lowerError.includes('connect')) {
-        setError('Erro de conexão. Verifique a sua internet.');
+      // Production redacts Convex Auth errors (InvalidSecret, InvalidAccountId, too many
+      // attempts) to "Server Error"; apart from the network, a refused sign-in is the credentials
+      if (/network|fetch|connect|offline|websocket/.test(lowerError)) {
+        setError('Sem ligação ao servidor. Verifique a internet e tente de novo.');
       } else {
-        setError('Erro na autenticação. Verifique os dados e tente novamente.');
+        setError('Email ou palavra-passe incorretos. Depois de várias tentativas, aguarde uns minutos ou peça uma nova à direção.');
       }
       setIsLoading(false);
     } finally {

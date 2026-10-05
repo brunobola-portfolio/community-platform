@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.19.3] - 2026-10-05
+
+### Fixed
+
+- A wrong password in production showed "Erro na autenticação": Convex redacts the sign-in error
+  to "Server Error". Any refused sign-in that is not a network failure now reads "Email ou
+  palavra-passe incorretos", with what to do after several attempts
+
 ## [2.19.2] - 2026-10-05
 
 ### Fixed
