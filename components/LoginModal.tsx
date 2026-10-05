@@ -9,10 +9,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuthActions } from "@convex-dev/auth/react";
+import { useConvexAuth } from "convex/react";
 import { Link } from 'react-router-dom';
 import { Loader2, LogIn, ShieldCheck, UserCircle } from 'lucide-react';
 import { Button, Modal, Input, cn } from './ui/UIComponents';
 import { HELP_PARAM } from '../content/help';
+
+/** Past this, a session that never opened is reported instead of a spinner forever. */
+const SESSION_TIMEOUT_MS = 10_000;
 
 export interface LoginModalProps {
   isOpen: boolean;
@@ -27,6 +31,29 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  // signIn resolves before the Convex client has re-authenticated; navigating then
+  // lands on a protected route that still sees "signed out" and bounces to /, which
+  // read as "the first login does nothing". We wait for the session instead.
+  const { isAuthenticated } = useConvexAuth();
+  const [awaitingSession, setAwaitingSession] = useState(false);
+
+  useEffect(() => {
+    if (!awaitingSession || !isAuthenticated) return;
+    setAwaitingSession(false);
+    setIsLoading(false);
+    onLogin(mode);
+    onClose();
+  }, [awaitingSession, isAuthenticated, mode, onClose, onLogin]);
+
+  useEffect(() => {
+    if (!awaitingSession) return;
+    const timer = setTimeout(() => {
+      setAwaitingSession(false);
+      setIsLoading(false);
+      setError('A sessão está a demorar a abrir. Verifique a ligação e tente de novo.');
+    }, SESSION_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [awaitingSession]);
 
   // The modal stays mounted for the whole session; wiping on close keeps
   // credentials from lingering on shared computers.
@@ -43,15 +70,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
     setError('');
     try {
       await signIn("password", { email: email.trim(), password, flow: 'signIn' });
-      onLogin(mode);
-      onClose();
+      setAwaitingSession(true);
     } catch (err) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : String(err);
       const lowerError = errorMessage.toLowerCase();
 
       if (lowerError.includes('invalid') || lowerError.includes('credentials') || lowerError.includes('password')) {
-        setError('Email ou password incorretos.');
+        setError('Email ou palavra-passe incorretos.');
       } else if (lowerError.includes('not found') || lowerError.includes('no user')) {
         setError('Conta não encontrada. Verifique o email.');
       } else if (lowerError.includes('network') || lowerError.includes('fetch') || lowerError.includes('connect')) {
@@ -59,9 +85,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
       } else {
         setError('Erro na autenticação. Verifique os dados e tente novamente.');
       }
+      setIsLoading(false);
     } finally {
       setPassword('');
-      setIsLoading(false);
     }
   };
 

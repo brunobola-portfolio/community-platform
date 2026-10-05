@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.19.2] - 2026-10-05
+
+### Fixed
+
+- **Signing in took two tries.** The dialog navigated to the backoffice or member area as soon
+  as the password was accepted, before the Convex client had re-authenticated; the protected
+  route still saw a signed-out visitor and sent them back to the home page. The dialog now keeps
+  "Entrar" spinning until the session is open (with a clear message if it takes over 10 s)
+
 ## [2.19.1] - 2026-10-05
 
 ### Changed
