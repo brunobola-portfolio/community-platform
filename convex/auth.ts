@@ -1,6 +1,7 @@
 import { convexAuth } from "@convex-dev/auth/server";
 import { Password } from "@convex-dev/auth/providers/Password";
 import { ConvexError } from "convex/values";
+import type { MutationCtx } from "./_generated/server";
 
 /** Admin and member accounts share this provider, so the floor is not 8 chars. */
 function validatePasswordRequirements(password: string) {
@@ -23,4 +24,21 @@ export const { auth, signIn, signOut, store } = convexAuth({
             },
         }),
     ],
+    callbacks: {
+        /**
+         * Accounts are given by an administrator (Acessos tab, access.grant), which always sets
+         * a role. A sign-up without one is only accepted while no administrator exists, so the
+         * first-run /setup wizard works and nobody else can mint an account through the API.
+         * Throwing here aborts the transaction, so the user is never stored.
+         */
+        async afterUserCreatedOrUpdated(ctx, { existingUserId, profile }) {
+            if (existingUserId !== null || typeof profile.role === "string") return;
+            // The library types ctx generically; this deployment's schema has the by_role index
+            const db = (ctx as unknown as MutationCtx).db;
+            const admin = await db.query("users").withIndex("by_role", (q) => q.eq("role", "admin")).first();
+            if (admin) {
+                throw new ConvexError("As contas são criadas pela direção. Peça acesso a um administrador do site.");
+            }
+        },
+    },
 });

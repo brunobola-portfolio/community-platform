@@ -118,8 +118,10 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
 - **O seed é a demonstração do produto**: `convex/mockData.ts` gera datas de eventos relativas
   ao dia em que corre (`inDays`), inclui formulários de inscrição e álbuns, e a identidade é a
   associação fictícia "ACR Vila Nova" — capturas, vídeo e README usam esta instância, nunca um
-  cliente. O nome opcional do registo passa pelo `profile` do provider Password em
-  `convex/auth.ts` e alimenta o cartão de sócio e a saudação do backoffice.
+  cliente. Não há registo livre: as contas nascem em Acessos (`access.grant`, sempre
+  com `role`) ou no `/setup` enquanto não houver admin; o callback `afterUserCreatedOrUpdated`
+  em `convex/auth.ts` recusa qualquer outro sign-up. O nome da conta alimenta o cartão de sócio
+  e a saudação do backoffice.
 - **Dados reais de uma instância nunca entram aqui**: as migrações com conteúdo real
   (`migrations.ts`) vivem no repositório privado da instância, não em `convex/`.
 - **Erros de mutation chegam ao utilizador**: os wrappers devolvem `ActionResult`; o

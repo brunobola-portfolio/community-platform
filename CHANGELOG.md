@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.19.1] - 2026-10-05
+
+### Changed
+
+- **No self sign-up.** Accounts are given by an administrator in Acessos (so each one has the
+  right role and can be tied to a member); the server refuses any other sign-up once an
+  administrator exists, while the first-run /setup still works. The sign-in dialog drops
+  "Não tem conta? Registar" and says how to ask the board for an account or a new password,
+  linking to the public guide "Pedir conta ou nova palavra-passe"
+
 ## [2.19.0] - 2026-10-04
 
 Each association looks like its own brand guide, and the help center reads like a friendly
