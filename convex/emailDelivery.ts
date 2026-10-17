@@ -27,7 +27,7 @@ const TIMEOUT_FAILURE: Outcome = { ok: false, retryable: true, message: "O prove
 async function post(request: HttpRequest): Promise<{ status: number; ok: boolean; raw: string; body: unknown }> {
     const response = await fetch(request.url, { method: "POST", headers: request.headers, body: request.body, signal: AbortSignal.timeout(TIMEOUT_MS) });
     const raw = await response.text();
-    let body: unknown = null;
+    let body: unknown;
     try { body = raw ? JSON.parse(raw) : null; } catch { body = null; }
     return { status: response.status, ok: response.ok, raw, body };
 }

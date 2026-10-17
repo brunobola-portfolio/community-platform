@@ -54,25 +54,34 @@ provider keys. When deploying an instance:
   probing whether an address is registered spends rate-limit tokens.
 - **Guest registration data is kept 90 days after the event** (30 days if cancelled), then
   deleted by a daily cron; the privacy notice at `/privacidade` says so.
+- **A guest registration can send one email to an address nobody verified.** With email on,
+  "registration received" goes to the address typed in the form. The message is a fixed
+  template (the name is escaped and stripped of line breaks, nothing else the visitor typed is
+  in it), each address is rate-limited, and all email a visitor can trigger shares a budget of
+  150 an hour, so the site cannot be used as a bulk mailer. The board's own sends are not
+  limited by it.
 
 Documented so deployers can decide whether they matter for their association:
 
-- **Sign-up is open and emails are not verified.** The Password provider has no email
-  verification step, so a member's quota record (`memberProfiles`, keyed by email) is
-  visible to whoever registers with that address first. Mitigation today: strong password
-  policy, no sign-up link on the admin dialog. Planned: an email-verification provider.
+- **There is no self sign-up; accounts are given in Acessos.** Since 2.19.1 the server refuses
+  any account it did not create itself (the first-run `/setup` aside), so nobody can register
+  someone else's address to read their dues record. Passwords are reset by an administrator,
+  never sent by email.
 - **No sign-in throttling at the auth HTTP routes.** Convex Auth does not expose a hook for
   it; the password policy (10+ chars, mixed case, digit) is the current control.
 - **Documents are visible to every signed-in account**, not only to dues-paying members;
   `documents.list` refuses anonymous callers but has no per-document visibility flag.
-- **Images uploaded through the Media Studio are referenced by URL**, so deleting the
-  entity leaves the blob in Convex storage. Remove orphans from the Convex dashboard.
+- **Email provider keys live in the database unless the deployment provides them.** They are
+  write-only (no query returns them; the backoffice shows "Guardada") and every admin mutation
+  checks the role, but anyone with access to the Convex dashboard or a database export can read
+  them. Deployers who prefer otherwise set `RESEND_API_KEY`, `BREVO_API_KEY`,
+  `POSTMARK_SERVER_TOKEN`, `MS_GRAPH_CLIENT_SECRET` or `SMTP_PASSWORD` on the deployment and
+  leave the field empty. The delivery log keeps each email's content for 90 days.
 - **A chat turn is refused when the guardrail classifier cannot run.** Since 2.8.0 the
   classifier fails closed: it retries, then falls back to Gemini when a key is configured,
   and if no verdict can be produced the assistant answers `ERR_UNAVAILABLE` rather than
   forwarding an unchecked message to the model. A deployment whose only provider is an
   unreachable custom endpoint therefore has no assistant until the endpoint recovers.
-- **The Facebook access token is collected but never used.** `settings.facebookAccessToken`
-  is stored write-only and validated, and the admin form asks for it, but no query reads it:
-  the footer link is built from `facebookPageId` alone. Leave it empty until a Graph feed
-  exists.
+- **Images replaced before 2.13.5 may still be in storage.** Uploads are reference-counted
+  since then and unused ones are swept after 48 h; files swapped earlier were never linked to a
+  record and can only be removed from the Convex dashboard.

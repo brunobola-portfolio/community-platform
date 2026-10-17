@@ -30,7 +30,7 @@ class Boundary extends Component<BoundaryProps, State> {
     console.error('PageErrorBoundary caught:', error, info);
     if (isChunkLoadError(error)) {
       // A page opened before a deploy asks for chunks that no longer exist
-      let storage: Storage | null = null;
+      let storage: Storage | null;
       try { storage = window.sessionStorage; } catch { storage = null; }
       if (claimChunkReload(storage)) {
         window.location.reload();

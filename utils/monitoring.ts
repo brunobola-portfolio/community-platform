@@ -38,7 +38,8 @@ function load(): Promise<SentryModule | null> {
         environment,
         release: `community-platform@${__PLATFORM_VERSION__}`,
         tracesSampleRate,
-        sendDefaultPii: false,
+        // Sentry 11 replaced sendDefaultPii with per-kind switches; none of it is collected
+        dataCollection: { userInfo: false, cookies: false, httpHeaders: false, httpBodies: [], urlQueryParams: false },
         beforeSend(event) {
           if (event.request) {
             event.request.url = stripQuery(event.request.url);

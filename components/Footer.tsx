@@ -8,7 +8,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Mail, Phone, Facebook, Instagram, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { MapPin, Mail, Phone, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Facebook, Instagram } from './ui/BrandIcons';
 import { PlatformCredit } from './PlatformCredit';
 import { useData } from '../context/DataContext';
 import { mapsSearchUrl, sanitizeExternalUrl, sanitizeUrl } from '../utils/security';

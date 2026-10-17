@@ -108,7 +108,7 @@ function htmlResponse(body: string, status = 200): Response {
 export const sharePage = httpAction(async (ctx, request) => {
     const url = new URL(request.url);
     const [, , kind, rawSlug] = url.pathname.split("/");
-    let slug = "";
+    let slug: string;
     try {
         slug = decodeURIComponent(rawSlug ?? "");
     } catch {

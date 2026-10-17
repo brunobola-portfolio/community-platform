@@ -153,7 +153,7 @@ export const enhanceText = action({
         error instanceof Error ? error.message : "Erro desconhecido";
       console.error("Text Enhancement error:", errorMsg);
       await logAiUsage(ctx, { userId: logUserId, action: "enhanceText", feature: AI_FEATURE.enhance, model: enhanceModel, startedAt: startTime, costUsd: meter.total, error: errorMsg });
-      throw new Error(`Erro na melhoria de texto: ${errorMsg}`);
+      throw new Error(`Erro na melhoria de texto: ${errorMsg}`, { cause: error });
     }
   },
 });

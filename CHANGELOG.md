@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.21.1] - 2026-10-17
+
+Everything brought up to date, with nothing visible changing on the sites.
+
+### Changed
+
+- Dependencies updated: React 19.3, Convex 1.47, Convex Auth 0.0.96, Vite 8.3, Vitest 5.0.5,
+  React Router 7.18.4, tailwind-merge 3.7, and three majors: `@google/genai` 2 (the breaking
+  changes are in the Interactions API, which the platform does not use; chat, voice and images
+  checked), `@sentry/react` 11 (`dataCollection` replaces `sendDefaultPii`, with every kind of
+  personal data off) and `lucide-react` 1 (the Facebook and Instagram marks it dropped are now
+  local SVGs drawn on the same grid and stroke)
+- Lint on ESLint 10 with a flat config (`eslint.config.mjs`), typescript-eslint 8 and
+  react-hooks 7, keeping the same rules; its new checks found six spots (useless assignments,
+  errors rethrown without `cause`), all fixed. This clears the advisories in the lint tooling
+- SECURITY.md and ROADMAP.md brought up to date: no more open sign-up, orphaned uploads or
+  Facebook token among the limitations; email delivery added to them; the roadmap drops what
+  shipped and lists password recovery and member notices by email
+
+### Known
+
+- `npm audit` still lists build-only advisories from Tailwind 3's file watcher (`braces`,
+  `micromatch`, `postcss-selector-parser`); `braces` has no fixed release. They run only on
+  the project's own files at build time and leave with the move to Tailwind 4
+
 ## [2.21.0] - 2026-10-17
 
 The site sends email: confirmations to whoever registers, alerts to the board, and replies to

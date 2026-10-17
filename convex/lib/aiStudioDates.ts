@@ -74,9 +74,9 @@ export function resolveRelativeDay(text: string, today: string): string | null {
   if (explicit) {
     const month = MONTHS.indexOf(explicit[2]);
     if (month >= 0) {
-      let year = explicit[3] ? Number(explicit[3]) : base.getUTCFullYear();
+      const year = explicit[3] ? Number(explicit[3]) : base.getUTCFullYear();
       let candidate = new Date(Date.UTC(year, month, Number(explicit[1])));
-      if (!explicit[3] && candidate < base) candidate = new Date(Date.UTC(++year, month, Number(explicit[1])));
+      if (!explicit[3] && candidate < base) candidate = new Date(Date.UTC(year + 1, month, Number(explicit[1])));
       if (candidate.getUTCDate() === Number(explicit[1])) return formatDay(candidate);
     }
   }

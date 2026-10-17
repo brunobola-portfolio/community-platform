@@ -61,7 +61,7 @@ export async function openRouterChat(
     if (!message) throw new Error("OpenRouter devolveu uma resposta vazia.");
     return { ...message, costUsd: openRouterCost(typeof body.model === "string" ? body.model : undefined, data.usage) };
   } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") throw new Error("OpenRouter timeout");
+    if (error instanceof Error && error.name === "AbortError") throw new Error("OpenRouter timeout", { cause: error });
     throw error;
   } finally {
     clearTimeout(timer);

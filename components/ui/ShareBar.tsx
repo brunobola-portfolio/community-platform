@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Check, Facebook, Link2, MessageCircle, Share2 } from 'lucide-react';
+import { Check, Link2, MessageCircle, Share2 } from 'lucide-react';
+import { Facebook } from './BrandIcons';
 import { cn } from '../../utils/cn';
 import { facebookShareUrl, whatsappShareUrl } from '../../utils/share';
 
@@ -69,7 +70,7 @@ export const ShareBar: React.FC<ShareBarProps> = ({ url, title, text = '', class
                 rel="noopener noreferrer"
                 className={cn(PILL, NEUTRAL)}
             >
-                <Facebook size={16} aria-hidden="true" /> Facebook
+                <Facebook size={16} /> Facebook
             </a>
             <button type="button" onClick={copyLink} className={cn(PILL, NEUTRAL)}>
                 {copied

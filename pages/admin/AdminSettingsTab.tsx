@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Globe, MapPin, Facebook, BookOpen, Plus, Trash2, CreditCard } from 'lucide-react';
+import { Globe, MapPin, BookOpen, Plus, Trash2, CreditCard } from 'lucide-react';
+import { Facebook } from '../../components/ui/BrandIcons';
 import { AdminSelect } from './components/AdminSelect';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import type { AdminSettingsTabProps } from './types';
