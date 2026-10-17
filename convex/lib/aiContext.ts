@@ -103,13 +103,19 @@ export const gatherContext = internalQuery({
         }
         lines.push(line);
       }
-      lines.push("Para se inscrever: abrir o evento na Agenda do site e carregar em Inscrever. A organizacao confirma depois; quem tem conta acompanha o estado na Area de Socio.");
       lines.push("");
     } else {
       lines.push("### Proximos Eventos");
       lines.push("- Nenhum evento agendado de momento.");
       lines.push("");
     }
+    // Asked even when nothing is open: the answer is how it works, not "contact us"
+    lines.push("### Como funcionam as inscricoes");
+    lines.push("- Abrir o evento na pagina Eventos do site e carregar em Inscrever-me (ou Inscrever equipa, nos torneios por equipas: uma pessoa inscreve a equipa e escreve o nome dos colegas).");
+    lines.push("- Nao e preciso ser socio nem ter conta, salvo eventos marcados so para socios. Basta nome e email.");
+    lines.push("- A organizacao confirma depois. Quem tem conta ve o estado em Area de Socio > Inscricoes e pode cancelar em Nao posso ir.");
+    lines.push("- Os eventos com inscricoes abertas aparecem na Agenda; se nenhum estiver aberto, as inscricoes ainda nao comecaram.");
+    lines.push("");
 
     // Latest Posts
     if (publishedPosts.length > 0) {

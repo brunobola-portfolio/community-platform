@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.20.1] - 2026-10-17
+
+### Fixed
+
+- The assistant only learned how registrations work when some event had them open; with none
+  open it told people to email the board. How to register (per person or team, no account
+  needed, where to follow the state) is now always in its context
+
 ## [2.20.0] - 2026-10-17
 
 Event registrations a club can actually run: teams, a deadline, the phone calls written down,
