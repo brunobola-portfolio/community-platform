@@ -115,11 +115,11 @@ real.
 | **História** | Timeline vertical editável (milestones geridos no admin), galeria de fotos históricas, sócios fundadores |
 | **Sobre** | Geo-assistente IA, mapa interativo, pilares de valores, formulário de contacto |
 | **Equipa** | Corpos sociais por tabs, fotos, hierarquia |
-| **Eventos** | Página própria por evento com o cartaz inteiro; inscrição **sem conta** (lugares, preço, perguntas do evento, esgotado); partilha no WhatsApp/Facebook com o cartaz na pré-visualização; export de calendário (Google + ICS) |
+| **Eventos** | Página própria por evento com o cartaz inteiro; inscrição **sem conta**, por pessoa ou **por equipa**, com lugares, preço, prazo e perguntas do evento; confirmação **por email**; partilha no WhatsApp/Facebook com o cartaz na pré-visualização; export de calendário (Google + ICS) |
 | **Blog** | Artigo destaque, filtros por categoria com contagem, pesquisa |
 | **Post** | Leitura imersiva, TTS "Ouvir Artigo", tags, bio do autor, recomendados |
 | **Galeria** | Álbuns com lightbox, navegação por setas/teclado |
-| **Área Sócio** | Cartão digital 3D com QR, estado da quota, instruções de pagamento (MB WAY/IBAN/Multibanco), documentos privados, notificações |
+| **Área Sócio** | Cartão digital 3D, estado da quota, instruções de pagamento (MB WAY/IBAN/Multibanco), **as minhas inscrições** (estado, «Não posso ir»), documentos privados, notificações |
 | **404** | Página estilizada com navegação de retorno |
 
 ### Assistente IA
@@ -130,22 +130,48 @@ real.
 - TTS em português (Gemini TTS); guardrails, persona e modelos configuráveis pelo admin
 - **Identidade dinâmica**: o assistente apresenta-se com o nome do site vindo das settings
 
-### Painel de administração — 17 separadores, com os nomes que uma direção usa
+### Painel de administração — 19 separadores, com os nomes que uma direção usa
 
 Todas as listas têm pesquisa (`/`), filtros com contagens ao vivo, ordenação e contador de resultados.
 
 Início (o que está por tratar) · Página inicial · Eventos (editor visual, cartaz otimizado no
-browser, inscrições, torneios) · **Inscrições** (confirmar todas as pendentes de uma vez, lista
-para a porta pronta a imprimir, Excel com as perguntas do evento, copiar emails) · Notícias ·
+browser, inscrições por pessoa ou por equipa, prazo, torneios) · **Inscrições** (confirmar todas
+as pendentes de uma vez, acrescentar quem ligou, abrir ou fechar inscrições, lista para a porta
+pronta a imprimir, Excel com as equipas e as perguntas do evento, copiar emails) · Notícias ·
 Membros · Parceiros · Galeria (upload múltiplo por arrastar, legendas, ordenação, capa, apagar
-em lote) · História · Mensagens recebidas · Sócios & Quotas · Documentos · Avisos aos sócios ·
-Categorias · Níveis de Parceria · Assistente virtual (fornecedor, modelos, guardrails,
-analytics) · Definições (identidade, fotografia da página inicial, contactos, quotas, Sobre,
-redes sociais)
+em lote) · História · Mensagens recebidas (responder por email) · Sócios & Quotas · Documentos ·
+Avisos aos sócios · Categorias · Níveis de Parceria · Acessos (contas e tipos, palavras-passe
+temporárias) · **Email** (serviço, remetente, o que se envia, teste ao vivo, histórico de envios)
+· Assistente virtual (fornecedor, modelos, guardrails, custos, chat de teste) · Definições
+(identidade, marca, fotografia da página inicial, contactos, quotas, Sobre, redes sociais)
 
 Feito para voluntários: aviso de privacidade em `/privacidade` escrito a partir das
 definições, dados de convidados apagados 90 dias depois do evento, e contraste WCAG AA nos dois
 temas, verificado com axe.
+
+### Email — confirmações e avisos, configurados no backoffice
+
+A direção escolhe o serviço em **Email** e cola uma chave; não há nada a instalar. **Brevo**,
+**Resend** e **Postmark** usam as APIs HTTP, **Microsoft 365** usa o Microsoft Graph (uma
+aplicação do Entra com `Mail.Send`, a enviar da caixa Exchange da própria associação, sem encher
+os Itens Enviados) e **SMTP** (Gmail, Outlook.com, a caixa do alojamento) usa o Nodemailer numa
+action Node. O que se envia: *inscrição recebida*, *confirmada* e
+*cancelada* a quem se inscreve (com link para o calendário), avisos à direção de nova inscrição,
+desistência de um sócio, mensagem de contacto ou pedido de patrocínio, e respostas a mensagens
+escritas no backoffice.
+
+- HTML com a marca (cor e logótipo do site) e parte em texto simples; tudo o que um visitante
+  escreveu é escapado e só links http(s) chegam a uma mensagem
+- Posto na fila pela mutation que o origina e entregue em segundo plano: uma falha do serviço
+  nunca impede uma inscrição. Falhas passageiras repetem-se duas vezes (1 min, 10 min); as
+  outras são explicadas em português («a chave foi recusada», «verifique o domínio do remetente»)
+- Cada modelo pode ser pré-visualizado com a identidade do site antes de ser ligado, em largura
+  de computador e de telemóvel; o email de teste responde «Enviado» ou o motivo do provedor
+- Histórico de envios com estado, motivo, pré-visualização do email exato e «Reenviar»; guardado
+  90 dias. Os visitantes provocam no máximo 150 emails por hora; os envios da própria direção
+  nunca ficam retidos. Um envio que morra a meio é retomado em 15 minutos
+- Chaves só de escrita (o backoffice mostra «Guardada», nunca o valor) e podem ficar no
+  deployment (`RESEND_API_KEY`, `BREVO_API_KEY`, `POSTMARK_SERVER_TOKEN`, `MS_GRAPH_*`, `SMTP_*`)
 
 ### Centro de ajuda — ninguém precisa de ligar ao programador
 

@@ -114,11 +114,11 @@ in production for a real community first.
 | **History** | Editable vertical timeline (admin-managed milestones), historical photo gallery, founding members |
 | **About** | AI geo-assistant, interactive map, values pillars, contact form |
 | **Team** | Governing bodies by tabs, photos, hierarchy |
-| **Events** | A page per event with its full poster; registration **without an account** (capacity, price, the event's own questions, sold-out state); WhatsApp/Facebook sharing with the poster in the preview; calendar export (Google + ICS) |
+| **Events** | A page per event with its full poster; registration **without an account**, per person or **per team**, with places, price, deadline and the event's own questions; confirmation **by email**; WhatsApp/Facebook sharing with the poster in the preview; calendar export (Google + ICS) |
 | **Blog** | Featured article, category filters with counts, search |
 | **Post** | Immersive reading, "Listen to article" TTS, tags, author bio, recommendations |
 | **Gallery** | Albums with lightbox, arrow/keyboard navigation |
-| **Member area** | 3D digital membership card with QR, dues status, payment instructions (MB WAY/IBAN/Multibanco), private documents, notifications |
+| **Member area** | 3D digital membership card, dues status, payment instructions (MB WAY/IBAN/Multibanco), **my registrations** (state, "I can't go"), private documents, notifications |
 | **404** | Styled page with return navigation |
 
 ### AI assistant
@@ -129,20 +129,47 @@ in production for a real community first.
 - Portuguese TTS (Gemini TTS); guardrails, persona and models configurable by the admin
 - **Identity is dynamic**: the assistant introduces itself with the site name from settings
 
-### Admin panel — 17 management tabs, named the way a board speaks
+### Admin panel — 19 management tabs, named the way a board speaks
 
 Every list has search (`/`), filter chips with live counts, sort and a result counter.
 
 Início (what needs attention) · Página inicial · Eventos (visual editor, poster optimised in the
-browser, registrations, tournaments) · **Inscrições** (confirm all pending at once, a list for
-the door to print, Excel export with the event's own questions, copy every email) · Notícias ·
-Membros · Parceiros · Galeria (drag-and-drop multi-upload, captions, ordering, cover pick, bulk
-delete) · História · Mensagens recebidas · Sócios & Quotas · Documentos · Avisos aos sócios ·
-Categorias · Níveis de Parceria · Assistente virtual (provider, models, guardrails, analytics) ·
-Definições (identity, home photo, contacts, dues, About page, social links)
+browser, registrations per person or team, deadline, tournaments) · **Inscrições** (confirm all
+pending at once, add phone-ins, open or close registrations, a list for the door to print, Excel
+export with the teams and the event's own questions, copy every email) · Notícias · Membros ·
+Parceiros · Galeria (drag-and-drop multi-upload, captions, ordering, cover pick, bulk delete) ·
+História · Mensagens recebidas (reply by email) · Sócios & Quotas · Documentos · Avisos aos
+sócios · Categorias · Níveis de Parceria · Acessos (accounts and roles, temporary passwords) ·
+**Email** (service, sender, what is sent, live test, delivery log) · Assistente virtual
+(provider, models, guardrails, costs, a live test chat) · Definições (identity, brand, home
+photo, contacts, dues, About page, social links)
 
 Built for volunteers: a privacy notice at `/privacidade` written from the settings, guest data
 deleted 90 days after the event, and WCAG AA contrast in both themes, checked with axe.
+
+### Email — confirmations and alerts, from the backoffice
+
+The board picks the service in **Email** and pastes a key; nothing to deploy. **Brevo**, **Resend**
+and **Postmark** go through their HTTP APIs, **Microsoft 365** through Microsoft Graph (an Entra
+app with `Mail.Send`, sending from the association's own Exchange mailbox, nothing kept in Sent
+Items), and **SMTP** (Gmail, Outlook.com, the hosting provider's mailbox) through Nodemailer in a
+Node action. What gets sent: *registration received*,
+*confirmed* and *cancelled* to the participant (with a calendar link), alerts to the board for a
+new registration, a member dropping out, a contact message or a sponsorship request, and replies
+to contact messages written in the backoffice.
+
+- Branded HTML (the site's colour and logo) with a plain-text part; everything a visitor typed
+  is escaped, and only http(s) links reach a message
+- Queued from the mutation that causes it, delivered in the background: a provider outage never
+  fails a registration. Passing failures are retried twice (1 min, 10 min); the rest are named
+  in Portuguese ("the key was refused", "verify the sender's domain")
+- Every template can be previewed with the site's identity before it is switched on, at desktop
+  and phone width; a live test email reports "sent" or the provider's reason
+- Delivery log with status, reason, preview of the exact email and "resend"; kept 90 days.
+  Visitors can trigger at most 150 emails an hour; the board's own sends are never held back.
+  A send that dies mid-way is picked up again within 15 minutes
+- Keys are write-only (the backoffice shows "Guardada", never the value) and can live on the
+  deployment instead (`RESEND_API_KEY`, `BREVO_API_KEY`, `POSTMARK_SERVER_TOKEN`, `MS_GRAPH_*`, `SMTP_*`)
 
 ### Help center — nobody has to call the developer
 

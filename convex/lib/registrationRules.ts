@@ -143,6 +143,18 @@ export function cleanTeam(
     return { teamName: name, teamMembers: others.length ? others : undefined };
 }
 
+const BASE_FIELD_WORDS = new Set(["nome", "nome completo", "name", "email", "e-mail", "telemovel", "telefone", "phone", "contacto telefonico"]);
+
+/**
+ * Events made before name and email were always asked carry their own copies
+ * of them. The form hides those and the server does not require them: asking
+ * twice is how people give up halfway.
+ */
+export function duplicatesBaseField(field: { id: string; label: string }): boolean {
+    const plain = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+    return BASE_FIELD_WORDS.has(plain(field.id)) || BASE_FIELD_WORDS.has(plain(field.label));
+}
+
 /**
  * Keeps only answers to questions the event actually asks, and checks the
  * required ones here too: the browser's checks are a convenience, not a gate.
@@ -150,6 +162,7 @@ export function cleanTeam(
 export function cleanAnswers(event: Pick<Doc<"events">, "registrationFields">, answers: CustomData | undefined, lenient = false): CustomData | undefined {
     const kept: CustomData = {};
     for (const field of event.registrationFields ?? []) {
+        if (duplicatesBaseField(field)) continue;
         const raw = answers?.[field.id];
         const value = typeof raw === "string" ? raw.trim() : raw;
         if (value === undefined || value === "") {

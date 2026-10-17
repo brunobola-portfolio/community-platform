@@ -1,7 +1,7 @@
 /**
  * Backoffice access management: who can sign in, and who runs the site.
  *
- * There is no email service, so an admin creates the account with a
+ * Passwords never travel by email, so an admin creates the account with a
  * temporary password shown once, and passes it on; the person changes it
  * after the first sign-in (changeOwnPassword). Resetting a forgotten password
  * works the same way and signs the person out everywhere.

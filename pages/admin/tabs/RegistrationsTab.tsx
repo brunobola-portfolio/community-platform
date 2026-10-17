@@ -1,4 +1,6 @@
 import React, { useMemo, useState } from 'react';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import { Check, ClipboardCheck, UserX, X } from 'lucide-react';
 import { Badge, Button } from '../../../components/ui/UIComponents';
 import { EntityList } from '../components/EntityList';
@@ -74,6 +76,9 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
     const [busy, setBusy] = useState(false);
     const [toRemove, setToRemove] = useState<Row | null>(null);
     const [adding, setAdding] = useState(false);
+    const emailStatus = useQuery(api.email.publicStatus);
+    // Said in the toast, so the board knows whether it still has to phone anyone
+    const mailed = emailStatus?.participantsNotified ? ' Foi enviado um email.' : '';
 
     const titles = useMemo(() => new Map(events.map(e => [e.id, e.title])), [events]);
     const event = events.find(e => e.id === eventId);
@@ -105,7 +110,7 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
 
     const confirmPending = () => {
         const ids = rows.filter(r => r.status === 'pending').map(r => r.id);
-        if (ids.length) void run(() => onBulkStatus(ids, 'confirmed'), `${ids.length} ${ids.length === 1 ? 'inscrição confirmada' : 'inscrições confirmadas'}.`);
+        if (ids.length) void run(() => onBulkStatus(ids, 'confirmed'), `${ids.length} ${ids.length === 1 ? 'inscrição confirmada' : 'inscrições confirmadas'}.${emailStatus?.participantsNotified ? ' Quem deixou email recebe a confirmação.' : ''}`);
     };
 
     // Who is actually coming: cancellations stay in the tab, not on the list for the door
@@ -171,12 +176,12 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
                     <>
                         {/* Words, not icons: cancel sat next to delete and the two were easy to confuse */}
                         {r.status !== 'confirmed' && (
-                            <Button size="sm" variant="ghost" aria-label={`Confirmar a inscrição de ${r.name}`} disabled={busy} className="text-emerald-400 hover:text-emerald-300" onClick={() => void run(() => onSetStatus(r.id, 'confirmed'), 'Inscrição confirmada.')}>
+                            <Button size="sm" variant="ghost" aria-label={`Confirmar a inscrição de ${r.name}`} disabled={busy} className="text-emerald-400 hover:text-emerald-300" onClick={() => void run(() => onSetStatus(r.id, 'confirmed'), `Inscrição confirmada.${r.email ? mailed : ''}`)}>
                                 <Check size={16} /> {r.status === 'cancelled' ? 'Reativar' : 'Confirmar'}
                             </Button>
                         )}
                         {r.status !== 'cancelled' && (
-                            <Button size="sm" variant="ghost" aria-label={`Cancelar a inscrição de ${r.name}`} disabled={busy} className="text-amber-300 hover:text-amber-200" onClick={() => void run(() => onSetStatus(r.id, 'cancelled'), 'Inscrição cancelada; o lugar ficou livre.')}>
+                            <Button size="sm" variant="ghost" aria-label={`Cancelar a inscrição de ${r.name}`} disabled={busy} className="text-amber-300 hover:text-amber-200" onClick={() => void run(() => onSetStatus(r.id, 'cancelled'), `Inscrição cancelada; o lugar ficou livre.${r.email ? mailed : ''}`)}>
                                 <X size={16} /> Cancelar
                             </Button>
                         )}

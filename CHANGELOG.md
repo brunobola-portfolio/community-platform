@@ -6,6 +6,56 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.21.0] - 2026-10-17
+
+The site sends email: confirmations to whoever registers, alerts to the board, and replies to
+contact messages, through a service the board picks and sets up in the backoffice.
+
+### Added
+
+- **Admin › Email**, a new tab. Six choices: off, **Brevo**, **Resend**, **Postmark**
+  (HTTP APIs), **Microsoft 365** (Microsoft Graph, an Entra app with `Mail.Send`, sending from the
+  association's own mailbox) and **SMTP** (Gmail, Outlook.com, hosting mailboxes, with presets).
+  Each card shows its free plan; keys are write-only ("Guardada", Substituir, Remover) and can
+  come from the deployment env instead (`EMAIL_PROVIDER`, `RESEND_API_KEY`, `BREVO_API_KEY`,
+  `POSTMARK_SERVER_TOKEN`, `MS_GRAPH_*`, `SMTP_*`). Sender name and address, where replies and
+  board alerts go, and two switches: emails to participants, alerts to the board
+- A status card (on / what is missing / sent and problems in the last 24 h), a **live test
+  email** that reports "sent" or the provider's reason in Portuguese, an example of every
+  template with the site's identity at desktop and phone width, and a **delivery log** (status,
+  reason, the exact email, attempts, resend, delete), kept 90 days
+- Emails: *registration received*, *confirmed* (with a Google Calendar link) and *cancelled*;
+  board alerts for a new registration, a member dropping out, a contact message and a
+  sponsorship request. Branded HTML (site colour, app icon, address) with a plain-text part
+- **Reply to contact messages** from Mensagens recebidas: the person gets the answer by email
+  with their message quoted, and the message is marked as replied. Without email set up, the
+  dialog offers the person's own mail program
+- The registration confirmation screen says an email was sent; the backoffice says the person
+  gets an email when a registration is confirmed or cancelled
+- Help: a new Email category with three guides (turning it on, choosing a service and verifying
+  the domain, an email that did not arrive); registration and messages guides updated
+
+### Changed
+
+- Event questions that repeat the base fields (an old "Nome completo" or "Email" question) are
+  no longer asked twice; the server stops requiring them
+- `nodemailer` 10 (the version without the 2025–26 advisories), pinned for `@auth/core` too
+
+### Fixed
+
+- Coloured badges (emerald, red, sky…) showed in the brand colour in dark mode: the badge only
+  recognised a few colour names as the caller's own
+
+### Delivery guarantees
+
+- Queued inside the mutation that causes it and delivered in the background; an email problem
+  never fails a registration or a message
+- Passing failures retried twice (1 min, 10 min); each delivery carries a token so a stale
+  retry cannot send twice; a send that dies mid-way is picked up within 15 minutes
+- Visitors can trigger at most 150 emails an hour; the board's own sends are never held back
+- Everything a visitor typed is escaped in the HTML and stripped of line breaks in headers; only
+  http(s) links reach a message
+
 ## [2.20.1] - 2026-10-17
 
 ### Fixed

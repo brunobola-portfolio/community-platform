@@ -24,6 +24,7 @@ export type Tab =
     | 'member-quotas'
     | 'access'
     | 'ai'
+    | 'email'
     | 'help';
 
 export type AdminFormData = Record<string, unknown>;

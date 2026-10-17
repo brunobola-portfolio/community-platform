@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { isDeadlinePassed, isRegistrationOpen, placesLeftText, teamSummary } from '../utils/registrationState';
-import { cleanTeam, normalizeRegistrationSettings } from '../convex/lib/registrationRules';
+import { cleanAnswers, cleanTeam, duplicatesBaseField, normalizeRegistrationSettings } from '../convex/lib/registrationRules';
 
 const now = new Date('2026-10-10T12:00:00');
 const open = { date: '2026-10-20T15:00', registrationOpen: true };
@@ -58,5 +58,18 @@ describe('team rules on the server', () => {
         expect(normalizeRegistrationSettings({ teamSize: 2 })).toEqual({ teamSize: 2 });
         expect(() => normalizeRegistrationSettings({ registrationDeadline: 'ontem' })).toThrow(/não é válida/);
         expect(() => normalizeRegistrationSettings({ teamSize: 50 })).toThrow(/20/);
+    });
+});
+
+describe('legacy copies of the base fields', () => {
+    it('recognises an event question that repeats name, email or phone', () => {
+        expect(duplicatesBaseField({ id: 'f-nome', label: 'Nome completo' })).toBe(true);
+        expect(duplicatesBaseField({ id: 'email', label: 'O seu email' })).toBe(true);
+        expect(duplicatesBaseField({ id: 'x', label: 'Telemóvel' })).toBe(true);
+        expect(duplicatesBaseField({ id: 'team', label: 'Nome da equipa' })).toBe(false);
+    });
+
+    it('does not require them on the server', () => {
+        expect(cleanAnswers({ registrationFields: [{ id: 'email', label: 'Email', type: 'email', required: true }] }, undefined)).toBeUndefined();
     });
 });

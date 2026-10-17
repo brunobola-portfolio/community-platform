@@ -21,7 +21,7 @@ export const PUBLIC_TUTORIALS: HelpTutorial[] = [
             { text: 'Escreva o nome e o email. O telemóvel é opcional.', tip: 'Alguns eventos pedem mais respostas.' },
             { text: 'Torneio por equipas? Escreva o nome dos colegas em **Jogador 2**, **Jogador 3**…', why: 'Basta uma inscrição por equipa; você fica como contacto.' },
             { text: 'Carregue em **Enviar inscrição**. Aparece **Inscrição recebida**.', tip: '**Guardar no calendário** lembra-o do dia; **Convide alguém** partilha o evento.' },
-            { text: 'Aguarde a confirmação da organização.', tip: 'Se entrou com a sua conta, vê o estado em **Área de Sócio › Inscrições**.' },
+            { text: 'Aguarde a confirmação da organização.', tip: 'Se a associação enviar emails, recebe um quando a inscrição chega e outro quando é confirmada. Com conta, vê também o estado em **Área de Sócio › Inscrições**.' },
         ],
     },
     {

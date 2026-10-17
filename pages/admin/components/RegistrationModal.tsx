@@ -1,6 +1,8 @@
 import React from 'react';
 import { CheckCircle2, ClipboardList, Mail, MessageCircle, Users, XCircle } from 'lucide-react';
 import { Badge, Button, Modal } from '../../../components/ui/UIComponents';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import type { Registration } from '../../../types';
 
 interface RegistrationModalProps {
@@ -35,6 +37,11 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ registrati
     // Portuguese numbers without the country code are the usual case
     const digits = (registration.phone ?? '').replace(/\D/g, '');
     const whatsappNumber = digits.length === 9 ? `351${digits}` : digits.length > 9 ? digits : '';
+    const emailStatus = useQuery(api.email.publicStatus);
+    // With email on, the person hears about it; without, the board has to tell them
+    const notice = emailStatus?.participantsNotified && registration.email
+        ? 'Ao confirmar ou cancelar, a pessoa recebe um email automático.'
+        : 'Confirmar ou cancelar só muda o estado aqui: a pessoa não recebe aviso automático — use os contactos abaixo se for preciso.';
 
     return (
         <Modal
@@ -42,7 +49,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ registrati
             onClose={onClose}
             title={registration.name ?? 'Inscrição'}
             eyebrow={eventTitle ?? 'Inscrição em evento'}
-            description={`${decided ? `Esta inscrição está ${STATUS_LABELS[registration.status]?.toLowerCase() ?? registration.status}.` : 'Confirme depois de validar os dados ou o pagamento.'} Confirmar ou cancelar só muda o estado aqui: a pessoa não recebe aviso automático — use os contactos abaixo se for preciso.`}
+            description={`${decided ? `Esta inscrição está ${STATUS_LABELS[registration.status]?.toLowerCase() ?? registration.status}.` : 'Confirme depois de validar os dados ou o pagamento.'} ${notice}`}
             icon={<ClipboardList size={20} />}
             size="md"
             footer={

@@ -9,6 +9,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
     { id: 'equipa', title: 'Equipa e parceiros', description: 'Corpos sociais, parceiros, níveis de parceria e mensagens recebidas.', icon: 'users', audience: 'direcao' },
     { id: 'galeria', title: 'Galeria', description: 'Álbuns, várias fotos de uma vez, legendas, ordem e capa.', icon: 'image', audience: 'direcao' },
     { id: 'socios', title: 'Sócios e quotas', description: 'Registo de sócios, quotas, documentos e avisos.', icon: 'wallet', audience: 'direcao' },
+    { id: 'email', title: 'Email', description: 'Confirmações de inscrição, avisos à Direção e respostas a mensagens por email.', icon: 'mail', audience: 'direcao' },
     { id: 'acessos', title: 'Acessos', description: 'Quem entra no site, quem o gere e como repor uma palavra-passe.', icon: 'key', audience: 'direcao' },
     { id: 'marca', title: 'Marca e definições', description: 'Nome, textos, cor, letra, contactos e pagamentos.', icon: 'palette', audience: 'direcao' },
     { id: 'assistente', title: 'Assistente virtual', description: 'O chat do site, o motor de imagem, os custos e os limites.', icon: 'bot', audience: 'direcao' },

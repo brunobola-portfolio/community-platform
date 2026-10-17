@@ -28,6 +28,7 @@ import { RegistrationsTab } from './admin/tabs/RegistrationsTab';
 import { AdminDashboard } from './admin/AdminDashboard';
 import { AdminSettingsTab } from './admin/AdminSettingsTab';
 import { AdminAITab } from './admin/AdminAITab';
+import { AdminEmailTab } from './admin/email/AdminEmailTab';
 import { AdminLeadsTab } from './admin/AdminLeadsTab';
 import { AdminMemberQuotasTab } from './admin/AdminMemberQuotasTab';
 import { AdminAccessTab } from './admin/AdminAccessTab';
@@ -452,8 +453,9 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     {activeTab === 'dashboard' && <AdminDashboard membersCount={members.length} dashboardStats={dashboardStats} activityLogs={activityLogs} aiStats={aiStats} onViewRegistration={setViewRegistration} onNewPost={() => openModalFor('post')} onNewEvent={() => openModalFor('event')} eventTitles={new Map(events.map(e => [e.id, e.title]))} />}
                     {activeTab === 'settings' && <AdminSettingsTab settingsForm={settingsForm} onSettingsChange={setSettingsForm} onSave={() => void handleSaveSettings('Definições')} isSaving={isSavingSettings} />}
                     {activeTab === 'ai' && <AdminAITab aiStats={aiStats} settingsForm={settingsForm} onSettingsChange={setSettingsForm} onSave={() => void handleSaveSettings('Definições de IA')} isSaving={isSavingSettings} />}
-                    {activeTab === 'leads' && <AdminLeadsTab />}
+                    {activeTab === 'leads' && <AdminLeadsTab onOpenEmailSettings={() => setActiveTab('email')} />}
                     {activeTab === 'member-quotas' && <AdminMemberQuotasTab />}
+                    {activeTab === 'email' && <AdminEmailTab adminEmail={me?.email ?? undefined} notify={notify} />}
                     {activeTab === 'access' && <AdminAccessTab siteName={settings.siteName} notify={notify} />}
                     {activeTab === 'homepage' && <HomepageTab actionAreas={actionAreas} stats={stats} {...handlers} onNewStat={() => openModalFor('stat')} />}
                     {activeTab === 'events' && <EventsTab events={events} registrations={registrations} onOpenRegistrations={id => { setRegistrationsEventId(id); setActiveTab('registrations'); }} {...handlers} />}

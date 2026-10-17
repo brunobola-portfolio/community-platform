@@ -4,6 +4,7 @@ import { ConvexError } from 'convex/values';
 import { api } from '../convex/_generated/api';
 import type { Id } from '../convex/_generated/dataModel';
 import { getSessionId } from '../utils/session';
+import { duplicatesBaseField } from '../convex/lib/registrationRules';
 import type { Event } from '../types';
 
 /** Base fields every registration asks for, before the event's own. */
@@ -53,6 +54,7 @@ export function validateRegistration(values: RegistrationValues, event: Pick<Eve
         if (!(values.teamMembers[i] ?? '').trim()) errors[`member-${i}`] = 'Escreva o nome deste jogador.';
     }
     for (const field of event.registrationFields ?? []) {
+        if (duplicatesBaseField(field)) continue;
         if (field.required && !(values.extra[field.id] ?? '').trim()) errors[field.id] = `Preencha “${field.label}”.`;
     }
     return errors;

@@ -3,6 +3,7 @@ import { ConvexError, v } from "convex/values";
 import { requireAdmin, isAdmin } from "./lib/auth";
 import { internal } from "./_generated/api";
 import { validateEmail, validateMaxLength, validateRequired } from "./lib/validation";
+import { notifyBoardOfSponsorship } from "./lib/email/notify";
 
 export const list = query({
     args: {},
@@ -43,11 +44,13 @@ export const create = mutation({
         validateMaxLength(args.name, "nome", 200);
         validateMaxLength(args.tier, "nível", 100);
 
-        return await ctx.db.insert("sponsorshipRequests", {
+        const id = await ctx.db.insert("sponsorshipRequests", {
             ...args,
             timestamp: Date.now(),
             status: "pending",
         });
+        await notifyBoardOfSponsorship(ctx, id, { name: args.name.trim(), email: args.email.trim(), phone: args.phone.trim(), tier: args.tier.trim() });
+        return id;
     },
 });
 

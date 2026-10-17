@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Users } from 'lucide-react';
 import { Input } from '../ui/UIComponents';
 import type { RegistrationErrors, RegistrationValues } from '../../hooks/useEventRegistration';
+import { duplicatesBaseField } from '../../convex/lib/registrationRules';
 import type { Event } from '../../types';
 
 interface RegistrationFormProps {
@@ -108,7 +109,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
 
             {teamSize >= 2 && <TeamFields formId={formId} teamSize={teamSize} values={values} errors={errors} onChange={onChange} onMemberChange={onMemberChange} />}
 
-            {(event.registrationFields ?? []).map((field) => (
+            {(event.registrationFields ?? []).filter((field) => !duplicatesBaseField(field)).map((field) => (
                 <div key={field.id}>
                     <label htmlFor={`${formId}-f-${field.id}`} className={LABEL}>{field.label}{field.required && <Required />}</label>
                     {field.type === 'textarea' ? (

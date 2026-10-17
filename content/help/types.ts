@@ -17,6 +17,7 @@ export type HelpCategoryId =
     | 'galeria'
     | 'socios'
     | 'acessos'
+    | 'email'
     | 'marca'
     | 'assistente'
     | 'boas-praticas'
@@ -28,7 +29,7 @@ export type HelpCategoryId =
 /** Icon keys resolved to lucide icons by the UI, so the content stays free of React. */
 export type HelpIconKey =
     | 'rocket' | 'calendar' | 'newspaper' | 'sparkles' | 'users' | 'image' | 'wallet'
-    | 'key' | 'palette' | 'bot' | 'shield' | 'ticket' | 'id-card' | 'user' | 'life-buoy';
+    | 'key' | 'palette' | 'bot' | 'shield' | 'ticket' | 'id-card' | 'user' | 'life-buoy' | 'mail';
 
 export interface HelpCategory {
     id: HelpCategoryId;

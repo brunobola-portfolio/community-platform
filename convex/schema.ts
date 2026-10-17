@@ -223,6 +223,57 @@ export default defineSchema({
     .index("by_action", ["action"]),
 
   // Settings (Singleton-ish)
+  // Outgoing email: one row, edited in Admin > Email. Secrets are write-only
+  // (getAdmin returns has* flags); the deployment's env fills what is left empty
+  emailSettings: defineTable({
+    provider: v.union(v.literal("none"), v.literal("resend"), v.literal("brevo"), v.literal("postmark"), v.literal("graph"), v.literal("smtp")),
+    fromName: v.optional(v.string()),
+    fromAddress: v.optional(v.string()),
+    replyTo: v.optional(v.string()),
+    boardAddress: v.optional(v.string()),
+    notifyParticipants: v.optional(v.boolean()),
+    notifyBoard: v.optional(v.boolean()),
+    resendApiKey: v.optional(v.string()),
+    brevoApiKey: v.optional(v.string()),
+    postmarkToken: v.optional(v.string()),
+    // Microsoft 365: an Entra app with Mail.Send (application); sends as the sender's mailbox
+    graphTenantId: v.optional(v.string()),
+    graphClientId: v.optional(v.string()),
+    graphClientSecret: v.optional(v.string()),
+    smtpHost: v.optional(v.string()),
+    smtpPort: v.optional(v.number()),
+    smtpSecurity: v.optional(v.union(v.literal("ssl"), v.literal("starttls"))),
+    smtpUser: v.optional(v.string()),
+    smtpPassword: v.optional(v.string()),
+    updatedAt: v.number(),
+  }),
+
+  // Every email queued, with what was sent and what happened. Purged after 90 days
+  emailLogs: defineTable({
+    kind: v.string(),
+    to: v.string(),
+    toName: v.optional(v.string()),
+    subject: v.string(),
+    html: v.string(),
+    text: v.string(),
+    replyTo: v.optional(v.string()),
+    status: v.union(v.literal("queued"), v.literal("sending"), v.literal("sent"), v.literal("failed"), v.literal("skipped")),
+    provider: v.optional(v.string()),
+    attempts: v.number(),
+    error: v.optional(v.string()),
+    messageId: v.optional(v.string()),
+    // The registration, message or request it is about, for the backoffice to link back
+    relatedId: v.optional(v.string()),
+    // The delivery run allowed to send; a stale scheduled retry carries an older one
+    deliveryToken: v.optional(v.string()),
+    // When the current attempt started, to take over a run that died mid-send
+    sendingAt: v.optional(v.number()),
+    createdAt: v.number(),
+    sentAt: v.optional(v.number()),
+  })
+    .index("by_createdAt", ["createdAt"])
+    .index("by_related", ["relatedId"]),
+
   settings: defineTable({
     siteName: v.string(),
     maintenanceMode: v.boolean(),

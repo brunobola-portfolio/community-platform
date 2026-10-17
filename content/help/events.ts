@@ -69,7 +69,7 @@ export const EVENT_TUTORIALS: HelpTutorial[] = [
         steps: [
             { text: 'Abra **Inscrições** e escolha o evento em **Evento**.', tip: 'Por omissão aparece o próximo evento com inscrições abertas.' },
             { text: 'Veja os números: por confirmar, confirmadas, canceladas e a lotação.' },
-            { text: 'Carregue em **Confirmar pendentes** para confirmar todas de uma vez.', tip: 'Também pode usar **Confirmar** ou **Cancelar** em cada linha.' },
+            { text: 'Carregue em **Confirmar pendentes** para confirmar todas de uma vez.', tip: 'Também pode usar **Confirmar** ou **Cancelar** em cada linha. Com o **Email** ligado, cada pessoa recebe a confirmação ou o cancelamento por email.' },
             { text: 'Alguém desistiu? Carregue em **Cancelar** nessa linha.', why: 'Cancelar liberta o lugar. Se for engano, **Reativar** volta a pôr a inscrição.' },
             { text: 'Alguém se inscreveu por telefone ou no bar? Carregue em **Adicionar** e escreva o nome.', why: 'Fica logo confirmada e conta para os lugares: o site, a lista e o Excel são uma só lista. O email é opcional.' },
             { text: 'Para parar de receber inscrições, carregue em **Fechar inscrições**.', tip: 'Em **Eventos**, a coluna **Inscrições** mostra quantas há e leva diretamente a este separador.' },

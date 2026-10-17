@@ -48,6 +48,7 @@ export const PrivacyPage: React.FC = () => {
                         <li>Inscrições feitas sem conta: apagadas automaticamente <b>90 dias depois do evento</b>; as canceladas, ao fim de 30 dias.</li>
                         <li>Inscrições de sócios com conta: enquanto a conta existir.</li>
                         <li>Contas de sócio: até pedir que sejam apagadas.</li>
+                        <li>Registo dos emails enviados pelo site (destinatário, assunto e conteúdo): <b>90 dias</b>.</li>
                     </ul>
                 </section>
 
@@ -57,6 +58,7 @@ export const PrivacyPage: React.FC = () => {
                     <ul className="list-disc space-y-2 pl-5">
                         <li><b>Convex</b> — base de dados e alojamento do site (Estados Unidos, com cláusulas contratuais-tipo aprovadas pela Comissão Europeia).</li>
                         <li><b>Fornecedor de inteligência artificial</b> — as perguntas ao assistente virtual, a leitura de textos em voz alta e a procura de direções são processadas pelo serviço que a associação configurou, por omissão a Google (Gemini), ou por outro fornecedor compatível.</li>
+                        <li><b>Serviço de envio de email</b> — se a associação ativou o envio de emails, as confirmações de inscrição e as respostas a mensagens são entregues pelo serviço que configurou (por exemplo Brevo, Resend, Postmark, Microsoft 365 ou o servidor de email da própria associação), que recebe o seu nome, email e o conteúdo da mensagem.</li>
                         <li><b>Sentry</b> — registo técnico de erros do site, sem nome nem email de quem o usa. Só existe nos sites em que a associação o ativou.</li>
                         <li><b>Google Fonts</b> — as letras do site são pedidas à Google quando a página abre, o que lhe revela o endereço IP e o browser de quem visita.</li>
                     </ul>

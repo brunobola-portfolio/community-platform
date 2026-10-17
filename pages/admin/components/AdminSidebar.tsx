@@ -3,8 +3,7 @@ import React from 'react';
 import {
     LogOut, LayoutDashboard, Calendar, FileText, Users, Image as ImageIcon,
     Settings as SettingsIcon, Handshake, Bell, Layers, Award, ChevronRight,
-    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet, X, ClipboardCheck, KeyRound, LifeBuoy
-} from 'lucide-react';
+    Shield, FileBox, PenTool, Bot, Inbox, Landmark, Wallet, X, ClipboardCheck, KeyRound, LifeBuoy, Mail } from 'lucide-react';
 import { ChangePasswordModal } from '../../../components/ChangePasswordModal';
 import { Button, cn } from '../../../components/ui/UIComponents';
 import type { Tab } from '../types';
@@ -119,6 +118,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
                     <SidebarItem id="categories" icon={Layers} label="Categorias" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="tiers" icon={Award} label="Níveis de Parceria" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="access" icon={KeyRound} label="Acessos" activeTab={activeTab} onSelect={onTabSelect} />
+                    <SidebarItem id="email" icon={Mail} label="Email" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="ai" icon={Bot} label="Assistente virtual" activeTab={activeTab} onSelect={onTabSelect} />
                     <SidebarItem id="settings" icon={SettingsIcon} label="Definições" activeTab={activeTab} onSelect={onTabSelect} />
                 </div>

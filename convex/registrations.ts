@@ -7,6 +7,7 @@ import { internal } from "./_generated/api";
 import { DuplicateRegistration, assertPlaceForReactivation, insertRegistration, normalizeEmail, syncParticipantCount } from "./lib/registrationRules";
 import { parseEventDate } from "./lib/time";
 import { keyHash } from "./lib/keyHash";
+import { notifyRegistration } from "./lib/email/notify";
 
 export const list = query({
     args: { eventId: v.optional(v.id("events")) },
@@ -93,7 +94,9 @@ export const create = mutation({
             await ctx.db.patch(guestRow._id, { userId: memberId });
             return guestRow._id;
         }
-        return await insertRegistration(ctx, { ...args, userId: memberId });
+        const id = await insertRegistration(ctx, { ...args, userId: memberId });
+        await notifyRegistration(ctx, id, "received");
+        return id;
     },
 });
 
@@ -142,7 +145,7 @@ export const createGuest = mutation({
         await ctx.runMutation(internal.lib.rateLimit.checkAndConsume, { key: "registration:guest", userId: keyHash(email) });
 
         try {
-            await insertRegistration(ctx, {
+            const id = await insertRegistration(ctx, {
                 eventId: args.eventId,
                 name: args.name,
                 email,
@@ -152,6 +155,7 @@ export const createGuest = mutation({
                 teamMembers: args.teamMembers,
                 noticeAcceptedAt: Date.now(),
             });
+            await notifyRegistration(ctx, id, "received");
             return { status: "received" as const };
         } catch (error) {
             // Answered, not thrown: a thrown error also rolls back the rate-limit
@@ -179,7 +183,10 @@ export const addByAdmin = mutation({
     },
     handler: async (ctx, args) => {
         await requireAdmin(ctx);
-        return await insertRegistration(ctx, { ...args, email: args.email ?? "", addedByAdmin: true });
+        const id = await insertRegistration(ctx, { ...args, email: args.email ?? "", addedByAdmin: true });
+        // Written down by the board, so already confirmed: the person gets the confirmation
+        await notifyRegistration(ctx, id, "confirmed");
+        return id;
     },
 });
 
@@ -199,6 +206,7 @@ export const cancelMine = mutation({
         if (!Number.isNaN(starts) && starts < Date.now()) throw new ConvexError("O evento já começou. Fale com a organização.");
         await ctx.db.patch(args.id, { status: "cancelled" });
         await syncParticipantCount(ctx, row.eventId);
+        await notifyRegistration(ctx, args.id, "member_cancelled");
     },
 });
 
@@ -211,6 +219,7 @@ export const updateStatus = mutation({
         await assertPlaceForReactivation(ctx, existing, args.status);
         await ctx.db.patch(args.id, { status: args.status });
         await syncParticipantCount(ctx, existing.eventId);
+        if (existing.status !== args.status && args.status !== "pending") await notifyRegistration(ctx, args.id, args.status);
     },
 });
 
@@ -227,6 +236,7 @@ export const bulkUpdateStatus = mutation({
             await assertPlaceForReactivation(ctx, row, args.status);
             await ctx.db.patch(id, { status: args.status });
             events.add(row.eventId);
+            if (row.status !== args.status && args.status !== "pending") await notifyRegistration(ctx, id, args.status);
         }
         for (const eventId of events) await syncParticipantCount(ctx, eventId);
         return args.ids.length;

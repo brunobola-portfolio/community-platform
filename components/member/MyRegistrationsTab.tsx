@@ -28,7 +28,7 @@ const EventLine: React.FC<{ registration: MyRegistration }> = ({ registration })
 
 /**
  * Where a member checks whether the board has confirmed them, and drops out
- * when they cannot go. There is no email service, so this page is the receipt.
+ * when they cannot go. Emails are optional per instance, so this page is the receipt that is always there.
  */
 export const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ registrations, onCancel }) => {
     if (registrations === undefined) {

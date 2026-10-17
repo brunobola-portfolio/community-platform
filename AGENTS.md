@@ -96,6 +96,16 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   enhance), helpers em `lib/aiShared.ts`.
 - **Listas públicas vs backoffice**: `DataContext` expõe `events`/`posts`/`sponsors` (só
   publicados/ativos) e `adminEvents`/`adminPosts`/`adminSponsors` (tudo, via `listAll`). Não misturar.
+- **Email tem tabela e separador próprios** (`emailSettings`, `emailLogs`, Admin › Email):
+  Brevo/Resend/Postmark por HTTP, Microsoft 365 por Graph (token client-credentials + `sendMail`)
+  e SMTP via Nodemailer em `convex/emailDelivery.ts` (`"use node"`). Cada entrega leva um
+  `deliveryToken`: só a corrida com o token atual envia, e `recoverStuck` (cron 15 min) retoma
+  linhas presas em `sending`. Enviar = `queueEmail` (`convex/lib/email/queue.ts`) dentro da mutation que causa o
+  email: renderiza o modelo, regista e agenda a entrega; nunca falha a mutation. Os momentos
+  vivem em `lib/email/notify.ts`; modelos puros e testados em `lib/email/templates.ts` +
+  `layout.ts` (HTML em tabelas, tudo escapado). Configuração: BD → env (`resolveEmailConfig`);
+  chaves só de escrita (`has*`). Email novo = `kinds.ts` + modelo + chamada em `notify.ts` +
+  guia em `content/help/email.ts`.
 - **Inscrições têm uma porta só**: `insertRegistration` (`convex/lib/registrationRules.ts`) serve
   sócios, convidados e a Direção (`addByAdmin`: confirmada, email opcional, ignora fecho/prazo mas
   não a lotação). Equipas (`teamSize` ≥ 2) contam como uma vaga; prazo em `registrationDeadline`.
@@ -153,7 +163,7 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
 - **Admin sem comandos**: BD sem admin redireciona qualquer acesso para o wizard `/setup`.
   Depois disso, acessos geridos no backoffice (separador Acessos, `convex/access.ts`): conta nova
   com palavra-passe temporária mostrada uma vez, mudar tipo, repor palavra-passe, remover;
-  cada pessoa muda a sua em "Alterar palavra-passe". Sem serviço de email, por desenho.
+  cada pessoa muda a sua em "Alterar palavra-passe". Palavras-passe nunca seguem por email.
   Fallback CLI: `npx convex run --prod access:grantFromCli '{"email":"…","role":"admin"}'`.
 
 ## Regras Convex (obrigatórias)

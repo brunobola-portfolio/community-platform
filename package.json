@@ -1,6 +1,6 @@
 {
   "name": "community-platform",
-  "version": "2.20.1",
+  "version": "2.21.0",
   "description": "White-label community platform for associations, communities and institutions — realtime backend, AI assistant with RAG, and a full self-service backoffice. Self-hosted or hosted and operated by BolaLabs.",
   "type": "module",
   "author": {
@@ -65,6 +65,7 @@
     "convex": "^1.45.0",
     "dompurify": "^3.4.14",
     "lucide-react": "^0.577.0",
+    "nodemailer": "^10.1.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.3",
@@ -74,6 +75,7 @@
     "@emnapi/runtime": "^1.11.3",
     "@types/dompurify": "^3.2.0",
     "@types/node": "^25.9.5",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
@@ -88,5 +90,8 @@
     "typescript": "^5.2.2",
     "vite": "^8.2.2",
     "vitest": "^5.0.0"
+  },
+  "overrides": {
+    "nodemailer": "$nodemailer"
   }
 }

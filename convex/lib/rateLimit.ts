@@ -33,6 +33,8 @@ const RATE_LIMITS: Record<string, BucketConfig> = {
   // Global caps so rotating the submitted email does not mint fresh buckets
   "contact:create:global": { maxTokens: 30, refillPerMinute: 10 },
   "sponsorship:create:global": { maxTokens: 20, refillPerMinute: 5 },
+  // Emails visitors can trigger (lib/email/queue.ts): about 150 an hour
+  "email:public": { maxTokens: 150, refillPerMinute: 2.5 },
 };
 
 /**

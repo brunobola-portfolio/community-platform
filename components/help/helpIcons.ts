@@ -1,7 +1,6 @@
 import {
     Bot, Calendar, IdCard, Image as ImageIcon, KeyRound, LifeBuoy, Newspaper, Palette, Rocket,
-    ShieldCheck, Sparkles, Ticket, User, Users, Wallet, type LucideIcon,
-} from 'lucide-react';
+    ShieldCheck, Sparkles, Ticket, User, Users, Wallet, type LucideIcon, Mail } from 'lucide-react';
 import type { HelpIconKey } from '../../content/help';
 
 export const HELP_ICONS: Record<HelpIconKey, LucideIcon> = {
@@ -20,4 +19,5 @@ export const HELP_ICONS: Record<HelpIconKey, LucideIcon> = {
     'id-card': IdCard,
     user: User,
     'life-buoy': LifeBuoy,
+    mail: Mail,
 };

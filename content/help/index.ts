@@ -12,6 +12,7 @@ import { GALLERY_TUTORIALS, PEOPLE_TUTORIALS } from './people';
 import { PUBLIC_TUTORIALS } from './public';
 import { ASSISTANT_TUTORIALS, PRACTICE_TUTORIALS, SETTINGS_TUTORIALS } from './settings';
 import { START_TUTORIALS } from './start';
+import { EMAIL_TUTORIALS } from './email';
 import { SUPPORT_TUTORIALS } from './support';
 import type { HelpAudience, HelpCategory, HelpTutorial } from './types';
 
@@ -29,6 +30,7 @@ export const HELP_TUTORIALS: HelpTutorial[] = [
     ...GALLERY_TUTORIALS,
     ...MEMBER_TUTORIALS,
     ...ACCESS_TUTORIALS,
+    ...EMAIL_TUTORIALS,
     ...SETTINGS_TUTORIALS,
     ...ASSISTANT_TUTORIALS,
     ...PRACTICE_TUTORIALS,

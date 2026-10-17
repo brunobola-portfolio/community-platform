@@ -76,6 +76,15 @@ Convex (server-side): `GEMINI_API_KEY` (obrigatória para IA) e, opcionalmente,
 `SITE_LATITUDE`/`SITE_LONGITUDE` para o geo-assistente e `SITE_PHONE` para a migração de
 contactos.
 
+**Email**: configura-se no backoffice (Admin › Email) e não precisa de variáveis. Para uma
+instância nova, crie conta no Brevo (ou Resend/Postmark), verifique o domínio da associação
+(SPF + DKIM no DNS), cole a chave, defina o remetente e envie um teste. Associações com
+Microsoft 365 podem enviar da própria caixa: registo de aplicação no Entra com `Mail.Send`
+(aplicação) e consentimento de administrador; o separador mostra os 5 passos. Quem preferir as chaves
+fora da BD define `EMAIL_PROVIDER`, `EMAIL_FROM_ADDRESS` e a chave do provedor no deployment;
+o backoffice mostra «Definida no servidor». Os emails levam o nome, a cor e o ícone da app
+(`/icons/icon-192.png` do overlay de marca), e os links usam `SITE_URL`.
+
 ## 3. Overlay de marca (`.brand/public/`)
 
 Espelha a estrutura de `public/`. Ficheiros com o mesmo nome substituem os genéricos:

@@ -88,7 +88,8 @@ interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'outline';
   color?: string;
 }
-const OWN_TEXT_COLOUR = /(?:^|\s)text-(?:white|black|slate-\d+|brand-\d+|amber-\d+|green-\d+)(?:\s|$)/;
+// Any palette colour the caller sets (emerald, red, sky…), so the brand default never overrides it in dark mode
+const OWN_TEXT_COLOUR = /(?:^|\s)(?:dark:)?text-(?:white|black|[a-z]+-\d{2,3})(?:\/\d+)?(?:\s|$)/;
 
 export const Badge: React.FC<BadgeProps> = ({ className, variant = 'default', color, ...props }) => {
   const ownsText = OWN_TEXT_COLOUR.test(className ?? '');

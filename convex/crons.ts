@@ -21,4 +21,8 @@ crons.daily("cleanup:abandonedUploads", { hourUTC: 4, minuteUTC: 0 }, internal.m
 // Latest platform release, for the "atualizada / nova versão" badge in the footer
 crons.interval("platform:latestRelease", { hours: 6 }, internal.platform.refreshLatest);
 
+// Email delivery log (what was sent, to whom) kept for 90 days
+crons.interval("email:recoverStuck", { minutes: 15 }, internal.email.recoverStuck, {});
+crons.daily("cleanup:emailLogs", { hourUTC: 4, minuteUTC: 15 }, internal.email.purgeOldLogs, {});
+
 export default crons;

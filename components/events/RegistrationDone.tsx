@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import { CalendarPlus, CheckCircle2, Mail, Phone } from 'lucide-react';
 import { Button } from '../ui/UIComponents';
 import { ShareBar } from '../ui/ShareBar';
@@ -29,6 +31,8 @@ export const RegistrationDone: React.FC<RegistrationDoneProps> = ({ event, email
     const calendar: CalendarEvent = { title: event.title, date: event.date, location: event.location, slug: event.slug, url, description: event.excerpt };
     const paid = Boolean(event.entryPrice && event.entryPrice > 0);
     const heading = useRef<HTMLHeadingElement>(null);
+    const emailStatus = useQuery(api.email.publicStatus);
+    const emailed = Boolean(emailStatus?.participantsNotified && email);
 
     // The send button that had focus is gone; land on the outcome instead
     useEffect(() => { heading.current?.focus(); }, []);
@@ -43,7 +47,9 @@ export const RegistrationDone: React.FC<RegistrationDoneProps> = ({ event, email
                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{event.title} · {formatEventDate(event.date)}{event.location ? ` · ${event.location}` : ''}</p>
                 {team && <p className="text-sm text-slate-700 dark:text-slate-300">Equipa: <b className="text-slate-900 dark:text-white">{team}</b></p>}
                 <p className="mx-auto max-w-sm text-sm text-slate-600 dark:text-slate-400">
-                    A organização vai confirmar a sua inscrição e, se for preciso, contacta-o por <b className="text-slate-800 dark:text-slate-200">{email}</b>.
+                    {emailed
+                        ? <>Enviámos um email para <b className="text-slate-800 dark:text-slate-200">{email}</b>. Quando a organização confirmar a inscrição, recebe outro.</>
+                        : <>A organização vai confirmar a sua inscrição e, se for preciso, contacta-o por <b className="text-slate-800 dark:text-slate-200">{email}</b>.</>}
                     {isMember && <> Acompanhe o estado em <Link to="/member?tab=inscricoes" className="rounded font-semibold text-brand-700 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Área de Sócio › Inscrições</Link>.</>}
                 </p>
             </div>

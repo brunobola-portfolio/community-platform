@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import { Mail, Phone, Clock, Trash2, CheckCircle, X, Archive, Inbox, Handshake } from 'lucide-react';
+import { Mail, Phone, Clock, Trash2, CheckCircle, X, Archive, Inbox, Handshake, Reply } from 'lucide-react';
 import { Button, Badge, cn } from '../../components/ui/UIComponents';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { DeleteConfirmDialog } from './components/DeleteConfirmDialog';
-import type { Id } from '../../convex/_generated/dataModel';
+import { ReplyModal } from './leads/ReplyModal';
+import type { Doc, Id } from '../../convex/_generated/dataModel';
 
 type ContactStatus = 'pending' | 'replied' | 'archived';
 type SponsorshipStatus = 'pending' | 'contacted' | 'confirmed' | 'rejected';
@@ -37,8 +38,9 @@ const formatTimestamp = (ts: number) =>
         minute: '2-digit',
     });
 
-export const AdminLeadsTab: React.FC = () => {
+export const AdminLeadsTab: React.FC<{ onOpenEmailSettings?: () => void }> = ({ onOpenEmailSettings }) => {
     const [section, setSection] = useState<'contact' | 'sponsorship'>('contact');
+    const [replying, setReplying] = useState<Doc<'contactSubmissions'> | null>(null);
     const [pendingDelete, setPendingDelete] = useState<{ kind: 'contact' | 'sponsorship'; id: string; title: string } | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -130,6 +132,9 @@ export const AdminLeadsTab: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="flex gap-2 flex-wrap">
+                                    <Button size="sm" onClick={() => setReplying(c)} aria-label={`Responder a ${c.name}`}>
+                                        <Reply size={14} className="mr-1" /> Responder
+                                    </Button>
                                     {c.status !== 'replied' && (
                                         <Button
                                             size="sm"
@@ -265,6 +270,8 @@ export const AdminLeadsTab: React.FC = () => {
                     onConfirm={confirmDelete}
                 />
             )}
+
+            {replying && <ReplyModal message={replying} onClose={() => setReplying(null)} onOpenEmailSettings={onOpenEmailSettings} />}
         </div>
     );
 };
