@@ -11,7 +11,7 @@
  */
 
 import React, { useRef, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext, useSearchParams } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { Button, Badge, Modal } from '../components/ui/UIComponents';
@@ -30,8 +30,12 @@ import {
   Check,
   Mail,
   KeyRound,
+  Ticket,
 } from 'lucide-react';
+import { MyRegistrationsTab } from '../components/member/MyRegistrationsTab';
+import { useMyRegistrations } from '../hooks/useMyRegistrations';
 import { ChangePasswordModal } from '../components/ChangePasswordModal';
+import { isEventUpcoming } from '../utils/eventTime';
 import { useData } from '../context/DataContext';
 import { cn } from '../utils/cn';
 import { sanitizeExternalUrl } from '../utils/security';
@@ -443,7 +447,11 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
   // placeholder instead of guessing a status.
   const quotaInfo = profile === undefined ? null : getQuotaInfo(profile?.quotaPaidUntil);
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // "?tab=inscricoes" opens straight on the registrations, from the event's confirmation
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => (searchParams.get('tab') === 'inscricoes' ? 'registrations' : 'dashboard'));
+  const mine = useMyRegistrations();
+  const activeRegistrations = mine.registrations?.filter(r => r.status !== 'cancelled' && isEventUpcoming(r.event.date)).length ?? 0;
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -452,6 +460,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
   // Navigation Tabs
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: User },
+    { id: 'registrations', label: activeRegistrations ? `Inscrições (${activeRegistrations})` : 'Inscrições', icon: Ticket },
     { id: 'documents', label: 'Documentos', icon: FileText },
     { id: 'notifications', label: 'Notificações', icon: Bell },
   ];
@@ -489,7 +498,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
         </div>
 
         {/* Tab Navigation */}
-        <div role="tablist" aria-label="Secções da área de sócio" className="flex gap-2 mb-8 overflow-x-auto p-1">
+        <div role="tablist" aria-label="Secções da área de sócio" className="flex gap-2 mb-8 overflow-x-auto p-1 no-scrollbar">
             {tabs.map((tab, index) => (
                 <button
                     key={tab.id}
@@ -524,6 +533,9 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
             notificationsCount={notifications.length}
             documentsCount={documents.length}
           />
+        )}
+        {activeTab === 'registrations' && (
+          <MyRegistrationsTab registrations={mine.registrations} onCancel={mine.cancel} />
         )}
         {activeTab === 'documents' && (
           <DocumentsTab documents={documents} />

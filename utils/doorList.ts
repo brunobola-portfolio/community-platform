@@ -15,7 +15,7 @@ export interface DoorListRow {
 const escape = (value: string) =>
     value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function doorListHtml(title: string, when: string, questions: string[], rows: DoorListRow[]): string {
+export function doorListHtml(title: string, when: string, questions: string[], rows: DoorListRow[], noun: [string, string] = ['pessoa', 'pessoas']): string {
     const head = ['', 'Nome', 'Telemóvel', ...questions, 'Estado'].map((h) => `<th>${escape(h)}</th>`).join('');
     const body = rows.map((r, i) => `<tr><td class="box">☐</td><td><b>${i + 1}.</b> ${escape(r.name ?? '')}</td><td>${escape(r.phone ?? '')}</td>${r.answers.map((a) => `<td>${escape(a)}</td>`).join('')}<td>${r.status === 'confirmed' ? 'Confirmada' : 'Por confirmar'}</td></tr>`).join('');
     return `<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>${escape(title)} — lista</title>
@@ -27,7 +27,7 @@ th{background:#f2f2f2;font-size:11px;text-transform:uppercase;letter-spacing:.05
 td.box{width:22px;font-size:16px;text-align:center}
 @media print{body{margin:10mm}}
 </style></head><body>
-<h1>${escape(title)}</h1><p>${escape(when)} · ${rows.length} ${rows.length === 1 ? 'pessoa' : 'pessoas'}</p>
+<h1>${escape(title)}</h1><p>${escape(when)} · ${rows.length} ${rows.length === 1 ? noun[0] : noun[1]}</p>
 <table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>
 </body></html>`;
 }

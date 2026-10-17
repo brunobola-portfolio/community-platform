@@ -75,7 +75,7 @@ export const ASSISTANT_TUTORIALS: HelpTutorial[] = [
         category: 'assistente',
         title: 'Configurar o assistente virtual',
         summary: 'Ligar o chat do site e experimentá-lo antes de o mostrar a todos.',
-        recap: 'Em **Assistente virtual**, ligue **Chatbot Ativo**, guarde e experimente em **Abrir Chat de Teste**.',
+        recap: 'Em **Assistente virtual**, ligue **Chatbot Ativo**, guarde e experimente em **Abrir conversa de teste**.',
         minutes: 3,
         audience: 'direcao',
         tab: 'ai',
@@ -88,7 +88,7 @@ export const ASSISTANT_TUTORIALS: HelpTutorial[] = [
             { text: 'Quer o botão do chat em todas as páginas? Ligue **Mostrar Bolha Flutuante**.' },
             { text: 'Opcional: escreva **Instruções extra do sistema**, como "lembra sempre o horário da secretaria".' },
             { text: 'Carregue em **Guardar alterações**.' },
-            { text: 'Em **Testar Chatbot**, carregue em **Abrir Chat de Teste** e faça uma pergunta.', why: 'O assistente responde com os dados reais do site: quanto mais atualizado, melhores as respostas.' },
+            { text: 'Em **Testar o assistente**, carregue em **Abrir conversa de teste** ou numa pergunta de exemplo.', tip: 'Funciona mesmo com o chatbot desligado no portal: só os administradores o veem aqui.', why: 'O assistente responde com os dados reais do site: quanto mais atualizado, melhores as respostas.' },
         ],
     },
     {

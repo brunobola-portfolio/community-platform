@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { CalendarOff } from 'lucide-react';
 import { Badge } from '../../../components/ui/UIComponents';
 import { EntityList } from '../components/EntityList';
 import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
 import type { AdminRecord, EntityHandlers } from '../types';
-import type { Event } from '../../../types';
+import type { Event, Registration } from '../../../types';
 import { progressWidthClass } from '../../../utils/text';
 
 type AdminEvent = Event & { category: string };
 
 const isUpcoming = (e: AdminEvent) => new Date(e.date).getTime() >= Date.now() - 24 * 3600 * 1000;
-const fill = (e: AdminEvent) => (e.isTournament && e.maxParticipants ? (e.currentParticipants ?? 0) / e.maxParticipants : -1);
+const fill = (e: AdminEvent) => (e.maxParticipants ? (e.currentParticipants ?? 0) / e.maxParticipants : -1);
 
 const FILTERS: ListFilter<AdminEvent>[] = [
     { key: 'all', label: 'Todos', predicate: () => true },
@@ -28,7 +28,7 @@ const SORTS: ListSort<AdminEvent>[] = [
 ];
 
 const Occupancy: React.FC<{ event: AdminEvent }> = ({ event }) => {
-    if (!event.isTournament || !event.maxParticipants) return <span className="text-xs text-slate-400">—</span>;
+    if (!event.maxParticipants) return <span className="text-xs text-slate-400">{event.registrationOpen ? 'Sem limite' : '—'}</span>;
     const current = event.currentParticipants ?? 0;
     const percent = Math.min(100, Math.round((current / event.maxParticipants) * 100));
     const width = progressWidthClass(percent);
@@ -50,7 +50,42 @@ const StatusCell: React.FC<{ event: AdminEvent }> = ({ event }) => {
     return <Badge className="border-emerald-500/20 bg-emerald-500/10 text-emerald-400">Publicado</Badge>;
 };
 
-export const EventsTab: React.FC<EntityHandlers & { events: AdminEvent[] }> = ({ events, ...h }) => (
+interface RegistrationTally { pending: number; active: number }
+
+/** Count of who signed up, with what still waits for the board; opens the event in Inscrições. */
+const RegistrationsCell: React.FC<{ event: AdminEvent; tally?: RegistrationTally; onOpen?: (eventId: string) => void }> = ({ event, tally, onOpen }) => {
+    const active = tally?.active ?? 0;
+    // A past event nobody signed up for is noise, whatever its old switch says
+    if (!active && (!event.registrationOpen || !isUpcoming(event))) return <span className="text-xs text-slate-400">—</span>;
+    const [one, many] = (event.teamSize ?? 1) >= 2 ? ['equipa', 'equipas'] : ['inscrito', 'inscritos'];
+    const label = `${active} ${active === 1 ? one : many}`;
+    return (
+        <button type="button" onClick={e => { e.stopPropagation(); onOpen?.(event.id); }} className="group flex flex-col items-start rounded-lg px-2 py-1 text-left hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label={`Ver inscrições de ${event.title}`}>
+            <span className="text-sm font-medium tabular-nums text-white group-hover:text-brand-300">{label}</span>
+            {tally?.pending ? <span className="text-[11px] font-semibold text-amber-300">{tally.pending} por confirmar</span> : <span className="text-[11px] text-slate-400">Ver inscrições</span>}
+        </button>
+    );
+};
+
+interface EventsTabProps extends EntityHandlers {
+    events: AdminEvent[];
+    registrations?: Registration[];
+    onOpenRegistrations?: (eventId: string) => void;
+}
+
+export const EventsTab: React.FC<EventsTabProps> = ({ events, registrations = [], onOpenRegistrations, ...h }) => {
+    const tallies = useMemo(() => {
+        const map = new Map<string, RegistrationTally>();
+        for (const r of registrations) {
+            if (r.status === 'cancelled') continue;
+            const t = map.get(r.eventId) ?? { pending: 0, active: 0 };
+            t.active++;
+            if (r.status === 'pending') t.pending++;
+            map.set(r.eventId, t);
+        }
+        return map;
+    }, [registrations]);
+    return (
     <EntityList<AdminEvent>
         items={events}
         isLoading={h.isLoading}
@@ -76,6 +111,7 @@ export const EventsTab: React.FC<EntityHandlers & { events: AdminEvent[] }> = ({
             },
             { header: 'Data', cell: e => <span className="tabular-nums text-slate-400">{new Date(e.date).toLocaleDateString('pt-PT')}</span> },
             { header: 'Estado', cell: e => <StatusCell event={e} /> },
+            { header: 'Inscrições', cell: e => <RegistrationsCell event={e} tally={tallies.get(e.id)} onOpen={onOpenRegistrations} /> },
             { header: 'Ocupação', cell: e => <Occupancy event={e} /> },
             {
                 header: 'Tipo',
@@ -93,4 +129,5 @@ export const EventsTab: React.FC<EntityHandlers & { events: AdminEvent[] }> = ({
         onCreate={h.onCreate}
         createLabel="Criar evento"
     />
-);
+    );
+};

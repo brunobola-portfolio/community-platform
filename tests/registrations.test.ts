@@ -5,7 +5,7 @@ import { validateRegistration, type RegistrationValues } from '../hooks/useEvent
 import { cleanAnswers } from '../convex/lib/registrationRules';
 import { keyHash } from '../convex/lib/keyHash';
 
-const base: RegistrationValues = { name: 'Maria', email: 'maria@example.org', phone: '', extra: {}, website: '' };
+const base: RegistrationValues = { name: 'Maria', email: 'maria@example.org', phone: '', extra: {}, teamName: '', teamMembers: [], website: '' };
 
 describe('registration validation', () => {
   it('always asks for a name and a usable email', () => {
@@ -18,6 +18,15 @@ describe('registration validation', () => {
     const fields = [{ id: 'team', label: 'Nome da equipa', type: 'text', required: true }];
     expect(validateRegistration(base, { registrationFields: fields }).team).toBe('Preencha “Nome da equipa”.');
     expect(validateRegistration({ ...base, extra: { team: 'Os Ases' } }, { registrationFields: fields }).team).toBeUndefined();
+  });
+});
+
+describe('team registration validation', () => {
+  it('asks for every other player on a team event', () => {
+    const errors = validateRegistration({ ...base, teamMembers: ['Rui', ' '] }, { teamSize: 3 });
+    expect(errors['member-0']).toBeUndefined();
+    expect(errors['member-1']).toBeTruthy();
+    expect(validateRegistration(base, {})['member-0']).toBeUndefined();
   });
 });
 
@@ -38,6 +47,13 @@ describe('registrations CSV', () => {
     expect(csvCell('=1+1')).toBe("'=1+1");
     expect(csvCell('=HYPERLINK("x")')).toBe(`"'=HYPERLINK(""x"")"`);
     expect(csvCell(undefined)).toBe('');
+  });
+
+  it('adds the team and the other players on a team event', () => {
+    const csv = registrationsCsv([{ name: 'Ana', status: 'pending', teamName: 'Os Ases', teamMembers: ['Rui', 'Zé'] }], [], false, true);
+    const [header, line] = csv.split('\r\n');
+    expect(header).toBe('﻿Equipa;Nome;Email;Telemóvel;Estado;Inscrito em;Outros jogadores');
+    expect(line).toBe('Os Ases;Ana;;;Pendente;;Rui, Zé');
   });
 
   it('translates the status and names the file by event and day', () => {

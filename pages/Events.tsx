@@ -6,7 +6,7 @@ import { api } from '../convex/_generated/api';
 import { useOutletContext, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { LayoutOutletContext } from '../layouts/types';
 import { EventsJsonLd } from '../components/StructuredData';
-import { MapPin, Clock, Search, CalendarPlus, Trophy, CheckCircle2, X, History, CalendarOff, LogIn } from 'lucide-react';
+import { MapPin, Clock, Search, CalendarPlus, Trophy, X, History, CalendarOff, LogIn, Users } from 'lucide-react';
 import { Button, Badge, Modal, cn } from '../components/ui/UIComponents';
 import { sanitizeHtml, sanitizeText } from '../utils/security';
 import { categoryColorClass } from '../utils/categoryColors';
@@ -23,6 +23,10 @@ import { PageMeta } from '../components/PageMeta';
 import { useEventRegistration } from '../hooks/useEventRegistration';
 import { RegistrationForm } from '../components/events/RegistrationForm';
 import { RegistrationDone } from '../components/events/RegistrationDone';
+import { RegistrationBanner } from '../components/events/RegistrationBanner';
+import { MyRegistrationCard } from '../components/events/MyRegistrationCard';
+import { useMyRegistrations } from '../hooks/useMyRegistrations';
+import { formatDeadline, isRegistrationOpen, isTeamEvent, placesLeft, teamSummary } from '../utils/registrationState';
 import type { Event } from '../types';
 
 export const EventsPage: React.FC = () => {
@@ -41,6 +45,8 @@ export const EventsPage: React.FC = () => {
     const { html: selectedEventBody, isLoading: isBodyLoading } = useEventDescription(selectedEvent);
     const [showRegistrationModal, setShowRegistrationModal] = useState(false);
     const registration = useEventRegistration(selectedEvent, isAuthenticated, me);
+    const mine = useMyRegistrations();
+    const myRegistration = mine.forEvent(selectedEvent?.id);
 
 
     // Every event has its own address, so a link on WhatsApp opens that event
@@ -140,9 +146,7 @@ export const EventsPage: React.FC = () => {
         setShowRegistrationModal(true);
     };
 
-    const registrationOpen = Boolean(
-        selectedEvent?.registrationOpen && selectedEvent && isEventUpcoming(selectedEvent.date),
-    );
+    const registrationOpen = Boolean(selectedEvent && isRegistrationOpen(selectedEvent));
     // The server enforces the limit on every event, so the button must too
     const soldOut = Boolean(
         selectedEvent?.maxParticipants && (selectedEvent.currentParticipants || 0) >= selectedEvent.maxParticipants,
@@ -162,11 +166,11 @@ export const EventsPage: React.FC = () => {
             <div key="done" className="flex justify-center">
                 <Button variant="outline" onClick={closeEvent}>Voltar à agenda</Button>
             </div>
-        ) : registrationOpen ? (
+        ) : registrationOpen && !myRegistration ? (
             <div key="details" className="flex justify-end">
                 {registration.canRegister ? (
                     <Button onClick={handleOpenRegistration} disabled={soldOut || registration.authLoading} className="w-full sm:w-auto">
-                        {soldOut ? 'Esgotado' : selectedEvent.entryPrice ? `Inscrever-me · ${selectedEvent.entryPrice} €` : 'Inscrever-me (grátis)'}
+                        {soldOut ? 'Esgotado' : `${isTeamEvent(selectedEvent) ? 'Inscrever equipa' : 'Inscrever-me'}${selectedEvent.entryPrice ? ` · ${selectedEvent.entryPrice} €` : ' (grátis)'}`}
                     </Button>
                 ) : (
                     <Button variant="outline" onClick={openMemberLogin} className="w-full sm:w-auto">
@@ -385,13 +389,17 @@ export const EventsPage: React.FC = () => {
                                             <div className="flex items-center gap-2"><Clock size={16} className="text-brand-700 dark:text-brand-400" /><span>{new Date(event.date).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}</span></div>
                                             <div className="flex items-center gap-2"><MapPin size={16} className="text-brand-700 dark:text-brand-400" /><span>{event.location}</span></div>
                                             {event.isTournament && <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400"><Trophy size={16} aria-hidden="true" /><span>Torneio</span></div>}
+                                            {isTeamEvent(event) && <div className="flex items-center gap-2"><Users size={16} aria-hidden="true" className="text-brand-700 dark:text-brand-400" /><span>Equipas de {event.teamSize}</span></div>}
+                                            {!isPast && isRegistrationOpen(event, now) && event.registrationDeadline && (
+                                                <div className="rounded-full bg-brand-500/10 px-2.5 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-brand-500/20 dark:text-brand-400">Inscrições até {formatDeadline(event.registrationDeadline)}</div>
+                                            )}
                                         </div>
 
                                         {/* Places left, for any event with a limit */}
                                         {Boolean(event.maxParticipants) && !isPast && (
                                             <div className="mt-4 max-w-xs">
                                                 <div className="flex justify-between text-xs mb-1 text-slate-600 dark:text-slate-400">
-                                                    <span>Inscritos: {event.currentParticipants ?? 0} de {event.maxParticipants}</span>
+                                                    <span>{isTeamEvent(event) ? 'Equipas' : 'Inscritos'}: {event.currentParticipants ?? 0} de {event.maxParticipants}</span>
                                                     <span>{Math.round(capacityPercent)}%</span>
                                                 </div>
                                                 <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden" role="progressbar" aria-label={`Lugares ocupados em ${event.title}`} aria-valuemin={0} aria-valuemax={event.maxParticipants || 0} aria-valuenow={event.currentParticipants || 0}>
@@ -402,9 +410,9 @@ export const EventsPage: React.FC = () => {
                                     </div>
 
                                     {/* Actions */}
-                                    <div className="flex flex-row md:flex-col justify-center gap-3 md:border-l border-slate-900/5 dark:border-white/5 md:pl-6 md:min-w-[140px]">
+                                    <div className="flex flex-col sm:flex-row md:flex-col justify-center gap-3 md:border-l border-slate-900/5 dark:border-white/5 md:pl-6 md:min-w-[180px] [&>button]:whitespace-nowrap">
                                         <Button variant="default" className={cn("flex-1 md:flex-none", isPast ? "bg-slate-700 hover:bg-slate-600 border-slate-600" : "")} onClick={() => openEvent(event)}>
-                                            {isPast ? 'Ver resumo' : event.registrationOpen ? 'Ver e inscrever-me' : 'Ver detalhes'}
+                                            {isPast ? 'Ver resumo' : mine.forEvent(event.id) ? 'Já inscrito · ver' : !isRegistrationOpen(event, now) ? 'Ver detalhes' : (placesLeft(event) ?? 1) > 0 ? 'Ver e inscrever-me' : 'Esgotado · ver detalhes'}
                                         </Button>
                                         {!isPast && canAddToCalendar(event) && (
                                             <Button variant="outline" size="sm" className="flex-1 md:flex-none text-xs border-slate-900/10 hover:bg-slate-900/5 dark:border-white/10 dark:hover:bg-white/5" onClick={() => downloadIcs(calendarFor(event))}>
@@ -439,27 +447,9 @@ export const EventsPage: React.FC = () => {
                             <div className="text-slate-600 dark:text-slate-300 leading-relaxed text-lg" aria-busy={isBodyLoading} dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedEventBody) }} />
                         </div>
 
-                        {registrationOpen && (soldOut ? (
-                            <div className="flex items-center gap-3 rounded-2xl bg-slate-900/5 p-4 ring-1 ring-slate-900/10 dark:bg-white/5 dark:ring-white/10">
-                                <X size={18} className="shrink-0 text-slate-600 dark:text-slate-400" />
-                                <div>
-                                    <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">Esgotado</div>
-                                    <div className="text-sm text-slate-700 dark:text-slate-200">Já não há lugares. Fale com a organização para ficar em lista de espera.</div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-3 rounded-2xl bg-brand-500/10 p-4 ring-1 ring-brand-500/20">
-                                <CheckCircle2 size={18} className="shrink-0 text-brand-700 dark:text-brand-400" />
-                                <div>
-                                    <div className="text-xs font-bold uppercase tracking-wider text-brand-700 dark:text-brand-400">Inscrições abertas</div>
-                                    <div className="text-sm text-slate-700 dark:text-slate-200">
-                                        {selectedEvent.maxParticipants
-                                            ? `Restam ${Math.max(0, selectedEvent.maxParticipants - (selectedEvent.currentParticipants || 0))} lugares.`
-                                            : 'Garanta o seu lugar neste evento.'}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                        {myRegistration ? (
+                            <MyRegistrationCard registration={myRegistration} onCancel={mine.cancel} canCancel={isEventUpcoming(selectedEvent.date)} />
+                        ) : registrationOpen && <RegistrationBanner event={selectedEvent} soldOut={soldOut} />}
 
                         <ShareBar
                             url={absoluteUrl(eventPath(selectedEvent.slug))}
@@ -470,7 +460,8 @@ export const EventsPage: React.FC = () => {
                 )}
 
                 {selectedEvent && showRegistrationModal && (registration.done ? (
-                    <RegistrationDone event={selectedEvent} email={registration.values.email} contactEmail={settings.contactEmail} phone={settings.phone} />
+                    <RegistrationDone event={selectedEvent} email={registration.values.email} contactEmail={settings.contactEmail} phone={settings.phone} isMember={!registration.isGuest}
+                        team={isTeamEvent(selectedEvent) ? teamSummary({ name: registration.values.name, teamName: registration.values.teamName, teamMembers: registration.values.teamMembers }) : undefined} />
                 ) : (
                     <RegistrationForm
                         formId="event-registration-form"
@@ -482,6 +473,7 @@ export const EventsPage: React.FC = () => {
                         siteName={settings.siteName}
                         onChange={registration.update}
                         onExtraChange={registration.updateExtra}
+                        onMemberChange={registration.updateMember}
                         onSubmit={registration.submit}
                     />
                 ))}

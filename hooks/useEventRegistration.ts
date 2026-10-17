@@ -13,6 +13,9 @@ export interface RegistrationValues {
     phone: string;
     /** Values of the event's own fields, keyed by field id. */
     extra: Record<string, string>;
+    /** Team events: the team's name (optional) and the other players, in order. */
+    teamName: string;
+    teamMembers: string[];
     /** Honeypot: hidden from people, filled by bots. */
     website: string;
 }
@@ -26,6 +29,8 @@ const emptyValues = (me?: { name?: string | null; email?: string | null } | null
     email: me?.email ?? '',
     phone: '',
     extra: {},
+    teamName: '',
+    teamMembers: [],
     website: '',
 });
 
@@ -39,11 +44,14 @@ function messageFor(error: unknown): string {
     return 'Não foi possível enviar a inscrição. Verifique a ligação e tente de novo.';
 }
 
-export function validateRegistration(values: RegistrationValues, event: Pick<Event, 'registrationFields'>): RegistrationErrors {
+export function validateRegistration(values: RegistrationValues, event: Pick<Event, 'registrationFields' | 'teamSize'>): RegistrationErrors {
     const errors: RegistrationErrors = {};
     if (!values.name.trim()) errors.name = 'Escreva o seu nome.';
     if (!values.email.trim()) errors.email = 'Escreva o seu email.';
     else if (!EMAIL.test(values.email.trim())) errors.email = 'Este email não parece válido.';
+    for (let i = 0; i < (event.teamSize ?? 1) - 1; i++) {
+        if (!(values.teamMembers[i] ?? '').trim()) errors[`member-${i}`] = 'Escreva o nome deste jogador.';
+    }
     for (const field of event.registrationFields ?? []) {
         if (field.required && !(values.extra[field.id] ?? '').trim()) errors[field.id] = `Preencha “${field.label}”.`;
     }
@@ -94,6 +102,15 @@ export function useEventRegistration(event: Event | null, isAuthenticated: boole
         setErrors((current) => ({ ...current, [key]: undefined, submit: undefined }));
     }, []);
 
+    const updateMember = useCallback((index: number, value: string) => {
+        setValues((current) => {
+            const teamMembers = [...current.teamMembers];
+            teamMembers[index] = value;
+            return { ...current, teamMembers };
+        });
+        setErrors((current) => ({ ...current, [`member-${index}`]: undefined, submit: undefined }));
+    }, []);
+
     const updateExtra = useCallback((id: string, value: string) => {
         setValues((current) => ({ ...current, extra: { ...current.extra, [id]: value } }));
         setErrors((current) => ({ ...current, [id]: undefined, submit: undefined }));
@@ -116,6 +133,10 @@ export function useEventRegistration(event: Event | null, isAuthenticated: boole
             email: values.email.trim(),
             phone: values.phone.trim() || undefined,
             customData: Object.keys(values.extra).length ? values.extra : undefined,
+            ...((event.teamSize ?? 1) >= 2 ? {
+                teamName: values.teamName.trim() || undefined,
+                teamMembers: values.teamMembers.slice(0, (event.teamSize ?? 1) - 1).map((m) => m.trim()),
+            } : {}),
         };
         try {
             if (isGuest) {
@@ -135,5 +156,5 @@ export function useEventRegistration(event: Event | null, isAuthenticated: boole
         }
     }, [event, submitting, authLoading, values, isGuest, createGuest, createMember]);
 
-    return { values, errors, submitting, done, isGuest, authLoading, canRegister, update, updateExtra, submit, reset };
+    return { values, errors, submitting, done, isGuest, authLoading, canRegister, update, updateExtra, updateMember, submit, reset };
 }

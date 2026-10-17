@@ -50,3 +50,15 @@ export function parseEventDate(date: string, timeZone: string = DEFAULT_TIMEZONE
         return wallClock;
     }
 }
+
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * The last moment registrations are taken. A deadline with no time means the
+ * whole of that day, not its first minute. NaN when the text is not a date.
+ */
+export function parseDeadline(deadline: string, timeZone: string = DEFAULT_TIMEZONE): number {
+    const trimmed = deadline.trim();
+    if (DATE_ONLY.test(trimmed)) return parseEventDate(`${trimmed}T23:59:59`, timeZone);
+    return parseEventDate(trimmed, timeZone);
+}

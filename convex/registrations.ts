@@ -23,22 +23,42 @@ export const list = query({
     },
 });
 
+/**
+ * The signed-in member's registrations with the event each one is for, newest
+ * event first. Empty for visitors: the agenda asks it on every page view.
+ */
 export const myRegistrations = query({
     args: {},
     handler: async (ctx) => {
         const userId = await getAuthUserId(ctx);
-        if (!userId) {
-            throw new ConvexError("Autenticação necessária.");
-        }
-        return await ctx.db
+        if (!userId) return [];
+        const rows = await ctx.db
             .query("registrations")
             .withIndex("by_user", (q) => q.eq("userId", userId))
-            .collect();
+            .take(200);
+        const withEvents = await Promise.all(rows.map(async (row) => {
+            const event = await ctx.db.get(row.eventId);
+            if (!event || event.status !== "published") return null;
+            return {
+                _id: row._id,
+                eventId: row.eventId,
+                status: row.status,
+                timestamp: row.timestamp,
+                teamName: row.teamName,
+                teamMembers: row.teamMembers,
+                event: { title: event.title, slug: event.slug, date: event.date, location: event.location, entryPrice: event.entryPrice },
+            };
+        }));
+        return withEvents
+            .filter((r): r is NonNullable<typeof r> => r !== null)
+            .sort((a, b) => b.event.date.localeCompare(a.event.date));
     },
 });
 
 const customData = v.optional(v.record(v.string(), v.union(v.string(), v.number(), v.boolean())));
 const status = v.union(v.literal("pending"), v.literal("confirmed"), v.literal("cancelled"));
+const teamName = v.optional(v.string());
+const teamMembers = v.optional(v.array(v.string()));
 
 /** A signed-in member registers as themselves: the email is the account's. */
 export const create = mutation({
@@ -48,6 +68,8 @@ export const create = mutation({
         email: v.string(),
         phone: v.optional(v.string()),
         customData,
+        teamName,
+        teamMembers,
     },
     handler: async (ctx, args) => {
         const { userId, user } = await requireAuth(ctx);
@@ -58,7 +80,20 @@ export const create = mutation({
             throw new ConvexError("O email fornecido não corresponde ao da conta autenticada.");
         }
         // requireAuth returns the id as a plain string; the table stores Id<"users">
-        return await insertRegistration(ctx, { ...args, userId: userId as unknown as Id<"users"> });
+        const memberId = userId as unknown as Id<"users">;
+        // Registered earlier from a shared link without signing in: that row becomes
+        // the member's, so it shows in their area instead of a "duplicate" error
+        // Only the account's own email may claim a row: an account without one claims nothing
+        const earlier = accountEmail ? await ctx.db
+            .query("registrations")
+            .withIndex("by_event_email", (q) => q.eq("eventId", args.eventId).eq("email", normalizeEmail(accountEmail)))
+            .collect() : [];
+        const guestRow = earlier.find((r) => r.status !== "cancelled" && !r.userId);
+        if (guestRow) {
+            await ctx.db.patch(guestRow._id, { userId: memberId });
+            return guestRow._id;
+        }
+        return await insertRegistration(ctx, { ...args, userId: memberId });
     },
 });
 
@@ -76,6 +111,8 @@ export const createGuest = mutation({
         email: v.string(),
         phone: v.optional(v.string()),
         customData,
+        teamName,
+        teamMembers,
         /**
          * The privacy notice was shown with the form. Managing a registration someone
          * asked for rests on art. 6(1)(b) GDPR, not on consent; this records that the
@@ -111,6 +148,8 @@ export const createGuest = mutation({
                 email,
                 phone: args.phone,
                 customData: args.customData,
+                teamName: args.teamName,
+                teamMembers: args.teamMembers,
                 noticeAcceptedAt: Date.now(),
             });
             return { status: "received" as const };
@@ -120,6 +159,46 @@ export const createGuest = mutation({
             if (error instanceof DuplicateRegistration) return { status: "duplicate" as const };
             throw error;
         }
+    },
+});
+
+/**
+ * The board writes down a registration that came by phone or in person, so the
+ * site's list stays the one list. Confirmed at once, allowed while the event is
+ * closed or past its deadline, and the email is optional.
+ */
+export const addByAdmin = mutation({
+    args: {
+        eventId: v.id("events"),
+        name: v.string(),
+        email: v.optional(v.string()),
+        phone: v.optional(v.string()),
+        customData,
+        teamName,
+        teamMembers,
+    },
+    handler: async (ctx, args) => {
+        await requireAdmin(ctx);
+        return await insertRegistration(ctx, { ...args, email: args.email ?? "", addedByAdmin: true });
+    },
+});
+
+/**
+ * A member who cannot go frees the place themselves, until the event starts.
+ * The row stays as cancelled so the board sees who dropped out.
+ */
+export const cancelMine = mutation({
+    args: { id: v.id("registrations") },
+    handler: async (ctx, args) => {
+        const { userId } = await requireAuth(ctx);
+        const row = await ctx.db.get(args.id);
+        if (!row || row.userId !== userId) throw new ConvexError("Inscrição não encontrada.");
+        if (row.status === "cancelled") return;
+        const event = await ctx.db.get(row.eventId);
+        const starts = event ? parseEventDate(event.date) : NaN;
+        if (!Number.isNaN(starts) && starts < Date.now()) throw new ConvexError("O evento já começou. Fale com a organização.");
+        await ctx.db.patch(args.id, { status: "cancelled" });
+        await syncParticipantCount(ctx, row.eventId);
     },
 });
 

@@ -6,6 +6,54 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.20.0] - 2026-10-17
+
+Event registrations a club can actually run: teams, a deadline, the phone calls written down,
+and members who can see where they stand. The assistant test in the backoffice works again.
+
+### Added
+
+- **Team registrations.** An event takes registrations per person or per team of N players.
+  One person registers the team (optional team name, the other players' names required); places,
+  price and "sold out" count teams. The backoffice list, the door list and the Excel export show
+  the team and its players
+- **Registration deadline** ("Inscrições até"). The site closes registrations at that moment;
+  the agenda card and the event say until when
+- **Written down by the board.** "Adicionar" in Inscrições records a registration that came by
+  phone or in person: confirmed at once, email optional, allowed after the deadline or with the
+  site closed, still within the places available ("Guardar e outra" for a run of calls)
+- **Open or close registrations from Inscrições**, with one line saying how the event takes them
+  (until when, per person or team, anyone or members only, sold out)
+- **Members see their registrations.** A signed-in member who opens an event they are in sees
+  "Inscrição recebida" or "Inscrição confirmada" instead of the register button, and can free the
+  place with "Não posso ir". Área de Sócio has a new "Inscrições" tab (upcoming and history). A
+  guest registration made with the same email is attached to the account when the member
+  registers, instead of answering "duplicate"
+- Eventos in the backoffice has an "Inscrições" column (how many, how many to confirm) that opens
+  that event in Inscrições
+- The assistant's context says, per event, until when, per person or team, who may register and
+  the places left, and how to register
+
+### Changed
+
+- "Who can register" is an explicit choice on the event, "Qualquer pessoa" by default (no
+  account needed), instead of a "members only" checkbox
+- The OpenRouter fallback list drops two retired free models (glm-5.2, minimax-m2.7) that cost
+  every failing chat two dead requests before Gemini answered
+
+### Fixed
+
+- **"Abrir Chat de Teste" did nothing.** It clicked the public site's floating bubble, which does
+  not exist in the backoffice. "Testar o assistente" now opens the real chat there, with example
+  questions, the chatbot's state, a warning when chat settings are not saved, and links opening
+  in a new tab. Admins can test with the chatbot switched off for visitors
+- A question handed to the chat while it mounts was sent twice in development
+- The "Guardar alterações" bar wrapped its label on phones; it now stacks and says when there
+  are unsaved changes
+- Event cards stack their two buttons on phones instead of wrapping both labels; a full event
+  says "Esgotado" on the card
+- The member area tabs showed a scrollbar on phones
+
 ## [2.19.3] - 2026-10-05
 
 ### Fixed

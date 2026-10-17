@@ -50,6 +50,10 @@ export default defineSchema({
     registrationOpen: v.optional(v.boolean()),
     // false = members with an account only; unset or true = anyone (rate-limited, pending until confirmed)
     allowGuestRegistration: v.optional(v.boolean()),
+    // People per registration: unset or 1 = one person; 2+ = a team, and maxParticipants counts teams
+    teamSize: v.optional(v.number()),
+    // Wall-clock time at the venue, like `date`; unset = open until the event starts
+    registrationDeadline: v.optional(v.string()),
     registrationFields: v.optional(v.array(v.object({
       id: v.string(),
       label: v.string(),
@@ -131,6 +135,11 @@ export default defineSchema({
     timestamp: v.number(),
     // When the privacy notice was shown with the form (guest registrations)
     noticeAcceptedAt: v.optional(v.number()),
+    // Team events: the team's name and the other players (the contact above is the first)
+    teamName: v.optional(v.string()),
+    teamMembers: v.optional(v.array(v.string())),
+    // Entered by the board in the backoffice (a phone call, someone at the bar)
+    addedByAdmin: v.optional(v.boolean()),
   })
     .index("by_event", ["eventId"])
     .index("by_event_email", ["eventId", "email"])

@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Users } from 'lucide-react';
 import { Input } from '../ui/UIComponents';
 import type { RegistrationErrors, RegistrationValues } from '../../hooks/useEventRegistration';
 import type { Event } from '../../types';
@@ -14,6 +15,7 @@ interface RegistrationFormProps {
     siteName: string;
     onChange: <K extends keyof RegistrationValues>(key: K, value: RegistrationValues[K]) => void;
     onExtraChange: (id: string, value: string) => void;
+    onMemberChange: (index: number, value: string) => void;
     onSubmit: () => void;
 }
 
@@ -26,14 +28,53 @@ const AUTOCOMPLETE: Record<string, string> = { email: 'email', phone: 'tel', tel
 
 const Required = () => <span aria-hidden="true" className="text-red-600 dark:text-red-400"> *</span>;
 
+interface TeamFieldsProps {
+    formId: string;
+    teamSize: number;
+    values: RegistrationValues;
+    errors: RegistrationErrors;
+    onChange: RegistrationFormProps['onChange'];
+    onMemberChange: RegistrationFormProps['onMemberChange'];
+}
+
+/**
+ * The person filling the form is player 1; the others are named here, because
+ * the board draws the brackets from this list and a team of one name is no use.
+ */
+const TeamFields: React.FC<TeamFieldsProps> = ({ formId, teamSize, values, errors, onChange, onMemberChange }) => (
+    <fieldset className="space-y-4 rounded-2xl border border-brand-500/20 bg-brand-500/5 p-4">
+        <legend className="flex items-center gap-2 px-1 text-sm font-semibold text-slate-900 dark:text-white">
+            <Users size={16} aria-hidden="true" className="text-brand-700 dark:text-brand-400" /> A sua equipa · {teamSize} jogadores
+        </legend>
+        <p className="text-xs text-slate-600 dark:text-slate-400">Você é o jogador 1 e o contacto da equipa. Basta uma inscrição por equipa.</p>
+        <div>
+            <label htmlFor={`${formId}-team`} className={LABEL}>Nome da equipa <span className="font-normal normal-case tracking-normal">(opcional)</span></label>
+            <Input id={`${formId}-team`} maxLength={100} value={values.teamName} onChange={(e) => onChange('teamName', e.target.value)} placeholder="Ex.: Os Ases" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+            {Array.from({ length: teamSize - 1 }, (_, i) => {
+                const key = `member-${i}`;
+                return (
+                    <div key={key}>
+                        <label htmlFor={`${formId}-${key}`} className={LABEL}>Jogador {i + 2}<Required /></label>
+                        <Input id={`${formId}-${key}`} maxLength={100} autoComplete="off" aria-required="true" value={values.teamMembers[i] ?? ''} aria-invalid={Boolean(errors[key])} aria-describedby={errors[key] ? `${formId}-${key}-error` : undefined} onChange={(e) => onMemberChange(i, e.target.value)} placeholder="Nome e apelido" />
+                        {errors[key] && <p id={`${formId}-${key}-error`} className={ERROR}>{errors[key]}</p>}
+                    </div>
+                );
+            })}
+        </div>
+    </fieldset>
+);
+
 /**
  * Name and email are always asked, then the event's own fields. Before, an
  * event with its own fields (a team name, say) dropped the base ones and then
  * refused the registration for lacking an email nobody could type.
  */
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({
-    formId, event, values, errors, isGuest, lockedEmail, siteName, onChange, onExtraChange, onSubmit,
+    formId, event, values, errors, isGuest, lockedEmail, siteName, onChange, onExtraChange, onMemberChange, onSubmit,
 }) => {
+    const teamSize = event.teamSize ?? 1;
     const describe = (id: string) => (errors[id] ? `${formId}-${id}-error` : undefined);
 
     // Opening the form lands on its first field, not on the button that opened it
@@ -50,7 +91,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
         >
             <div className="grid gap-5 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                    <label htmlFor={`${formId}-name`} className={LABEL}>Nome<Required /></label>
+                    <label htmlFor={`${formId}-name`} className={LABEL}>{teamSize >= 2 ? 'O seu nome (jogador 1)' : 'Nome'}<Required /></label>
                     <Input id={`${formId}-name`} autoComplete="name" aria-required="true" value={values.name} aria-invalid={Boolean(errors.name)} aria-describedby={describe('name')} onChange={(e) => onChange('name', e.target.value)} placeholder="O seu nome" />
                     {errors.name && <p id={`${formId}-name-error`} className={ERROR}>{errors.name}</p>}
                 </div>
@@ -64,6 +105,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
                     <Input id={`${formId}-phone`} type="tel" inputMode="tel" autoComplete="tel" value={values.phone} onChange={(e) => onChange('phone', e.target.value)} placeholder="9xx xxx xxx" />
                 </div>
             </div>
+
+            {teamSize >= 2 && <TeamFields formId={formId} teamSize={teamSize} values={values} errors={errors} onChange={onChange} onMemberChange={onMemberChange} />}
 
             {(event.registrationFields ?? []).map((field) => (
                 <div key={field.id}>

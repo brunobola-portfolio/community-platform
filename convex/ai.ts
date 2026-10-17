@@ -54,7 +54,10 @@ export const chat = action({
 
       // AI model configuration from DB settings (internal query), env vars, or defaults
       const settings = await ctx.runQuery(internal.settings.getForAI);
-      if (settings?.enableChatbot === false) throw new ConvexError("ERR_UNAVAILABLE");
+      // Admins test the assistant from the backoffice before switching it on for visitors
+      if (settings?.enableChatbot === false && !(await ctx.runQuery(api.lib.actionAuth.isAdminCaller))) {
+        throw new ConvexError("ERR_UNAVAILABLE");
+      }
       // The client already caps the message; the server is the boundary
       const message = args.message.slice(0, 2000);
       const chatModel = settings?.chatModel ?? process.env.GEMINI_CHAT_MODEL ?? DEFAULT_CHAT_MODEL;

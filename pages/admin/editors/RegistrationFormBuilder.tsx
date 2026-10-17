@@ -43,7 +43,7 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
 
             {fields.length === 0 ? (
                 <div className="text-center py-6 text-slate-400 text-xs italic border border-dashed border-slate-800 rounded-lg">
-                    O formulário já pede nome, email e telemóvel. Acrescente só o que faltar: nome do parceiro de jogo, tamanho da t-shirt, restrições alimentares.
+                    O formulário já pede nome, email e telemóvel (e os colegas, num evento por equipas). Acrescente só o que faltar: escalão, tamanho da t-shirt, restrições alimentares.
                 </div>
             ) : (
                 <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">

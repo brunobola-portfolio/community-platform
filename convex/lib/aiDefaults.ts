@@ -58,11 +58,13 @@ export const DEFAULT_OPENROUTER_VISION_MODEL = "google/gemini-2.5-flash";
 export const DEFAULT_OPENROUTER_MODEL = "google/gemma-4-26b-a4b-it:free";
 // Tried in order when the configured slug is retired or rate-limited upstream
 // (free slugs share capacity); the chat then falls back to Gemini if a key exists
+// Checked against openrouter.ai/api/v1/models on 2026-10-17: glm-5.2 and
+// minimax-m2.7 had been retired and cost every failing chat two dead requests
 export const OPENROUTER_FALLBACK_MODELS = [
   "google/gemma-4-26b-a4b-it:free",
+  "google/gemma-4-31b-it:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
   "nvidia/nemotron-3.5-lightning:free",
-  "z-ai/glm-5.2:free",
-  "minimax/minimax-m2.7:free",
 ];
 
 /**

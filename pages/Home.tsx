@@ -29,6 +29,7 @@ import { ShareBar } from '../components/ui/ShareBar';
 import { EventPoster } from '../components/events/EventPoster';
 import { absoluteUrl, eventPath, eventShareText, postPath } from '../utils/share';
 import { isEventUpcoming } from '../utils/eventTime';
+import { isRegistrationOpen, isTeamEvent } from '../utils/registrationState';
 import { PageMeta } from '../components/PageMeta';
 import { FALLBACK_IMAGES } from '../utils/constants';
 
@@ -117,9 +118,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
     ? selectedEvent.maxParticipants - (selectedEvent.currentParticipants ?? 0)
     : undefined;
   const eventIsFull = eventSlotsLeft !== undefined && eventSlotsLeft <= 0;
-  const eventCanRegister = Boolean(
-    selectedEvent && isEventUpcoming(selectedEvent.date) && selectedEvent.registrationOpen === true,
-  );
+  const eventCanRegister = Boolean(selectedEvent && isRegistrationOpen(selectedEvent));
 
   return (
     <div className="w-full overflow-x-hidden">
@@ -592,7 +591,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             {eventCanRegister && !eventIsFull ? (
               <Button onClick={() => { const id = selectedEvent.id; setSelectedEvent(null); onOpenEvent(id); }}>
                 <CheckCircle2 size={16} />
-                {selectedEvent.entryPrice && selectedEvent.entryPrice > 0 ? `Inscrever-me · ${selectedEvent.entryPrice} €` : 'Inscrever-me (grátis)'}
+                {`${isTeamEvent(selectedEvent) ? 'Inscrever equipa' : 'Inscrever-me'}${selectedEvent.entryPrice && selectedEvent.entryPrice > 0 ? ` · ${selectedEvent.entryPrice} €` : ' (grátis)'}`}
               </Button>
             ) : eventIsFull ? (
               <Button variant="outline" disabled>Vagas esgotadas</Button>
@@ -634,7 +633,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   )}
                   {selectedEvent.maxParticipants !== undefined && (
                     <div>
-                      <div className="text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">Vagas</div>
+                      <div className="text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1">{isTeamEvent(selectedEvent) ? 'Equipas' : 'Vagas'}</div>
                       <div className="text-lg font-bold text-slate-900 dark:text-white">
                         {selectedEvent.currentParticipants ?? 0} / {selectedEvent.maxParticipants}
                         {isFull && <span className="ml-2 text-xs text-red-600 dark:text-red-400 font-normal">Esgotado</span>}

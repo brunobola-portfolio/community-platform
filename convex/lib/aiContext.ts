@@ -93,10 +93,17 @@ export const gatherContext = internalQuery({
           line += ` [Torneio de ${sanitize(ev.tournamentType, 50)}]`;
         }
         if (ev.registrationOpen) {
-          line += " [Inscricoes Abertas]";
+          const details = [
+            ev.registrationDeadline ? `ate ${ev.registrationDeadline}` : null,
+            (ev.teamSize ?? 1) >= 2 ? `por equipas de ${ev.teamSize}` : null,
+            ev.allowGuestRegistration === false ? "so socios com conta" : "qualquer pessoa, sem conta",
+            ev.maxParticipants ? `${Math.max(0, ev.maxParticipants - (ev.currentParticipants ?? 0))} vagas` : null,
+          ].filter(Boolean).join(", ");
+          line += ` [Inscricoes Abertas: ${details}]`;
         }
         lines.push(line);
       }
+      lines.push("Para se inscrever: abrir o evento na Agenda do site e carregar em Inscrever. A organizacao confirma depois; quem tem conta acompanha o estado na Area de Socio.");
       lines.push("");
     } else {
       lines.push("### Proximos Eventos");

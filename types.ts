@@ -186,6 +186,10 @@ export interface Event {
   registrationOpen?: boolean;
   /** false = members only; unset or true = anyone may register, pending until the board confirms. */
   allowGuestRegistration?: boolean;
+  /** People per registration; 2+ makes it a team event and maxParticipants counts teams. */
+  teamSize?: number;
+  /** Last moment to register, wall-clock time at the venue like `date`. */
+  registrationDeadline?: string;
 
   // Dynamic Form Configuration
   registrationFields?: RegistrationFieldDefinition[];
@@ -214,6 +218,13 @@ export interface Registration {
   // Status
   status: RegistrationStatus;
   timestamp?: number;
+
+  // Team events
+  teamName?: string;
+  /** The other players; the contact above is the first. */
+  teamMembers?: string[];
+  /** Written down by the board (phone call, in person). */
+  addedByAdmin?: boolean;
 
   // Legacy/mock fields (used in Admin.tsx, not yet in Convex schema)
   mainContactName?: string;

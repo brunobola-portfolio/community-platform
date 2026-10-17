@@ -14,6 +14,8 @@ export interface CsvRegistration {
     timestamp?: number;
     customData?: Record<string, string | number | boolean>;
     eventTitle?: string;
+    teamName?: string;
+    teamMembers?: string[];
 }
 
 export interface CsvField {
@@ -30,19 +32,23 @@ export function csvCell(value: unknown): string {
     return /[";\r\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 }
 
-export function registrationsCsv(rows: CsvRegistration[], fields: CsvField[] = [], withEvent = false): string {
+export function registrationsCsv(rows: CsvRegistration[], fields: CsvField[] = [], withEvent = false, withTeam = false): string {
     const header = [
         ...(withEvent ? ['Evento'] : []),
+        ...(withTeam ? ['Equipa'] : []),
         'Nome', 'Email', 'Telemóvel', 'Estado', 'Inscrito em',
+        ...(withTeam ? ['Outros jogadores'] : []),
         ...fields.map((f) => f.label),
     ];
     const lines = rows.map((r) => [
         ...(withEvent ? [r.eventTitle ?? ''] : []),
+        ...(withTeam ? [r.teamName ?? ''] : []),
         r.name ?? '',
         r.email ?? '',
         r.phone ?? '',
         STATUS_LABELS[r.status] ?? r.status,
         r.timestamp ? new Date(r.timestamp).toLocaleString('pt-PT') : '',
+        ...(withTeam ? [(r.teamMembers ?? []).join(', ')] : []),
         ...fields.map((f) => r.customData?.[f.id] ?? ''),
     ]);
     return `\uFEFF${[header, ...lines].map((line) => line.map(csvCell).join(';')).join('\r\n')}\r\n`;

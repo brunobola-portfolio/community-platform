@@ -1,15 +1,20 @@
 
 import React from 'react';
-import { Bot, Shield, MessageSquare, Image as LucideImage, Loader2, Save } from 'lucide-react';
-import { Button } from '../../components/ui/UIComponents';
+import { Bot, Shield, Image as LucideImage } from 'lucide-react';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import { AdminSelect } from './components/AdminSelect';
 import { ProviderConfigSection } from './components/ProviderConfigSection';
 import { ImageEngineSection } from './components/ImageEngineSection';
 import { AIUsagePanel } from './ai/AIUsagePanel';
+import { TestChatSection } from './ai/TestChatSection';
+import { SaveBar } from './components/SaveBar';
+import { useData } from '../../context/DataContext';
 import type { AdminAITabProps } from './types';
 import { Field } from './components/Field';
 import { GEMINI_CHAT_MODELS, GEMINI_TTS_MODELS, GEMINI_IMAGE_MODELS } from '../../convex/lib/aiDefaults';
+
+/** Settings the test chat answers with; a difference here means the test is not what was typed. */
+const CHAT_KEYS = ['enableChatbot', 'chatModel', 'chatModelFallback', 'thinkingBudget', 'aiSystemPromptExtra', 'aiGuardrailsEnabled', 'aiAllowedTopics', 'aiForbiddenTopics', 'aiProvider', 'openrouterModel', 'customModel', 'customApiUrl'] as const;
 
 /**
  * AI & Chatbot configuration tab.
@@ -22,9 +27,11 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
     onSave,
     isSaving = false,
 }) => {
+    const { settings: saved } = useData();
     const update = <K extends keyof typeof settingsForm>(key: K, value: (typeof settingsForm)[K]) => {
         onSettingsChange({ ...settingsForm, [key]: value });
     };
+    const chatDirty = CHAT_KEYS.some(k => (settingsForm[k] ?? '') !== (saved[k] ?? ''));
 
     return (
         <div className="space-y-6 animate-fade-in-up">
@@ -34,14 +41,9 @@ export const AdminAITab: React.FC<AdminAITabProps> = ({
             <GuardrailsConfig settingsForm={settingsForm} update={update} />
             <ImageGenerationConfig settingsForm={settingsForm} update={update} />
             <ImageEngineSection settingsForm={settingsForm} update={update} />
-            <TestChatSection />
+            <TestChatSection enabled={saved.enableChatbot !== false} bubbleVisible={saved.showChatbotBubble !== false} dirty={chatDirty} />
 
-            <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-white/10 bg-dark-bg/95 p-4 backdrop-blur">
-                <span className="text-xs text-slate-400">As alterações só ficam no portal depois de guardar.</span>
-                <Button onClick={onSave} disabled={isSaving} className="min-w-[170px]">
-                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> Guardar alterações</>}
-                </Button>
-            </div>
+            <SaveBar onSave={onSave} isSaving={isSaving} dirty={chatDirty} />
         </div>
     );
 };
@@ -136,29 +138,6 @@ const ImageGenerationConfig: React.FC<ConfigSectionProps> = ({ settingsForm, upd
                     <option value="Formal e Institucional">Formal e Institucional</option>
                     <option value="Jovem e Dinâmico">Jovem e Dinâmico</option>
                 </AdminSelect></Field>
-        </div>
-    </div>
-);
-
-// ── Test Chat Section ───────────────────────────────────────────────────────
-
-const TestChatSection: React.FC = () => (
-    <div className="bg-dark-surface border border-white/10 rounded-2xl p-6">
-        <h3 className="text-xl font-serif text-white mb-6 flex items-center gap-2">
-            <MessageSquare className="text-green-400" /> Testar Chatbot
-        </h3>
-        <p className="text-slate-400 text-sm mb-4">Testa o chatbot com as definições atuais. As alterações devem ser guardadas primeiro.</p>
-        <div className="bg-black/40 border border-white/5 rounded-xl p-4 h-[300px] flex items-center justify-center">
-            <button
-                type="button"
-                onClick={() => {
-                    const bubble = document.querySelector('[data-chatbot-trigger]') as HTMLButtonElement | null;
-                    if (bubble) bubble.click();
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-700 rounded-lg text-white text-sm hover:bg-brand-800 transition-all"
-            >
-                <Bot size={16} /> Abrir Chat de Teste
-            </button>
         </div>
     </div>
 );

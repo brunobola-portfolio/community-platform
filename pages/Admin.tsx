@@ -137,6 +137,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const [deleteConfirm, setDeleteConfirm] = useState<DeleteConfirmState | null>(null);
     const [tempPhotoUrl, setTempPhotoUrl] = useState('');
     const [viewRegistration, setViewRegistration] = useState<Registration | null>(null);
+    // Set when Eventos sends the board to one event's registrations
+    const [registrationsEventId, setRegistrationsEventId] = useState<string | undefined>();
     const [studioKind, setStudioKind] = useState<'event' | 'post' | null>(null);
 
     useEffect(() => { setSettingsForm(settings); }, [settings]);
@@ -220,7 +222,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         for (const key of STORAGE_KEYS) delete copy[key];
         if (typeof item.title === 'string') copy.title = `${item.title} (Cópia)`;
         if (typeof item.name === 'string') copy.name = `${item.name} (Cópia)`;
-        if (type === 'event') { copy.date = formatDateForInput(new Date().toISOString()); copy.currentParticipants = 0; copy.slug = ''; copy.registrationOpen = false; }
+        if (type === 'event') { copy.date = formatDateForInput(new Date().toISOString()); copy.currentParticipants = 0; copy.slug = ''; copy.registrationOpen = false; copy.registrationDeadline = ''; }
         else if (type === 'post') { copy.date = formatDateForInput(new Date().toISOString()); copy.published = false; copy.slug = ''; }
         else if (type === 'document' || type === 'album') { copy.date = new Date().toISOString().split('T')[0]; }
         else if (type === 'notification') { copy.date = new Date().toISOString(); }
@@ -266,7 +268,10 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 const { currentParticipants: _count, ...event } = rest;
                 const limit = Number(event.maxParticipants);
                 // 0 clears the limit: undefined would be dropped by the client and keep the old one
-                return { ...event, categoryId: event.categoryId || categories[0]?.id || '', entryPrice: Number(event.entryPrice) || 0, maxParticipants: limit > 0 ? limit : (editingId ? 0 : undefined), registrationFields: event.registrationFields || [] };
+                return { ...event, categoryId: event.categoryId || categories[0]?.id || '', entryPrice: Number(event.entryPrice) || 0, maxParticipants: limit > 0 ? limit : (editingId ? 0 : undefined), registrationFields: event.registrationFields || [],
+                    // 1 and "" clear them on the server; undefined would be dropped and keep the old value
+                    teamSize: Number(event.teamSize) >= 2 ? Number(event.teamSize) : (editingId ? 1 : undefined),
+                    registrationDeadline: event.registrationDeadline ? String(event.registrationDeadline) : (editingId ? '' : undefined) };
             }
             case 'post':
                 return {
@@ -451,8 +456,8 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     {activeTab === 'member-quotas' && <AdminMemberQuotasTab />}
                     {activeTab === 'access' && <AdminAccessTab siteName={settings.siteName} notify={notify} />}
                     {activeTab === 'homepage' && <HomepageTab actionAreas={actionAreas} stats={stats} {...handlers} onNewStat={() => openModalFor('stat')} />}
-                    {activeTab === 'events' && <EventsTab events={events} {...handlers} />}
-                    {activeTab === 'registrations' && <RegistrationsTab events={events} registrations={registrations} onView={setViewRegistration} onSetStatus={(id, status) => updateRegistrationStatus(id, status)} onBulkStatus={bulkUpdateRegistrationStatus} onRemove={removeRegistration} notify={notify} />}
+                    {activeTab === 'events' && <EventsTab events={events} registrations={registrations} onOpenRegistrations={id => { setRegistrationsEventId(id); setActiveTab('registrations'); }} {...handlers} />}
+                    {activeTab === 'registrations' && <RegistrationsTab key={registrationsEventId} initialEventId={registrationsEventId} events={events} registrations={registrations} onView={setViewRegistration} onSetStatus={(id, status) => updateRegistrationStatus(id, status)} onBulkStatus={bulkUpdateRegistrationStatus} onRemove={removeRegistration} notify={notify} />}
                     {activeTab === 'news' && <NewsTab posts={posts} {...handlers} />}
                     {activeTab === 'members' && <MembersTab members={members} {...handlers} />}
                     {activeTab === 'sponsors' && <SponsorsTab sponsors={sponsors} sponsorTiers={sponsorTiers} {...handlers} />}

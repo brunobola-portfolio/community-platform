@@ -25,6 +25,50 @@ const CategoryOptions: React.FC<{ categories: AdminFormModalProps['categories'];
 
 // ── Event Form ──────────────────────────────────────────────────────────────
 
+const SEGMENT_CLASS = 'flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+
+interface SegmentedProps {
+    label: string;
+    name: string;
+    value: string;
+    options: Array<{ value: string; label: string }>;
+    onChange: (value: string) => void;
+    hint?: string;
+}
+
+/** Two or three exclusive choices shown side by side, so the current one is never hidden in a select. */
+const Segmented: React.FC<SegmentedProps> = ({ label, name, value, options, onChange, hint }) => (
+    <div className="space-y-2">
+        <span className={LABEL_CLASS} id={`${name}-label`}>{label}</span>
+        <div role="radiogroup" aria-labelledby={`${name}-label`} className="flex gap-1 rounded-xl border border-white/10 bg-black/20 p-1">
+            {options.map(o => (
+                <button key={o.value} type="button" role="radio" aria-checked={value === o.value} onClick={() => onChange(o.value)}
+                    className={cn(SEGMENT_CLASS, value === o.value ? 'bg-brand-700 text-white shadow' : 'text-slate-300 hover:bg-white/5')}>
+                    {o.label}
+                </button>
+            ))}
+        </div>
+        {hint && <p className="text-xs text-slate-400">{hint}</p>}
+    </div>
+);
+
+/** Per person or per team: a team event counts teams and asks for every player's name. */
+const RegistrationKind: React.FC<{ teamSize: number; onChange: (size: number) => void }> = ({ teamSize, onChange }) => {
+    const team = teamSize >= 2;
+    return (
+        <div className="space-y-3">
+            <Segmented label="Cada inscrição é de" name="registration-kind" value={team ? 'team' : 'person'}
+                options={[{ value: 'person', label: 'Uma pessoa' }, { value: 'team', label: 'Uma equipa' }]}
+                onChange={v => onChange(v === 'team' ? (team ? teamSize : 2) : 1)} />
+            {team && (
+                <Field label="Jogadores por equipa" hint="Quem inscreve escreve o nome dos colegas. Os lugares e o preço passam a contar equipas.">
+                    <input type="number" min="2" max="20" inputMode="numeric" value={teamSize} onChange={e => onChange(Math.min(20, Math.max(2, parseInt(e.target.value) || 2)))} className={STD_INPUT_CLASS} />
+                </Field>
+            )}
+        </div>
+    );
+};
+
 interface EventFormProps extends FieldHelpers, NumHelper {
     formData: AdminFormData;
     bool: (key: string) => boolean;
@@ -46,6 +90,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 }) => {
     // Stored as a number, edited as a string: show whichever the record currently holds
     const numStr = (key: string) => str(key) || (Number.isNaN(num(key, NaN)) ? '' : String(num(key, NaN)));
+    const team = num('teamSize', 1) >= 2;
     return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-6">
@@ -93,17 +138,22 @@ export const EventForm: React.FC<EventFormProps> = ({
                 </label>
                 {bool('registrationOpen') && (
                     <>
+                        <RegistrationKind teamSize={num('teamSize', 1)} onChange={size => setField('teamSize', size)} />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Field label="Lugares disponíveis" hint="Vazio = sem limite. Quando enchem, o site mostra “Esgotado”."><input type="number" min="1" inputMode="numeric" value={numStr('maxParticipants')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
-                            <Field label="Preço por pessoa (€)" hint="Vazio ou 0 = grátis. O pagamento combina-se com a organização."><input type="number" min="0" step="0.5" inputMode="decimal" value={numStr('entryPrice')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                            <Field label={team ? 'Equipas disponíveis' : 'Lugares disponíveis'} hint={`Vazio = sem limite. Quando ${team ? 'enchem as equipas' : 'enchem'}, o site mostra “Esgotado”.`}><input type="number" min="1" inputMode="numeric" value={numStr('maxParticipants')} onChange={e => setField('maxParticipants', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                            <Field label={team ? 'Preço por equipa (€)' : 'Preço por pessoa (€)'} hint="Vazio ou 0 = grátis. O pagamento combina-se com a organização."><input type="number" min="0" step="0.5" inputMode="decimal" value={numStr('entryPrice')} onChange={e => setField('entryPrice', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                         </div>
-                        <label className="flex items-start gap-2 cursor-pointer rounded-lg border border-white/10 bg-black/20 p-3">
-                            <input type="checkbox" className="accent-brand-500 w-4 h-4 mt-0.5" checked={formData.allowGuestRegistration === false} onChange={e => setField('allowGuestRegistration', !e.target.checked)} />
-                            <span className="text-sm text-slate-300">
-                                Só sócios com conta se podem inscrever
-                                <span className="block text-xs text-slate-400">Desligado (recomendado): quem abre o evento num link do WhatsApp inscreve-se só com nome e email.</span>
-                            </span>
-                        </label>
+                        <Field label="Inscrições até (opcional)" hint="Vazio = abertas até o evento começar. Depois do prazo, só a Direção pode acrescentar inscrições."><input type="datetime-local" value={str('registrationDeadline')} max={str('date') || undefined} onChange={e => setField('registrationDeadline', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                        <Segmented
+                            label="Quem se pode inscrever"
+                            name="registration-audience"
+                            value={formData.allowGuestRegistration === false ? 'members' : 'anyone'}
+                            options={[{ value: 'anyone', label: 'Qualquer pessoa' }, { value: 'members', label: 'Só sócios com conta' }]}
+                            onChange={v => setField('allowGuestRegistration', v === 'anyone')}
+                            hint={formData.allowGuestRegistration === false
+                                ? 'Quem não tem sessão iniciada vê “Iniciar sessão para inscrever”. Contas novas só se criam em Acessos.'
+                                : 'Recomendado. Quem abre o evento num link do WhatsApp inscreve-se só com nome e email, sem conta.'}
+                        />
                         <RegistrationFormBuilder
                             fields={Array.isArray(formData.registrationFields) ? formData.registrationFields as Array<{ id: string; label: string; type: string; required: boolean; placeholder?: string }> : []}
                             onChange={fields => onFormDataChange({ ...formData, registrationFields: fields })}

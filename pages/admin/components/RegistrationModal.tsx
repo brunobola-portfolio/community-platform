@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, ClipboardList, Mail, MessageCircle, XCircle } from 'lucide-react';
+import { CheckCircle2, ClipboardList, Mail, MessageCircle, Users, XCircle } from 'lucide-react';
 import { Badge, Button, Modal } from '../../../components/ui/UIComponents';
 import type { Registration } from '../../../types';
 
@@ -63,10 +63,10 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ registrati
             <div className="space-y-5">
                 <dl className="grid grid-cols-2 gap-4">
                     <Field label="Nome" value={registration.name ?? '—'} />
-                    <Field label="Email" value={registration.email ?? '—'} />
+                    <Field label="Email" value={registration.email || '—'} />
                     <Field label="Telemóvel" value={registration.phone || '—'} />
                     <Field label="Data" value={registration.timestamp ? new Date(registration.timestamp).toLocaleString('pt-PT') : '—'} />
-                    <Field label="Conta" value={registration.userId ? 'Sócio com sessão' : 'Sem conta'} />
+                    <Field label="Origem" value={registration.addedByAdmin ? 'Adicionada pela Direção' : registration.userId ? 'Sócio com sessão' : 'Site, sem conta'} />
                     <Field
                         label="Estado"
                         value={
@@ -80,6 +80,17 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ registrati
                         }
                     />
                 </dl>
+
+                {(registration.teamName || registration.teamMembers?.length) && (
+                    <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                        <h4 className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-brand-400"><Users size={14} aria-hidden="true" /> {registration.teamName || 'Equipa'}</h4>
+                        <ol className="list-inside list-decimal space-y-1 text-sm text-white">
+                            {[registration.name, ...(registration.teamMembers ?? [])].filter(Boolean).map((player, i) => (
+                                <li key={i}>{player}{i === 0 && <span className="text-slate-400"> · contacto</span>}</li>
+                            ))}
+                        </ol>
+                    </div>
+                )}
 
                 {(registration.email || registration.phone) && (
                     <div className="flex flex-wrap gap-2">

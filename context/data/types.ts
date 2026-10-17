@@ -36,6 +36,8 @@ export interface ConvexEvent extends ConvexDoc {
   currentParticipants?: number;
   registrationOpen?: boolean;
   allowGuestRegistration?: boolean;
+  teamSize?: number;
+  registrationDeadline?: string;
   registrationFields?: Array<{
     id: string;
     label: string;
@@ -100,6 +102,10 @@ export interface ConvexRegistration extends ConvexDoc {
   phone?: string;
   status: string;
   timestamp: number;
+  customData?: Record<string, string | number | boolean>;
+  teamName?: string;
+  teamMembers?: string[];
+  addedByAdmin?: boolean;
 }
 
 export interface ConvexDocument extends ConvexDoc {

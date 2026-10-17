@@ -96,6 +96,10 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   enhance), helpers em `lib/aiShared.ts`.
 - **Listas públicas vs backoffice**: `DataContext` expõe `events`/`posts`/`sponsors` (só
   publicados/ativos) e `adminEvents`/`adminPosts`/`adminSponsors` (tudo, via `listAll`). Não misturar.
+- **Inscrições têm uma porta só**: `insertRegistration` (`convex/lib/registrationRules.ts`) serve
+  sócios, convidados e a Direção (`addByAdmin`: confirmada, email opcional, ignora fecho/prazo mas
+  não a lotação). Equipas (`teamSize` ≥ 2) contam como uma vaga; prazo em `registrationDeadline`.
+  O cliente decide botões com `utils/registrationState.ts`, que espelha `closedReason`.
 - **Datas de eventos** guardam-se sem fuso (hora da sede). No servidor lêem-se com
   `parseEventDate` (`convex/lib/time.ts`, `Europe/Lisbon`); no cliente, "próximo/realizado"
   vem só de `utils/eventTime.ts`. Nunca `new Date(event.date)` para decidir prazos no servidor.

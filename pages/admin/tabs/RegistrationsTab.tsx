@@ -1,22 +1,26 @@
 import React, { useMemo, useState } from 'react';
-import { Check, ClipboardCheck, Copy, Download, Printer, UserX, X } from 'lucide-react';
+import { Check, ClipboardCheck, UserX, X } from 'lucide-react';
 import { Badge, Button } from '../../../components/ui/UIComponents';
 import { EntityList } from '../components/EntityList';
-import { AdminSelect } from '../components/AdminSelect';
 import { DeleteConfirmDialog } from '../components/DeleteConfirmDialog';
+import { RegistrationsHeader, ALL_EVENTS } from '../registrations/RegistrationsHeader';
+import { AddRegistrationModal } from '../registrations/AddRegistrationModal';
 import { downloadCsv, registrationsCsv, csvFileName } from '../../../utils/registrationsCsv';
 import { doorListHtml, printDoorList } from '../../../utils/doorList';
 import { formatEventDate } from '../../../utils/share';
-import { progressWidthClass } from '../../../utils/text';
+import { isEventUpcoming } from '../../../utils/eventTime';
+import { isTeamEvent, teamSummary } from '../../../utils/registrationState';
 import type { ListFilter, ListSort } from '../../../hooks/useAdminList';
 import type { ActionResult, Event, Registration, RegistrationStatus } from '../../../types';
 import { describeActionError } from '../errors';
 
-type Row = Registration & { eventTitle: string };
+type Row = Registration & { eventTitle: string; team: string };
 
 interface RegistrationsTabProps {
     events: Event[];
     registrations: Registration[];
+    /** Opened from an event's row in Eventos: start on that event. */
+    initialEventId?: string;
     onView: (registration: Registration) => void;
     onSetStatus: (id: string, status: RegistrationStatus) => Promise<ActionResult>;
     onBulkStatus: (ids: string[], status: RegistrationStatus) => Promise<ActionResult>;
@@ -24,10 +28,8 @@ interface RegistrationsTabProps {
     notify: (message: string, type?: 'success' | 'error' | 'info') => void;
 }
 
-const ALL = 'all';
-
 const STATUS: Record<RegistrationStatus, { label: string; className: string }> = {
-    pending: { label: 'Pendente', className: 'border-amber-500/20 bg-amber-500/10 text-amber-300' },
+    pending: { label: 'Por confirmar', className: 'border-amber-500/20 bg-amber-500/10 text-amber-300' },
     confirmed: { label: 'Confirmada', className: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400' },
     cancelled: { label: 'Cancelada', className: 'border-red-500/20 bg-red-500/10 text-red-400' },
 };
@@ -47,49 +49,48 @@ const SORTS: ListSort<Row>[] = [
 
 /** The event the board is most likely handling now: the next one taking registrations. */
 function defaultEvent(events: Event[], registrations: Registration[]): string {
-    const now = Date.now();
     const open = events
-        .filter(e => e.registrationOpen && new Date(e.date).getTime() >= now)
+        .filter(e => e.registrationOpen && isEventUpcoming(e.date))
         .sort((a, b) => a.date.localeCompare(b.date));
     if (open[0]) return open[0].id;
     const withRegistrations = events.find(e => registrations.some(r => r.eventId === e.id));
-    return withRegistrations?.id ?? ALL;
+    return withRegistrations?.id ?? ALL_EVENTS;
 }
 
-const Stat: React.FC<{ label: string; value: React.ReactNode; tone?: string }> = ({ label, value, tone = 'text-white' }) => (
-    <div className="min-w-[88px]">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</div>
-        <div className={`mt-1 text-2xl font-semibold tabular-nums ${tone}`}>{value}</div>
-    </div>
+const StatusBadge: React.FC<{ row: Row }> = ({ row }) => (
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+        <Badge className={STATUS[row.status].className}>{STATUS[row.status].label}</Badge>
+        {row.addedByAdmin && <Badge className="border-white/10 bg-white/5 text-slate-300" title="Adicionada no backoffice">Direção</Badge>}
+    </span>
 );
 
 /**
  * Everything the board does after an event is published with registrations:
- * see who is coming, confirm, cancel, and take the list to the door.
+ * see who is coming, confirm, cancel, write down a phone call, and take the
+ * list to the door.
  */
-export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, registrations, onView, onSetStatus, onBulkStatus, onRemove, notify }) => {
-    const [eventId, setEventId] = useState(() => defaultEvent(events, registrations));
+export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, registrations, initialEventId, onView, onSetStatus, onBulkStatus, onRemove, notify }) => {
+    const [eventId, setEventId] = useState(() => (initialEventId && events.some(e => e.id === initialEventId) ? initialEventId : defaultEvent(events, registrations)));
     const [busy, setBusy] = useState(false);
     const [toRemove, setToRemove] = useState<Row | null>(null);
+    const [adding, setAdding] = useState(false);
 
     const titles = useMemo(() => new Map(events.map(e => [e.id, e.title])), [events]);
     const event = events.find(e => e.id === eventId);
+    const team = event ? isTeamEvent(event) : registrations.some(r => r.teamMembers?.length);
     const pickable = useMemo(() => events
         .filter(e => e.registrationOpen || registrations.some(r => r.eventId === e.id))
         .sort((a, b) => b.date.localeCompare(a.date)), [events, registrations]);
 
     const rows: Row[] = useMemo(() => registrations
-        .filter(r => eventId === ALL || r.eventId === eventId)
-        .map(r => ({ ...r, eventTitle: titles.get(r.eventId) ?? 'Evento apagado' })), [registrations, eventId, titles]);
+        .filter(r => eventId === ALL_EVENTS || r.eventId === eventId)
+        .map(r => ({ ...r, eventTitle: titles.get(r.eventId) ?? 'Evento apagado', team: r.teamMembers?.length || r.teamName ? teamSummary(r) : '' })), [registrations, eventId, titles]);
 
     const counts = useMemo(() => ({
         pending: rows.filter(r => r.status === 'pending').length,
         confirmed: rows.filter(r => r.status === 'confirmed').length,
         cancelled: rows.filter(r => r.status === 'cancelled').length,
     }), [rows]);
-    const active = counts.pending + counts.confirmed;
-    const capacity = event?.maxParticipants;
-    const percent = capacity ? Math.min(100, Math.round((active / capacity) * 100)) : 0;
 
     const run = async (work: () => Promise<ActionResult>, done: string) => {
         setBusy(true);
@@ -114,21 +115,23 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
 
     const exportList = () => {
         const fields = event?.registrationFields?.map(f => ({ id: f.id, label: f.label })) ?? [];
-        const ordered = attending;
-        downloadCsv(registrationsCsv(ordered, fields, eventId === ALL), csvFileName(event?.slug));
+        downloadCsv(registrationsCsv(attending, fields, eventId === ALL_EVENTS, team), csvFileName(event?.slug));
         notify('Lista exportada. Abre no Excel ou no Google Sheets.', 'info');
     };
 
     const printList = () => {
         if (!event) return;
         const fields = event.registrationFields ?? [];
-        const html = doorListHtml(event.title, `${formatEventDate(event.date)} · ${event.location}`, fields.map(f => f.label),
-            attending.map(r => ({ name: r.name, phone: r.phone, status: r.status, answers: fields.map(f => String(r.customData?.[f.id] ?? '')) })));
+        const questions = [...(team ? ['Equipa'] : []), ...fields.map(f => f.label)];
+        const html = doorListHtml(event.title, `${formatEventDate(event.date)} · ${event.location}`, questions,
+            attending.map(r => ({ name: r.name, phone: r.phone, status: r.status, answers: [...(team ? [r.team] : []), ...fields.map(f => String(r.customData?.[f.id] ?? ''))] })),
+            team ? ['equipa', 'equipas'] : undefined);
         if (!printDoorList(html)) notify('O browser bloqueou a janela de impressão. Permita janelas para este site e tente de novo.', 'error');
     };
 
     const copyEmails = async () => {
-        const emails = [...new Set(rows.filter(r => r.status !== 'cancelled').map(r => r.email).filter(Boolean))].join('; ');
+        const emails = [...new Set(attending.map(r => r.email).filter(Boolean))].join('; ');
+        if (!emails) { notify('Nenhuma destas inscrições tem email.', 'info'); return; }
         try {
             await navigator.clipboard.writeText(emails);
             notify('Emails copiados. Cole-os no campo Bcc de um email.', 'info');
@@ -139,73 +142,30 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
 
     return (
         <div className="space-y-6">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div className="w-full max-w-md">
-                        <label htmlFor="registrations-event" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-brand-400">Evento</label>
-                        <AdminSelect id="registrations-event" value={eventId} onChange={e => setEventId(e.target.value)}>
-                            <option value={ALL}>Todos os eventos</option>
-                            {pickable.map(e => (
-                                <option key={e.id} value={e.id}>{new Date(e.date).toLocaleDateString('pt-PT')} · {e.title}</option>
-                            ))}
-                        </AdminSelect>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        <Button onClick={confirmPending} disabled={busy || counts.pending === 0} className="bg-emerald-600 hover:bg-emerald-500">
-                            <Check size={16} /> Confirmar pendentes{counts.pending ? ` (${counts.pending})` : ''}
-                        </Button>
-                        <Button variant="outline" onClick={printList} disabled={!event || attending.length === 0} title={event ? undefined : 'Escolha um evento'}>
-                            <Printer size={16} /> Lista para a porta
-                        </Button>
-                        <Button variant="outline" onClick={exportList} disabled={attending.length === 0}>
-                            <Download size={16} /> Exportar (Excel)
-                        </Button>
-                        <Button variant="outline" onClick={copyEmails} disabled={active === 0}>
-                            <Copy size={16} /> Copiar emails
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="mt-5 flex flex-wrap items-end gap-6 border-t border-white/10 pt-5">
-                    <Stat label="Por confirmar" value={counts.pending} tone={counts.pending ? 'text-amber-300' : 'text-white'} />
-                    <Stat label="Confirmadas" value={counts.confirmed} tone="text-emerald-400" />
-                    <Stat label="Canceladas" value={counts.cancelled} tone="text-slate-400" />
-                    {capacity ? (
-                        <div className="min-w-[220px] flex-1">
-                            <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                                <span>Lotação</span><span className="tabular-nums">{active} / {capacity}</span>
-                            </div>
-                            <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-700" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label="Lotação">
-                                <div className={`h-full rounded-full ${percent >= 100 ? 'bg-red-500' : percent > 85 ? 'bg-amber-400' : 'bg-emerald-500'} ${progressWidthClass(percent)}`} />
-                            </div>
-                            <p className="mt-1.5 text-xs text-slate-400">{capacity - active > 0 ? `${capacity - active} lugares livres` : 'Esgotado — novas inscrições são recusadas'}</p>
-                        </div>
-                    ) : event ? (
-                        <p className="text-xs text-slate-400">Sem limite de lugares neste evento.</p>
-                    ) : null}
-                </div>
-                {event && !event.registrationOpen && (
-                    <p className="mt-4 rounded-lg bg-white/5 p-3 text-xs text-slate-400">As inscrições deste evento estão fechadas. Abra-as no evento para voltar a receber.</p>
-                )}
-            </div>
+            <RegistrationsHeader
+                events={pickable} eventId={eventId} onEventChange={setEventId} event={event} counts={counts} busy={busy}
+                hasAttending={attending.length > 0} onConfirmPending={confirmPending} onAdd={() => setAdding(true)}
+                onPrint={printList} onExport={exportList} onCopyEmails={() => void copyEmails()} notify={notify}
+            />
 
             <EntityList<Row>
                 items={rows}
                 getKey={r => r.id}
                 getTitle={r => r.name ?? 'Sem nome'}
-                getSubtitle={r => [r.email, eventId === ALL ? r.eventTitle : undefined].filter(Boolean).join(' · ')}
-                getStatus={r => <Badge className={STATUS[r.status].className}>{STATUS[r.status].label}</Badge>}
-                search={r => `${r.name ?? ''} ${r.email ?? ''} ${r.phone ?? ''} ${r.eventTitle} ${Object.values(r.customData ?? {}).join(' ')}`}
+                getSubtitle={r => [r.team || r.email, eventId === ALL_EVENTS ? r.eventTitle : undefined].filter(Boolean).join(' · ')}
+                getStatus={r => <StatusBadge row={r} />}
+                search={r => `${r.name ?? ''} ${r.email ?? ''} ${r.phone ?? ''} ${r.eventTitle} ${r.team} ${Object.values(r.customData ?? {}).join(' ')}`}
                 filters={FILTERS}
                 sorts={SORTS}
-                searchPlaceholder="Pesquisar por nome, email, telemóvel ou equipa"
+                searchPlaceholder={team ? 'Pesquisar por nome, equipa, email ou telemóvel' : 'Pesquisar por nome, email ou telemóvel'}
                 noun={['inscrição', 'inscrições']}
                 columns={[
-                    { header: 'Participante', cell: r => <div><div className="font-medium text-white">{r.name}</div><div className="text-xs text-slate-400">{r.email}</div></div> },
-                    ...(eventId === ALL ? [{ header: 'Evento', cell: (r: Row) => <span className="line-clamp-1 max-w-[220px] text-slate-300">{r.eventTitle}</span> }] : []),
+                    { header: 'Participante', cell: r => <div><div className="font-medium text-white">{r.name}</div><div className="text-xs text-slate-400">{r.email || 'Sem email'}</div></div> },
+                    ...(team ? [{ header: 'Equipa', cell: (r: Row) => <span className="line-clamp-2 max-w-[240px] text-slate-300">{r.team || '—'}</span> }] : []),
+                    ...(eventId === ALL_EVENTS ? [{ header: 'Evento', cell: (r: Row) => <span className="line-clamp-1 max-w-[220px] text-slate-300">{r.eventTitle}</span> }] : []),
                     { header: 'Telemóvel', cell: r => <span className="tabular-nums text-slate-400">{r.phone || '—'}</span> },
                     { header: 'Inscrito em', cell: r => <span className="tabular-nums text-slate-400">{r.timestamp ? new Date(r.timestamp).toLocaleString('pt-PT', { dateStyle: 'short', timeStyle: 'short' }) : '—'}</span> },
-                    { header: 'Estado', cell: r => <Badge className={STATUS[r.status].className}>{STATUS[r.status].label}</Badge> },
+                    { header: 'Estado', cell: r => <StatusBadge row={r} /> },
                 ]}
                 extraActions={r => (
                     <>
@@ -224,14 +184,15 @@ export const RegistrationsTab: React.FC<RegistrationsTabProps> = ({ events, regi
                 )}
                 onEdit={r => onView(r)}
                 editLabel="Ver"
-
                 onDelete={r => setToRemove(r)}
-                emptyIcon={eventId === ALL ? ClipboardCheck : UserX}
-                emptyTitle={eventId === ALL ? 'Ainda não há inscrições' : 'Ninguém se inscreveu ainda'}
-                emptyDescription={eventId === ALL
+                emptyIcon={eventId === ALL_EVENTS ? ClipboardCheck : UserX}
+                emptyTitle={eventId === ALL_EVENTS ? 'Ainda não há inscrições' : 'Ninguém se inscreveu ainda'}
+                emptyDescription={eventId === ALL_EVENTS
                     ? 'Abra as inscrições num evento (Eventos → editar → «Aceitar inscrições pelo site») e partilhe-o no WhatsApp.'
-                    : 'Partilhe o evento no WhatsApp ou no Facebook a partir do site: as inscrições aparecem aqui assim que chegarem.'}
+                    : 'Partilhe o evento no WhatsApp ou no Facebook. Quem ligar ou aparecer no bar entra em «Adicionar».'}
             />
+
+            {adding && event && <AddRegistrationModal event={event} onClose={() => setAdding(false)} notify={notify} />}
 
             {toRemove && (
                 <DeleteConfirmDialog

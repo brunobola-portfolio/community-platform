@@ -1,5 +1,6 @@
 import { query } from "../_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { isAdmin } from "./auth";
 
 /**
  * Query that checks if the current user is authenticated.
@@ -52,4 +53,10 @@ export const checkAdminAuth = query({
     }
     return userId;
   },
+});
+
+/** True for a signed-in admin, false otherwise; never throws. */
+export const isAdminCaller = query({
+  args: {},
+  handler: async (ctx) => isAdmin(ctx),
 });

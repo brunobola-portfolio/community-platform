@@ -9,6 +9,7 @@ import { assertCategoryExists, assertUniqueSlug, uniqueSlug, validateMaxLength, 
 // and the detail view loads the body on demand through getById.
 import { toExcerpt } from "./lib/text";
 import { retainUrl } from "./lib/uploads";
+import { normalizeRegistrationSettings } from "./lib/registrationRules";
 
 export const list = query({
     args: {},
@@ -117,6 +118,8 @@ export const create = mutation({
         currentParticipants: v.optional(v.number()),
         registrationOpen: v.optional(v.boolean()),
         allowGuestRegistration: v.optional(v.boolean()),
+        teamSize: v.optional(v.number()),
+        registrationDeadline: v.optional(v.string()),
         registrationFields: v.optional(v.array(v.object({
             id: v.string(),
             label: v.string(),
@@ -144,7 +147,7 @@ export const create = mutation({
         const sanitizedDescription = sanitizeContentServer(args.description);
 
         await retainUrl(ctx, args.externalImage);
-        const eventId = await ctx.db.insert("events", { ...args, slug, description: sanitizedDescription });
+        const eventId = await ctx.db.insert("events", { ...args, ...normalizeRegistrationSettings(args), slug, description: sanitizedDescription });
         return eventId;
     },
 });
@@ -169,6 +172,8 @@ export const update = mutation({
         currentParticipants: v.optional(v.number()),
         registrationOpen: v.optional(v.boolean()),
         allowGuestRegistration: v.optional(v.boolean()),
+        teamSize: v.optional(v.number()),
+        registrationDeadline: v.optional(v.string()),
         registrationFields: v.optional(v.array(v.object({
             id: v.string(),
             label: v.string(),
@@ -199,6 +204,8 @@ export const update = mutation({
         if (updates.maxParticipants !== undefined && updates.maxParticipants <= 0) {
             updates.maxParticipants = undefined;
         }
+        // "" and 1 arrive from the form to clear the deadline and the team size
+        Object.assign(updates, normalizeRegistrationSettings(updates));
         // Sanitize HTML description if provided (defense-in-depth)
         if (updates.description !== undefined) {
             updates.description = sanitizeContentServer(updates.description);

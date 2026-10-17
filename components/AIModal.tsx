@@ -29,6 +29,11 @@ interface AIModalProps {
   initialQuery?: string;
   /** Notifies the owner that initialQuery was sent, so it can clear the pending state. */
   onInitialQueryConsumed?: () => void;
+  /**
+   * Where a suggested link goes. The backoffice test opens pages in a new tab
+   * instead of leaving the settings with unsaved changes.
+   */
+  onNavigatePath?: (path: string) => void;
 }
 
 const buildWelcomeMessage = (siteName: string): ChatMessageData => ({
@@ -61,7 +66,7 @@ const getAiErrorMessage = (error: unknown): string => {
   return AI_ERROR_MESSAGES[token] ?? 'Não foi possível obter resposta. Tenta novamente.';
 };
 
-export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery, onInitialQueryConsumed }) => {
+export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery, onInitialQueryConsumed, onNavigatePath }) => {
   const chatAction = useAction(api.ai.chat);
   const ttsAction = useAction(api.aiMedia.tts);
   const navigate = useNavigate();
@@ -71,6 +76,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
   // first paint is used; only the conversation itself is state
   const welcomeMessage = useMemo(() => buildWelcomeMessage(settings.siteName), [settings.siteName]);
   const [conversation, setConversation] = useState<ChatMessageData[]>([]);
+  const sentQueryRef = useRef<string | undefined>(undefined);
   const messages = useMemo(() => [welcomeMessage, ...conversation], [welcomeMessage, conversation]);
   const dialogRef = useRef<HTMLElement>(null);
   useFocusTrap(dialogRef, isOpen);
@@ -97,6 +103,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
   };
 
   const handleNavigate = (path: string) => {
+    if (onNavigatePath) { onNavigatePath(path); return; }
     navigate(path);
     onClose();
   };
@@ -161,7 +168,10 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
   // Auto-send a question handed off from another surface (e.g. hero search).
   // isThinking in the deps queues the send until any in-flight reply settles.
   useEffect(() => {
-    if (!isOpen || !initialQuery || isThinking) return;
+    if (!initialQuery) { sentQueryRef.current = undefined; return; }
+    // Mounting already open with a question runs this twice in development; one send is enough
+    if (!isOpen || isThinking || sentQueryRef.current === initialQuery) return;
+    sentQueryRef.current = initialQuery;
     onInitialQueryConsumed?.();
     void handleSend(initialQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps

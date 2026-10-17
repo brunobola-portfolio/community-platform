@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Globe, MapPin, Facebook, BookOpen, Plus, Trash2, CreditCard, Loader2, Save } from 'lucide-react';
-import { Button } from '../../components/ui/UIComponents';
+import { Globe, MapPin, Facebook, BookOpen, Plus, Trash2, CreditCard } from 'lucide-react';
 import { AdminSelect } from './components/AdminSelect';
 import { STD_INPUT_CLASS, LABEL_CLASS } from './constants';
 import type { AdminSettingsTabProps } from './types';
@@ -9,6 +8,7 @@ import type { AboutPillar } from '../../types';
 import { AdminIdentitySection } from './AdminIdentitySection';
 import { AdminBrandSection } from './AdminBrandSection';
 import { Field } from './components/Field';
+import { SaveBar } from './components/SaveBar';
 
 // Icon options must match PILLAR_ICONS in pages/About.tsx
 const PILLAR_ICON_OPTIONS = ['Target', 'Shield', 'Users', 'Heart', 'Trophy', 'Handshake', 'Star', 'Sparkles'];
@@ -201,12 +201,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
             </div>
 
             {/* Save Button */}
-            <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-white/10 bg-dark-bg/95 p-4 backdrop-blur">
-                <span className="text-xs text-slate-400">As alterações só ficam no portal depois de guardar.</span>
-                <Button onClick={onSave} disabled={isSaving} className="min-w-[170px]">
-                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <><Save size={16} /> Guardar alterações</>}
-                </Button>
-            </div>
+            <SaveBar onSave={onSave} isSaving={isSaving} />
         </div>
     );
 };
