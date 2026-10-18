@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BellRing, Eye, Send, Users } from 'lucide-react';
 import { TemplatePreviewModal, type TemplateKind } from './EmailPreviewModal';
+import { domainOf, useMailboxCheck } from './useMailboxCheck';
 import { Field } from '../components/Field';
 import { STD_INPUT_CLASS } from '../constants';
 import { cn } from '../../../utils/cn';
@@ -63,6 +64,15 @@ const BOARD_ITEMS: EmailItem[] = [
 export const SenderSection: React.FC<SenderSectionProps> = ({ form, data, update }) => {
     const [preview, setPreview] = useState<EmailItem | null>(null);
     const boardless = form.notifyBoard && !form.boardAddress.trim() && !data.defaults.contactEmail;
+    // What is actually used: the typed address, or the site's contact email when empty
+    const replyTo = form.replyTo.trim() || data.defaults.contactEmail;
+    const board = form.boardAddress.trim() || data.defaults.contactEmail;
+    const dead = useMailboxCheck([replyTo, board]);
+    const deadNote = (address: string) => address && dead.has(domainOf(address)) ? (
+        <p role="alert" className="mt-1.5 rounded-lg bg-amber-500/10 p-2.5 text-xs leading-relaxed text-amber-200">
+            {`${address} não recebe emails: o domínio ${domainOf(address)} não tem servidor de correio (registo MX). Use um endereço que a Direção leia, por exemplo um Gmail.`}
+        </p>
+    ) : null;
     return (
     <section aria-labelledby="email-sender-title" className="space-y-6 rounded-2xl border border-white/10 bg-dark-surface p-6">
         <div>
@@ -76,12 +86,18 @@ export const SenderSection: React.FC<SenderSectionProps> = ({ form, data, update
             <Field label="Email do remetente" hint="De um domínio verificado no provedor, ex.: avisos@a-sua-associacao.pt. No SMTP, o da própria conta.">
                 <input type="email" required value={form.fromAddress} maxLength={254} onChange={e => update('fromAddress', e.target.value)} className={STD_INPUT_CLASS} placeholder="avisos@exemplo.pt" autoComplete="off" />
             </Field>
+            <div>
             <Field label="Respostas vão para" hint={data.defaults.contactEmail ? `Vazio usa o email de contacto (${data.defaults.contactEmail}).` : 'Vazio: respostas voltam ao remetente.'}>
                 <input type="email" value={form.replyTo} maxLength={254} onChange={e => update('replyTo', e.target.value)} className={STD_INPUT_CLASS} placeholder={data.defaults.contactEmail || 'direcao@exemplo.pt'} />
             </Field>
+            {deadNote(replyTo)}
+            </div>
+            <div>
             <Field label="Avisos da Direção chegam a" hint={data.defaults.contactEmail ? `Vazio usa o email de contacto (${data.defaults.contactEmail}).` : 'Sem endereço, a Direção não recebe avisos.'}>
                 <input type="email" value={form.boardAddress} maxLength={254} onChange={e => update('boardAddress', e.target.value)} className={STD_INPUT_CLASS} placeholder={data.defaults.contactEmail || 'direcao@exemplo.pt'} />
             </Field>
+            {deadNote(board)}
+            </div>
         </div>
         <div className="space-y-3">
             <SwitchRow icon={Users} title="Emails a quem se inscreve" checked={form.notifyParticipants} onChange={v => update('notifyParticipants', v)} items={PARTICIPANT_ITEMS} onPreview={setPreview} />

@@ -20,7 +20,7 @@ export const EMAIL_TUTORIALS: HelpTutorial[] = [
             { text: 'Crie conta no serviço e crie uma chave de API.', tip: 'O link e o caminho até à chave estão por baixo do campo da chave.' },
             { text: 'Cole a chave no campo da chave.', why: 'A chave nunca volta a aparecer: o backoffice só mostra **Guardada**. Para a trocar, carregue em **Substituir**.' },
             { text: 'Em **Email do remetente**, escreva um endereço do domínio da associação, como avisos@a-sua-associacao.pt.', warning: 'O domínio tem de estar verificado no serviço; sem isso, o envio é recusado. Veja o guia «Escolher o serviço e verificar o domínio».' },
-            { text: 'Confirme **Respostas vão para** e **Avisos da Direção chegam a**. Vazios, usam o email de contacto do site.' },
+            { text: 'Confirme **Respostas vão para** e **Avisos da Direção chegam a**. Vazios, usam o email de contacto do site.', warning: 'Se aparecer «não recebe emails», esse domínio não tem correio: use um endereço que a Direção leia, como um Gmail.' },
             { text: 'Escolha o que enviar: **Emails a quem se inscreve** e **Avisos à Direção**.' },
             { text: 'Carregue em **Guardar alterações**.' },
             { text: 'Em **Enviar um email de teste**, escreva o seu email e carregue em **Enviar teste**.', tip: 'O resultado aparece ali mesmo: **Enviado**, ou o motivo da falha em português.' },

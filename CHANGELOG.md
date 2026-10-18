@@ -6,6 +6,19 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.21.2] - 2026-10-18
+
+### Added
+
+- **Addresses that cannot receive mail are flagged.** The backoffice checks the domain's mail
+  servers (MX records) for the contact email in Definições and for "Respostas vão para" and
+  "Avisos da Direção chegam a" in Email, and says so in plain words when nobody would get the
+  messages. Found on a real instance whose public contact address had no mail server at all
+
+### Changed
+
+- Release workflow on `actions/attest-build-provenance` v4
+
 ## [2.21.1] - 2026-10-17
 
 Everything brought up to date, with nothing visible changing on the sites.

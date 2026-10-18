@@ -10,6 +10,7 @@ import { AdminIdentitySection } from './AdminIdentitySection';
 import { AdminBrandSection } from './AdminBrandSection';
 import { Field } from './components/Field';
 import { SaveBar } from './components/SaveBar';
+import { domainOf, useMailboxCheck } from './email/useMailboxCheck';
 
 // Icon options must match PILLAR_ICONS in pages/About.tsx
 const PILLAR_ICON_OPTIONS = ['Target', 'Shield', 'Users', 'Heart', 'Trophy', 'Handshake', 'Star', 'Sparkles'];
@@ -28,6 +29,9 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
     const update = <K extends keyof typeof settingsForm>(key: K, value: (typeof settingsForm)[K]) => {
         onSettingsChange({ ...settingsForm, [key]: value });
     };
+    // The address shown on the site: if its domain has no mail server, every message to it is lost
+    const deadDomains = useMailboxCheck([settingsForm.contactEmail ?? '']);
+    const contactDead = Boolean(settingsForm.contactEmail && deadDomains.has(domainOf(settingsForm.contactEmail)));
 
     return (
         <div className="space-y-6 animate-fade-in-up">
@@ -39,6 +43,11 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({
                 <div className="space-y-4">
                     <Field label="Nome do Site"><input required maxLength={200} value={settingsForm.siteName} onChange={e => update('siteName', e.target.value)} className={STD_INPUT_CLASS} /></Field>
                     <Field label="Email"><input type="email" maxLength={254} value={settingsForm.contactEmail} onChange={e => update('contactEmail', e.target.value)} className={STD_INPUT_CLASS} /></Field>
+                    {contactDead && (
+                        <p role="alert" className="-mt-2 rounded-lg bg-amber-500/10 p-2.5 text-xs leading-relaxed text-amber-200">
+                            {`${settingsForm.contactEmail} não recebe emails: o domínio ${domainOf(settingsForm.contactEmail ?? '')} não tem servidor de correio (registo MX). Quem escrever para este endereço não chega a ninguém. Configure o correio do domínio ou use outro endereço.`}
+                        </p>
+                    )}
                     <div>
                         <label htmlFor="settings-logo-url" className={LABEL_CLASS}>URL do logótipo</label>
                         <div className="flex gap-2">
