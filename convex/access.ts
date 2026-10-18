@@ -182,21 +182,41 @@ export const remove = mutation({
             actorId, targetId: userId, targetRole: target.role, nextRole: "removed", adminCount: await adminCount(ctx),
         });
         if (problem) throw new ConvexError(problem);
-        const accounts = await ctx.db.query("authAccounts").withIndex("userIdAndProvider", (q) => q.eq("userId", userId)).collect();
-        for (const account of accounts) {
-            const codes = await ctx.db.query("authVerificationCodes").withIndex("accountId", (q) => q.eq("accountId", account._id)).collect();
-            for (const code of codes) await ctx.db.delete(code._id);
-            await ctx.db.delete(account._id);
-        }
-        const sessions = await ctx.db.query("authSessions").withIndex("userId", (q) => q.eq("userId", userId)).collect();
-        for (const session of sessions) {
-            const tokens = await ctx.db.query("authRefreshTokens").withIndex("sessionId", (q) => q.eq("sessionId", session._id)).collect();
-            for (const token of tokens) await ctx.db.delete(token._id);
-            await ctx.db.delete(session._id);
-        }
-        await ctx.db.delete(userId);
+        await deleteAccount(ctx, userId);
     },
 });
+
+/**
+ * The CLI counterpart of grantFromCli: removes an account by email, e.g. a
+ * temporary one used for a check in production. Refuses the last admin.
+ */
+export const removeFromCli = internalMutation({
+    args: { email: v.string() },
+    handler: async (ctx, { email }) => {
+        const user = await ctx.db.query("users").withIndex("email", (q) => q.eq("email", email.trim().toLowerCase())).first();
+        if (!user) return { status: "not_found" as const };
+        if (user.role === "admin" && (await adminCount(ctx)) <= 1) throw new ConvexError("É o único administrador: crie outro antes de o remover.");
+        await deleteAccount(ctx, user._id);
+        return { status: "removed" as const };
+    },
+});
+
+/** An account, its sign-in records and its sessions; the person can no longer enter. */
+async function deleteAccount(ctx: MutationCtx, userId: Id<"users">) {
+    const accounts = await ctx.db.query("authAccounts").withIndex("userIdAndProvider", (q) => q.eq("userId", userId)).collect();
+    for (const account of accounts) {
+        const codes = await ctx.db.query("authVerificationCodes").withIndex("accountId", (q) => q.eq("accountId", account._id)).collect();
+        for (const code of codes) await ctx.db.delete(code._id);
+        await ctx.db.delete(account._id);
+    }
+    const sessions = await ctx.db.query("authSessions").withIndex("userId", (q) => q.eq("userId", userId)).collect();
+    for (const session of sessions) {
+        const tokens = await ctx.db.query("authRefreshTokens").withIndex("sessionId", (q) => q.eq("sessionId", session._id)).collect();
+        for (const token of tokens) await ctx.db.delete(token._id);
+        await ctx.db.delete(session._id);
+    }
+    await ctx.db.delete(userId);
+}
 
 /** Anyone signed in: replace the password, keeping this session and ending the others. */
 export const changeOwnPassword = action({

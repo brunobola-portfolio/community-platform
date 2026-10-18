@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.21.3] - 2026-10-18
+
+### Added
+
+- `access:removeFromCli '{"email":"…"}'`, the counterpart of `grantFromCli`: removes an account
+  (sign-in records and sessions included) from the command line, e.g. a temporary account used
+  to check a production instance. It refuses to remove the last administrator
+
 ## [2.21.2] - 2026-10-18
 
 ### Added

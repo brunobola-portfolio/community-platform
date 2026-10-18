@@ -164,7 +164,8 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   Depois disso, acessos geridos no backoffice (separador Acessos, `convex/access.ts`): conta nova
   com palavra-passe temporária mostrada uma vez, mudar tipo, repor palavra-passe, remover;
   cada pessoa muda a sua em "Alterar palavra-passe". Palavras-passe nunca seguem por email.
-  Fallback CLI: `npx convex run --prod access:grantFromCli '{"email":"…","role":"admin"}'`.
+  Fallback CLI: `npx convex run --prod access:grantFromCli '{"email":"…","role":"admin"}'`; para
+  remover (ex.: uma conta temporária de verificação), `access:removeFromCli '{"email":"…"}'`.
 
 ## Regras Convex (obrigatórias)
 
