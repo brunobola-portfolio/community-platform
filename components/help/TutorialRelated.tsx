@@ -14,8 +14,8 @@ interface TutorialRelatedProps {
     level: 2 | 3 | 4;
 }
 
-const TITLE = 'min-w-0 font-medium text-slate-900 [overflow-wrap:anywhere] group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-400';
-const NAV_BUTTON = 'group flex min-h-11 w-full min-w-0 flex-1 flex-col gap-1 rounded-2xl border border-slate-900/10 p-4 text-left transition-colors hover:border-brand-500/40 hover:bg-slate-900/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:hover:bg-white/[0.04]';
+const TITLE = 'min-w-0 font-medium text-slate-900 wrap-anywhere group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-400';
+const NAV_BUTTON = 'group flex min-h-11 w-full min-w-0 flex-1 flex-col gap-1 rounded-2xl border border-slate-900/10 p-4 text-left transition-colors hover:border-brand-500/40 hover:bg-slate-900/3 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:hover:bg-white/4';
 
 /** What to read next: a few related guides, then the previous and next guide in reading order. */
 export const TutorialRelated: React.FC<TutorialRelatedProps> = ({ related, prev, next, siteName, onSelect, level }) => {

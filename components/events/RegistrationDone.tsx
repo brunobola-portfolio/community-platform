@@ -43,14 +43,14 @@ export const RegistrationDone: React.FC<RegistrationDoneProps> = ({ event, email
                 <CheckCircle2 size={34} aria-hidden="true" />
             </div>
             <div className="space-y-2">
-                <h3 ref={heading} tabIndex={-1} className="font-serif text-2xl text-slate-900 outline-none dark:text-white">Inscrição recebida</h3>
+                <h3 ref={heading} tabIndex={-1} className="font-serif text-2xl text-slate-900 outline-hidden dark:text-white">Inscrição recebida</h3>
                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">{event.title} · {formatEventDate(event.date)}{event.location ? ` · ${event.location}` : ''}</p>
                 {team && <p className="text-sm text-slate-700 dark:text-slate-300">Equipa: <b className="text-slate-900 dark:text-white">{team}</b></p>}
                 <p className="mx-auto max-w-sm text-sm text-slate-600 dark:text-slate-400">
                     {emailed
                         ? <>Enviámos um email para <b className="text-slate-800 dark:text-slate-200">{email}</b>. Quando a organização confirmar a inscrição, recebe outro.</>
                         : <>A organização vai confirmar a sua inscrição e, se for preciso, contacta-o por <b className="text-slate-800 dark:text-slate-200">{email}</b>.</>}
-                    {isMember && <> Acompanhe o estado em <Link to="/member?tab=inscricoes" className="rounded font-semibold text-brand-700 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Área de Sócio › Inscrições</Link>.</>}
+                    {isMember && <> Acompanhe o estado em <Link to="/member?tab=inscricoes" className="rounded-sm font-semibold text-brand-700 underline underline-offset-2 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Área de Sócio › Inscrições</Link>.</>}
                 </p>
             </div>
 
@@ -68,7 +68,7 @@ export const RegistrationDone: React.FC<RegistrationDoneProps> = ({ event, email
                 <Button type="button" variant="outline" onClick={() => downloadIcs(calendar)}>
                     <CalendarPlus size={16} aria-hidden="true" /> Guardar no calendário
                 </Button>
-                <a href={googleCalendarUrl(calendar)} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded dark:text-brand-400">
+                <a href={googleCalendarUrl(calendar)} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-700 underline-offset-4 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm dark:text-brand-400">
                     Google Calendar
                 </a>
             </div>
@@ -78,7 +78,7 @@ export const RegistrationDone: React.FC<RegistrationDoneProps> = ({ event, email
                 <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400">
                     <p>Não pode ir? Avise a organização:</p>
                     {phone && <p className="font-mono text-slate-800 dark:text-slate-200">{phone}</p>}
-                    {contactEmail && <p className="font-mono text-slate-800 [overflow-wrap:anywhere] dark:text-slate-200">{contactEmail}</p>}
+                    {contactEmail && <p className="font-mono text-slate-800 wrap-anywhere dark:text-slate-200">{contactEmail}</p>}
                 </div>
             )}
 

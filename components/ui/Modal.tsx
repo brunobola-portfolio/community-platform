@@ -121,9 +121,9 @@ export const Modal: React.FC<ModalProps> = ({
   // Portalled to <body>: a dialog opened inside an animated (transformed) section would
   // otherwise be trapped by it, drawn under later content and lose its clicks
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-end justify-center p-0 sm:items-center sm:p-6">
+    <div className="fixed inset-0 z-100 flex items-end justify-center p-0 sm:items-center sm:p-6">
       <div
-        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm dark:bg-black/70"
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs dark:bg-black/70"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -136,11 +136,11 @@ export const Modal: React.FC<ModalProps> = ({
         aria-describedby={description ? descriptionId : undefined}
         tabIndex={-1}
         className={cn(
-          'relative flex w-full max-h-[92dvh] flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-[0_40px_100px_-24px_rgba(2,6,23,0.55)] ring-1 ring-slate-900/10 animate-fade-in-up sm:rounded-[1.75rem] dark:bg-dark-surface dark:ring-white/10 focus:outline-none',
+          'relative flex w-full max-h-[92dvh] flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-[0_40px_100px_-24px_rgba(2,6,23,0.55)] ring-1 ring-slate-900/10 animate-fade-in-up sm:rounded-[1.75rem] dark:bg-dark-surface dark:ring-white/10 focus:outline-hidden',
           SIZE_CLASSES[size],
         )}
       >
-        <header className="relative shrink-0 border-b border-slate-900/[0.06] px-6 pb-5 pt-6 sm:px-7 sm:pt-7 dark:border-white/[0.06]">
+        <header className="relative shrink-0 border-b border-slate-900/6 px-6 pb-5 pt-6 sm:px-7 sm:pt-7 dark:border-white/6">
           <span
             className="pointer-events-none absolute -top-24 right-0 h-48 w-48 rounded-full bg-brand-500/10 blur-3xl"
             aria-hidden="true"
@@ -175,7 +175,7 @@ export const Modal: React.FC<ModalProps> = ({
               onClick={onClose}
               aria-label="Fechar"
               title="Fechar"
-              className="-mr-1 -mt-1 shrink-0 rounded-xl p-2.5 text-slate-600 dark:text-slate-400 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/5 dark:hover:text-white"
+              className="-mr-1 -mt-1 shrink-0 rounded-xl p-2.5 text-slate-600 dark:text-slate-400 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:bg-white/5 dark:hover:text-white"
             >
               <X size={18} />
             </button>
@@ -190,7 +190,7 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {footer && (
-          <div className="shrink-0 border-t border-slate-900/[0.06] bg-slate-50/70 px-6 py-4 sm:px-7 dark:border-white/[0.06] dark:bg-white/[0.02]">
+          <div className="shrink-0 border-t border-slate-900/6 bg-slate-50/70 px-6 py-4 sm:px-7 dark:border-white/6 dark:bg-white/2">
             {footer}
           </div>
         )}

@@ -2,6 +2,7 @@ import path from 'node:path';
 import { createReadStream, existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { createHash } from 'crypto';
 
 /**
@@ -253,7 +254,7 @@ export default defineConfig(({ mode }) => {
         port: serverPort,
         host: serverHost,
       },
-      plugins: [react(), siteMeta(env), brandOverlay(), versionManifest(), webConfigCsp(env, 'dist')],
+      plugins: [react(), tailwindcss(), siteMeta(env), brandOverlay(), versionManifest(), webConfigCsp(env, 'dist')],
       build: {
         rolldownOptions: {
           output: {

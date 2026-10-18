@@ -79,7 +79,7 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
                     onClick={browse}
                     disabled={disabled}
                     title={disabled ? 'Preenche primeiro o URL Base.' : undefined}
-                    className="inline-flex items-center gap-1.5 text-xs text-brand-400 hover:text-brand-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+                    className="inline-flex items-center gap-1.5 text-xs text-brand-400 hover:text-brand-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
                 >
                     <Search size={12} /> Ver modelos disponíveis
                 </button>
@@ -88,7 +88,7 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
                         href={catalogUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-400 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+                        className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-400 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm"
                     >
                         Catálogo completo em openrouter.ai/models <ExternalLink size={11} />
                     </a>
@@ -113,7 +113,7 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
                                     value={filter}
                                     onChange={e => setFilter(e.target.value)}
                                     placeholder="Filtrar modelos..."
-                                    className="flex-1 bg-slate-950/50 border border-slate-800 rounded-md px-2.5 py-1.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-none transition-all focus-visible:ring-2 focus-visible:ring-brand-500"
+                                    className="flex-1 bg-slate-950/50 border border-slate-800 rounded-md px-2.5 py-1.5 text-xs text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-brand-500"
                                 />
                                 <span className="text-slate-400 text-xs ml-2 shrink-0">{filtered.length} modelos</span>
                             </div>
@@ -129,7 +129,7 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({ provider, model, onMod
                                                     onModelChange(m.id);
                                                     setOpen(false);
                                                 }}
-                                                className="w-full text-left px-2.5 py-1.5 rounded-md text-xs text-slate-300 hover:bg-white/5 hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                                                className="w-full text-left px-2.5 py-1.5 rounded-md text-xs text-slate-300 hover:bg-white/5 hover:text-white transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                                             >
                                                 <span className="text-white font-mono">{m.id}</span>
                                                 {m.name !== m.id && <span className="text-slate-400 ml-2">{m.name}</span>}

@@ -69,7 +69,7 @@ export const BlogPage: React.FC = () => {
                   <Sparkles size={12} />
                   <span>Jornal da Associação</span>
                </div>
-               <h1 className="text-5xl md:text-8xl font-serif text-slate-900 dark:text-white mb-6 tracking-tight">Blog & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Notícias</span></h1>
+               <h1 className="text-5xl md:text-8xl font-serif text-slate-900 dark:text-white mb-6 tracking-tight">Blog & <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-display to-accent-600 dark:to-accent-400">Notícias</span></h1>
                <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto leading-relaxed">
                   Histórias, conquistas e momentos que definem a nossa comunidade.
                </p>
@@ -80,7 +80,7 @@ export const BlogPage: React.FC = () => {
                <div
                   className="relative group mb-20 rounded-[2.5rem] overflow-hidden bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 hover:border-brand-500/30 transition-all duration-500 animate-fade-in-up shadow-2xl"
                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/40 dark:from-dark-bg/90 dark:via-dark-bg/40 to-transparent z-10"></div>
+                  <div className="absolute inset-0 bg-linear-to-r from-white/90 via-white/40 dark:from-dark-bg/90 dark:via-dark-bg/40 to-transparent z-10"></div>
                   <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[500px]">
                      <div className="z-20 p-10 md:p-16 flex flex-col justify-center">
                         <div className="flex items-center gap-3 mb-6">
@@ -91,7 +91,7 @@ export const BlogPage: React.FC = () => {
                            </div>
                         </div>
                         <h2 className="text-4xl md:text-6xl font-serif text-slate-900 dark:text-white mb-6 leading-[1.1] group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
-                           <Link to={postPath(featuredPost.slug || featuredPost.id)} className="after:absolute after:inset-0 after:rounded-[2.5rem] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{featuredPost.title}</Link>
+                           <Link to={postPath(featuredPost.slug || featuredPost.id)} className="after:absolute after:inset-0 after:rounded-[2.5rem] focus-visible:outline-hidden focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{featuredPost.title}</Link>
                         </h2>
                         <p className="text-slate-600 dark:text-slate-400 text-lg mb-8 line-clamp-3 leading-relaxed max-w-xl">
                            {featuredPost.excerpt}
@@ -140,7 +140,7 @@ export const BlogPage: React.FC = () => {
                         type="text"
                         placeholder="Pesquisar artigos..."
                         aria-label="Pesquisar artigos"
-                        className="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 py-5 px-4 focus:ring-0 focus:outline-none text-sm"
+                        className="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 py-5 px-4 focus:ring-0 focus:outline-hidden text-sm"
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
                      />
@@ -157,12 +157,12 @@ export const BlogPage: React.FC = () => {
                </div>
 
                {/* Category chips — horizontal scroll bar */}
-               <div className="flex items-center w-full max-w-3xl bg-white/70 dark:bg-dark-surface/70 border border-slate-900/10 dark:border-white/10 rounded-2xl px-2.5 py-2 backdrop-blur-sm shadow-lg">
-                  <div className="flex items-center gap-1.5 overflow-x-auto w-full [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+               <div className="flex items-center w-full max-w-3xl bg-white/70 dark:bg-dark-surface/70 border border-slate-900/10 dark:border-white/10 rounded-2xl px-2.5 py-2 backdrop-blur-xs shadow-lg">
+                  <div className="flex items-center gap-1.5 overflow-x-auto w-full scrollbar-none [&::-webkit-scrollbar]:hidden">
                      <button
                         onClick={() => setActiveFilter('Todos')}
                         aria-pressed={activeFilter === 'Todos'}
-                        className={`flex-none flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                        className={`flex-none flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 ${
                            activeFilter === 'Todos'
                               ? 'bg-brand-500/15 text-brand-700 dark:text-brand-400 border-brand-500/30'
                               : 'text-slate-600 dark:text-slate-400 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5'
@@ -182,9 +182,9 @@ export const BlogPage: React.FC = () => {
                               onClick={() => setActiveFilter(cat.name)}
                               aria-pressed={activeFilter === cat.name}
                               disabled={count === 0}
-                              className={`flex-none flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                              className={`flex-none flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 ${
                                  activeFilter === cat.name
-                                    ? 'bg-slate-50 dark:bg-dark-bg text-slate-900 dark:text-white border-brand-500/50 shadow-sm shadow-brand-500/10'
+                                    ? 'bg-slate-50 dark:bg-dark-bg text-slate-900 dark:text-white border-brand-500/50 shadow-xs shadow-brand-500/10'
                                     : count > 0
                                        ? 'text-slate-600 dark:text-slate-400 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5'
                                        : 'text-slate-400 dark:text-slate-600 border-transparent opacity-40 cursor-default'
@@ -220,7 +220,7 @@ export const BlogPage: React.FC = () => {
                {displayPosts.map((post) => (
                   <article
                      key={post.id}
-                     className="group relative flex flex-col h-full bg-white dark:bg-dark-surface border border-slate-900/5 dark:border-white/5 rounded-[2rem] overflow-hidden hover:border-brand-500/20 transition-all duration-500"
+                     className="group relative flex flex-col h-full bg-white dark:bg-dark-surface border border-slate-900/5 dark:border-white/5 rounded-4xl overflow-hidden hover:border-brand-500/20 transition-all duration-500"
                   >
                      {/* Image Container */}
                      <div className="relative h-64 overflow-hidden">
@@ -233,7 +233,7 @@ export const BlogPage: React.FC = () => {
                               (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post;
                            }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-dark-surface via-transparent to-transparent opacity-60"></div>
+                        <div className="absolute inset-0 bg-linear-to-t from-white dark:from-dark-surface via-transparent to-transparent opacity-60"></div>
 
                         {/* Compact Badge */}
                         <div className="absolute top-4 left-4">
@@ -243,7 +243,7 @@ export const BlogPage: React.FC = () => {
                         </div>
 
                         <div className="absolute bottom-4 left-4">
-                           <div className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest bg-slate-50/60 dark:bg-dark-bg/60 backdrop-blur-sm px-3 py-1 rounded-lg">
+                           <div className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-widest bg-slate-50/60 dark:bg-dark-bg/60 backdrop-blur-xs px-3 py-1 rounded-lg">
                               {new Date(post.date).toLocaleDateString('pt-PT', { month: 'short', day: '2-digit' })}
                            </div>
                         </div>
@@ -252,7 +252,7 @@ export const BlogPage: React.FC = () => {
                      {/* Content Wrapper */}
                      <div className="p-8 flex-1 flex flex-col">
                         <h3 className="text-2xl font-serif text-slate-900 dark:text-white mb-4 leading-snug group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2">
-                           <Link to={postPath(post.slug || post.id)} className="after:absolute after:inset-0 after:rounded-[2rem] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{post.title}</Link>
+                           <Link to={postPath(post.slug || post.id)} className="after:absolute after:inset-0 after:rounded-4xl focus-visible:outline-hidden focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{post.title}</Link>
                         </h3>
                         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed line-clamp-3 mb-8 flex-1">
                            {post.excerpt}
@@ -284,7 +284,7 @@ export const BlogPage: React.FC = () => {
                ))}
 
                {displayPosts.length === 0 && (
-                  <div className="col-span-full py-32 flex flex-col items-center justify-center bg-slate-900/[0.02] dark:bg-white/[0.02] rounded-[3rem] border border-slate-900/5 dark:border-white/5 border-dashed">
+                  <div className="col-span-full py-32 flex flex-col items-center justify-center bg-slate-900/2 dark:bg-white/2 rounded-[3rem] border border-slate-900/5 dark:border-white/5 border-dashed">
                      <div className="w-24 h-24 bg-white dark:bg-dark-surface rounded-full flex items-center justify-center mb-8 shadow-inner border border-slate-900/5 dark:border-white/5 text-slate-300 dark:text-slate-700">
                         <Search size={40} />
                      </div>

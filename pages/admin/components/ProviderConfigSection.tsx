@@ -165,7 +165,7 @@ export const ProviderConfigSection: React.FC<ConfigSectionProps> = ({ settingsFo
                     type="button"
                     onClick={handleTest}
                     disabled={testing}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-white text-sm hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg text-white text-sm hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                     {testing ? <Loader2 size={16} className="animate-spin" /> : <PlugZap size={16} />}
                     {testing ? 'A testar…' : 'Testar ligação'}
@@ -230,7 +230,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ name, description, icon: Ic
         }}
         className={cn(
             'text-left rounded-xl p-4 border cursor-pointer transition-all',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+            'focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
             selected
                 ? 'border-brand-500 ring-1 ring-brand-500/50 bg-brand-500/10'
                 : 'border-white/10 bg-black/20 hover:border-white/20 hover:bg-white/5'

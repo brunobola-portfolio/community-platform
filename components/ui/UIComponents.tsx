@@ -24,13 +24,13 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'md',
   ...props
 }) => {
-  const base = "inline-flex items-center justify-center gap-2 rounded-2xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]";
+  const base = "inline-flex items-center justify-center gap-2 rounded-2xl text-sm font-medium transition-all duration-300 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97]";
   const variants = {
     default: "bg-brand-700 text-white hover:bg-brand-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgb(var(--brand-600)/0.3)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.22),0_8px_30px_rgb(var(--brand-600)/0.4)] border border-brand-500/50",
     outline: "border border-slate-300 dark:border-slate-700 bg-transparent hover:bg-slate-900/5 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white hover:border-brand-500/50",
     ghost: "hover:bg-slate-900/5 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white text-slate-600 dark:text-slate-400",
     link: "text-brand-700 dark:text-brand-400 underline-offset-4 hover:underline",
-    glass: "bg-slate-900/[0.03] dark:bg-white/[0.03] backdrop-blur-xl border border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white hover:bg-slate-900/[0.08] dark:hover:bg-white/[0.08] hover:border-slate-900/20 dark:hover:border-white/20 shadow-2xl",
+    glass: "bg-slate-900/3 dark:bg-white/3 backdrop-blur-xl border border-slate-900/10 dark:border-white/10 text-slate-900 dark:text-white hover:bg-slate-900/8 dark:hover:bg-white/8 hover:border-slate-900/20 dark:hover:border-white/20 shadow-2xl",
   };
   const sizes = {
     sm: "h-9 rounded-xl px-4 text-xs",
@@ -54,7 +54,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
       <input
         type={type}
         className={cn(
-          "flex h-12 w-full rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/50 px-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:border-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-inner",
+          "flex h-12 w-full rounded-2xl border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/50 px-4 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-500 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:border-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all shadow-inner",
           className
         )}
         ref={ref}
@@ -68,7 +68,7 @@ Input.displayName = "Input";
 // --- Card Components ---
 // These allow for composable card structures (Card > CardHeader > CardContent)
 export const Card: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (
-  <div className={cn("rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface/50 backdrop-blur-md text-slate-800 dark:text-slate-100 shadow-2xl", className)} {...props} />
+  <div className={cn("rounded-4xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface/50 backdrop-blur-md text-slate-800 dark:text-slate-100 shadow-2xl", className)} {...props} />
 );
 
 export const CardHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...props }) => (

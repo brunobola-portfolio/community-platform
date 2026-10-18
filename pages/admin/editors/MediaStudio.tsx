@@ -103,7 +103,7 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                 </div>
                 {imageUrl && (
                     <div className="flex justify-end border-t border-white/5 px-4 pt-3">
-                        <button type="button" onClick={() => onChange('')} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                        <button type="button" onClick={() => onChange('')} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-red-300 hover:bg-red-500/10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                             <Trash2 size={14} aria-hidden="true" /> Remover imagem
                         </button>
                     </div>
@@ -116,7 +116,7 @@ export const MediaStudio: React.FC<MediaStudioProps> = ({ imageUrl, onChange, on
                                 type="button"
                                 onClick={() => { setMode(m.id); setUploadError(''); setSavedNote(''); }}
                                 aria-pressed={mode === m.id}
-                                className={cn("flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all", mode === m.id ? "bg-brand-700 text-white shadow-sm" : "text-slate-400 hover:text-white")}
+                                className={cn("flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-all", mode === m.id ? "bg-brand-700 text-white shadow-xs" : "text-slate-400 hover:text-white")}
                             >
                                 <m.icon size={14} /> {m.label}
                             </button>

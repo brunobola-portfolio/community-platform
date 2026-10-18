@@ -20,12 +20,12 @@ export const TutorialCard: React.FC<TutorialCardProps> = ({ tutorial, siteName, 
         type="button"
         onClick={() => onSelect(tutorial.id)}
         className={cn(
-            'group flex h-full w-full min-w-0 flex-col gap-2 rounded-2xl border border-slate-900/10 bg-white p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand-500/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:bg-dark-surface dark:shadow-none',
+            'group flex h-full w-full min-w-0 flex-col gap-2 rounded-2xl border border-slate-900/10 bg-white p-5 text-left shadow-xs transition-all hover:-translate-y-0.5 hover:border-brand-500/40 hover:shadow-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:bg-dark-surface dark:shadow-none',
             className,
         )}
     >
         {eyebrow && <span className="text-[11px] font-bold uppercase tracking-widest text-brand-700 dark:text-brand-400">{eyebrow}</span>}
-        <span className="font-serif text-lg leading-snug text-slate-900 [overflow-wrap:anywhere] group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-400">
+        <span className="font-serif text-lg leading-snug text-slate-900 wrap-anywhere group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-400">
             {fillTokens(tutorial.title, { siteName })}
         </span>
         <span className="line-clamp-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{fillTokens(tutorial.summary, { siteName })}</span>

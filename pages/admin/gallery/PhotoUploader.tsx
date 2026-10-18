@@ -95,7 +95,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({ albumId, onDone })
                 onDragLeave={() => setDragging(false)}
                 onDrop={e => { e.preventDefault(); setDragging(false); void uploadFiles(Array.from(e.dataTransfer.files)); }}
                 className={cn(
-                    'rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                    'rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                     dragging ? 'border-brand-500 bg-brand-500/10' : 'border-white/15 bg-black/20 hover:border-white/30'
                 )}
             >

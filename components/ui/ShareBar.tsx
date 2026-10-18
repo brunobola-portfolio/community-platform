@@ -14,7 +14,7 @@ interface ShareBarProps {
     className?: string;
 }
 
-const PILL = 'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const PILL = 'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500';
 const NEUTRAL = 'border-slate-900/10 bg-slate-900/5 text-slate-700 hover:bg-slate-900/10 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10';
 
 /**

@@ -189,7 +189,7 @@ export const EventsPage: React.FC = () => {
                 {/* Header */}
                 <div className="text-center mb-12 animate-fade-in-up">
                     <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Agenda Cultural</span>
-                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Eventos & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Atividades</span></h1>
+                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Eventos & <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-display to-accent-600 dark:to-accent-400">Atividades</span></h1>
                     <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto">
                         {settings.locality ? `O ponto de encontro da comunidade de ${settings.locality}.` : "O ponto de encontro da comunidade."}
                     </p>
@@ -209,7 +209,7 @@ export const EventsPage: React.FC = () => {
                                 type="text"
                                 placeholder="Pesquisar eventos..."
                                 aria-label="Pesquisar eventos"
-                                className="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 py-5 px-4 focus:ring-0 focus:outline-none text-sm"
+                                className="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 py-5 px-4 focus:ring-0 focus:outline-hidden text-sm"
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                             />
@@ -227,7 +227,7 @@ export const EventsPage: React.FC = () => {
 
                     {/* Unified Filter Bar */}
                     {/* Stacks on small screens: the chip rail needs the full row width to stay scrollable */}
-                    <div className="flex flex-col sm:flex-row sm:items-center w-full max-w-3xl bg-white/70 dark:bg-dark-surface/70 border border-slate-900/10 dark:border-white/10 rounded-2xl px-2.5 py-2 backdrop-blur-sm gap-2 shadow-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center w-full max-w-3xl bg-white/70 dark:bg-dark-surface/70 border border-slate-900/10 dark:border-white/10 rounded-2xl px-2.5 py-2 backdrop-blur-xs gap-2 shadow-lg">
 
                         {/* Time segment — compact pill group */}
                         <div className="flex shrink-0 gap-0.5 p-0.5 bg-slate-900/5 dark:bg-white/5 rounded-xl self-center">
@@ -242,7 +242,7 @@ export const EventsPage: React.FC = () => {
                                     aria-label={`Filtrar eventos: ${tab.label}`}
                                     aria-pressed={activeTab === tab.id}
                                     className={cn(
-                                        "flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                                        "flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold transition-all duration-200 whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500",
                                         activeTab === tab.id
                                             ? "bg-brand-700 text-white shadow-md shadow-brand-600/30"
                                             : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -264,13 +264,13 @@ export const EventsPage: React.FC = () => {
 
                         {/* Category chips — scrollable rail with edge fade on narrow screens,
                             wrapping from lg up so no category stays hidden on desktop */}
-                        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:flex-1 min-w-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] lg:flex-wrap lg:overflow-visible lg:[mask-image:none]">
+                        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:flex-1 min-w-0 scrollbar-none [&::-webkit-scrollbar]:hidden mask-[linear-gradient(to_right,black_calc(100%-2rem),transparent)] lg:flex-wrap lg:overflow-visible lg:mask-none">
                             <button
                                 onClick={() => setCategoryFilter('all')}
                                 aria-label="Filtrar por categoria: Todas"
                                 aria-pressed={categoryFilter === 'all'}
                                 className={cn(
-                                    "flex-none px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                                    "flex-none px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500",
                                     categoryFilter === 'all'
                                         ? "bg-brand-500/15 text-brand-700 dark:text-brand-400 border-brand-500/30"
                                         : "text-slate-600 dark:text-slate-400 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5"
@@ -285,9 +285,9 @@ export const EventsPage: React.FC = () => {
                                     aria-label={`Filtrar por categoria: ${cat.name}`}
                                     aria-pressed={categoryFilter === cat.name}
                                     className={cn(
-                                        "flex-none flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                                        "flex-none flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-xs font-semibold border transition-all duration-200 whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500",
                                         categoryFilter === cat.name
-                                            ? "bg-slate-50 dark:bg-dark-bg text-slate-900 dark:text-white border-brand-500/50 shadow-sm shadow-brand-500/10"
+                                            ? "bg-slate-50 dark:bg-dark-bg text-slate-900 dark:text-white border-brand-500/50 shadow-xs shadow-brand-500/10"
                                             : "text-slate-600 dark:text-slate-400 border-transparent hover:text-slate-900 hover:bg-slate-900/5 dark:hover:text-white dark:hover:bg-white/5"
                                     )}
                                 >
@@ -318,7 +318,7 @@ export const EventsPage: React.FC = () => {
                         </div>
                     ) : filteredEvents.length === 0 ? (
                         // Empty State
-                        <div className="flex flex-col items-center justify-center py-20 border border-dashed border-slate-900/10 dark:border-white/10 rounded-3xl bg-slate-900/[0.02] dark:bg-white/[0.02]">
+                        <div className="flex flex-col items-center justify-center py-20 border border-dashed border-slate-900/10 dark:border-white/10 rounded-3xl bg-slate-900/2 dark:bg-white/2">
                             <div className="w-20 h-20 bg-slate-900/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 text-slate-400 dark:text-slate-600">
                                 <CalendarOff size={32} />
                             </div>
@@ -347,7 +347,7 @@ export const EventsPage: React.FC = () => {
                                     "group relative bg-white dark:bg-dark-surface border rounded-2xl p-4 md:p-6 flex flex-col md:flex-row gap-6 transition-all duration-300",
                                     isPast
                                         ? "border-slate-900/5 dark:border-white/5 hover:border-slate-900/10 dark:hover:border-white/10"
-                                        : "border-slate-900/10 dark:border-white/10 hover:border-brand-500/30 hover:bg-slate-900/[0.02] dark:hover:bg-white/[0.02]"
+                                        : "border-slate-900/10 dark:border-white/10 hover:border-brand-500/30 hover:bg-slate-900/2 dark:hover:bg-white/2"
                                 )}>
                                     {/* Image */}
                                     <div className="md:w-64 h-48 md:h-auto shrink-0 rounded-xl overflow-hidden relative">

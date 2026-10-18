@@ -13,8 +13,8 @@ interface HelpContactCardProps {
     siteName: string;
 }
 
-const BUTTON = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg';
-const LINK = 'inline-flex min-h-11 items-center gap-1.5 rounded font-semibold text-brand-700 underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400';
+const BUTTON = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg';
+const LINK = 'inline-flex min-h-11 items-center gap-1.5 rounded-sm font-semibold text-brand-700 underline underline-offset-4 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400';
 
 /** The contact as a button or an inline link; renders nothing when there is no way to reach anyone. */
 export const HelpContactAction: React.FC<HelpContactActionProps> = ({ contact, variant }) => {

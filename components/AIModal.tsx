@@ -208,9 +208,9 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:justify-end p-0 sm:p-5 lg:p-6 pointer-events-none">
+    <div className="fixed inset-0 z-100 flex items-end justify-center sm:justify-end p-0 sm:p-5 lg:p-6 pointer-events-none">
       <div
-        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm sm:bg-transparent sm:backdrop-blur-none dark:bg-black/60 dark:sm:bg-transparent pointer-events-auto"
+        className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs sm:bg-transparent sm:backdrop-blur-none dark:bg-black/60 dark:sm:bg-transparent pointer-events-auto"
         onClick={onClose}
       />
       <section
@@ -219,9 +219,9 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
         role="dialog"
         aria-modal="true"
         aria-label={`Assistente ${settings.siteName}`}
-        className="relative pointer-events-auto focus:outline-none flex w-full flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-[0_32px_80px_-24px_rgba(2,6,23,0.65)] ring-1 ring-slate-900/10 animate-fade-in-up sm:w-[420px] sm:rounded-[1.75rem] dark:bg-dark-surface dark:ring-white/10 h-[86dvh] sm:h-[min(640px,calc(100dvh-6rem))]"
+        className="relative pointer-events-auto focus:outline-hidden flex w-full flex-col overflow-hidden rounded-t-[1.75rem] bg-white shadow-[0_32px_80px_-24px_rgba(2,6,23,0.65)] ring-1 ring-slate-900/10 animate-fade-in-up sm:w-[420px] sm:rounded-[1.75rem] dark:bg-dark-surface dark:ring-white/10 h-[86dvh] sm:h-[min(640px,calc(100dvh-6rem))]"
       >
-        <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 px-5 py-4">
+        <header className="relative shrink-0 overflow-hidden bg-linear-to-br from-brand-700 via-brand-800 to-brand-950 px-5 py-4">
           <span className="pointer-events-none absolute -right-8 -top-16 h-40 w-40 rounded-full bg-brand-500/30 blur-3xl" aria-hidden="true" />
           <div className="relative flex items-center gap-3">
             <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20">
@@ -237,7 +237,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
                 onClick={handleClearConversation}
                 aria-label="Limpar conversa"
                 title="Limpar conversa"
-                className="rounded-xl p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                className="rounded-xl p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white/60"
               >
                 <Trash2 size={16} />
               </button>
@@ -245,7 +245,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
                 onClick={onClose}
                 aria-label="Fechar"
                 title="Fechar"
-                className="rounded-xl p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                className="rounded-xl p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white/60"
               >
                 <X size={18} />
               </button>
@@ -254,7 +254,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
         </header>
 
         <div
-          className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-gradient-to-b from-slate-50 to-white px-4 py-5 dark:from-dark-bg dark:to-dark-surface"
+          className="custom-scrollbar flex-1 space-y-5 overflow-y-auto bg-linear-to-b from-slate-50 to-white px-4 py-5 dark:from-dark-bg dark:to-dark-surface"
           aria-live="polite"
         >
           {messages.map((msg, idx) => (
@@ -272,7 +272,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
           {isThinking && (
             <div className="flex gap-3">
               <AssistantAvatar />
-              <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm bg-white px-4 py-4 shadow-sm ring-1 ring-slate-900/[0.06] dark:bg-white/[0.05] dark:ring-white/10">
+              <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm bg-white px-4 py-4 shadow-xs ring-1 ring-slate-900/6 dark:bg-white/5 dark:ring-white/10">
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand-500" />
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand-500 [animation-delay:150ms]" />
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand-500 [animation-delay:300ms]" />
@@ -283,18 +283,18 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="shrink-0 border-t border-slate-900/[0.06] bg-white px-4 pb-3 pt-3 dark:border-white/10 dark:bg-dark-surface">
+        <div className="shrink-0 border-t border-slate-900/6 bg-white px-4 pb-3 pt-3 dark:border-white/10 dark:bg-dark-surface">
           {voiceError && (
             <p className="mb-2 px-1 text-[11px] text-red-600 dark:text-red-400" role="alert">{voiceError}</p>
           )}
           <div className={cn(
-            'flex items-center gap-1.5 rounded-2xl border bg-slate-900/[0.03] p-1.5 transition-all focus-within:border-brand-500/60 focus-within:ring-2 focus-within:ring-brand-500/20 dark:bg-black/30',
+            'flex items-center gap-1.5 rounded-2xl border bg-slate-900/3 p-1.5 transition-all focus-within:border-brand-500/60 focus-within:ring-2 focus-within:ring-brand-500/20 dark:bg-black/30',
             isListening ? 'border-red-500/50' : 'border-slate-900/10 dark:border-white/10',
           )}>
             <input
               ref={inputRef}
               aria-label="Mensagem para a IA"
-              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-500 dark:text-white dark:placeholder:text-slate-400"
+              className="min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-slate-900 outline-hidden placeholder:text-slate-500 dark:text-white dark:placeholder:text-slate-400"
               placeholder={isListening ? 'A ouvir... fala agora' : 'Onde fica a sede? Próximos eventos?'}
               value={isListening ? interimTranscript || inputText : inputText}
               onChange={e => setInputText(e.target.value)}
@@ -310,7 +310,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
                 aria-pressed={isListening}
                 title={isListening ? 'Parar de ouvir' : 'Perguntar por voz'}
                 className={cn(
-                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all active:scale-95 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                   isListening
                     ? 'bg-red-500/15 text-red-500'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-900/5 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white',
@@ -323,7 +323,7 @@ export const AIModal: React.FC<AIModalProps> = ({ isOpen, onClose, initialQuery,
               onClick={() => handleSend()}
               disabled={isThinking || isListening || !inputText.trim()}
               aria-label="Enviar mensagem"
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-700 text-white shadow-[0_6px_16px_-8px_rgb(var(--brand-600)/0.9)] transition-all hover:bg-brand-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-surface"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-700 text-white shadow-[0_6px_16px_-8px_rgb(var(--brand-600)/0.9)] transition-all hover:bg-brand-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-surface"
             >
               <Send size={16} />
             </button>

@@ -42,7 +42,7 @@ const ServiceScreen: React.FC<{ icon: React.ReactNode; title: string; text: stri
       {onRetry && (
         <button
           onClick={onRetry}
-          className="px-6 py-3 bg-brand-700 hover:bg-brand-800 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"
+          className="px-6 py-3 bg-brand-700 hover:bg-brand-800 text-white rounded-2xl font-medium transition-all active:scale-[0.97] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"
         >
           Tentar novamente
         </button>
@@ -133,7 +133,7 @@ export const MainLayout: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleOpenLogin('ADMIN')}
-                className="mt-2 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-400 dark:hover:text-white"
+                className="mt-2 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-600 transition-colors hover:text-slate-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-400 dark:hover:text-white"
               >
                 <ShieldCheck size={12} aria-hidden="true" /> Acesso reservado
               </button>
@@ -155,7 +155,7 @@ export const MainLayout: React.FC = () => {
       <div className="font-sans text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-dark-bg min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:bg-brand-700 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-200 focus:px-4 focus:py-2 focus:bg-brand-700 focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-hidden"
         >
           Saltar para o conteúdo
         </a>
@@ -169,7 +169,7 @@ export const MainLayout: React.FC = () => {
           onAdminLogin={() => handleOpenLogin('ADMIN')}
         />
 
-        <main id="main-content" className="flex-grow">
+        <main id="main-content" className="grow">
           <Outlet context={{ onAskAI: openAI, openContact, openMemberLogin: () => handleOpenLogin('USER'), handleLogout }} />
         </main>
 
@@ -179,7 +179,7 @@ export const MainLayout: React.FC = () => {
             data-chatbot-trigger
             onClick={() => openAI()}
             aria-label={`Abrir o assistente ${settings.siteName}`}
-            className="fixed bottom-6 right-6 z-40 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 rounded-2xl flex items-center justify-center shadow-[0_18px_40px_-12px_rgb(var(--brand-600)/0.7)] hover:scale-105 active:scale-95 transition-all group animate-fade-in-up ring-1 ring-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="fixed bottom-6 right-6 z-40 w-14 h-14 sm:w-16 sm:h-16 bg-linear-to-br from-brand-500 via-brand-600 to-brand-800 rounded-2xl flex items-center justify-center shadow-[0_18px_40px_-12px_rgb(var(--brand-600)/0.7)] hover:scale-105 active:scale-95 transition-all group animate-fade-in-up ring-1 ring-white/25 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <MessageCircle size={28} className="text-white" />
             <div className="absolute right-full mr-4 bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 px-4 py-2 rounded-xl text-xs text-slate-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-xl">

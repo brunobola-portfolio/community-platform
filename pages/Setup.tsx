@@ -157,7 +157,7 @@ export const SetupPage: React.FC = () => {
                     <div className="mb-8 flex flex-col items-center gap-3">
                         <div className="relative">
                             <div className="absolute -inset-3 rounded-full bg-brand-500/20 blur-2xl" />
-                            <div className="relative grid h-16 w-16 place-items-center rounded-3xl border border-white/10 bg-gradient-to-br from-brand-500/30 to-brand-700/30 backdrop-blur-xl">
+                            <div className="relative grid h-16 w-16 place-items-center rounded-3xl border border-white/10 bg-linear-to-br from-brand-500/30 to-brand-700/30 backdrop-blur-xl">
                                 <Sparkles className="h-7 w-7 text-brand-300" />
                             </div>
                         </div>
@@ -171,8 +171,8 @@ export const SetupPage: React.FC = () => {
                     </div>
 
                     {/* Card */}
-                    <div className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-6 shadow-2xl backdrop-blur-2xl sm:p-8">
-                        <div className="absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-brand-400/50 to-transparent" />
+                    <div className="relative rounded-3xl border border-white/10 bg-white/3 p-6 shadow-2xl backdrop-blur-2xl sm:p-8">
+                        <div className="absolute inset-x-8 -top-px h-px bg-linear-to-r from-transparent via-brand-400/50 to-transparent" />
 
                         {phase === 'done' ? (
                             <SuccessState email={email} />
@@ -191,7 +191,7 @@ export const SetupPage: React.FC = () => {
                                         onChange={(e) => setName(e.target.value)}
                                         disabled={submitting}
                                         placeholder="O seu nome"
-                                        className="bg-white/[0.04] border-white/5 focus-visible:border-brand-400/40"
+                                        className="bg-white/4 border-white/5 focus-visible:border-brand-400/40"
                                     />
                                 </Field>
 
@@ -208,7 +208,7 @@ export const SetupPage: React.FC = () => {
                                         onChange={(e) => setEmail(e.target.value)}
                                         disabled={submitting}
                                         placeholder="admin@exemplo.pt"
-                                        className="bg-white/[0.04] border-white/5 focus-visible:border-brand-400/40"
+                                        className="bg-white/4 border-white/5 focus-visible:border-brand-400/40"
                                     />
                                 </Field>
 
@@ -226,7 +226,7 @@ export const SetupPage: React.FC = () => {
                                             onChange={(e) => setPassword(e.target.value)}
                                             disabled={submitting}
                                             placeholder="••••••••••••"
-                                            className="bg-white/[0.04] border-white/5 pr-12 focus-visible:border-brand-400/40"
+                                            className="bg-white/4 border-white/5 pr-12 focus-visible:border-brand-400/40"
                                         />
                                         <button
                                             type="button"
@@ -270,7 +270,7 @@ export const SetupPage: React.FC = () => {
                                         onChange={(e) => setConfirm(e.target.value)}
                                         disabled={submitting}
                                         placeholder="Repete a password"
-                                        className="bg-white/[0.04] border-white/5 focus-visible:border-brand-400/40"
+                                        className="bg-white/4 border-white/5 focus-visible:border-brand-400/40"
                                     />
                                     {confirm.length > 0 && confirm !== password && (
                                         <p className="mt-2 text-[11px] text-red-400">As passwords não coincidem.</p>
@@ -279,7 +279,7 @@ export const SetupPage: React.FC = () => {
 
                                 {error && (
                                     <div role="alert" className="flex items-start gap-2.5 rounded-2xl border border-red-500/20 bg-red-500/5 p-3 text-xs text-red-300">
-                                        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                                         <span>{error}</span>
                                     </div>
                                 )}
@@ -366,7 +366,7 @@ const BackgroundDecor: React.FC = () => (
         {/* Layered radial mesh: brand cyan, indigo, accent cyan */}
         <div className="absolute inset-0 opacity-70 bg-[radial-gradient(60%_50%_at_30%_20%,rgb(var(--brand-600)/0.18)_0%,rgb(var(--brand-600)/0)_60%),radial-gradient(50%_40%_at_80%_80%,rgba(99,102,241,0.16)_0%,rgba(99,102,241,0)_60%),radial-gradient(40%_35%_at_70%_10%,rgb(var(--brand-400)/0.10)_0%,rgb(var(--brand-400)/0)_60%)]" />
         {/* Subtle 48px grid masked toward edges */}
-        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
+        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] bg-size-[48px_48px] mask-[radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
         {/* Vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(2,6,23,0.7)_100%)]" />
     </>

@@ -13,7 +13,7 @@ interface AlbumPhotoGridProps {
     onRemoveMany: (ids: string[]) => void;
 }
 
-const ICON_BUTTON = 'p-1.5 rounded-lg bg-black/60 text-white hover:bg-brand-800 disabled:opacity-30 disabled:hover:bg-black/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const ICON_BUTTON = 'p-1.5 rounded-lg bg-black/60 text-white hover:bg-brand-800 disabled:opacity-30 disabled:hover:bg-black/60 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500';
 
 /**
  * Photo grid of one album: inline captions, arrow reordering, cover pick,
@@ -53,7 +53,7 @@ export const AlbumPhotoGrid: React.FC<AlbumPhotoGridProps> = ({ images, coverIma
                     <button
                         type="button"
                         onClick={() => { onRemoveMany(Array.from(selected)); setSelected(new Set()); }}
-                        className="inline-flex items-center gap-1.5 text-red-400 hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded px-1"
+                        className="inline-flex items-center gap-1.5 text-red-400 hover:text-red-300 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm px-1"
                     >
                         <Trash2 size={13} /> Apagar {selected.size} selecionada{selected.size > 1 ? 's' : ''}
                     </button>
@@ -80,7 +80,7 @@ export const AlbumPhotoGrid: React.FC<AlbumPhotoGridProps> = ({ images, coverIma
                                         <Star size={10} fill="currentColor" /> Capa
                                     </span>
                                 )}
-                                <span className="absolute bottom-2 left-2 text-[10px] font-mono text-white/70 bg-black/50 rounded px-1.5">{index + 1}</span>
+                                <span className="absolute bottom-2 left-2 text-[10px] font-mono text-white/70 bg-black/50 rounded-sm px-1.5">{index + 1}</span>
                                 <div className="absolute bottom-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                                     <button type="button" className={ICON_BUTTON} disabled={index === 0} onClick={() => onMove(img.id, -1)} aria-label="Mover para trás"><ChevronLeft size={14} /></button>
                                     <button type="button" className={ICON_BUTTON} disabled={index === images.length - 1} onClick={() => onMove(img.id, 1)} aria-label="Mover para a frente"><ChevronRight size={14} /></button>
@@ -94,7 +94,7 @@ export const AlbumPhotoGrid: React.FC<AlbumPhotoGridProps> = ({ images, coverIma
                                 onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
                                 placeholder="Legenda (opcional)"
                                 aria-label={`Legenda da foto ${index + 1}`}
-                                className="w-full bg-transparent px-3 py-2 text-xs text-slate-300 placeholder:text-slate-600 border-t border-white/5 focus:outline-none focus:bg-white/5"
+                                className="w-full bg-transparent px-3 py-2 text-xs text-slate-300 placeholder:text-slate-600 border-t border-white/5 focus:outline-hidden focus:bg-white/5"
                             />
                         </li>
                     );

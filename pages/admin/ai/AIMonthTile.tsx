@@ -12,7 +12,7 @@ export const AIMonthTile: React.FC = () => {
     const summary = month ? `${formatUsd(month.costUsd)} · ${month.calls} ${month.calls === 1 ? 'pedido' : 'pedidos'}` : '…';
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-dark-surface to-amber-900/10 p-5 shadow-lg">
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-linear-to-br from-dark-surface to-amber-900/10 p-5 shadow-lg">
             <div className="flex items-start justify-between">
                 <p className="text-xs font-bold uppercase text-slate-400">IA este mês</p>
                 <Sparkles className="text-amber-400/50" size={20} aria-hidden="true" />

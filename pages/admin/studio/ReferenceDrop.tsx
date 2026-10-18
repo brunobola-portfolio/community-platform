@@ -32,7 +32,7 @@ export const ReferenceDrop: React.FC<ReferenceDropProps> = ({ previewUrl, isUplo
                     onClick={onRemove}
                     disabled={disabled}
                     aria-label="Remover imagem de referência"
-                    className="shrink-0 rounded-xl p-2 text-slate-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"
+                    className="shrink-0 rounded-xl p-2 text-slate-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"
                 >
                     <X size={18} />
                 </button>

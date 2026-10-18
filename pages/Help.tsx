@@ -21,7 +21,7 @@ const HERO: HelpHero = {
     suggestions: ['inscrições', 'palavra-passe', 'quota', 'cartão de sócio'],
 };
 
-const CONTACT_LINK = 'inline-flex items-center gap-2 rounded text-slate-700 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-300 dark:hover:text-brand-400 [overflow-wrap:anywhere]';
+const CONTACT_LINK = 'inline-flex items-center gap-2 rounded-sm text-slate-700 hover:text-brand-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-300 dark:hover:text-brand-400 wrap-anywhere';
 
 interface ContactsProps {
     settings: Settings;

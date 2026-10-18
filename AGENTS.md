@@ -66,10 +66,12 @@ npm test             # Vitest (lógica pura: rate limit, excertos, CSP, release)
   duplicar strings de modelo em mais lado nenhum. Em OpenRouter o chat percorre
   `OPENROUTER_FALLBACK_MODELS` a cada falha (slug retirado, 429, 5xx) e só desiste em erro
   de credenciais (`isAuthError`), caindo depois para Gemini se houver `GEMINI_API_KEY`.
-- **Classes Tailwind vindas da BD precisam de safelist**: as cores de categoria são
-  guardadas como classe (`bg-*-500`). A paleta autorizada vive em `utils/categoryColors.ts`
-  e entra no `safelist` do `tailwind.config.ts` — fora da paleta, o JIT não compila a classe
-  e o ponto de cor fica invisível em produção.
+- **Tailwind 4, configurado em CSS** (`index.css`: `@theme`, `@custom-variant dark`,
+  `@source`; plugin `@tailwindcss/vite`, sem `tailwind.config.ts` nem PostCSS). As cores de
+  categoria vêm da BD como classe (`bg-*-500`, rótulo `bg-*-700`): a paleta autorizada vive em
+  `utils/categoryColors.ts` e os tons gerados têm de estar na linha `@source inline(...)` do
+  `index.css` — o teste `categoryColors` falha se faltar algum. Num `leading-*` explícito, o
+  v4 respeita-o mesmo com `md:text-*` (o v3 deixava o tamanho responsivo sobrepor-se).
 - **Identidade do assistente IA é dinâmica**: `convex/ai.ts` constrói o system prompt com
   `settings.siteName`/`address` (via `settings.getForAI`, que é um subconjunto explícito de
   campos — ao precisar de um campo novo numa action, adicioná-lo lá, não usar `getAdmin`).

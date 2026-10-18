@@ -15,7 +15,7 @@ interface ContextHelpProps {
     onOpenCenter: (tutorialId: string | null) => void;
 }
 
-const BACK = 'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const BACK = 'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500';
 
 /** "Como funciona" next to the page title: the guides of the current tab, without leaving it. */
 export const ContextHelp: React.FC<ContextHelpProps> = ({ tab, siteName, onOpenCenter }) => {
@@ -34,7 +34,7 @@ export const ContextHelp: React.FC<ContextHelpProps> = ({ tab, siteName, onOpenC
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-haspopup="dialog"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-500/40 bg-brand-500/10 px-4 text-sm font-semibold text-brand-200 transition-colors hover:border-brand-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:min-h-0 sm:py-2 sm:text-xs"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-500/40 bg-brand-500/10 px-4 text-sm font-semibold text-brand-200 transition-colors hover:border-brand-400 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 sm:min-h-0 sm:py-2 sm:text-xs"
             >
                 <HelpCircle size={16} aria-hidden="true" /> Como funciona
             </button>

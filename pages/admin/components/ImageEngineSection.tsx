@@ -59,7 +59,7 @@ export const ImageEngineSection: React.FC<ImageEngineSectionProps> = ({ settings
                         aria-checked={engine === option.id}
                         onClick={() => update('imageProvider', option.id)}
                         className={cn(
-                            'rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                            'rounded-xl border p-4 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                             engine === option.id ? 'border-brand-500/60 bg-brand-500/10' : 'border-white/10 bg-black/20 hover:border-white/25',
                         )}
                     >

@@ -82,7 +82,7 @@ export const ReplyModal: React.FC<ReplyModalProps> = ({ message, onClose, onOpen
                     <p className="rounded-xl bg-amber-500/10 p-4 text-sm text-amber-100">Para responder daqui, ligue primeiro o envio de emails no separador Email. Entretanto, pode responder pelo seu programa de email.</p>
                     <div className="flex flex-wrap gap-2">
                         {onOpenEmailSettings && <Button variant="outline" onClick={onOpenEmailSettings}><Settings2 size={16} /> Configurar o email</Button>}
-                        <a href={mailto} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><Mail size={16} /> Abrir no meu email</a>
+                        <a href={mailto} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"><Mail size={16} /> Abrir no meu email</a>
                     </div>
                 </div>
             ) : (

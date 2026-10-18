@@ -75,9 +75,9 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
          <div className="min-h-screen bg-slate-50 pt-32 dark:bg-dark-bg">
             <div className="mx-auto max-w-3xl space-y-6 px-4 animate-pulse">
                <div className="h-72 rounded-3xl bg-slate-900/5 dark:bg-white/5" />
-               <div className="h-8 w-2/3 rounded bg-slate-900/5 dark:bg-white/5" />
-               <div className="h-4 w-full rounded bg-slate-900/5 dark:bg-white/5" />
-               <div className="h-4 w-5/6 rounded bg-slate-900/5 dark:bg-white/5" />
+               <div className="h-8 w-2/3 rounded-sm bg-slate-900/5 dark:bg-white/5" />
+               <div className="h-4 w-full rounded-sm bg-slate-900/5 dark:bg-white/5" />
+               <div className="h-4 w-5/6 rounded-sm bg-slate-900/5 dark:bg-white/5" />
             </div>
          </div>
       );
@@ -105,7 +105,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
 
             <div className="absolute inset-0">
                <img src={post.coverUrl || FALLBACK_IMAGES.post} alt={post.title} className="w-full h-full object-cover brightness-[0.5] scale-105" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post; }} />
-               <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/60 to-transparent"></div>
+               <div className="absolute inset-0 bg-linear-to-t from-dark-bg via-dark-bg/60 to-transparent"></div>
             </div>
 
             <div className="absolute inset-0 flex flex-col justify-end z-30 px-6 pb-20 md:pb-32">
@@ -121,7 +121,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                      <button
                         onClick={handleNarrate}
                         disabled={isNarrating}
-                        className="flex items-center gap-2 bg-black/30 text-white px-5 py-1.5 rounded-full border border-white/30 backdrop-blur-md hover:bg-brand-600 hover:border-brand-500 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-brand-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        className="flex items-center gap-2 bg-black/30 text-white px-5 py-1.5 rounded-full border border-white/30 backdrop-blur-md hover:bg-brand-600 hover:border-brand-500 transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-brand-500/10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                      >
                         {isNarrating ? <Loader2 size={14} className="animate-spin" /> : <Volume2 size={14} />}
                         {isNarrating ? 'A Narrar...' : 'Ouvir Artigo'}
@@ -211,7 +211,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                   {relatedPosts.map(p => (
                      <div
                         key={p.id}
-                        className="group relative bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-slate-900/[0.08] dark:hover:bg-white/[0.08] transition-all"
+                        className="group relative bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 rounded-3xl overflow-hidden hover:bg-slate-900/8 dark:hover:bg-white/8 transition-all"
                      >
                         <div className="aspect-video overflow-hidden bg-slate-200 dark:bg-slate-800">
                            <img
@@ -226,7 +226,7 @@ export const PostDetailsPage: React.FC<PostDetailsProps> = ({ postId, onBack }) 
                         </div>
                         <div className="p-6">
                            <Badge className="bg-brand-700 text-white border-none shadow-md mb-3 text-[10px]">{p.category}</Badge>
-                           <h3 className="text-slate-900 dark:text-white font-bold line-clamp-2 mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"><Link to={postPath(p.slug)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{p.title}</Link></h3>
+                           <h3 className="text-slate-900 dark:text-white font-bold line-clamp-2 mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors"><Link to={postPath(p.slug)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-hidden focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{p.title}</Link></h3>
                            <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{p.excerpt}</p>
                         </div>
                      </div>

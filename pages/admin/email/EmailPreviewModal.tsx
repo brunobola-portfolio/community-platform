@@ -44,7 +44,7 @@ export const EmailPreviewModal: React.FC<EmailPreviewModalProps> = ({ eyebrow, t
                 <div className="flex justify-end gap-1" role="group" aria-label="Largura da pré-visualização">
                     {([['desktop', Monitor, 'Computador'], ['phone', Smartphone, 'Telemóvel']] as const).map(([id, Icon, label]) => (
                         <button key={id} type="button" aria-pressed={width === id} onClick={() => setWidth(id)}
-                            className={cn('flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                            className={cn('flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                                 width === id ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white')}>
                             <Icon size={14} aria-hidden="true" /> {label}
                         </button>

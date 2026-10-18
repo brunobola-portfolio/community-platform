@@ -27,7 +27,7 @@ const cardId = (id: string) => `help-cat-${id}`;
 const CategoryCard: React.FC<CategoryCardProps> = ({ category, tutorials, siteName, onSelect }) => {
     const Icon = HELP_ICONS[category.icon];
     return (
-        <div id={cardId(category.id)} tabIndex={-1} className="flex scroll-mt-28 flex-col rounded-3xl border border-slate-900/10 bg-white p-5 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:bg-dark-surface dark:shadow-none sm:p-6">
+        <div id={cardId(category.id)} tabIndex={-1} className="flex scroll-mt-28 flex-col rounded-3xl border border-slate-900/10 bg-white p-5 shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:bg-dark-surface dark:shadow-none sm:p-6">
             <div className="mb-3 flex items-start gap-4">
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-700 ring-1 ring-brand-500/20 dark:text-brand-400">
                     <Icon size={20} aria-hidden="true" />
@@ -44,9 +44,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, tutorials, siteNa
                         <button
                             type="button"
                             onClick={() => onSelect(t.id)}
-                            className="group flex min-h-12 w-full items-center gap-3 rounded-lg py-2.5 text-left text-[15px] text-slate-800 transition-colors hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-200 dark:hover:text-brand-400"
+                            className="group flex min-h-12 w-full items-center gap-3 rounded-lg py-2.5 text-left text-[15px] text-slate-800 transition-colors hover:text-brand-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-200 dark:hover:text-brand-400"
                         >
-                            <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">{fillTokens(t.title, { siteName })}</span>
+                            <span className="min-w-0 flex-1 wrap-anywhere">{fillTokens(t.title, { siteName })}</span>
                             <span className="shrink-0 text-xs tabular-nums text-slate-600 dark:text-slate-400">{t.minutes} min</span>
                             <ChevronRight size={16} aria-hidden="true" className="shrink-0 transition-transform group-hover:translate-x-0.5" />
                         </button>
@@ -89,7 +89,7 @@ export const HelpHome: React.FC<HelpHomeProps> = ({ tutorials, featured, categor
                                 <button
                                     type="button"
                                     onClick={() => jumpTo(category.id)}
-                                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-900/10 bg-white px-4 text-sm font-semibold text-slate-800 transition-colors hover:border-brand-500/50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:bg-dark-surface dark:text-slate-100 dark:hover:text-brand-400"
+                                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-900/10 bg-white px-4 text-sm font-semibold text-slate-800 transition-colors hover:border-brand-500/50 hover:text-brand-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:bg-dark-surface dark:text-slate-100 dark:hover:text-brand-400"
                                 >
                                     {category.title}
                                     <span className="rounded-full bg-slate-900/5 px-2 py-0.5 text-xs tabular-nums text-slate-700 dark:bg-white/10 dark:text-slate-200">

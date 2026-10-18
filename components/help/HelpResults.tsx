@@ -16,12 +16,12 @@ interface HelpResultsProps {
     onSuggest: (term: string) => void;
 }
 
-const CHIP = 'inline-flex min-h-11 items-center rounded-full border border-slate-900/15 bg-white px-4 text-sm font-semibold text-slate-800 transition-colors hover:border-brand-500/50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/15 dark:bg-dark-surface dark:text-slate-100 dark:hover:text-brand-400';
+const CHIP = 'inline-flex min-h-11 items-center rounded-full border border-slate-900/15 bg-white px-4 text-sm font-semibold text-slate-800 transition-colors hover:border-brand-500/50 hover:text-brand-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/15 dark:bg-dark-surface dark:text-slate-100 dark:hover:text-brand-400';
 
 /** Search results, or a way out when nothing matches: simpler words and a person to ask. */
 export const HelpResults: React.FC<HelpResultsProps> = ({ query, results, siteName, suggestions, contact, onSelect, onSuggest }) => (
     <section aria-labelledby="help-results" className="space-y-6">
-        <h2 id="help-results" className="font-serif text-2xl text-slate-900 [overflow-wrap:anywhere] dark:text-white">
+        <h2 id="help-results" className="font-serif text-2xl text-slate-900 wrap-anywhere dark:text-white">
             {results.length ? `${results.length} ${results.length === 1 ? 'guia' : 'guias'} para «${query}»` : `Sem resultados para «${query}»`}
         </h2>
         {results.length > 0 && (

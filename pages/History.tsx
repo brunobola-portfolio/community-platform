@@ -37,10 +37,10 @@ export const HistoryPage: React.FC = () => {
         {/* Intro Narrative */}
         <div className="text-center mb-24 animate-fade-in-up">
            <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.3em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">O Nosso Legado</span>
-           <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-12">História & <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Tradição</span></h1>
+           <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-12">História & <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-display to-accent-600 dark:to-accent-400">Tradição</span></h1>
 
            <div className="relative max-w-4xl mx-auto text-left bg-white dark:bg-dark-surface/50 p-8 md:p-12 rounded-3xl border border-slate-900/10 dark:border-white/10 backdrop-blur-md shadow-2xl">
-             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-accent-500 to-brand-500 opacity-50"></div>
+             <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-brand-500 via-accent-500 to-brand-500 opacity-50"></div>
              
              <div className="space-y-6 text-lg md:text-xl text-slate-600 dark:text-slate-300 font-light leading-relaxed">
                {introParagraphs.map((paragraph, i) => (
@@ -63,7 +63,7 @@ export const HistoryPage: React.FC = () => {
         {/* Timeline Visualization */}
         <div className="relative py-12">
           {/* Vertical Line */}
-          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-brand-500/30 to-transparent md:-ml-px"></div>
+          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-transparent via-brand-500/30 to-transparent md:-ml-px"></div>
 
           <div className="space-y-24">
             {milestones.length === 0 && (
@@ -94,7 +94,7 @@ export const HistoryPage: React.FC = () => {
                 {/* Image Side */}
                 <div className={`w-full md:w-1/2 pl-12 md:pl-0 ${idx % 2 === 0 ? 'md:pl-16' : 'md:pr-16'}`}>
                    <div
-                      className="relative h-64 md:h-80 w-full rounded-2xl overflow-hidden border border-slate-900/10 dark:border-white/10 group-hover:border-brand-500/50 group-hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.2)] transition-all duration-500 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      className="relative h-64 md:h-80 w-full rounded-2xl overflow-hidden border border-slate-900/10 dark:border-white/10 group-hover:border-brand-500/50 group-hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.2)] transition-all duration-500 cursor-zoom-in focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                       role="button"
                       tabIndex={0}
                       aria-label={`Ampliar imagem: ${item.title} (${item.year})`}
@@ -109,7 +109,7 @@ export const HistoryPage: React.FC = () => {
                         decoding="async"
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 scale-100 group-hover:scale-110 transition-all duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-transparent to-transparent opacity-60"></div>
+                      <div className="absolute inset-0 bg-linear-to-t from-dark-bg via-transparent to-transparent opacity-60"></div>
                       
                       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white font-mono px-3 py-1 rounded-full border border-white/20 text-sm">
                          {item.year}
@@ -125,10 +125,10 @@ export const HistoryPage: React.FC = () => {
         {/* Founders Grid */}
         {founders.length > 0 && (
         <div className="mt-40 relative">
-           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-900/5 to-transparent pointer-events-none"></div>
+           <div className="absolute inset-0 bg-linear-to-b from-transparent via-accent-900/5 to-transparent pointer-events-none"></div>
            
            <div className="relative z-10 text-center mb-16">
-               <div className="w-16 h-16 mx-auto bg-gradient-to-br from-accent-400 to-accent-600 rounded-2xl flex items-center justify-center text-black mb-6 shadow-[0_0_30px_rgb(var(--accent-500)/0.3)]">
+               <div className="w-16 h-16 mx-auto bg-linear-to-br from-accent-400 to-accent-600 rounded-2xl flex items-center justify-center text-black mb-6 shadow-[0_0_30px_rgb(var(--accent-500)/0.3)]">
                   <Award size={32} />
                </div>
                <h2 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mb-4">{settings.foundedYear ? `Os Visionários de ${settings.foundedYear}` : "Os Sócios Fundadores"}</h2>
@@ -141,7 +141,7 @@ export const HistoryPage: React.FC = () => {
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {founders.map((founder, i) => (
                  <div key={i} className="group relative bg-white dark:bg-black/40 border border-slate-900/5 dark:border-white/5 hover:border-accent-500/40 rounded-xl p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_30px_-10px_rgb(var(--accent-500)/0.2)] cursor-default overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-500/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-accent-500/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                     
                     <div className="flex items-center gap-4 relative z-10">
                         <div className="w-12 h-12 rounded-full border border-accent-500/20 bg-accent-900/10 flex items-center justify-center text-accent-600 dark:text-accent-400 group-hover:text-accent-700 dark:group-hover:text-accent-300 group-hover:border-accent-400/50 transition-colors">

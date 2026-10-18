@@ -34,7 +34,7 @@ const SwitchRow: React.FC<SwitchRowProps> = ({ icon: Icon, title, items, checked
                     <li key={item.label} className="flex flex-wrap items-center gap-x-2">
                         <span aria-hidden="true">·</span>{item.label}
                         {item.kind && (
-                            <button type="button" onClick={() => onPreview(item)} className="inline-flex items-center gap-1 rounded font-semibold text-brand-300 hover:text-brand-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <button type="button" onClick={() => onPreview(item)} className="inline-flex items-center gap-1 rounded-sm font-semibold text-brand-300 hover:text-brand-200 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                                 <Eye size={12} aria-hidden="true" /> Ver exemplo
                             </button>
                         )}
@@ -43,8 +43,8 @@ const SwitchRow: React.FC<SwitchRowProps> = ({ icon: Icon, title, items, checked
             </ul>
         </div>
         <button type="button" role="switch" aria-checked={checked} aria-label={title} onClick={() => onChange(!checked)}
-            className={cn('relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500', checked ? 'bg-brand-600' : 'bg-slate-700')}>
-            <span className={cn('absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform', checked ? 'translate-x-[22px]' : 'translate-x-0.5')} />
+            className={cn('relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500', checked ? 'bg-brand-600' : 'bg-slate-700')}>
+            <span className={cn('absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform', checked ? 'translate-x-[22px]' : 'translate-x-0.5')} />
         </button>
     </div>
 );

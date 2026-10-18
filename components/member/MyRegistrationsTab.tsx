@@ -16,7 +16,7 @@ const PAST_LABEL: Record<MyRegistration['status'], string> = { pending: 'Não co
 
 const EventLine: React.FC<{ registration: MyRegistration }> = ({ registration }) => (
     <div className="min-w-0">
-        <Link to={eventPath(registration.event.slug)} className="rounded font-serif text-lg text-slate-900 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-white dark:hover:text-brand-400">
+        <Link to={eventPath(registration.event.slug)} className="rounded-sm font-serif text-lg text-slate-900 hover:text-brand-700 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-white dark:hover:text-brand-400">
             {registration.event.title}
         </Link>
         <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600 dark:text-slate-400">
@@ -43,7 +43,7 @@ export const MyRegistrationsTab: React.FC<MyRegistrationsTabProps> = ({ registra
                 <Ticket size={32} aria-hidden="true" className="mb-4 text-brand-600 dark:text-brand-400" />
                 <h3 className="font-serif text-xl text-slate-900 dark:text-white">Ainda não se inscreveu em nenhum evento</h3>
                 <p className="mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">Quando se inscrever com a sessão iniciada, a inscrição e o estado (por confirmar ou confirmada) aparecem aqui.</p>
-                <Link to="/events" className="mt-6 rounded-xl bg-brand-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Ver a agenda</Link>
+                <Link to="/events" className="mt-6 rounded-xl bg-brand-700 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-800 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Ver a agenda</Link>
             </div>
         );
     }

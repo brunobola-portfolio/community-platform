@@ -132,7 +132,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           {settings.heroImageUrl && (
             <img src={settings.heroImageUrl} alt="" aria-hidden="true" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover opacity-[0.08] mix-blend-multiply dark:opacity-30 dark:mix-blend-overlay scale-105 animate-pulse-slow" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-50/90 to-slate-50 dark:from-dark-bg dark:via-dark-bg/90 dark:to-dark-bg"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-slate-50 via-slate-50/90 to-slate-50 dark:from-dark-bg dark:via-dark-bg/90 dark:to-dark-bg"></div>
           {/* Animated Glow Orbs */}
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 dark:bg-brand-500/20 rounded-full blur-[120px] animate-float"></div>
           <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent-500/5 dark:bg-accent-500/10 rounded-full blur-[120px] animate-float [animation-delay:2s]"></div>
@@ -148,7 +148,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             <span className="text-xs font-medium text-slate-600 dark:text-slate-300 tracking-wider uppercase">Portal Comunitário 2.0</span>
           </div>
 
-          <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-slate-900 via-slate-800 to-slate-500 dark:from-white dark:via-white dark:to-slate-500 mb-8 leading-[0.9] tracking-tight animate-fade-in-up drop-shadow-2xl [animation-delay:0.1s]">
+          <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl font-bold text-transparent bg-clip-text bg-linear-to-b from-slate-900 via-slate-800 to-slate-500 dark:from-white dark:via-white dark:to-slate-500 mb-8 leading-[0.9] tracking-tight animate-fade-in-up drop-shadow-2xl [animation-delay:0.1s]">
             {settings.locality || settings.siteName}<br />
             {settings.locality && (
               <span className="text-4xl md:text-6xl lg:text-7xl font-light italic font-sans text-brand-display">{settings.siteName}</span>
@@ -162,7 +162,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
           {/* AI Search Bar Mockup */}
           <div className="w-full max-w-lg mx-auto mb-12 animate-fade-in-up relative group [animation-delay:0.25s]">
-            <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-brand-800 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+            <div className="absolute -inset-1 bg-linear-to-r from-brand-500 to-brand-800 rounded-full blur-sm opacity-25 group-hover:opacity-50 transition duration-200"></div>
             <div className={cn(
               'relative flex items-center bg-white/80 dark:bg-black/60 border rounded-full px-4 py-2 backdrop-blur-xl transition-colors',
               isListening ? 'border-red-500/40' : 'border-slate-900/10 dark:border-white/10',
@@ -173,7 +173,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 placeholder={isListening ? 'A ouvir... fala agora' : 'Pergunte à IA: Quando é o próximo torneio?'}
                 aria-label="Pesquisar"
                 className={cn(
-                  'bg-transparent border-none outline-none text-slate-900 dark:text-white w-full text-sm h-10',
+                  'bg-transparent border-none outline-hidden text-slate-900 dark:text-white w-full text-sm h-10',
                   isListening ? 'placeholder:text-red-400/70 dark:placeholder:text-red-300/60' : 'placeholder:text-slate-500',
                 )}
                 value={isListening ? interimTranscript || searchValue : searchValue}
@@ -185,7 +185,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 {voiceSupported && (
                   <button
                     className={cn(
-                      'p-2 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                      'p-2 rounded-full transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                       isListening ? 'text-red-600 dark:text-red-400 bg-red-500/10' : 'hover:text-brand-700 dark:hover:text-brand-400 text-slate-600 dark:text-slate-400',
                     )}
                     onClick={toggleVoice}
@@ -195,7 +195,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                     <Mic size={18} className={isListening ? 'animate-pulse' : ''} />
                   </button>
                 )}
-                <button className="p-2 bg-brand-700 rounded-full text-white hover:bg-brand-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" onClick={handleHeroSearch} aria-label="Pesquisar"><Search size={16} /></button>
+                <button className="p-2 bg-brand-700 rounded-full text-white hover:bg-brand-800 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500" onClick={handleHeroSearch} aria-label="Pesquisar"><Search size={16} /></button>
               </div>
             </div>
             {voiceError && (
@@ -222,12 +222,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.scrollTo({ top: window.innerHeight, behavior: 'smooth' }); } }}
         >
           <span className="text-[10px] uppercase tracking-[0.3em] text-brand-700 dark:text-brand-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Explorar</span>
-          <div className="w-[1px] h-16 bg-gradient-to-b from-brand-500 via-brand-400 to-transparent opacity-50 group-hover:h-20 group-hover:opacity-100 transition-all duration-500"></div>
+          <div className="w-px h-16 bg-linear-to-b from-brand-500 via-brand-400 to-transparent opacity-50 group-hover:h-20 group-hover:opacity-100 transition-all duration-500"></div>
         </div>
       </section>
 
       {/* Stats Ribbon */}
-      <div className="border-y border-slate-900/5 dark:border-white/5 bg-slate-900/[0.02] dark:bg-white/[0.02] backdrop-blur-sm relative z-20">
+      <div className="border-y border-slate-900/5 dark:border-white/5 bg-slate-900/2 dark:bg-white/2 backdrop-blur-xs relative z-20">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-900/5 dark:divide-white/5">
           {isLoading ? (
             [1, 2, 3, 4].map(i => (
@@ -239,7 +239,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           ) : (
             <>
               {stats.map((stat) => (
-                <div key={stat.label} className="py-12 text-center group hover:bg-slate-900/[0.02] dark:hover:bg-white/[0.02] transition-colors cursor-default">
+                <div key={stat.label} className="py-12 text-center group hover:bg-slate-900/2 dark:hover:bg-white/2 transition-colors cursor-default">
                   <div className="text-3xl md:text-4xl font-serif font-bold text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors scale-100 group-hover:scale-110 duration-300 transform">{stat.value}</div>
                   <div className="text-xs uppercase tracking-widest text-slate-600 dark:text-slate-400 font-medium">{stat.label}</div>
                 </div>
@@ -257,7 +257,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
             <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.25em] text-xs font-bold mb-4 block">Os Nossos Pilares</span>
-            <h2 className="font-serif text-5xl md:text-6xl text-slate-900 dark:text-white mb-8 leading-tight">Áreas de <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Impacto</span></h2>
+            <h2 className="font-serif text-5xl md:text-6xl text-slate-900 dark:text-white mb-8 leading-tight">Áreas de <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-display to-accent-600 dark:to-accent-400">Impacto</span></h2>
             <p className="text-slate-600 dark:text-slate-300 max-w-3xl mx-auto text-lg font-light leading-relaxed">
               {`Da vida recreativa ao desporto, da cultura à solidariedade — a nossa missão assenta em áreas de ação ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}.`}
             </p>
@@ -266,7 +266,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden min-h-[300px] md:h-[420px] p-8 flex flex-col">
+                <div key={i} className="rounded-4xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden min-h-[300px] md:h-[420px] p-8 flex flex-col">
                   <Skeleton className="w-14 h-14 rounded-2xl" />
                   <div className="mt-auto space-y-3">
                     <Skeleton className="h-3 w-20" />
@@ -281,7 +281,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               return (
                 <div
                   key={area.id}
-                  className="group relative min-h-[300px] md:h-[420px] rounded-[2rem] border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.15)] transition-all duration-500"
+                  className="group relative min-h-[300px] md:h-[420px] rounded-4xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface overflow-hidden cursor-pointer shadow-lg hover:shadow-[0_0_30px_rgb(var(--brand-600)/0.15)] transition-all duration-500"
                   role="button"
                   tabIndex={0}
                   onClick={() => setSelectedArea(area)}
@@ -290,11 +290,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                   {/* Background Image on Hover */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-700">
                     <img src={area.imageUrl} alt="" aria-hidden="true" loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 dark:from-dark-surface dark:via-dark-surface/80 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-white via-white/80 dark:from-dark-surface dark:via-dark-surface/80 to-transparent"></div>
                   </div>
 
                   {/* Border Glow */}
-                  <div className="absolute -inset-px bg-gradient-to-b from-brand-500 to-brand-800 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none p-px -z-10"></div>
+                  <div className="absolute -inset-px bg-linear-to-b from-brand-500 to-brand-800 rounded-4xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none p-px -z-10"></div>
 
                   <div className="relative z-10 flex flex-col h-full p-8">
                     <div className="w-14 h-14 rounded-2xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 text-brand-700 dark:text-brand-400 flex items-center justify-center mb-auto group-hover:bg-brand-500 group-hover:text-white group-hover:border-transparent transition-all duration-500">
@@ -324,7 +324,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
       {/* Bento Grid News Section: hidden until there is something to read */}
       {(isLoading || posts.length > 0) && (
       <section className="py-20 md:py-32 relative">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex justify-between items-end mb-16">
@@ -360,14 +360,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 {/* The text block is positioned, so a stretched title link would only cover it; this mouse-only twin covers the card */}
                 <Link to={postPath(highlightPost.slug || highlightPost.id)} tabIndex={-1} aria-hidden="true" className="absolute inset-0 z-10" />
                 <img src={highlightPost.coverUrl || FALLBACK_IMAGES.post} alt={highlightPost.title} loading="lazy" className="w-full h-full object-cover opacity-60 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post; }} />
-                <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/20 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-dark-bg via-dark-bg/20 to-transparent" />
 
                 <div className="absolute top-6 right-6">
                   <div className="bg-brand-700 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_10px_rgb(var(--brand-600)/0.5)]">Destaque</div>
                 </div>
 
                 <div className="absolute bottom-0 left-0 p-8 w-full translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                  <h3 className="text-3xl md:text-4xl font-serif text-white font-medium mb-4 leading-tight group-hover:text-brand-400 transition-colors"><Link to={postPath(highlightPost.slug || highlightPost.id)} className="rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{highlightPost.title}</Link></h3>
+                  <h3 className="text-3xl md:text-4xl font-serif text-white font-medium mb-4 leading-tight group-hover:text-brand-400 transition-colors"><Link to={postPath(highlightPost.slug || highlightPost.id)} className="rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">{highlightPost.title}</Link></h3>
                   <p className="text-slate-300 line-clamp-2 mb-6 text-lg font-light opacity-80 group-hover:opacity-100">{highlightPost.excerpt}</p>
                   <div className="flex items-center text-brand-400 font-medium uppercase text-xs tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
                     Ler Artigo Completo <ChevronRight size={16} className="ml-2" />
@@ -379,14 +379,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             {/* Secondary Post 1 */}
             {secondaryPosts[0] && (
               <div className="md:col-span-2 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface flex items-center">
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-500/10 to-accent-500/10 dark:from-brand-900/20 dark:to-accent-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-linear-to-r from-brand-500/10 to-accent-500/10 dark:from-brand-900/20 dark:to-accent-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="w-1/3 h-full relative">
                   <img src={secondaryPosts[0].coverUrl || FALLBACK_IMAGES.post} alt={secondaryPosts[0].title} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.post; }} />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white dark:to-dark-surface"></div>
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent to-white dark:to-dark-surface"></div>
                 </div>
                 <div className="w-2/3 p-6 z-10">
                   <span className="text-brand-700 dark:text-brand-400 text-xs font-mono mb-2 block">{new Date(secondaryPosts[0].date).toLocaleDateString('pt-PT')}</span>
-                  <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors"><Link to={postPath(secondaryPosts[0].slug || secondaryPosts[0].id)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{secondaryPosts[0].title}</Link></h3>
+                  <h3 className="text-xl font-serif text-slate-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-300 transition-colors"><Link to={postPath(secondaryPosts[0].slug || secondaryPosts[0].id)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-hidden focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{secondaryPosts[0].title}</Link></h3>
                   <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{secondaryPosts[0].excerpt}</p>
                 </div>
               </div>
@@ -397,7 +397,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
               <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl border border-slate-900/10 dark:border-white/10 bg-white dark:bg-dark-surface p-6 flex flex-col justify-between hover:border-brand-500/30 transition-colors hover:shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                 <div>
                   <Sparkles className="text-accent-500 mb-4 w-8 h-8" />
-                  <h3 className="text-lg font-serif text-slate-900 dark:text-white leading-snug"><Link to={postPath(secondaryPosts[1].slug || secondaryPosts[1].id)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{secondaryPosts[1].title}</Link></h3>
+                  <h3 className="text-lg font-serif text-slate-900 dark:text-white leading-snug"><Link to={postPath(secondaryPosts[1].slug || secondaryPosts[1].id)} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-hidden focus-visible:after:ring-2 focus-visible:after:ring-brand-500">{secondaryPosts[1].title}</Link></h3>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-900/5 dark:border-white/5 flex justify-between items-center">
                   <span className="text-xs text-slate-600 dark:text-slate-400">Notícia</span>
@@ -408,7 +408,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
             {/* Gallery Link */}
             <div className="md:col-span-1 md:row-span-1 relative group overflow-hidden rounded-3xl bg-brand-700 p-6 flex flex-col justify-center items-center text-center hover:bg-brand-800 transition-colors shadow-[0_0_30px_rgb(var(--brand-600)/0.2)]">
-              <h3 className="text-2xl font-serif text-white mb-2 z-10"><Link to="/gallery" className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-500">Multimédia</Link></h3>
+              <h3 className="text-2xl font-serif text-white mb-2 z-10"><Link to="/gallery" className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-hidden focus-visible:after:ring-2 focus-visible:after:ring-brand-500">Multimédia</Link></h3>
               <p className="text-brand-100 text-sm mb-4">Explore a galeria de fotos e vídeos.</p>
               <span className="inline-flex w-full items-center justify-center rounded-xl border border-white/30 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition-colors group-hover:bg-white/20">Ver Galeria</span>
             </div>
@@ -424,7 +424,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
       {/* Events Stream */}
       <section id="events" className="py-20 md:py-32 bg-white dark:bg-black relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-200 dark:via-brand-900 to-transparent"></div>
+        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-brand-200 dark:via-brand-900 to-transparent"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-end mb-12">
@@ -461,7 +461,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
           ) : events.length > 0 ? (
           <div
             ref={eventsContainerRef}
-            className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar [scrollbar-width:none]"
+            className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory no-scrollbar scrollbar-none"
           >
             {carouselEvents.map(event => (
               <div
@@ -476,9 +476,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                     loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-dark-surface to-transparent"></div>
+                  <div className="absolute inset-0 bg-linear-to-t from-white dark:from-dark-surface to-transparent"></div>
 
-                  <div className="absolute top-3 right-3 bg-brand-600/90 backdrop-blur-sm text-white text-xs font-bold px-2 py-1 rounded">
+                  <div className="absolute top-3 right-3 bg-brand-600/90 backdrop-blur-xs text-white text-xs font-bold px-2 py-1 rounded-sm">
                     {new Date(event.date).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' }).toUpperCase()}
                   </div>
                   <div className="absolute top-3 left-3">
@@ -508,7 +508,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
             {/* View All Card */}
             <Link
               to="/events"
-              className="min-w-[200px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-900/10 dark:border-white/10 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all snap-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="min-w-[200px] flex flex-col items-center justify-center text-center p-6 border border-dashed border-slate-900/10 dark:border-white/10 rounded-2xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-all snap-center focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               <Calendar size={32} className="mb-3" />
               <span className="font-medium">Ver calendário completo</span>
@@ -523,7 +523,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
       </section>
 
       {/* Infinite Partners Marquee: with no partners only the invitation remains */}
-      <section className={cn('border-t border-slate-900/5 dark:border-white/5 bg-slate-900/[0.01] dark:bg-white/[0.01] overflow-hidden', sponsors.length > 0 ? 'py-16 md:py-24' : 'py-12')}>
+      <section className={cn('border-t border-slate-900/5 dark:border-white/5 bg-slate-900/1 dark:bg-white/1 overflow-hidden', sponsors.length > 0 ? 'py-16 md:py-24' : 'py-12')}>
         {sponsors.length > 0 && (
           <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12">
@@ -532,8 +532,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
 
             <div className="relative w-full flex overflow-hidden group">
               {/* Gradient Masks */}
-              <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute top-0 left-0 w-32 h-full bg-linear-to-r from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-l from-slate-50 dark:from-dark-bg to-transparent z-10 pointer-events-none"></div>
 
               {/* Scrolling Content */}
               <div className="flex gap-16 animate-marquee whitespace-nowrap hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] items-center">
@@ -541,7 +541,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 {[0, 1].flatMap(copy => sponsors.map(sponsor => (
                   <div
                     key={`${sponsor.id}-${copy}`}
-                    className="flex-shrink-0 rounded-2xl transition-all duration-500 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="shrink-0 rounded-2xl transition-all duration-500 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                     title={sponsor.name}
                     role="button"
                     tabIndex={copy === 0 ? 0 : -1}
@@ -688,7 +688,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenEvent, onA
                 </ul>
               </div>
 
-              <div className="h-fit rounded-2xl bg-slate-900/[0.03] p-5 ring-1 ring-slate-900/10 dark:bg-white/[0.03] dark:ring-white/10">
+              <div className="h-fit rounded-2xl bg-slate-900/3 p-5 ring-1 ring-slate-900/10 dark:bg-white/3 dark:ring-white/10">
                 <h4 className="mb-3 font-medium text-slate-900 dark:text-white">Quer participar?</h4>
                 <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                   Estamos sempre à procura de voluntários e de novas ideias para esta área. Fale com a direção e diga como

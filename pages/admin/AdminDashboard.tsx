@@ -100,7 +100,7 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon, gradient, footer, customValue }) => (
-    <div className={`bg-gradient-to-br ${gradient} p-5 rounded-2xl border border-white/10 relative overflow-hidden group shadow-lg`}>
+    <div className={`bg-linear-to-br ${gradient} p-5 rounded-2xl border border-white/10 relative overflow-hidden group shadow-lg`}>
         <div className="flex justify-between items-start">
             <p className="text-slate-400 text-xs uppercase font-bold">{label}</p>
             {icon}
@@ -131,7 +131,7 @@ const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
         </h3>
         <div className="flex-1 min-h-0 flex flex-col">
             {pendingRegistrations.length === 0 ? (
-                <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-white/10 rounded-xl bg-white/[0.02] mb-4">
+                <div className="flex-1 flex flex-col items-center justify-center border border-dashed border-white/10 rounded-xl bg-white/2 mb-4">
                     <CheckCircle2 size={32} className="mx-auto text-green-500 mb-2 opacity-50" />
                     <p className="text-slate-400 text-sm">Tudo em dia! Sem pendentes.</p>
                 </div>
@@ -141,7 +141,7 @@ const ApprovalsPanel: React.FC<ApprovalsPanelProps> = ({
                         <button
                             key={reg.id}
                             type="button"
-                            className="w-full flex items-center justify-between bg-black/20 p-4 rounded-xl border border-white/5 cursor-pointer hover:bg-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                            className="w-full flex items-center justify-between bg-black/20 p-4 rounded-xl border border-white/5 cursor-pointer hover:bg-black/30 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                             onClick={() => onViewRegistration(reg)}
                         >
                             <div className="flex items-center gap-3">
@@ -197,7 +197,7 @@ const ActivityLogPanel: React.FC<ActivityLogPanelProps> = ({ activityLogs }) => 
                             <span className="text-[10px] text-slate-400">
                                 {new Date(log.timestamp).toLocaleString('pt-PT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <span className="text-[10px] text-brand-400 bg-brand-900/10 px-1.5 rounded uppercase tracking-wider">
+                            <span className="text-[10px] text-brand-400 bg-brand-900/10 px-1.5 rounded-sm uppercase tracking-wider">
                                 {ACTION_LABELS[log.action] ?? log.action}
                             </span>
                         </div>

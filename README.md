@@ -8,7 +8,7 @@
 <img src="https://img.shields.io/badge/TypeScript-5%20strict-3178C6?logo=typescript&logoColor=white&labelColor=0f172a" alt="TypeScript 5" />
 <img src="https://img.shields.io/badge/Vite-8%20(Rolldown)-646CFF?logo=vite&logoColor=white&labelColor=0f172a" alt="Vite 8" />
 <img src="https://img.shields.io/badge/Convex-realtime-EE342F?labelColor=0f172a" alt="Convex" />
-<img src="https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white&labelColor=0f172a" alt="Tailwind CSS" />
+<img src="https://img.shields.io/badge/Tailwind_CSS-4.3-06B6D4?logo=tailwindcss&logoColor=white&labelColor=0f172a" alt="Tailwind CSS" />
 <img src="https://img.shields.io/badge/Gemini_AI-multi--provider-4285F4?logo=google&logoColor=white&labelColor=0f172a" alt="Gemini AI" />
 <img src="https://img.shields.io/badge/license-MIT-7fc528?labelColor=0f172a" alt="MIT" />
 <a href="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml"><img src="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
@@ -188,10 +188,10 @@ uploads go to Convex storage, never base64.
 
 | Layer | Technology | Version |
 |-------|-----------|---------|
-| Frontend | React + TypeScript | 19.2 + 5.9 |
-| Build | Vite (Rolldown) | 8.2 |
-| Styling | Tailwind CSS + clsx + tailwind-merge | 3.4 |
-| Backend | Convex (serverless, realtime) | 1.45 |
+| Frontend | React + TypeScript | 19.3 + 5.9 |
+| Build | Vite (Rolldown) | 8.3 |
+| Styling | Tailwind CSS (CSS-first, `@tailwindcss/vite`) + clsx + tailwind-merge | 4.3 |
+| Backend | Convex (serverless, realtime) | 1.47 |
 | Auth | @convex-dev/auth (password) | 0.0.95 |
 | AI | Google Gemini (@google/genai), multi-provider layer | 1.52 |
 | Sanitization | DOMPurify (client) + server-side | 3.4 |
@@ -394,7 +394,7 @@ The short version — full checklist in **[docs/WHITE-LABEL.md](docs/WHITE-LABEL
 2. Open `/setup`, create the admin account
 3. Fill in **Admin > Settings**: name, contacts, address, coordinates, socials, dues
 4. Replace the static branding: `index.html` meta tags, `public/` logos and OG image,
-   brand color in `tailwind.config.ts`
+   (the brand colour and fonts are set in **Admin > Settings > Brand**)
 5. Replace the demo content (events, history milestones, team) from the admin panel
 
 ## Deploying to Production

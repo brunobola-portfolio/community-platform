@@ -88,7 +88,7 @@ export const AdminGalleryManager: React.FC<AdminGalleryManagerProps> = ({ albums
                                     aria-selected={a.id === selectedId}
                                     onClick={() => setSelectedId(a.id)}
                                     className={cn(
-                                        'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500',
+                                        'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500',
                                         a.id === selectedId ? 'bg-brand-500/10' : 'hover:bg-white/5'
                                     )}
                                 >

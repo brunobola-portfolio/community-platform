@@ -183,7 +183,7 @@ export const AIStudioModal: React.FC<AIStudioModalProps> = ({ kind, onClose, onD
                                 key={example}
                                 type="button"
                                 onClick={() => setBrief(example)}
-                                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-left text-xs text-slate-300 transition-colors hover:border-brand-500/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                                className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-left text-xs text-slate-300 transition-colors hover:border-brand-500/40 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                             >
                                 {example.length > 60 ? `${example.slice(0, 58)}…` : example}
                             </button>

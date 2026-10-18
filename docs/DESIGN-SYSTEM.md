@@ -1,7 +1,7 @@
 # Design System
 
-Referência visual da plataforma. Fonte de verdade dos tokens:
-[tailwind.config.ts](../tailwind.config.ts) e [index.css](../index.css). Estética:
+Referência visual da plataforma. Fonte de verdade dos tokens: [index.css](../index.css)
+(Tailwind 4, bloco `@theme`). Estética:
 glassmorphism sobre neutros tingidos pela marca, com uma cor brand e uma cor de destaque
 por instância (escolhidas no backoffice, ver [Marca dinâmica](#marca-dinâmica)).
 
@@ -44,9 +44,10 @@ estados («Reservado», orçamento, inscrições pendentes). O tom "info" das no
 `brand-500/10`.
 
 Cores de categoria (eventos e notícias) vêm da BD como classes Tailwind: a paleta
-autorizada é `utils/categoryColors.ts`, importada pelo `safelist` do
-[tailwind.config.ts](../tailwind.config.ts). Sem essa entrada a classe não é compilada
-e o ponto de cor fica invisível — nunca gravar uma classe fora da paleta.
+autorizada é `utils/categoryColors.ts`, e os tons que o compilador não vê no código (os
+`-700` dos rótulos) estão na linha `@source inline(...)` do [index.css](../index.css). Sem
+essa entrada a classe não é compilada e a cor fica invisível — nunca gravar uma classe fora
+da paleta; o teste `categoryColors` confirma as duas listas.
 
 ## Tipografia
 
@@ -129,10 +130,10 @@ o modal é só a casca e o encaminhamento.
 
 ## Marca dinâmica
 
-Os tokens `brand-*`, `accent-*`, `slate-*`, `dark-*` e `font-*` do
-[tailwind.config.ts](../tailwind.config.ts) são variáveis CSS
-(`rgb(var(--brand-500) / <alpha-value>)`, com canais RGB separados por espaço para os
-modificadores `/10`, `/20` continuarem a funcionar). Quem as escreve:
+Os tokens `brand-*`, `accent-*`, `slate-*`, `dark-*` e `font-*` do bloco `@theme` do
+[index.css](../index.css) são variáveis CSS (`--color-brand-500: rgb(var(--brand-500))`,
+com canais RGB separados por espaço; os modificadores `/10`, `/20` funcionam por
+`color-mix`). Quem as escreve:
 
 1. **`index.css` `:root`** — valores das predefinições (brand `#4f46e5`, destaque automático,
    Playfair Display / Geist / Geist Mono), para o primeiro paint sem JS. Os testes

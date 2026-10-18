@@ -102,12 +102,12 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ registrati
                 {(registration.email || registration.phone) && (
                     <div className="flex flex-wrap gap-2">
                         {registration.email && (
-                            <a href={`mailto:${registration.email}?subject=${encodeURIComponent(`Inscrição: ${eventTitle ?? 'evento'}`)}`} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <a href={`mailto:${registration.email}?subject=${encodeURIComponent(`Inscrição: ${eventTitle ?? 'evento'}`)}`} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                                 <Mail size={16} /> Enviar email
                             </a>
                         )}
                         {whatsappNumber && (
-                            <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm font-semibold text-slate-200 hover:bg-white/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                                 <MessageCircle size={16} /> WhatsApp
                             </a>
                         )}
@@ -125,7 +125,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ registrati
                             {entries.map(([key, value]) => (
                                 <div key={key} className="flex items-start justify-between gap-4 py-2 text-sm">
                                     <dt className="text-slate-400">{labels.get(key) ?? key.replace(/_/g, ' ')}</dt>
-                                    <dd className="break-words text-right font-medium text-white">{String(value)}</dd>
+                                    <dd className="wrap-break-word text-right font-medium text-white">{String(value)}</dd>
                                 </div>
                             ))}
                         </dl>

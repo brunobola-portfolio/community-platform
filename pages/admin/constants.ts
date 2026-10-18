@@ -15,7 +15,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
 // default to min-width: auto, which lets long placeholder/content widths
 // push past the column and clip neighbouring fields)
 export const STD_INPUT_CLASS =
-    "w-full min-w-0 bg-slate-950/50 border border-slate-800 rounded-lg p-3 text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-none transition-all";
+    "w-full min-w-0 bg-slate-950/50 border border-slate-800 rounded-lg p-3 text-white placeholder:text-slate-600 focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-hidden transition-all";
 
 export const LABEL_CLASS =
     "text-xs font-mono text-brand-400 uppercase tracking-wider font-bold mb-1.5 block";

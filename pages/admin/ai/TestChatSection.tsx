@@ -56,7 +56,7 @@ export const TestChatSection: React.FC<TestChatSectionProps> = ({ enabled, bubbl
                     </Button>
                     <div className="flex flex-wrap gap-2" aria-label="Perguntas de exemplo">
                         {SUGGESTIONS.map(q => (
-                            <button key={q} type="button" onClick={() => start(q)} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-slate-300 hover:border-brand-500/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <button key={q} type="button" onClick={() => start(q)} className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-slate-300 hover:border-brand-500/40 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                                 {q}
                             </button>
                         ))}

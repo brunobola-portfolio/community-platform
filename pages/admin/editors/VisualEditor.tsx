@@ -26,7 +26,7 @@ const TOOLS: { label: string; icon: React.ElementType; action: Command }[] = [
     { label: 'Link', icon: Link2, action: { kind: 'link' } },
 ];
 
-const TOOL_CLASS = 'rounded p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white active:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const TOOL_CLASS = 'rounded-sm p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white active:bg-white/20 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500';
 
 /**
  * What the people who run an association need: type, press Enter for a new
@@ -137,7 +137,7 @@ export const VisualEditor: React.FC<VisualEditorProps> = ({ value, onChange, lab
                 }}
                 onPaste={handlePaste}
                 className={cn(
-                    'prose prose-invert prose-sm max-w-none w-full overflow-y-auto p-4 text-slate-200 outline-none custom-scrollbar',
+                    'prose prose-invert prose-sm max-w-none w-full overflow-y-auto p-4 text-slate-200 outline-hidden custom-scrollbar',
                     'empty:before:pointer-events-none empty:before:text-slate-500 empty:before:content-[attr(data-placeholder)]',
                     height,
                 )}

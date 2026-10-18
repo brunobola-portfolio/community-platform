@@ -36,8 +36,8 @@ export const SecretField: React.FC<SecretFieldProps> = ({ label, stored, fromSer
                     <span className="flex items-center gap-2 text-sm text-emerald-300"><Check size={16} aria-hidden="true" /> Guardada</span>
                     <span className="font-mono text-xs tracking-widest text-slate-500" aria-hidden="true">••••••••••••</span>
                     <div className="ml-auto flex gap-1">
-                        <button type="button" onClick={() => onChange('')} className="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-300 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Remover</button>
-                        <button type="button" onClick={() => onChange(' ')} className="rounded-lg px-2.5 py-1 text-xs font-semibold text-brand-300 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Substituir</button>
+                        <button type="button" onClick={() => onChange('')} className="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-300 hover:bg-white/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Remover</button>
+                        <button type="button" onClick={() => onChange(' ')} className="rounded-lg px-2.5 py-1 text-xs font-semibold text-brand-300 hover:bg-white/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Substituir</button>
                     </div>
                 </div>
             ) : (
@@ -53,7 +53,7 @@ export const SecretField: React.FC<SecretFieldProps> = ({ label, stored, fromSer
                         placeholder={removing ? 'Vai ser removida ao guardar' : placeholder}
                         className={cn(STD_INPUT_CLASS, 'pl-9 pr-11 font-mono')}
                     />
-                    <button type="button" onClick={() => setVisible(v => !v)} aria-label={visible ? 'Esconder' : 'Mostrar'} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1.5 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <button type="button" onClick={() => setVisible(v => !v)} aria-label={visible ? 'Esconder' : 'Mostrar'} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm p-1.5 text-slate-400 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                         {visible ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                 </div>

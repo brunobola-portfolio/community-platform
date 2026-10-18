@@ -78,7 +78,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNa
 
   if (!isOpen || !current) return null;
 
-  const controlClasses = "text-white/60 hover:text-white p-2 rounded-2xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70";
+  const controlClasses = "text-white/60 hover:text-white p-2 rounded-2xl transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white/70";
 
   // Portalled to <body>: inside a dialog, its transform would make this "fixed" overlay
   // cover only the dialog's box instead of the screen
@@ -90,7 +90,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNa
       aria-label={label}
       data-lightbox=""
       tabIndex={-1}
-      className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl animate-fade-in-up"
+      className="fixed inset-0 z-200 bg-black/95 flex items-center justify-center p-4 backdrop-blur-xl animate-fade-in-up"
       onClick={onClose}
     >
       <button
@@ -102,7 +102,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNa
       </button>
 
       {images.length > 1 && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/60 text-sm font-mono bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-sm">
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 text-white/60 text-sm font-mono bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-xs">
           {index + 1} / {images.length}
         </div>
       )}
@@ -124,7 +124,7 @@ export const Lightbox: React.FC<LightboxProps> = ({ images, index, onClose, onNa
           className="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain"
         />
         {current.caption && (
-          <figcaption className="text-white/80 text-sm font-medium bg-black/40 px-5 py-2 rounded-full backdrop-blur-sm text-center">
+          <figcaption className="text-white/80 text-sm font-medium bg-black/40 px-5 py-2 rounded-full backdrop-blur-xs text-center">
             {current.caption}
           </figcaption>
         )}

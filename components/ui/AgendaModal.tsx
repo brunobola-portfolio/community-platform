@@ -65,7 +65,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
             <section key={month}>
               <div className="mb-3 flex items-center gap-3">
                 <h3 className="font-serif text-lg text-slate-900 dark:text-white">{month}</h3>
-                <span className="h-px flex-1 bg-gradient-to-r from-slate-900/10 to-transparent dark:from-white/10" />
+                <span className="h-px flex-1 bg-linear-to-r from-slate-900/10 to-transparent dark:from-white/10" />
                 <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">
                   {groupedEvents[month].length}
                 </span>
@@ -78,7 +78,7 @@ export const AgendaModal: React.FC<AgendaModalProps> = ({ isOpen, onClose, event
                     <button
                       key={event.id}
                       onClick={() => { onClose(); onEventClick(event); }}
-                      className="group flex w-full items-center gap-4 rounded-2xl bg-slate-900/[0.03] p-3 text-left ring-1 ring-slate-900/5 transition-all hover:bg-white hover:shadow-lg hover:ring-brand-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/[0.03] dark:ring-white/5 dark:hover:bg-white/[0.06]"
+                      className="group flex w-full items-center gap-4 rounded-2xl bg-slate-900/3 p-3 text-left ring-1 ring-slate-900/5 transition-all hover:bg-white hover:shadow-lg hover:ring-brand-500/30 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/3 dark:ring-white/5 dark:hover:bg-white/6"
                     >
                       <span className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-white ring-1 ring-slate-900/10 transition-colors group-hover:ring-brand-500/30 dark:bg-black/40 dark:ring-white/10">
                         <span className="text-lg font-bold leading-none text-slate-900 tabular-nums dark:text-white">{date.getDate()}</span>

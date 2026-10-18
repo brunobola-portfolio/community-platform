@@ -35,7 +35,7 @@ const PeriodPicker: React.FC<PeriodPickerProps> = ({ value, onChange }) => (
                 aria-checked={value === p}
                 onClick={() => onChange(p)}
                 className={cn(
-                    'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                    'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                     value === p ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-white',
                 )}
             >

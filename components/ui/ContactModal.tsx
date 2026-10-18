@@ -83,7 +83,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, ini
         <div className="flex flex-col items-center justify-center py-12 text-center animate-fade-in-up">
           <div className="relative mb-6 h-20 w-20">
             <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500/20" />
-            <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-lg ring-1 ring-white/20">
+            <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-emerald-500 to-emerald-700 text-white shadow-lg ring-1 ring-white/20">
               <CheckCircle2 size={40} />
             </span>
           </div>

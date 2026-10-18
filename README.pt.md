@@ -8,7 +8,7 @@
 <img src="https://img.shields.io/badge/TypeScript-5%20strict-3178C6?logo=typescript&logoColor=white&labelColor=0f172a" alt="TypeScript 5" />
 <img src="https://img.shields.io/badge/Vite-8%20(Rolldown)-646CFF?logo=vite&logoColor=white&labelColor=0f172a" alt="Vite 8" />
 <img src="https://img.shields.io/badge/Convex-realtime-EE342F?labelColor=0f172a" alt="Convex" />
-<img src="https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white&labelColor=0f172a" alt="Tailwind CSS" />
+<img src="https://img.shields.io/badge/Tailwind_CSS-4.3-06B6D4?logo=tailwindcss&logoColor=white&labelColor=0f172a" alt="Tailwind CSS" />
 <img src="https://img.shields.io/badge/Gemini_AI-multi--provedor-4285F4?logo=google&logoColor=white&labelColor=0f172a" alt="Gemini AI" />
 <img src="https://img.shields.io/badge/licen%C3%A7a-MIT-7fc528?labelColor=0f172a" alt="MIT" />
 <a href="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml"><img src="https://github.com/brunobola-portfolio/community-platform/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
@@ -191,10 +191,10 @@ narração TTS — uploads vão para o Convex storage, nunca base64.
 
 | Camada | Tecnologia | Versão |
 |--------|-----------|--------|
-| Frontend | React + TypeScript | 19.2 + 5.9 |
-| Build | Vite (Rolldown) | 8.2 |
-| Styling | Tailwind CSS + clsx + tailwind-merge | 3.4 |
-| Backend | Convex (serverless, tempo real) | 1.45 |
+| Frontend | React + TypeScript | 19.3 + 5.9 |
+| Build | Vite (Rolldown) | 8.3 |
+| Styling | Tailwind CSS (CSS-first, `@tailwindcss/vite`) + clsx + tailwind-merge | 4.3 |
+| Backend | Convex (serverless, tempo real) | 1.47 |
 | Auth | @convex-dev/auth (password) | 0.0.95 |
 | IA | Google Gemini (@google/genai), camada multi-provedor | 1.52 |
 | Sanitização | DOMPurify (cliente) + server-side | 3.4 |
@@ -355,7 +355,7 @@ A versão curta — checklist completa em **[docs/WHITE-LABEL.md](docs/WHITE-LAB
 2. Abrir `/setup`, criar a conta admin
 3. Preencher **Admin > Definições**: nome, contactos, morada, coordenadas, redes, quotas
 4. Substituir o branding estático: meta tags do `index.html`, logos e OG image em
-   `public/`, cor brand no `tailwind.config.ts`
+   `public/` (a cor e as letras da marca escolhem-se em **Admin > Definições > Marca**)
 5. Substituir o conteúdo demo (eventos, milestones da história, equipa) no painel admin
 
 ## Deploy para Produção

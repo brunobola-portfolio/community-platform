@@ -54,7 +54,7 @@ export const TutorialReader: React.FC<TutorialReaderProps> = ({
         <article className="space-y-8">
             <header className="space-y-4">
                 {categoryTitle && <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-700 dark:text-brand-400">{categoryTitle}</p>}
-                <Title className="font-serif text-3xl leading-tight text-slate-900 [overflow-wrap:anywhere] [hyphens:auto] dark:text-white md:text-4xl">
+                <Title className="font-serif text-3xl leading-tight text-slate-900 wrap-anywhere [hyphens:auto] dark:text-white md:text-4xl">
                     {fillTokens(tutorial.title, { siteName })}
                 </Title>
                 <p className="max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300">{fillTokens(tutorial.summary, { siteName })}</p>

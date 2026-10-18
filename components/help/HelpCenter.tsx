@@ -38,7 +38,7 @@ interface TopicNavProps {
     onOpen: (id: string) => void;
 }
 
-const BACK = 'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white print:hidden';
+const BACK = 'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white print:hidden';
 
 const TopicNav: React.FC<TopicNavProps> = ({ title, siblings, selectedId, siteName, onOpen }) => (
     <nav aria-label="Guias deste tema" className="hidden lg:block print:hidden">
@@ -51,7 +51,7 @@ const TopicNav: React.FC<TopicNavProps> = ({ title, siblings, selectedId, siteNa
                     onClick={() => onOpen(t.id)}
                     aria-current={t.id === selectedId ? 'page' : undefined}
                     className={cn(
-                        'block w-full rounded-xl px-2 py-2 text-left text-sm transition-colors [overflow-wrap:anywhere] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                        'block w-full rounded-xl px-2 py-2 text-left text-sm transition-colors wrap-anywhere focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                         t.id === selectedId ? 'bg-brand-500/10 font-semibold text-brand-700 dark:text-brand-300' : 'text-slate-700 hover:bg-slate-900/5 dark:text-slate-300 dark:hover:bg-white/5',
                     )}
                 >
@@ -88,7 +88,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({ tutorials, categories, s
             <div ref={topRef} className="scroll-mt-28 space-y-6">
                 <button type="button" onClick={() => onSelect(null)} className={BACK}><ArrowLeft size={16} aria-hidden="true" /> Todos os guias</button>
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px]">
-                    <div ref={readerRef} tabIndex={-1} className="min-w-0 outline-none">
+                    <div ref={readerRef} tabIndex={-1} className="min-w-0 outline-hidden">
                         <TutorialReader
                             tutorial={selected}
                             siteName={siteName}
@@ -111,7 +111,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({ tutorials, categories, s
 
     return (
         <div ref={topRef} className="space-y-10 sm:space-y-12">
-            <div className="relative overflow-hidden rounded-3xl border border-slate-900/10 bg-gradient-to-br from-brand-50 via-white to-slate-50 px-4 py-8 dark:border-white/10 dark:from-brand-950/70 dark:via-dark-surface dark:to-dark-bg sm:px-6 sm:py-10 md:px-12 md:py-14">
+            <div className="relative overflow-hidden rounded-3xl border border-slate-900/10 bg-linear-to-br from-brand-50 via-white to-slate-50 px-4 py-8 dark:border-white/10 dark:from-brand-950/70 dark:via-dark-surface dark:to-dark-bg sm:px-6 sm:py-10 md:px-12 md:py-14">
                 <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-500/10 blur-3xl" />
                 <div className="relative max-w-2xl space-y-4">
                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-700 dark:text-brand-400">{hero.eyebrow}</p>

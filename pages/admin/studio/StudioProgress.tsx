@@ -14,7 +14,7 @@ interface StudioProgressProps {
 export const StudioProgress: React.FC<StudioProgressProps> = ({ stages, current, hint }) => {
     const currentIndex = stages.indexOf(current);
     return (
-        <div className="rounded-2xl border border-brand-500/20 bg-brand-500/[0.06] p-5">
+        <div className="rounded-2xl border border-brand-500/20 bg-brand-500/6 p-5">
             <p className="sr-only" role="status" aria-live="polite">{STAGE_LABEL[current]}</p>
             <ol className="space-y-3">
                 {stages.map((stage, index) => {

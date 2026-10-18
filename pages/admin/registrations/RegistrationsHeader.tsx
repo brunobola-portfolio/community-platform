@@ -73,7 +73,7 @@ const OpenToggle: React.FC<{ event: Event; full: boolean; notify: RegistrationsH
         <div className={cn('flex flex-col gap-3 rounded-xl p-3 text-sm sm:flex-row sm:items-center', state.open ? 'bg-emerald-500/10 text-emerald-200' : 'bg-white/5 text-slate-300')}>
             <span className="flex-1">{state.text}</span>
             <div className="flex shrink-0 gap-2">
-                <a href={eventPath(event.slug)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                <a href={eventPath(event.slug)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                     <ExternalLink size={14} aria-hidden="true" /> Ver no site
                 </a>
                 {upcoming && (

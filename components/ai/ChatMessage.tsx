@@ -61,7 +61,7 @@ const renderText = (text: string, onNavigate: (path: string) => void): React.Rea
             <button
               key={`${lineIdx}-${i}`}
               onClick={() => onNavigate(linkPath)}
-              className="rounded font-medium text-brand-700 underline decoration-brand-500/40 underline-offset-2 transition-colors hover:decoration-brand-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-300"
+              className="rounded-sm font-medium text-brand-700 underline decoration-brand-500/40 underline-offset-2 transition-colors hover:decoration-brand-500 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-300"
             >
               {linkText}
             </button>
@@ -129,7 +129,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   if (message.role === 'user') {
     return (
       <div className="flex justify-end pl-8">
-        <div className="rounded-2xl rounded-br-sm bg-gradient-to-br from-brand-500 to-brand-700 px-4 py-2.5 text-sm leading-relaxed text-white shadow-[0_8px_20px_-10px_rgb(var(--brand-600)/0.9)]">
+        <div className="rounded-2xl rounded-br-sm bg-linear-to-br from-brand-500 to-brand-700 px-4 py-2.5 text-sm leading-relaxed text-white shadow-[0_8px_20px_-10px_rgb(var(--brand-600)/0.9)]">
           {message.text}
         </div>
       </div>
@@ -142,10 +142,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       <div className="min-w-0 flex-1 space-y-2">
         <div
           className={cn(
-            'w-fit max-w-full rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-sm ring-1',
+            'w-fit max-w-full rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed shadow-xs ring-1',
             message.isError
               ? 'bg-amber-500/10 text-amber-800 ring-amber-500/25 dark:text-amber-200'
-              : 'bg-white text-slate-700 ring-slate-900/[0.06] dark:bg-white/[0.05] dark:text-slate-200 dark:ring-white/10',
+              : 'bg-white text-slate-700 ring-slate-900/6 dark:bg-white/5 dark:text-slate-200 dark:ring-white/10',
           )}
         >
           {message.isError && (
@@ -154,7 +154,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
               <span className="text-[10px] font-semibold uppercase tracking-wider">Assistente indisponível</span>
             </span>
           )}
-          <span className="flex flex-col gap-0.5 [overflow-wrap:anywhere]">{renderText(message.text, onNavigate)}</span>
+          <span className="flex flex-col gap-0.5 wrap-anywhere">{renderText(message.text, onNavigate)}</span>
         </div>
 
         {!message.isError && (
@@ -162,7 +162,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
             onClick={onSpeak}
             disabled={speechBusy}
             aria-label="Ouvir resposta"
-            className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400 transition-colors hover:text-brand-700 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
+            className="flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-medium uppercase tracking-wider text-slate-600 dark:text-slate-400 transition-colors hover:text-brand-700 disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:hover:text-brand-400"
           >
             <Volume2 size={13} className={isSpeaking ? 'animate-pulse text-brand-500' : ''} />
             {isSpeaking ? 'A ler...' : 'Ouvir'}
@@ -194,7 +194,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
                 <button
                   key={saIdx}
                   onClick={() => (isRoute ? onNavigate(sa.action) : onAsk(sa.action))}
-                  className="group flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-900/10 transition-all hover:bg-brand-600/5 hover:text-brand-700 hover:ring-brand-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/[0.04] dark:text-slate-300 dark:ring-white/10 dark:hover:bg-brand-500/10 dark:hover:text-brand-200"
+                  className="group flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-900/10 transition-all hover:bg-brand-600/5 hover:text-brand-700 hover:ring-brand-500/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/4 dark:text-slate-300 dark:ring-white/10 dark:hover:bg-brand-500/10 dark:hover:text-brand-200"
                 >
                   {sa.label}
                   {isRoute && (

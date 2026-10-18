@@ -131,9 +131,9 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                   onClick={onFlip}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onFlip(); } }}
               >
-                  <div className={`relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
+                  <div className={`relative w-full h-full transition-transform duration-700 transform-3d ${isFlipped ? 'transform-[rotateY(180deg)]' : ''}`}>
                       {/* Front Face */}
-                      <div className="absolute inset-0 [backface-visibility:hidden] bg-gradient-to-br from-slate-900 via-brand-950 to-black border border-white/20 rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-[0_0_40px_rgba(0,0,0,0.6)] overflow-hidden">
+                      <div className="absolute inset-0 backface-hidden bg-linear-to-br from-slate-900 via-brand-950 to-black border border-white/20 rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-[0_0_40px_rgba(0,0,0,0.6)] overflow-hidden">
                           <div className="absolute top-0 right-0 w-48 h-48 bg-brand-500/10 rounded-full blur-[60px] -mr-10 -mt-10 pointer-events-none"></div>
                           <div className="relative z-10 flex justify-between items-start">
                               <div>
@@ -152,7 +152,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                           </div>
                       </div>
                       {/* Back Face: identity only; there is no scanner behind the card, so no code is drawn */}
-                      <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-slate-900 border border-brand-500/30 rounded-2xl p-6 flex flex-col justify-center items-center text-center gap-3 shadow-xl">
+                      <div className="absolute inset-0 backface-hidden transform-[rotateY(180deg)] bg-slate-900 border border-brand-500/30 rounded-2xl p-6 flex flex-col justify-center items-center text-center gap-3 shadow-xl">
                           <ShieldCheck className="text-brand-500 w-10 h-10" aria-hidden="true" />
                           <div className="text-brand-400 font-serif font-bold text-xl tracking-wide">{siteName}</div>
                           <div className="text-white font-mono text-lg tracking-wider">Sócio Nº {memberData.number}</div>
@@ -166,7 +166,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full content-start">
               {quotaInfo ? (
                   <div
-                      className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl p-6 flex flex-col justify-between hover:border-brand-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl p-6 flex flex-col justify-between hover:border-brand-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                       role="button"
                       tabIndex={0}
                       aria-label="Ver como pagar a quota"
@@ -191,7 +191,7 @@ const DashboardTab: React.FC<DashboardTabProps> = ({ siteName, memberData, quota
                       </div>
                       <div>
                           <div className="text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider mb-1">Quotas</div>
-                          <div className="h-5 w-32 rounded bg-slate-900/10 dark:bg-white/10" />
+                          <div className="h-5 w-32 rounded-sm bg-slate-900/10 dark:bg-white/10" />
                       </div>
                   </div>
               )}
@@ -259,7 +259,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({ documents }) => (
                               href={href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                              className="md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100 transition-opacity inline-flex items-center justify-center px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                               aria-label={`Descarregar ${doc.title}`}
                           >
                               <Download size={16} />
@@ -337,7 +337,7 @@ const CopyableField: React.FC<CopyableFieldProps> = ({ label, value, monospace }
         type="button"
         onClick={handleCopy}
         aria-label="Copiar"
-        className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 hover:bg-slate-900/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
       >
         {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
       </button>
@@ -374,7 +374,7 @@ const PaymentModalContent: React.FC<PaymentModalContentProps> = ({ settings: pub
         </div>
         <a
           href={`mailto:${settings.contactEmail}`}
-          className="inline-flex items-center gap-2 justify-center w-full px-4 py-2.5 rounded-xl bg-brand-700 text-white font-medium hover:bg-brand-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="inline-flex items-center gap-2 justify-center w-full px-4 py-2.5 rounded-xl bg-brand-700 text-white font-medium hover:bg-brand-800 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <Mail size={16} /> Contactar a Direção
         </a>
@@ -484,7 +484,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
             <div>
                 <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.3em] text-[10px] font-bold">Portal do Sócio</span>
                 <h1 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mt-2 mb-2">Área de Sócio</h1>
-                <p className="text-slate-600 dark:text-slate-400">Bem-vindo à sua área reservada. <Link to="/ajuda" className="rounded font-medium text-brand-700 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Precisa de ajuda?</Link></p>
+                <p className="text-slate-600 dark:text-slate-400">Bem-vindo à sua área reservada. <Link to="/ajuda" className="rounded-sm font-medium text-brand-700 underline-offset-4 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Precisa de ajuda?</Link></p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
                 <Button variant="ghost" onClick={() => setShowPassword(true)} className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
@@ -510,7 +510,7 @@ export const MemberArea: React.FC<{ onLogout: () => void }> = ({ onLogout }) => 
                     aria-selected={activeTab === tab.id}
                     aria-controls="member-tabpanel"
                     tabIndex={activeTab === tab.id ? 0 : -1}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 ${
                         activeTab === tab.id
                             ? 'bg-brand-700 text-white'
                             : 'bg-white dark:bg-dark-surface text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-900/10 dark:border-white/10'

@@ -44,7 +44,7 @@ export const PartnerDetailsModal: React.FC<PartnerDetailsModalProps> = ({ sponso
       }
     >
       <div className="flex flex-col items-center gap-6 text-center">
-        <div className="flex h-36 w-full max-w-[220px] items-center justify-center rounded-2xl bg-white p-6 ring-1 ring-slate-900/10 dark:bg-white/[0.04] dark:ring-white/10">
+        <div className="flex h-36 w-full max-w-[220px] items-center justify-center rounded-2xl bg-white p-6 ring-1 ring-slate-900/10 dark:bg-white/4 dark:ring-white/10">
           {sponsor.logoUrl ? (
             <img src={sponsor.logoUrl} alt={sponsor.name} className="max-h-full w-full object-contain" />
           ) : (

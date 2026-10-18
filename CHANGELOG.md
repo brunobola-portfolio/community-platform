@@ -6,6 +6,39 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [2.22.0] - 2026-10-18
+
+Tailwind CSS 4, with the sites looking the same.
+
+### Changed
+
+- **Tailwind CSS 4.3, configured in CSS.** `index.css` holds the theme (`@theme`: brand,
+  tinted neutrals, accent, fonts, animations), `@custom-variant dark` for the class-based theme
+  and `@source` for what is scanned; `@tailwindcss/vite` replaces PostCSS and Autoprefixer, and
+  `tailwind.config.ts` is gone. Builds take about a third of the time
+- Class names moved to their v4 spelling across 90 files (`outline-hidden`, `rounded-sm`,
+  `shadow-xs`, `bg-linear-to-*`, opacity steps like `/3`…). The upgrade tool also rewrote the
+  Button variant type `'outline'`, which is not a class; restored
+- Three Tailwind 3 defaults the design relies on are kept on purpose: light grey borders when no
+  colour is given, the pointer cursor on buttons, and grey placeholders
+- An explicit `leading-*` now holds at every breakpoint (Tailwind 3 let a responsive `md:text-*`
+  override it): body copy on History, About and Ajuda breathes a little more, and table rows in
+  the backoffice are a little tighter
+- The category colour test reads the `@source inline(...)` line of `index.css` and fails when a
+  colour offered in the backoffice would not be compiled
+
+### Fixed
+
+- `npm audit` reports no vulnerabilities: the last advisories came from Tailwind 3's file watcher
+
+### Verified
+
+- 68 screenshots compared pixel by pixel before and after (public pages in both themes at
+  desktop and phone width, the registration form, every backoffice tab and the event dialog);
+  every difference reviewed by eye
+- axe WCAG 2 AA: zero violations on eight pages in both themes; keyboard focus visible on every
+  stop
+
 ## [2.21.3] - 2026-10-18
 
 ### Added

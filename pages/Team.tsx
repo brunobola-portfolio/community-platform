@@ -17,7 +17,7 @@ import { PageMeta } from '../components/PageMeta';
 // Component for rendering individual member cards
 const MemberCard: React.FC<{ member: Member, isFeatured?: boolean, onOpenPhoto: () => void }> = ({ member, isFeatured, onOpenPhoto }) => (
   <div className={`relative group transition-transform duration-300 hover:-translate-y-1 ${isFeatured ? 'md:col-span-1 md:row-span-1' : ''}`}>
-    <div className="absolute inset-0 bg-gradient-to-r from-brand-500 to-brand-800 rounded-2xl blur opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
+    <div className="absolute inset-0 bg-linear-to-r from-brand-500 to-brand-800 rounded-2xl blur-sm opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
     <div className={`relative bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-2xl overflow-hidden hover:border-slate-900/20 dark:hover:border-white/20 transition-all duration-300 h-full flex flex-col ${isFeatured ? 'shadow-[0_0_30px_rgb(var(--brand-600)/0.2)]' : ''}`}>
 
       <div
@@ -37,7 +37,7 @@ const MemberCard: React.FC<{ member: Member, isFeatured?: boolean, onOpenPhoto: 
           tone="dark"
           className="w-full h-full text-7xl object-[50%_25%] grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
         />
-        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-dark-surface via-dark-surface/80 to-transparent opacity-95"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1/2 bg-linear-to-t from-dark-surface via-dark-surface/80 to-transparent opacity-95"></div>
 
         <div className="absolute bottom-6 left-6 z-20">
           {isFeatured && <Badge className="mb-2 bg-brand-700 text-white border-none shadow-lg ring-1 ring-white/30 text-[10px] tracking-widest">LIDERANÇA</Badge>}
@@ -107,7 +107,7 @@ export const TeamPage: React.FC = () => {
               <button
                 key={tab}
                 onClick={() => selectTab(tab)}
-                className={`flex-1 sm:flex-none leading-tight sm:whitespace-nowrap px-2 sm:px-6 py-2.5 sm:py-2 rounded-xl sm:rounded-full text-[13px] sm:text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500
+                className={`flex-1 sm:flex-none leading-tight sm:whitespace-nowrap px-2 sm:px-6 py-2.5 sm:py-2 rounded-xl sm:rounded-full text-[13px] sm:text-sm font-medium transition-all duration-300 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500
                     ${activeTab === tab
                     ? 'bg-brand-700 text-white shadow-lg'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-900/5 dark:hover:bg-white/5'

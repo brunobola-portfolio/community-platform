@@ -137,7 +137,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                                 key={tier.id}
                                 type="button"
                                 onClick={() => handleSelectTier(String(tier.id))}
-                                className="group flex flex-col rounded-2xl bg-slate-900/[0.03] p-5 text-left ring-1 ring-slate-900/10 transition-all hover:-translate-y-1 hover:bg-white hover:shadow-xl hover:ring-brand-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/[0.03] dark:ring-white/10 dark:hover:bg-white/[0.06]"
+                                className="group flex flex-col rounded-2xl bg-slate-900/3 p-5 text-left ring-1 ring-slate-900/10 transition-all hover:-translate-y-1 hover:bg-white hover:shadow-xl hover:ring-brand-500/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:bg-white/3 dark:ring-white/10 dark:hover:bg-white/6"
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
                                     <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600/10 text-brand-700 ring-1 ring-brand-600/20 transition-transform group-hover:scale-105 dark:bg-brand-500/15 dark:text-brand-400 dark:ring-brand-500/25">
@@ -200,7 +200,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                         required
                     />
 
-                    <div className="flex items-center justify-between rounded-2xl bg-slate-900/[0.03] px-4 py-3 text-xs text-slate-600 ring-1 ring-slate-900/5 dark:bg-white/[0.03] dark:text-slate-300 dark:ring-white/10">
+                    <div className="flex items-center justify-between rounded-2xl bg-slate-900/3 px-4 py-3 text-xs text-slate-600 ring-1 ring-slate-900/5 dark:bg-white/3 dark:text-slate-300 dark:ring-white/10">
                         <span>Nível selecionado</span>
                         <Badge className="border-brand-500/20 bg-brand-500/15 px-3 py-1 text-brand-700 dark:text-brand-400">
                             {tierName.toUpperCase()}
@@ -220,7 +220,7 @@ export const SponsorshipModal: React.FC<SponsorshipModalProps> = ({ isOpen, onCl
                 <div className="flex flex-col items-center py-10 text-center animate-fade-in-up">
                     <div className="relative mb-6 h-20 w-20">
                         <span className="absolute inset-0 animate-ping rounded-full bg-emerald-500/20" />
-                        <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-lg ring-1 ring-white/20">
+                        <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-emerald-500 to-emerald-700 text-white shadow-lg ring-1 ring-white/20">
                             <CheckCircle2 size={40} />
                         </span>
                     </div>

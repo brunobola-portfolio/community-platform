@@ -44,7 +44,7 @@ const NavAction: React.FC<NavActionProps> = ({ icon, label, onClick, tone = 'neu
     title={label}
     aria-label={label}
     className={cn(
-      'hidden md:flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl border backdrop-blur-md text-[10px] font-bold uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+      'hidden md:flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl border backdrop-blur-md text-[10px] font-bold uppercase tracking-wider transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
       'w-9 px-0 md:w-auto md:px-3 lg:w-9 lg:px-0 xl:w-auto xl:px-3',
       ACTION_TONES[tone],
     )}
@@ -144,18 +144,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
         aria-label="Menu principal"
         className={cn(
           // focus-within: a keyboard user tabbing into a hidden bar must see where focus is
-          "fixed top-0 left-0 right-0 z-[100] flex justify-center px-2 sm:px-6 lg:px-8 pt-2 sm:pt-4 transition-transform duration-500 ease-in-out focus-within:translate-y-0",
-          isVisible && !mobileOpen ? "translate-y-0" : mobileOpen ? "translate-y-0" : "-translate-y-[150%]"
+          "fixed top-0 left-0 right-0 z-100 flex justify-center px-2 sm:px-6 lg:px-8 pt-2 sm:pt-4 transition-transform duration-500 ease-in-out focus-within:translate-y-0",
+          isVisible && !mobileOpen ? "translate-y-0" : mobileOpen ? "translate-y-0" : "translate-y-[-150%]"
         )}
       >
         <div className={cn(
-          "w-full max-w-7xl flex items-center justify-between gap-3 rounded-[2rem] px-3 sm:px-5 transition-all duration-500",
+          "w-full max-w-7xl flex items-center justify-between gap-3 rounded-4xl px-3 sm:px-5 transition-all duration-500",
           scrolled && !mobileOpen
             ? "bg-white/85 dark:bg-dark-bg/80 backdrop-blur-xl border border-slate-900/10 dark:border-white/10 shadow-2xl py-2"
             : mobileOpen
               ? "bg-transparent border-transparent py-3"
               : isHome
-                ? "bg-gradient-to-b from-white/60 dark:from-black/60 to-transparent border-transparent py-3 sm:py-5"
+                ? "bg-linear-to-b from-white/60 dark:from-black/60 to-transparent border-transparent py-3 sm:py-5"
                 : "bg-white/75 dark:bg-dark-bg/60 backdrop-blur-md border border-slate-900/5 dark:border-white/5 shadow-lg py-3"
         )}>
 
@@ -163,7 +163,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           {/* Logo - sourced from environment config with text fallback */}
           <Link
             to="/"
-            className="flex shrink-0 items-center gap-2.5 group relative z-[102] rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="flex shrink-0 items-center gap-2.5 group relative z-102 rounded-xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
             onClick={() => setMobileOpen(false)}
           >
             <div className="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
@@ -189,7 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
                 onClick={() => onNavigate(link.id)}
                 aria-current={currentPage === link.id ? "page" : undefined}
                 className={cn(
-                  "px-3 xl:px-4 py-1.5 rounded-full text-[11px] xl:text-xs font-medium whitespace-nowrap transition-all duration-300 uppercase tracking-wider focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                  "px-3 xl:px-4 py-1.5 rounded-full text-[11px] xl:text-xs font-medium whitespace-nowrap transition-all duration-300 uppercase tracking-wider focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500",
                   currentPage === link.id
                     ? "bg-slate-900 text-white dark:bg-white dark:text-black shadow-lg"
                     : "text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10"
@@ -201,9 +201,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
           </div>
 
           {/* Action Buttons */}
-          <div className="flex shrink-0 items-center gap-2 relative z-[102]">
+          <div className="flex shrink-0 items-center gap-2 relative z-102">
             <button
-              className="w-9 h-9 flex shrink-0 items-center justify-center rounded-xl backdrop-blur-md border transition-all bg-slate-900/5 border-slate-900/10 text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:bg-white/5 dark:border-white/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="w-9 h-9 flex shrink-0 items-center justify-center rounded-xl backdrop-blur-md border transition-all bg-slate-900/5 border-slate-900/10 text-slate-600 hover:text-slate-900 hover:bg-slate-900/10 dark:bg-white/5 dark:border-white/10 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? "Mudar para tema claro" : "Mudar para tema escuro"}
               title={theme === 'dark' ? "Mudar para tema claro" : "Mudar para tema escuro"}
@@ -219,7 +219,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
 
             {/* Mobile Hamburger Toggle */}
             <button
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur-md border border-slate-900/10 bg-slate-900/5 text-slate-900 dark:border-white/10 dark:bg-black/40 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur-md border border-slate-900/10 bg-slate-900/5 text-slate-900 dark:border-white/10 dark:bg-black/40 dark:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
               aria-expanded={mobileOpen}
@@ -235,7 +235,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
         aria-hidden={!mobileOpen}
         inert={!mobileOpen}
         className={cn(
-          "fixed inset-0 z-[90] transition-all duration-500 h-[100dvh] w-screen",
+          "fixed inset-0 z-90 transition-all duration-500 h-dvh w-screen",
           mobileOpen ? "opacity-100 pointer-events-auto" : "invisible opacity-0 pointer-events-none"
         )}
       >
@@ -247,16 +247,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentPage, onMembe
                 key={link.id}
                 onClick={() => { onNavigate(link.id); setMobileOpen(false); }}
                 aria-current={currentPage === link.id ? "page" : undefined}
-                className="text-4xl font-serif font-medium text-slate-900/90 dark:text-white/90 hover:text-brand-700 dark:hover:text-brand-400 transition-all rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="text-4xl font-serif font-medium text-slate-900/90 dark:text-white/90 hover:text-brand-700 dark:hover:text-brand-400 transition-all rounded-xl focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 {link.name}
               </button>
             ))}
           </div>
           <div className="flex flex-col gap-4 mt-12 w-full max-w-xs mx-auto">
-            <button onClick={() => { onOpenAgenda(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-slate-900/5 border border-slate-900/10 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><CalendarDays size={20} /> Agenda Cultural</button>
-            <button onClick={() => { onMemberLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-brand-700 text-white font-medium flex items-center justify-center gap-3 hover:bg-brand-800 active:scale-[0.97] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgb(var(--brand-600)/0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"><UserCircle size={20} /> Área de Sócio</button>
-            {onAdminLogin && <button onClick={() => { onAdminLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl border border-amber-600/40 text-amber-700 dark:border-amber-500/30 dark:text-amber-400 font-medium flex items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={20} /> Acesso Reservado</button>}
+            <button onClick={() => { onOpenAgenda(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-slate-900/5 border border-slate-900/10 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white font-medium flex items-center justify-center gap-3 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"><CalendarDays size={20} /> Agenda Cultural</button>
+            <button onClick={() => { onMemberLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl bg-brand-700 text-white font-medium flex items-center justify-center gap-3 hover:bg-brand-800 active:scale-[0.97] transition-all shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_4px_20px_rgb(var(--brand-600)/0.3)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-dark-bg"><UserCircle size={20} /> Área de Sócio</button>
+            {onAdminLogin && <button onClick={() => { onAdminLogin(); setMobileOpen(false); }} className="w-full py-4 rounded-2xl border border-amber-600/40 text-amber-700 dark:border-amber-500/30 dark:text-amber-400 font-medium flex items-center justify-center gap-3 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={20} /> Acesso Reservado</button>}
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ export const AdminSelect: React.FC<AdminSelectProps> = ({ className, children, .
             {...props}
             className={cn(
                 'w-full min-w-0 appearance-none bg-slate-950/50 border border-slate-800 rounded-lg p-3 pr-10 text-white',
-                'focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-none transition-all cursor-pointer',
+                'focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 outline-hidden transition-all cursor-pointer',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 className
             )}

@@ -55,7 +55,7 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                                         aria-label="Pergunta"
                                         value={field.label}
                                         onChange={e => updateField(idx, { label: e.target.value })}
-                                        className="w-full bg-transparent text-xs text-white border-b border-slate-700 focus:border-brand-500 outline-none"
+                                        className="w-full bg-transparent text-xs text-white border-b border-slate-700 focus:border-brand-500 outline-hidden"
                                         placeholder="Pergunta"
                                     />
                                 </div>
@@ -64,7 +64,7 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                                         value={field.type}
                                         onChange={e => updateField(idx, { type: e.target.value as RegistrationFieldDefinition['type'] })}
                                         aria-label="Tipo de resposta"
-                                        className="bg-slate-800 text-xs text-slate-300 border-none rounded py-1 pl-2 pr-6"
+                                        className="bg-slate-800 text-xs text-slate-300 border-none rounded-sm py-1 pl-2 pr-6"
                                     >
                                         <option value="text">Texto curto</option>
                                         <option value="textarea">Texto longo</option>
@@ -79,7 +79,7 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                                         aria-label="Exemplo de resposta"
                                         value={field.placeholder || ''}
                                         onChange={e => updateField(idx, { placeholder: e.target.value })}
-                                        className="w-full bg-transparent text-xs text-slate-400 border-b border-slate-700 focus:border-brand-500 outline-none"
+                                        className="w-full bg-transparent text-xs text-slate-400 border-b border-slate-700 focus:border-brand-500 outline-hidden"
                                         placeholder="Exemplo de resposta"
                                     />
                                 </div>
@@ -95,7 +95,7 @@ export const RegistrationFormBuilder: React.FC<RegistrationFormBuilderProps> = (
                                     </label>
                                 </div>
                             </div>
-                            <button type="button" onClick={() => removeField(idx)} aria-label={`Remover a pergunta ${field.label || idx + 1}`} title="Remover pergunta" className="rounded p-1 text-slate-600 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <button type="button" onClick={() => removeField(idx)} aria-label={`Remover a pergunta ${field.label || idx + 1}`} title="Remover pergunta" className="rounded-sm p-1 text-slate-600 hover:text-red-400 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                                 <Trash2 size={14} />
                             </button>
                         </div>

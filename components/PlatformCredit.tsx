@@ -24,7 +24,7 @@ export const PlatformCredit: React.FC = () => {
         target="_blank"
         rel="noopener noreferrer"
         title={`Site v${site}${backend ? ` · servidor v${backend.version}` : ''}${latest ? ` · última publicada v${latest.version}` : ''}`}
-        className="text-slate-600 dark:text-slate-400 hover:text-brand-500 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        className="text-slate-600 dark:text-slate-400 hover:text-brand-500 transition-colors rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
       >
         Community Platform <span className="tabular-nums">v{site}</span> by BolaLabs
       </a>
@@ -44,7 +44,7 @@ export const PlatformCredit: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           title="Há uma versão mais recente da plataforma: ver as novidades"
-          className="ml-1 inline-flex items-center gap-1 rounded text-amber-700 dark:text-amber-400 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="ml-1 inline-flex items-center gap-1 rounded-sm text-amber-700 dark:text-amber-400 underline-offset-2 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current" />
           <span className="tabular-nums">v{latest.version}</span> disponível

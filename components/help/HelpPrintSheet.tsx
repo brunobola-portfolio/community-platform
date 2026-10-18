@@ -15,7 +15,7 @@ interface HelpPrintSheetProps {
  * arbitrary variant on <body>, so it needs no global CSS and only exists while a
  * guide is on screen; a counter keeps it when a dialog and the page both show one.
  */
-const BODY_CLASSES = ['print:[&>*:not(.help-print-sheet)]:!hidden', 'print:!bg-white'];
+const BODY_CLASSES = ['print:[&>*:not(.help-print-sheet)]:hidden!', 'print:bg-white!'];
 let mounted = 0;
 
 const BOLD = 'font-bold text-black dark:text-black';
@@ -51,7 +51,7 @@ export const HelpPrintSheet: React.FC<HelpPrintSheetProps> = ({ tutorial, siteNa
                     </li>
                 ))}
             </ol>
-            {shareUrl && <p className="mt-8 border-t border-black pt-3 text-xs text-black [overflow-wrap:anywhere]">Versão online, com vídeo e imagens: {shareUrl}</p>}
+            {shareUrl && <p className="mt-8 border-t border-black pt-3 text-xs text-black wrap-anywhere">Versão online, com vídeo e imagens: {shareUrl}</p>}
         </div>,
         document.body,
     );

@@ -25,7 +25,7 @@ const CategoryOptions: React.FC<{ categories: AdminFormModalProps['categories'];
 
 // ── Event Form ──────────────────────────────────────────────────────────────
 
-const SEGMENT_CLASS = 'flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const SEGMENT_CLASS = 'flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500';
 
 interface SegmentedProps {
     label: string;
@@ -43,7 +43,7 @@ const Segmented: React.FC<SegmentedProps> = ({ label, name, value, options, onCh
         <div role="radiogroup" aria-labelledby={`${name}-label`} className="flex gap-1 rounded-xl border border-white/10 bg-black/20 p-1">
             {options.map(o => (
                 <button key={o.value} type="button" role="radio" aria-checked={value === o.value} onClick={() => onChange(o.value)}
-                    className={cn(SEGMENT_CLASS, value === o.value ? 'bg-brand-700 text-white shadow' : 'text-slate-300 hover:bg-white/5')}>
+                    className={cn(SEGMENT_CLASS, value === o.value ? 'bg-brand-700 text-white shadow-sm' : 'text-slate-300 hover:bg-white/5')}>
                     {o.label}
                 </button>
             ))}
@@ -205,7 +205,7 @@ export const PostForm: React.FC<PostFormProps> = ({
                 <RichTextEditor label="Notícia" value={str('content')} onChange={(v: string) => setField('content', v)} onEnhance={onEnhanceText} isEnhancing={isEnhancingText} height="h-96" />
                 {/* Optional details most news never needs, folded so the article comes first */}
                 <details className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <summary className="cursor-pointer text-sm font-semibold text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded">Mais opções: autor e palavras-chave</summary>
+                    <summary className="cursor-pointer text-sm font-semibold text-slate-300 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 rounded-sm">Mais opções: autor e palavras-chave</summary>
                     <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Field label="Autor" hint="Vazio mostra “Direção”."><input value={str('author')} onChange={e => setField('author', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Direção" /></Field>
                         <Field label="Cargo do autor"><input value={str('authorRole')} onChange={e => setField('authorRole', e.target.value)} className={STD_INPUT_CLASS} placeholder="Ex: Presidente" /></Field>

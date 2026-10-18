@@ -416,12 +416,12 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         <div className="dark flex h-screen overflow-hidden bg-dark-bg font-sans text-slate-200">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
             <AdminSidebar activeTab={activeTab} mobileMenuOpen={mobileMenuOpen} onTabSelect={handleTabSelect} onClose={() => setMobileMenuOpen(false)} onLogout={onLogout} pendingRegistrations={dashboardStats.pendingRegistrations.length} />
-            {mobileMenuOpen && <div className="fixed inset-0 z-[55] bg-black/60 md:hidden" onClick={() => setMobileMenuOpen(false)} />}
+            {mobileMenuOpen && <div className="fixed inset-0 z-55 bg-black/60 md:hidden" onClick={() => setMobileMenuOpen(false)} />}
 
             <main className="relative flex-1 overflow-y-auto bg-dark-bg pt-16 md:pt-0">
-                <div className="fixed left-0 right-0 top-0 z-[50] flex h-16 items-center justify-between border-b border-white/10 bg-dark-surface/95 px-4 backdrop-blur-xl md:hidden">
+                <div className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center justify-between border-b border-white/10 bg-dark-surface/95 px-4 backdrop-blur-xl md:hidden">
                     <div className="truncate font-serif text-lg font-bold text-white">{settings.siteName} <span className="font-sans font-light text-brand-400">OS</span></div>
-                    <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-lg p-2 text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label="Abrir menu" aria-expanded={mobileMenuOpen}><Menu /></button>
+                    <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-lg p-2 text-slate-400 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500" aria-label="Abrir menu" aria-expanded={mobileMenuOpen}><Menu /></button>
                 </div>
 
                 <div className="mx-auto max-w-7xl p-4 pb-24 md:p-8 md:pb-8">
@@ -443,7 +443,7 @@ export const AdminPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                             <button
                                 key={shortcut.type}
                                 onClick={() => { setActiveTab(shortcut.tab); openModalFor(shortcut.type); }}
-                                className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-dark-surface px-4 py-2 text-xs font-bold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                                className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-dark-surface px-4 py-2 text-xs font-bold text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                             >
                                 <shortcut.icon size={14} /> {shortcut.label}
                             </button>

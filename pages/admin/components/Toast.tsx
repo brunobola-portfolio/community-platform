@@ -41,7 +41,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
             role={type === 'error' ? 'alert' : 'status'}
             aria-live={type === 'error' ? 'assertive' : 'polite'}
             className={cn(
-                'fixed bottom-6 right-6 z-[200] flex max-w-md items-start gap-3 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur-md animate-fade-in-up',
+                'fixed bottom-6 right-6 z-200 flex max-w-md items-start gap-3 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur-md animate-fade-in-up',
                 STYLES[type],
             )}
         >
@@ -50,7 +50,7 @@ export const Toast: React.FC<ToastProps> = ({ message, type, onClose }) => {
             <button
                 onClick={onClose}
                 aria-label="Fechar aviso"
-                className="-mr-1 -mt-1 shrink-0 rounded-lg p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                className="-mr-1 -mt-1 shrink-0 rounded-lg p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-white/60"
             >
                 <X size={15} />
             </button>

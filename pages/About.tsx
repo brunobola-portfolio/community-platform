@@ -112,7 +112,7 @@ const LocationCommand: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[680px]">
 
         {/* Information Console */}
-        <div className="lg:col-span-5 p-10 md:p-16 flex flex-col justify-between border-r border-slate-900/5 dark:border-white/5 bg-gradient-to-b from-slate-100/60 dark:from-dark-surface/50 to-transparent relative">
+        <div className="lg:col-span-5 p-10 md:p-16 flex flex-col justify-between border-r border-slate-900/5 dark:border-white/5 bg-linear-to-b from-slate-100/60 dark:from-dark-surface/50 to-transparent relative">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
           <div>
@@ -125,7 +125,7 @@ const LocationCommand: React.FC = () => {
 
             <div className="space-y-8 mb-14">
               <div className="flex gap-6 group/item">
-                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/[0.03] border border-slate-900/10 text-brand-700 dark:bg-white/[0.03] dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
+                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/3 border border-slate-900/10 text-brand-700 dark:bg-white/3 dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
                   <MapPin size={26} />
                 </div>
                 <div>
@@ -135,7 +135,7 @@ const LocationCommand: React.FC = () => {
               </div>
 
               <div className="flex gap-6 group/item">
-                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/[0.03] border border-slate-900/10 text-brand-700 dark:bg-white/[0.03] dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
+                <div className="w-14 h-14 rounded-[1.25rem] bg-slate-900/3 border border-slate-900/10 text-brand-700 dark:bg-white/3 dark:border-white/10 dark:text-brand-400 flex items-center justify-center shrink-0 group-hover/item:border-brand-500/50 group-hover/item:bg-brand-500/5 transition-all shadow-xl">
                   <Clock size={26} />
                 </div>
                 <div>
@@ -148,8 +148,8 @@ const LocationCommand: React.FC = () => {
             </div>
 
             {/* Geo-Assistant Widget */}
-            <div className="bg-slate-900/[0.03] dark:bg-white/[0.03] backdrop-blur-3xl rounded-[2rem] p-7 border border-slate-900/10 dark:border-white/10 shadow-2xl relative overflow-hidden transition-all hover:border-brand-500/30">
-               <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-500/40 to-transparent"></div>
+            <div className="bg-slate-900/3 dark:bg-white/3 backdrop-blur-3xl rounded-4xl p-7 border border-slate-900/10 dark:border-white/10 shadow-2xl relative overflow-hidden transition-all hover:border-brand-500/30">
+               <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-brand-500/40 to-transparent"></div>
                <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-2">
                     <Sparkles size={14} className="text-brand-700 dark:text-brand-400" />
@@ -159,7 +159,7 @@ const LocationCommand: React.FC = () => {
                     <button
                       onClick={handleSpeak}
                       aria-label="Ouvir resposta"
-                      className={cn("p-2 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-brand-700 dark:text-brand-400 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500", isSpeaking && "animate-pulse text-slate-900 dark:text-white bg-brand-500/20")}
+                      className={cn("p-2 rounded-lg hover:bg-slate-900/10 dark:hover:bg-white/10 text-brand-700 dark:text-brand-400 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500", isSpeaking && "animate-pulse text-slate-900 dark:text-white bg-brand-500/20")}
                     >
                       <Volume2 size={16} />
                     </button>
@@ -170,7 +170,7 @@ const LocationCommand: React.FC = () => {
                     type="text"
                     placeholder="Como chegar do Porto?"
                     aria-label="Pesquisar localização"
-                    className="w-full bg-white dark:bg-black/40 border border-slate-900/10 dark:border-white/5 rounded-xl py-4 pl-5 pr-12 text-sm text-slate-900 dark:text-white focus:border-brand-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner"
+                    className="w-full bg-white dark:bg-black/40 border border-slate-900/10 dark:border-white/5 rounded-xl py-4 pl-5 pr-12 text-sm text-slate-900 dark:text-white focus:border-brand-500/40 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && askLocalAI()}
@@ -179,7 +179,7 @@ const LocationCommand: React.FC = () => {
                     onClick={askLocalAI}
                     disabled={isSearching}
                     aria-label="Pesquisar"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-brand-700 hover:text-slate-900 dark:text-brand-400 dark:hover:text-white transition-all disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-brand-700 hover:text-slate-900 dark:text-brand-400 dark:hover:text-white transition-all disabled:opacity-50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                   >
                     {isSearching ? <Loader2 className="animate-spin" size={18}/> : <Search size={18}/>}
                   </button>
@@ -202,7 +202,7 @@ const LocationCommand: React.FC = () => {
           <div className="mt-14 pt-8 border-t border-slate-900/5 dark:border-white/5 flex items-center justify-between">
              <button
                 onClick={copyCoordinates}
-                className="rounded text-[10px] font-mono text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group/coords focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="rounded-sm text-[10px] font-mono text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group/coords focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
              >
                 {copied ? <CheckCircle2 size={12} className="text-green-500"/> : <LocateFixed size={12} className="group-hover/coords:scale-125 transition-transform"/>}
                 {LOCATION.lat}, {LOCATION.lon}
@@ -215,8 +215,8 @@ const LocationCommand: React.FC = () => {
         <div className="lg:col-span-7 relative bg-slate-100 dark:bg-[#010205] flex items-center justify-center p-12 overflow-hidden">
            {/* Decorative grid and vignette only: a hotlinked satellite photo leaked every visit to a third party */}
            <div className="absolute inset-0 z-0">
-             <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-             <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-[#02040a] via-transparent to-transparent"></div>
+             <div className="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[50px_50px]"></div>
+             <div className="absolute inset-0 bg-linear-to-r from-white dark:from-[#02040a] via-transparent to-transparent"></div>
              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#f1f5f9_90%)] dark:bg-[radial-gradient(circle_at_center,transparent_20%,#010205_90%)]"></div>
            </div>
 
@@ -241,7 +241,7 @@ const LocationCommand: React.FC = () => {
                 href={sanitizeUrl(settings.mapsUrl ?? '') || `https://www.google.com/maps/search/?api=1&query=${LOCATION.lat},${LOCATION.lon}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group/btn flex items-center gap-5 bg-brand-700 hover:bg-brand-800 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgb(var(--brand-600)/0.2)] transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="group/btn flex items-center gap-5 bg-brand-700 hover:bg-brand-800 text-white px-12 py-6 rounded-2xl font-bold shadow-[0_20px_50px_rgb(var(--brand-600)/0.2)] transition-all hover:scale-105 active:scale-95 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 <Navigation size={26} className="group-hover/btn:rotate-45 transition-transform duration-500" />
                 <span className="text-lg tracking-widest uppercase">Obter Direções</span>
@@ -301,18 +301,18 @@ const ContactForm: React.FC = () => {
 
   return (
     <div className="bg-white dark:bg-dark-surface border border-slate-900/10 dark:border-white/10 rounded-[3.5rem] p-10 md:p-20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative overflow-hidden group/form">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/[0.03] rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/3 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div>
            <Badge className="mb-8 border-brand-500/20">Canais de Atendimento</Badge>
-           <h2 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mb-10 leading-[1] tracking-tighter">Vamos criar o <span className="text-brand-display italic">próximo</span> capítulo?</h2>
+           <h2 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mb-10 leading-none tracking-tighter">Vamos criar o <span className="text-brand-display italic">próximo</span> capítulo?</h2>
            <p className="text-slate-600 dark:text-slate-400 text-xl mb-14 font-light leading-relaxed max-w-md">
              Seja para uma proposta de parceria, inscrição como sócio ou reserva de espaço, a nossa equipa está disponível para o ouvir.
            </p>
 
            <div className="space-y-6">
-             <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-900/[0.02] dark:bg-white/[0.02] border border-slate-900/5 dark:border-white/5 hover:bg-slate-900/[0.05] dark:hover:bg-white/[0.05] hover:border-brand-500/30 transition-all group/info">
+             <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-900/2 dark:bg-white/2 border border-slate-900/5 dark:border-white/5 hover:bg-slate-900/5 dark:hover:bg-white/5 hover:border-brand-500/30 transition-all group/info">
                <div className="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-700 dark:text-brand-400 border border-brand-500/20 transition-all group-hover/info:bg-brand-500 group-hover/info:text-white">
                  <Mail size={26}/>
                </div>
@@ -322,7 +322,7 @@ const ContactForm: React.FC = () => {
                </div>
              </div>
              {settings.phone && (
-             <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-900/[0.02] dark:bg-white/[0.02] border border-slate-900/5 dark:border-white/5 hover:bg-slate-900/[0.05] dark:hover:bg-white/[0.05] hover:border-brand-500/30 transition-all group/info">
+             <div className="flex items-center gap-6 p-6 rounded-3xl bg-slate-900/2 dark:bg-white/2 border border-slate-900/5 dark:border-white/5 hover:bg-slate-900/5 dark:hover:bg-white/5 hover:border-brand-500/30 transition-all group/info">
                <div className="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-700 dark:text-brand-400 border border-brand-500/20 transition-all group-hover/info:bg-brand-500 group-hover/info:text-white">
                  <Phone size={26}/>
                </div>
@@ -349,15 +349,15 @@ const ContactForm: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-8 bg-slate-900/5 dark:bg-black/40 p-10 md:p-12 rounded-[3rem] border border-slate-900/10 dark:border-white/10 backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.6)]">
               <div className="space-y-2.5">
                 <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Sua Identidade</label>
-                <input required aria-label="Sua Identidade" value={formState.name} onChange={e=>setFormState({...formState, name: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="Como devemos tratá-lo?"/>
+                <input required aria-label="Sua Identidade" value={formState.name} onChange={e=>setFormState({...formState, name: e.target.value})} className="w-full bg-slate-900/4 dark:bg-white/4 border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="Como devemos tratá-lo?"/>
               </div>
               <div className="space-y-2.5">
                 <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Email de Contacto</label>
-                <input required type="email" aria-label="Email de Contacto" value={formState.email} onChange={e=>setFormState({...formState, email: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="exemplo@servidor.com"/>
+                <input required type="email" aria-label="Email de Contacto" value={formState.email} onChange={e=>setFormState({...formState, email: e.target.value})} className="w-full bg-slate-900/4 dark:bg-white/4 border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="exemplo@servidor.com"/>
               </div>
               <div className="space-y-2.5">
                 <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-[0.2em] ml-2">Mensagem</label>
-                <textarea required rows={4} aria-label="Mensagem" value={formState.message} onChange={e=>setFormState({...formState, message: e.target.value})} className="w-full bg-slate-900/[0.04] dark:bg-white/[0.04] border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all resize-none placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="O que tem em mente?"/>
+                <textarea required rows={4} aria-label="Mensagem" value={formState.message} onChange={e=>setFormState({...formState, message: e.target.value})} className="w-full bg-slate-900/4 dark:bg-white/4 border border-slate-900/5 dark:border-white/5 rounded-2xl p-5 text-slate-900 dark:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus:border-brand-500/50 focus:bg-slate-900/10 dark:focus:bg-white/10 transition-all resize-none placeholder:text-slate-500 dark:placeholder:text-slate-500 shadow-inner" placeholder="O que tem em mente?"/>
               </div>
               {error && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm p-3 rounded-lg">
@@ -388,7 +388,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
           <Badge className="mb-8 border-brand-500/30 px-6 py-2">{`${settings.foundedYear ? `Desde ${settings.foundedYear} ` : ""}ao serviço ${settings.locality ? `de ${settings.locality}` : "da comunidade"}`}</Badge>
           <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif text-slate-900 dark:text-white mb-10 leading-[0.95] tracking-tighter">
             A apoiar a <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400 font-bold">Comunidade</span>
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-display to-accent-600 dark:to-accent-400 font-bold">Comunidade</span>
           </h1>
           <p className="text-2xl md:text-3xl text-slate-600 dark:text-slate-400 font-light leading-relaxed mb-16 max-w-4xl mx-auto">
             {settings.aboutMission}
@@ -422,7 +422,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate, onContact }) =
               const Icon = PILLAR_ICONS[item.icon] ?? Target;
               return (
                 <div key={i} className="bg-white dark:bg-dark-surface border border-slate-900/5 dark:border-white/5 p-14 rounded-[3.5rem] hover:border-brand-500/30 transition-all duration-700 group text-center relative overflow-hidden flex flex-col items-center">
-                  <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-brand-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-transparent via-brand-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   <div className="w-20 h-20 bg-brand-500/5 rounded-2xl flex items-center justify-center text-brand-700 dark:text-brand-400 mb-10 group-hover:scale-110 group-hover:bg-brand-500 group-hover:text-white transition-all shadow-xl border border-slate-900/5 dark:border-white/5">
                     <Icon size={36} />
                   </div>

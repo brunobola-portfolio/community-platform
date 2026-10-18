@@ -1,10 +1,11 @@
 /**
  * Category colour palette.
  *
- * Category colours are stored in the database as Tailwind classes, so the JIT
- * compiler never sees them in source: tailwind.config.ts imports this list into
- * its safelist. Any colour offered to an admin must live here, or the swatch
- * renders transparent in production.
+ * Category colours are stored in the database as Tailwind classes. The -500
+ * values below are seen by the compiler in this file; the -700 label shades are
+ * derived at runtime and listed in the `@source inline(...)` line of index.css.
+ * A colour added here must be added there too, or its label renders without a
+ * background in production.
  */
 
 export interface CategoryColor {

@@ -118,7 +118,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
             {isAdmin
               ? 'Esqueceu-se da palavra-passe? Outro administrador gera-lhe uma nova em Acessos.'
               : <>Ainda não tem conta ou esqueceu-se da palavra-passe? A direção trata disso.{' '}
-                  <Link to={`/ajuda?${HELP_PARAM}=esqueci-palavra-passe`} onClick={onClose} className="rounded font-semibold text-brand-700 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Saber como</Link>
+                  <Link to={`/ajuda?${HELP_PARAM}=esqueci-palavra-passe`} onClick={onClose} className="rounded-sm font-semibold text-brand-700 underline-offset-2 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-brand-400">Saber como</Link>
                 </>}
           </p>
         </div>
@@ -141,7 +141,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="border-slate-900/5 bg-slate-900/[0.03] focus:border-brand-500/40 dark:border-white/5 dark:bg-white/[0.03]"
+            className="border-slate-900/5 bg-slate-900/3 focus:border-brand-500/40 dark:border-white/5 dark:bg-white/3"
           />
         </div>
         <div className="space-y-1.5">
@@ -154,7 +154,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, mode, o
             required
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="border-slate-900/5 bg-slate-900/[0.03] focus:border-brand-500/40 dark:border-white/5 dark:bg-white/[0.03]"
+            className="border-slate-900/5 bg-slate-900/3 focus:border-brand-500/40 dark:border-white/5 dark:bg-white/3"
           />
         </div>
       </form>

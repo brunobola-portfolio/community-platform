@@ -37,7 +37,7 @@ export const AdminPageHeader: React.FC<AdminPageHeaderProps> = ({ title, descrip
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-400 transition-colors hover:border-white/25 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 md:inline-flex"
+                className="hidden items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-400 transition-colors hover:border-white/25 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 md:inline-flex"
             >
                 <ExternalLink size={14} /> Ver site
             </a>

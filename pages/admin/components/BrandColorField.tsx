@@ -51,7 +51,7 @@ export const BrandColorField: React.FC<BrandColorFieldProps> = ({ id, label, val
                     value={value}
                     onChange={e => setColor(e.target.value)}
                     aria-label={`Escolher: ${label.toLowerCase()}`}
-                    className="h-12 w-14 shrink-0 cursor-pointer rounded-lg border border-slate-800 bg-slate-950/50 p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="h-12 w-14 shrink-0 cursor-pointer rounded-lg border border-slate-800 bg-slate-950/50 p-1 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                 />
                 <input
                     id={id}
@@ -69,7 +69,7 @@ export const BrandColorField: React.FC<BrandColorFieldProps> = ({ id, label, val
                     <button
                         type="button"
                         onClick={() => { setDraft(null); auto.onReset(); }}
-                        className="shrink-0 rounded-xl border border-white/10 px-3 text-xs font-semibold text-slate-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        className="shrink-0 rounded-xl border border-white/10 px-3 text-xs font-semibold text-slate-300 hover:bg-white/5 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                     >
                         Automático
                     </button>
@@ -88,7 +88,7 @@ export const BrandColorField: React.FC<BrandColorFieldProps> = ({ id, label, val
                         aria-pressed={!auto?.active && value === s.hex}
                         title={s.name}
                         className={cn(
-                            'h-8 w-8 rounded-xl border border-white/20 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-surface',
+                            'h-8 w-8 rounded-xl border border-white/20 transition-transform hover:scale-110 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-surface',
                             s.className,
                             !auto?.active && value === s.hex && 'ring-2 ring-white ring-offset-2 ring-offset-dark-surface'
                         )}

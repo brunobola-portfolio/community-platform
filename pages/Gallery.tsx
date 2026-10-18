@@ -40,7 +40,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                 {/* Header */}
                 <div className="text-center mb-16 animate-fade-in-up">
                     <span className="text-brand-700 dark:text-brand-400 uppercase tracking-[0.2em] text-xs font-bold border border-brand-500/30 px-4 py-1 rounded-full">Multimédia</span>
-                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Galeria <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-display to-accent-600 dark:to-accent-400">Visual</span></h1>
+                    <h1 className="text-5xl md:text-7xl font-serif text-slate-900 dark:text-white mt-6 mb-6">Galeria <span className="text-transparent bg-clip-text bg-linear-to-r from-brand-display to-accent-600 dark:to-accent-400">Visual</span></h1>
                     <p className="text-xl text-slate-600 dark:text-slate-400 font-light max-w-2xl mx-auto">
                         Recorde os melhores momentos da vida comunitária.
                     </p>
@@ -51,7 +51,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in-up">
                         {Array.from({ length: 6 }).map((_, i) => (
                             <div key={i} className="rounded-3xl overflow-hidden border border-slate-900/10 dark:border-white/10">
-                                <Skeleton className="aspect-[4/3] w-full rounded-none" />
+                                <Skeleton className="aspect-4/3 w-full rounded-none" />
                             </div>
                         ))}
                     </div>
@@ -70,7 +70,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                         {albums.map(album => (
                             <div
                                 key={album.id}
-                                className="group relative aspect-[4/3] rounded-3xl overflow-hidden cursor-pointer border border-slate-900/10 dark:border-white/10 shadow-xl"
+                                className="group relative aspect-4/3 rounded-3xl overflow-hidden cursor-pointer border border-slate-900/10 dark:border-white/10 shadow-xl"
                                 role="button"
                                 tabIndex={0}
                                 aria-label={`Álbum: ${album.title}, ${album.photoCount ?? album.photos?.length ?? 0} fotos`}
@@ -78,7 +78,7 @@ export const GalleryPage: React.FC<{ onNavigate: (page: string) => void }> = () 
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedAlbum(album.id); } }}
                             >
                                 <img src={album.coverUrl || FALLBACK_IMAGES.gallery} alt={album.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:brightness-110" onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGES.gallery; }} />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
+                                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
                                 <div className="absolute bottom-0 left-0 p-8 w-full">
                                     <h3 className="text-2xl font-serif text-white mb-2 group-hover:text-brand-400 transition-colors">{album.title}</h3>
                                     <div className="flex items-center justify-between text-sm text-slate-300">

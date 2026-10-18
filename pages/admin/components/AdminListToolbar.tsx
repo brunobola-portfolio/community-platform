@@ -42,12 +42,12 @@ export function AdminListToolbar<T>({ list, placeholder, noun }: AdminListToolba
                         onChange={e => list.setQuery(e.target.value)}
                         placeholder={placeholder}
                         aria-label={placeholder}
-                        className="w-full bg-black/30 border border-white/10 rounded-xl pl-9 pr-9 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/30"
+                        className="w-full bg-black/30 border border-white/10 rounded-xl pl-9 pr-9 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/30"
                     />
                     {list.query ? (
-                        <button type="button" onClick={() => list.setQuery('')} aria-label="Limpar pesquisa" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><X size={14} /></button>
+                        <button type="button" onClick={() => list.setQuery('')} aria-label="Limpar pesquisa" className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-sm text-slate-400 hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"><X size={14} /></button>
                     ) : (
-                        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden md:inline-block text-[10px] font-mono text-slate-600 border border-white/10 rounded px-1.5">/</kbd>
+                        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden md:inline-block text-[10px] font-mono text-slate-600 border border-white/10 rounded-sm px-1.5">/</kbd>
                     )}
                 </div>
                 {list.sorts.length > 0 && (
@@ -57,7 +57,7 @@ export function AdminListToolbar<T>({ list, placeholder, noun }: AdminListToolba
                             value={list.sortKey}
                             onChange={e => list.setSortKey(e.target.value)}
                             aria-label="Ordenar por"
-                            className="w-full appearance-none bg-black/30 border border-white/10 rounded-xl pl-9 pr-8 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/30"
+                            className="w-full appearance-none bg-black/30 border border-white/10 rounded-xl pl-9 pr-8 py-2.5 text-sm text-slate-200 focus:outline-hidden focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/30"
                         >
                             {list.sorts.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
                         </select>
@@ -74,7 +74,7 @@ export function AdminListToolbar<T>({ list, placeholder, noun }: AdminListToolba
                             onClick={() => list.setFilterKey(f.key)}
                             aria-pressed={active}
                             className={cn(
-                                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                                 active ? 'bg-brand-500/15 border-brand-500/50 text-white' : 'bg-black/20 border-white/10 text-slate-400 hover:text-white hover:border-white/25'
                             )}
                         >

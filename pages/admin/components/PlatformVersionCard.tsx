@@ -77,7 +77,7 @@ export const PlatformVersionCard: React.FC = () => {
                         {latest ? latest.version : '—'}
                         {release === 'current' && <span className="font-sans text-xs text-emerald-400">atualizada</span>}
                         {release === 'behind' && latest && (
-                            <a href={latest.url} target="_blank" rel="noopener noreferrer" className="rounded font-sans text-xs text-amber-300 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                            <a href={latest.url} target="_blank" rel="noopener noreferrer" className="rounded-sm font-sans text-xs text-amber-300 underline-offset-2 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                                 ver novidades
                             </a>
                         )}
@@ -113,7 +113,7 @@ export const PlatformVersionCard: React.FC = () => {
                 <button
                     type="button"
                     onClick={() => window.location.reload()}
-                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 transition-colors hover:bg-amber-500/20 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                     <RefreshCw size={14} /> Há uma versão mais recente publicada — recarregar
                 </button>

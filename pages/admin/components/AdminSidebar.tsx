@@ -36,7 +36,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ id, icon: Icon, label, active
         onClick={() => onSelect(id)}
         aria-current={activeTab === id ? 'page' : undefined}
         className={cn(
-            "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 mb-1 border",
+            "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 mb-1 border",
             activeTab === id
                 ? "bg-brand-700 text-white border-brand-500 shadow-md"
                 : "border-transparent text-slate-400 hover:text-white hover:bg-white/5"
@@ -66,7 +66,7 @@ export interface AdminSidebarProps {
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMenuOpen, onTabSelect, onClose, onLogout, pendingRegistrations }) => (
     <aside className={cn(
-        "fixed inset-y-0 left-0 z-[60] w-72 bg-dark-surface border-r border-white/5 flex flex-col transition-transform duration-300 md:translate-x-0 md:static",
+        "fixed inset-y-0 left-0 z-60 w-72 bg-dark-surface border-r border-white/5 flex flex-col transition-transform duration-300 md:translate-x-0 md:static",
         mobileMenuOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full md:translate-x-0"
     )}>
         <div className="flex items-center justify-between p-6 pb-4 md:pb-6">
@@ -82,7 +82,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, mobileMen
             <button
                 onClick={onClose}
                 aria-label="Fechar menu"
-                className="rounded-lg p-2 text-slate-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 md:hidden"
+                className="rounded-lg p-2 text-slate-400 transition-colors hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 md:hidden"
             >
                 <X size={20} />
             </button>

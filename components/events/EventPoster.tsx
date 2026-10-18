@@ -44,12 +44,12 @@ export const EventPoster: React.FC<EventPosterProps> = ({ src, title }) => {
             <button
                 type="button"
                 onClick={() => setOpen(0)}
-                className="group relative block h-72 w-full overflow-hidden rounded-2xl bg-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 md:h-96"
+                className="group relative block h-72 w-full overflow-hidden rounded-2xl bg-slate-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 md:h-96"
                 aria-label={`Ver cartaz em ecrã inteiro: ${title}`}
             >
                 {frame}
                 {/* Always shown on touch screens, where there is no hover and zooming matters most */}
-                <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs font-semibold text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
+                <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs font-semibold text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100">
                     <Maximize2 size={12} aria-hidden="true" /> Ver cartaz
                 </span>
             </button>

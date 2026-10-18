@@ -22,7 +22,7 @@ interface StepNoteProps {
 }
 
 const NOTE_STYLES = {
-    why: { label: 'Porquê: ', Icon: HelpCircle, box: 'border-slate-900/10 bg-slate-900/[0.03] dark:border-white/10 dark:bg-white/[0.04]', accent: 'text-slate-800 dark:text-slate-100' },
+    why: { label: 'Porquê: ', Icon: HelpCircle, box: 'border-slate-900/10 bg-slate-900/3 dark:border-white/10 dark:bg-white/4', accent: 'text-slate-800 dark:text-slate-100' },
     tip: { label: 'Dica: ', Icon: Lightbulb, box: 'border-brand-500/25 bg-brand-500/10', accent: 'text-brand-700 dark:text-brand-400' },
     warning: { label: 'Atenção: ', Icon: AlertTriangle, box: 'border-amber-500/30 bg-amber-500/10', accent: 'text-amber-800 dark:text-amber-300' },
 } as const;
@@ -42,7 +42,7 @@ export const TutorialStep: React.FC<TutorialStepProps> = ({ step, index, isLast,
     const checkboxId = `${idPrefix}-step-${index}`;
     return (
         <li className="relative flex gap-3 pb-4 last:pb-0 sm:gap-4">
-            {!isLast && <span aria-hidden="true" className="absolute bottom-0 left-[1.1875rem] top-11 w-0.5 rounded-full bg-slate-900/10 dark:bg-white/10" />}
+            {!isLast && <span aria-hidden="true" className="absolute bottom-0 left-4.75 top-11 w-0.5 rounded-full bg-slate-900/10 dark:bg-white/10" />}
             <span
                 aria-hidden="true"
                 className={cn(
@@ -55,10 +55,10 @@ export const TutorialStep: React.FC<TutorialStepProps> = ({ step, index, isLast,
             <div
                 className={cn(
                     'min-w-0 flex-1 rounded-2xl border p-4 transition-colors',
-                    done ? 'border-brand-500/25 bg-brand-500/[0.04]' : 'border-slate-900/10 bg-white dark:border-white/10 dark:bg-white/[0.03]',
+                    done ? 'border-brand-500/25 bg-brand-500/4' : 'border-slate-900/10 bg-white dark:border-white/10 dark:bg-white/3',
                 )}
             >
-                <p className="text-base leading-relaxed text-slate-800 [overflow-wrap:anywhere] dark:text-slate-100">
+                <p className="text-base leading-relaxed text-slate-800 wrap-anywhere dark:text-slate-100">
                     <span className="sr-only">Passo {index + 1}: </span>
                     <HelpText text={step.text} siteName={siteName} />
                 </p>
@@ -67,14 +67,14 @@ export const TutorialStep: React.FC<TutorialStepProps> = ({ step, index, isLast,
                 {step.warning && <StepNote kind="warning" text={step.warning} siteName={siteName} />}
                 <label
                     htmlFor={checkboxId}
-                    className="mt-3 inline-flex min-h-11 cursor-pointer select-none items-center gap-3 rounded-xl border border-slate-900/10 px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-900/5 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-500 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/5"
+                    className="mt-3 inline-flex min-h-11 cursor-pointer select-none items-center gap-3 rounded-xl border border-slate-900/10 px-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-900/5 has-focus-visible:ring-2 has-focus-visible:ring-brand-500 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/5"
                 >
                     <input
                         id={checkboxId}
                         type="checkbox"
                         checked={done}
                         onChange={() => onToggle(index)}
-                        className="h-5 w-5 shrink-0 cursor-pointer rounded accent-brand-700 focus-visible:outline-none"
+                        className="h-5 w-5 shrink-0 cursor-pointer rounded-sm accent-brand-700 focus-visible:outline-hidden"
                     />
                     {done ? 'Feito' : 'Marcar como feito'}
                     <span className="sr-only">: passo {index + 1}</span>

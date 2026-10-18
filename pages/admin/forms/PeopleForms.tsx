@@ -101,7 +101,7 @@ export const CategoryForm: React.FC<FieldHelpers> = ({ str, setField }) => (
                             aria-pressed={selected}
                             title={color.label}
                             className={cn(
-                                'w-8 h-8 rounded-full ring-2 ring-offset-2 ring-offset-slate-900 transition-transform focus-visible:outline-none focus-visible:ring-brand-500',
+                                'w-8 h-8 rounded-full ring-2 ring-offset-2 ring-offset-slate-900 transition-transform focus-visible:outline-hidden focus-visible:ring-brand-500',
                                 color.value,
                                 selected ? 'ring-white scale-110' : 'ring-transparent hover:scale-105',
                             )}

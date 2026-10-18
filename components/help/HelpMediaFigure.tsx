@@ -39,7 +39,7 @@ const HelpVideo: React.FC<{ media: VideoMedia }> = ({ media }) => {
                     <button
                         type="button"
                         onClick={() => setState('playing')}
-                        className="group relative block w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                        className="group relative block w-full focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
                     >
                         <img src={media.poster} alt="" loading="lazy" decoding="async" onError={() => setState('failed')} className="block h-auto w-full" />
                         <span aria-hidden="true" className="absolute inset-0 bg-black/25 transition-colors group-hover:bg-black/35" />
@@ -81,7 +81,7 @@ const HelpImage: React.FC<{ media: ImageMedia; onZoom?: () => void }> = ({ media
                         type="button"
                         onClick={onZoom}
                         aria-label={`Ampliar imagem: ${media.alt}`}
-                        className="group relative block w-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
+                        className="group relative block w-full cursor-zoom-in focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-500"
                     >
                         {/* The visible caption carries the description; repeating it as alt would read it twice */}
                         <img src={media.src} alt="" loading="lazy" decoding="async" onError={() => setFailed(true)} className="block h-auto w-full" />

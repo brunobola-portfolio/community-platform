@@ -22,7 +22,7 @@ interface RegistrationFormProps {
 
 const LABEL = 'mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400';
 const ERROR = 'mt-1.5 text-xs text-red-600 dark:text-red-400';
-const TEXTAREA = 'min-h-[88px] w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:border-brand-500 focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-slate-700 dark:bg-slate-950/50 dark:text-white';
+const TEXTAREA = 'min-h-[88px] w-full rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-hidden focus:border-brand-500 focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-slate-700 dark:bg-slate-950/50 dark:text-white';
 
 /** Fields a browser can autofill, by the type the board chose for them. */
 const AUTOCOMPLETE: Record<string, string> = { email: 'email', phone: 'tel', tel: 'tel' };
@@ -122,7 +122,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({
             ))}
 
             {/* Invisible to people and to assistive technology; bots fill every field */}
-            <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+            <div aria-hidden="true" className="absolute left-[-9999px] h-px w-px overflow-hidden">
                 <label htmlFor={`${formId}-website`}>Website</label>
                 <input id={`${formId}-website`} tabIndex={-1} autoComplete="off" value={values.website} onChange={(e) => onChange('website', e.target.value)} />
             </div>

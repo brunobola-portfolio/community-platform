@@ -57,7 +57,7 @@ const ThemeSample: React.FC<ThemeSampleProps> = ({ tone }) => {
                 Festa de <span className="italic text-brand-display">Verão</span>
             </h4>
             <p className={cn('font-serif text-xl leading-tight', c.title)}>
-                Eventos & <span className={cn('text-transparent bg-clip-text bg-gradient-to-r from-brand-display', c.gradientEnd)}>Atividades</span>
+                Eventos & <span className={cn('text-transparent bg-clip-text bg-linear-to-r from-brand-display', c.gradientEnd)}>Atividades</span>
             </p>
             <span className={cn('inline-block rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider', c.badge)}>
                 Próximo evento
@@ -71,7 +71,7 @@ const ThemeSample: React.FC<ThemeSampleProps> = ({ tone }) => {
                 </span>
                 <span className={cn('text-sm font-semibold underline underline-offset-4', c.link)}>Ver agenda</span>
             </div>
-            <div className="h-1 rounded-full bg-gradient-to-r from-brand-500 via-accent-500 to-brand-500" aria-hidden="true" />
+            <div className="h-1 rounded-full bg-linear-to-r from-brand-500 via-accent-500 to-brand-500" aria-hidden="true" />
         </div>
     );
 };

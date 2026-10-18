@@ -92,7 +92,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
                     <button
                         type="button"
                         onClick={() => setVisible(v => !v)}
-                        className="inline-flex items-center gap-2 rounded-lg px-1 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                        className="inline-flex items-center gap-2 rounded-lg px-1 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                     >
                         {visible ? <EyeOff size={14} /> : <Eye size={14} />} {visible ? 'Ocultar' : 'Mostrar'} palavras-passe
                     </button>

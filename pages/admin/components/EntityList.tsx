@@ -93,7 +93,7 @@ const LoadingRows: React.FC<{ columns: number }> = ({ columns }) => (
       <tr key={row} className="animate-pulse">
         {Array.from({ length: columns + 1 }).map((_, cell) => (
           <td key={cell} className="p-4">
-            <span className="block h-3 rounded bg-white/10" />
+            <span className="block h-3 rounded-sm bg-white/10" />
           </td>
         ))}
       </tr>
@@ -151,7 +151,7 @@ export function EntityList<T>({
       ) : (
         <>
           {/* Desktop: scrolls horizontally instead of clipping long content */}
-          <div className="hidden overflow-hidden rounded-2xl border border-white/10 bg-dark-surface shadow-sm md:block">
+          <div className="hidden overflow-hidden rounded-2xl border border-white/10 bg-dark-surface shadow-xs md:block">
             <div className="overflow-x-auto custom-scrollbar">
               <table className="w-full text-left text-sm">
                 <thead className="bg-white/5 text-slate-400">
@@ -169,7 +169,7 @@ export function EntityList<T>({
                     <LoadingRows columns={columns.length} />
                   ) : (
                     list.visible.map(item => (
-                      <tr key={getKey(item)} className="transition-colors hover:bg-white/[0.04]">
+                      <tr key={getKey(item)} className="transition-colors hover:bg-white/4">
                         {columns.map(column => (
                           <td key={column.header} className={`p-4 align-middle ${column.className ?? ''}`}>
                             {column.cell(item)}
@@ -197,7 +197,7 @@ export function EntityList<T>({
                 return (
                   <div
                     key={getKey(item)}
-                    className="rounded-2xl border border-white/10 bg-dark-surface p-3 shadow-sm"
+                    className="rounded-2xl border border-white/10 bg-dark-surface p-3 shadow-xs"
                   >
                     {/* Actions sit on their own row so the title keeps the full width */}
                     <div className="flex items-start gap-3">

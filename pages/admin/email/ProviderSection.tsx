@@ -35,7 +35,7 @@ const SmtpFields: React.FC<ProviderSectionProps> = ({ form, data, update, setSec
             <div className="flex flex-wrap gap-2" role="group" aria-label="Predefinições SMTP">
                 {SMTP_PRESETS.map(p => (
                     <button key={p.label} type="button" onClick={() => applyPreset(p.label)} aria-pressed={preset?.label === p.label}
-                        className={cn('rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                        className={cn('rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                             preset?.label === p.label ? 'border-brand-500/50 bg-brand-500/15 text-white' : 'border-white/10 text-slate-300 hover:border-white/20 hover:text-white')}>
                         {p.label}
                     </button>
@@ -64,7 +64,7 @@ const SmtpFields: React.FC<ProviderSectionProps> = ({ form, data, update, setSec
 const GraphFields: React.FC<ProviderSectionProps> = ({ form, data, update, setSecret }) => (
     <div className="space-y-4">
         <details className="group rounded-lg bg-sky-500/10 p-3 text-xs text-sky-100">
-            <summary className="flex cursor-pointer items-center gap-2 font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={14} aria-hidden="true" /> Como criar a aplicação no Microsoft Entra (5 passos)</summary>
+            <summary className="flex cursor-pointer items-center gap-2 font-semibold focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"><ShieldCheck size={14} aria-hidden="true" /> Como criar a aplicação no Microsoft Entra (5 passos)</summary>
             <ol className="mt-3 list-decimal space-y-1.5 pl-5 leading-relaxed">
                 {GRAPH_STEPS.map(step => <li key={step}>{step}</li>)}
             </ol>
@@ -105,7 +105,7 @@ export const ProviderSection: React.FC<ProviderSectionProps> = props => {
                     const active = form.provider === c.id;
                     return (
                         <button key={c.id} type="button" role="radio" aria-checked={active} onClick={() => update('provider', c.id)}
-                            className={cn('relative flex flex-col items-start gap-1.5 rounded-xl border p-4 text-left transition-all', (c.id === 'none' || c.id === 'smtp') && 'col-span-2 lg:col-span-1', ' focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                            className={cn('relative flex flex-col items-start gap-1.5 rounded-xl border p-4 text-left transition-all', (c.id === 'none' || c.id === 'smtp') && 'col-span-2 lg:col-span-1', ' focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500',
                                 active ? 'border-brand-500/60 bg-brand-500/10 shadow-[0_0_0_1px_rgb(var(--brand-500)/0.4)]' : 'border-white/10 bg-black/20 hover:border-white/20')}>
                             {active && <CheckCircle2 size={16} aria-hidden="true" className="absolute right-3 top-3 text-brand-400" />}
                             <span className="flex items-center gap-2 text-sm font-semibold text-white">{c.id === 'smtp' ? <Mail size={15} aria-hidden="true" /> : c.id === 'graph' ? <ShieldCheck size={15} aria-hidden="true" /> : null}{c.name}</span>

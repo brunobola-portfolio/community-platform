@@ -60,7 +60,7 @@ const RegistrationsCell: React.FC<{ event: AdminEvent; tally?: RegistrationTally
     const [one, many] = (event.teamSize ?? 1) >= 2 ? ['equipa', 'equipas'] : ['inscrito', 'inscritos'];
     const label = `${active} ${active === 1 ? one : many}`;
     return (
-        <button type="button" onClick={e => { e.stopPropagation(); onOpen?.(event.id); }} className="group flex flex-col items-start rounded-lg px-2 py-1 text-left hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" aria-label={`Ver inscrições de ${event.title}`}>
+        <button type="button" onClick={e => { e.stopPropagation(); onOpen?.(event.id); }} className="group flex flex-col items-start rounded-lg px-2 py-1 text-left hover:bg-white/5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500" aria-label={`Ver inscrições de ${event.title}`}>
             <span className="text-sm font-medium tabular-nums text-white group-hover:text-brand-300">{label}</span>
             {tally?.pending ? <span className="text-[11px] font-semibold text-amber-300">{tally.pending} por confirmar</span> : <span className="text-[11px] text-slate-400">Ver inscrições</span>}
         </button>

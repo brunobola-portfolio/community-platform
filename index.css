@@ -1,6 +1,132 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss' source(none);
+
+/* Only the app's own code is scanned, as before: docs and changelogs mention class names too */
+@source "./index.html";
+@source "./*.{ts,tsx}";
+@source "./components";
+@source "./pages";
+@source "./layouts";
+@source "./context";
+@source "./utils";
+
+/*
+ * Category colours are chosen in the backoffice and stored in the database as
+ * class names (utils/categoryColors.ts). The -500 dots appear in that file;
+ * the -700 label shades are derived at runtime, so they are listed here or the
+ * compiler would never emit them.
+ */
+@source inline("bg-{brand,red,orange,amber,yellow,green,emerald,teal,cyan,blue,indigo,violet,purple,pink,slate}-{500,700}");
+
+/* The theme follows the `dark` class on <html> (hooks/useTheme.ts), not the OS */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Brand tokens are CSS variables written at runtime from settings (see
+ * components/BrandTheme.tsx), as space-separated RGB channels so opacity
+ * modifiers (bg-brand-500/10) keep working. Every slate class follows the
+ * brand-tinted neutrals: same luminance per step as Tailwind's slate, so the
+ * audited contrast holds, with the brand's hue.
+ */
+@theme {
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-heading), Georgia, serif;
+  /* Same name as the runtime variable on :root, which overrides this stack */
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, "Cascadia Mono", Menlo, Consolas, monospace;
+
+  --color-brand-50: rgb(var(--brand-50));
+  --color-brand-100: rgb(var(--brand-100));
+  --color-brand-200: rgb(var(--brand-200));
+  --color-brand-300: rgb(var(--brand-300));
+  --color-brand-400: rgb(var(--brand-400));
+  --color-brand-500: rgb(var(--brand-500));
+  --color-brand-600: rgb(var(--brand-600));
+  --color-brand-700: rgb(var(--brand-700));
+  --color-brand-800: rgb(var(--brand-800));
+  --color-brand-900: rgb(var(--brand-900));
+  --color-brand-950: rgb(var(--brand-950));
+  /* Large display accents: the brand colour itself where 3:1 allows, per theme */
+  --color-brand-display: rgb(var(--brand-display));
+
+  --color-slate-50: rgb(var(--neutral-50));
+  --color-slate-100: rgb(var(--neutral-100));
+  --color-slate-200: rgb(var(--neutral-200));
+  --color-slate-300: rgb(var(--neutral-300));
+  --color-slate-400: rgb(var(--neutral-400));
+  --color-slate-500: rgb(var(--neutral-500));
+  --color-slate-600: rgb(var(--neutral-600));
+  --color-slate-700: rgb(var(--neutral-700));
+  --color-slate-800: rgb(var(--neutral-800));
+  --color-slate-900: rgb(var(--neutral-900));
+  --color-slate-950: rgb(var(--neutral-950));
+
+  --color-dark-bg: rgb(var(--neutral-950));
+  --color-dark-surface: rgb(var(--neutral-900));
+  --color-dark-border: rgb(var(--neutral-50) / 0.08);
+
+  --color-accent-50: rgb(var(--accent-50));
+  --color-accent-100: rgb(var(--accent-100));
+  --color-accent-200: rgb(var(--accent-200));
+  --color-accent-300: rgb(var(--accent-300));
+  --color-accent-400: rgb(var(--accent-400));
+  --color-accent-500: rgb(var(--accent-500));
+  --color-accent-600: rgb(var(--accent-600));
+  --color-accent-700: rgb(var(--accent-700));
+  --color-accent-800: rgb(var(--accent-800));
+  --color-accent-900: rgb(var(--accent-900));
+  --color-accent-950: rgb(var(--accent-950));
+  /* Fixed on purpose: "Destaque" and gold tiers mean the same on every instance */
+  --color-accent-gold: #fbbf24;
+  --color-accent-glow: rgb(var(--brand-600) / 0.5);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-fade-in-up: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(10px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
+
+/* Background images used as utilities (bg-gradient-radial, bg-hero-glow) */
+@utility bg-gradient-radial {
+  background-image: radial-gradient(var(--tw-gradient-stops));
+}
+@utility bg-hero-glow {
+  background-image: conic-gradient(from 180deg at 50% 50%, rgb(var(--brand-600)) 0deg, #000000 180deg, rgb(var(--brand-600)) 360deg);
+}
+
+/*
+ * Tailwind 4 changed three defaults this design was drawn with; they are kept
+ * as they were: borders without a colour are light grey (not currentColor),
+ * buttons show the pointer, and placeholders use the neutral 400.
+ */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+}
 
 /*
  * Brand defaults for the first paint. BrandTheme overwrites these on <html>
@@ -76,39 +202,37 @@
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@layer utilities {
-  /* Slim themed scrollbar for modal bodies and horizontal rails */
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(var(--neutral-500) / 0.4) transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar {
+/* Slim themed scrollbar for modal bodies and horizontal rails */
+@utility custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--neutral-500) / 0.4) transparent;
+  &::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
-  .custom-scrollbar::-webkit-scrollbar-track {
+  &::-webkit-scrollbar-track {
     background: transparent;
   }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
+  &::-webkit-scrollbar-thumb {
     background: rgb(var(--neutral-500) / 0.35);
     border-radius: 8px;
   }
+}
 
-  .no-scrollbar {
-    scrollbar-width: none;
-  }
-  .no-scrollbar::-webkit-scrollbar {
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
     display: none;
   }
+}
 
-  /* 3D flip support for the membership card */
-  .perspective-1000 {
-    perspective: 1000px;
-  }
+/* 3D flip support for the membership card */
+@utility perspective-1000 {
+  perspective: 1000px;
+}
 
-  .text-shadow {
-    text-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
-  }
+@utility text-shadow {
+  text-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
 }
 
 /* Vestibular safety: collapse decorative motion when the OS asks for it */

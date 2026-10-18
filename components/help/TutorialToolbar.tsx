@@ -10,7 +10,7 @@ interface TutorialToolbarProps {
     shareUrl?: string;
 }
 
-const ACTION = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-900/10 px-4 text-sm font-semibold text-slate-700 transition-colors hover:border-brand-500/40 hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/5 dark:hover:text-white';
+const ACTION = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-900/10 px-4 text-sm font-semibold text-slate-700 transition-colors hover:border-brand-500/40 hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:border-white/10 dark:text-slate-200 dark:hover:bg-white/5 dark:hover:text-white';
 
 async function copyText(text: string): Promise<boolean> {
     try {
@@ -39,7 +39,7 @@ export const TutorialToolbar: React.FC<TutorialToolbarProps> = ({ doneCount, ste
     };
 
     return (
-        <div className="space-y-4 rounded-2xl border border-slate-900/10 bg-white p-4 dark:border-white/10 dark:bg-white/[0.03] print:hidden">
+        <div className="space-y-4 rounded-2xl border border-slate-900/10 bg-white p-4 dark:border-white/10 dark:bg-white/3 print:hidden">
             <div className="space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="inline-flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -47,7 +47,7 @@ export const TutorialToolbar: React.FC<TutorialToolbarProps> = ({ doneCount, ste
                         {complete ? 'Guia concluído' : `${doneCount} de ${stepCount} passos feitos`}
                     </p>
                     {doneCount > 0 && (
-                        <button type="button" onClick={onReset} className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-slate-600 hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white">
+                        <button type="button" onClick={onReset} className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-slate-600 hover:bg-slate-900/5 hover:text-slate-900 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white">
                             <RotateCcw size={15} aria-hidden="true" /> Recomeçar
                         </button>
                     )}
@@ -77,7 +77,7 @@ export const TutorialToolbar: React.FC<TutorialToolbarProps> = ({ doneCount, ste
                     <Printer size={16} aria-hidden="true" /> Imprimir
                 </button>
             </div>
-            <p role="status" aria-live="polite" className={cn('text-sm text-slate-700 [overflow-wrap:anywhere] dark:text-slate-200', !copyStatus && 'sr-only')}>{copyStatus}</p>
+            <p role="status" aria-live="polite" className={cn('text-sm text-slate-700 wrap-anywhere dark:text-slate-200', !copyStatus && 'sr-only')}>{copyStatus}</p>
         </div>
     );
 };

@@ -14,7 +14,7 @@ import { PlatformCredit } from './PlatformCredit';
 import { useData } from '../context/DataContext';
 import { mapsSearchUrl, sanitizeExternalUrl, sanitizeUrl } from '../utils/security';
 
-const FOOTER_LINK = 'text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+const FOOTER_LINK = 'text-slate-600 dark:text-slate-400 hover:text-brand-700 dark:hover:text-brand-400 transition-colors rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500';
 
 interface FooterProps {
   onContact?: () => void;
@@ -36,7 +36,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
   return (
     <footer className="bg-slate-100 dark:bg-black text-slate-600 dark:text-slate-300 pt-16 pb-28 md:py-20 border-t border-slate-900/10 dark:border-white/10 relative overflow-hidden">
       {/* Background Gradient Fade */}
-      <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-brand-500/5 dark:from-brand-900/10 to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-full h-full bg-linear-to-t from-brand-500/5 dark:from-brand-900/10 to-transparent pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
@@ -54,7 +54,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Facebook da ${settings.siteName}`}
-                  className="w-10 h-10 rounded-xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500/40 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  className="w-10 h-10 rounded-xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500/40 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                   <Facebook size={16} />
                 </a>
@@ -65,7 +65,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Instagram da ${settings.siteName}`}
-                  className="w-10 h-10 rounded-xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500/40 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  className="w-10 h-10 rounded-xl bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-brand-500/40 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500"
                 >
                   <Instagram size={16} />
                 </a>
@@ -78,11 +78,11 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
             <h3 className="text-slate-900 dark:text-white font-mono uppercase text-xs tracking-[0.2em] text-brand-700 dark:text-brand-400">Explorar</h3>
             <div className="flex justify-center md:justify-start">
               <ul className="space-y-4 text-sm text-center md:text-left">
-                <li><button onClick={() => onNavigate?.('blog')} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Notícias <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
-                <li><button onClick={() => onNavigate?.('events')} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Agenda Cultural <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
-                <li><button onClick={() => onNavigate?.('about')} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Sobre Nós <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
-                <li><button onClick={onContact} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Contacte-nos <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
-                <li><Link to="/ajuda" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Ajuda <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></Link></li>
+                <li><button onClick={() => onNavigate?.('blog')} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Notícias <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
+                <li><button onClick={() => onNavigate?.('events')} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Agenda Cultural <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
+                <li><button onClick={() => onNavigate?.('about')} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Sobre Nós <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
+                <li><button onClick={onContact} className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Contacte-nos <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></button></li>
+                <li><Link to="/ajuda" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white md:hover:translate-x-2 transition-all inline-flex items-center group rounded-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">Ajuda <ArrowUpRight size={12} className="ml-1 opacity-0 group-hover:opacity-100"/></Link></li>
               </ul>
             </div>
           </div>
@@ -95,7 +95,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
                 {settings.address && (
                   <li className="flex items-start justify-center md:justify-start gap-3 group">
                     <MapPin size={18} className="text-brand-500 shrink-0 group-hover:text-slate-900 dark:group-hover:text-white" />
-                    <a href={sanitizeUrl(settings.mapsUrl ?? '') || mapsSearchUrl(settings.address)} target="_blank" rel="noopener noreferrer" className="rounded group-hover:text-slate-900 dark:group-hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <a href={sanitizeUrl(settings.mapsUrl ?? '') || mapsSearchUrl(settings.address)} target="_blank" rel="noopener noreferrer" className="rounded-sm group-hover:text-slate-900 dark:group-hover:text-white focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
                       <span className="block text-left">{addressLine1}{addressLine2 && <><br/>{addressLine2}</>}</span>
                     </a>
                   </li>
@@ -131,7 +131,7 @@ export const Footer: React.FC<FooterProps> = ({ onContact, onAdminLogin, onNavig
             </nav>
             <p className="text-slate-500 dark:text-slate-400"><PlatformCredit /></p>
           </div>
-          <button onClick={onAdminLogin} disabled={!onAdminLogin} className="group flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 hover:bg-amber-900/10 hover:border-amber-500/30 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+          <button onClick={onAdminLogin} disabled={!onAdminLogin} className="group flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 hover:bg-amber-900/10 hover:border-amber-500/30 transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand-500">
             <ShieldCheck size={12} className="text-slate-600 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-500" />
             <span className="text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-500 font-semibold">Acesso Reservado</span>
           </button>
