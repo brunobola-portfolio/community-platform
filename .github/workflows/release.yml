@@ -51,7 +51,7 @@ jobs:
         run: sha256sum community-platform-dist.zip | tee community-platform-dist.zip.sha256
 
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v3
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: community-platform-dist.zip
 
